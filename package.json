@@ -19,9 +19,9 @@
     "functions:check": "npm run functions:lint && npm run functions:build",
     "check": "npm run lint && npm run typecheck && npm run build",
     "check:all": "npm run lint && npm run typecheck && npm run functions:check && npm run build",
-    "emulators": "firebase emulators:start --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data",
-    "firebase:staging": "firebase use staging",
-    "firebase:production": "firebase use production"
+    "firebase:current": "firebase use",
+    "firebase:projects": "firebase projects:list",
+    "emulators": "firebase emulators:start --project energie-kraft-next --import=.firebase/emulator-data --export-on-exit=.firebase/emulator-data"
   },
   "dependencies": {
     "clsx": "^2.1.1",
