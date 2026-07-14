@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { env } from "@/config/env";
+import { publicEnv } from "@/config/env/public";
 import { siteConfig } from "@/config/site";
 
 export default function robots(): MetadataRoute.Robots {
-  if (!env.isProduction) {
+  if (!publicEnv.isProduction) {
     return {
       rules: {
         userAgent: "*",

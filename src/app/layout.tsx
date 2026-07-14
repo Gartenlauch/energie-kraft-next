@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-import { env } from "@/config/env";
+import { publicEnv } from "@/config/env/public";
 import { siteConfig } from "@/config/site";
 
 import "./globals.css";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
 
-  robots: env.isProduction
+  robots: publicEnv.isProduction
     ? {
         index: true,
         follow: true,

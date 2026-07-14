@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { env } from "@/config/env";
+import { publicEnv } from "@/config/env/public";
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  if (!env.isProduction) {
+  if (!publicEnv.isProduction) {
     return [];
   }
 
