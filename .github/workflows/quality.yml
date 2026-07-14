@@ -34,7 +34,7 @@ jobs:
       - name: Create CI environment
         run: |
           cat <<EOF > .env.local
-          NEXT_PUBLIC_SITE_ENV=staging
+          NEXT_PUBLIC_SITE_ENV=ci
           NEXT_PUBLIC_CANONICAL_BASE_URL=https://www.energie-kraft.de
           NEXT_PUBLIC_FIREBASE_API_KEY=ci-placeholder
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=ci-placeholder.firebaseapp.com

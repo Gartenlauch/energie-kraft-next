@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const publicEnvSchema = z.object({
-  NEXT_PUBLIC_SITE_ENV: z.enum(["local", "production"]),
+  NEXT_PUBLIC_SITE_ENV: z.enum(["local", "ci", "production"]),
 
   NEXT_PUBLIC_CANONICAL_BASE_URL: z
     .string()
