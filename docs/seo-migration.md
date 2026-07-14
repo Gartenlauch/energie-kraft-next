@@ -1,0 +1,8 @@
+- aktuelle WordPress-URL
+- neue Next.js-URL
+- HTTP-Status
+- Redirect-Ziel
+- Canonical
+- Seitentyp
+- Indexierungsstatus
+- Priorität

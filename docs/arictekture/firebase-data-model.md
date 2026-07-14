@@ -1,0 +1,9 @@
+faqCategories
+faqs
+zukünftige leads
+zukünftige applications
+Timestamp-Konvention
+Statuswerte
+Datenschutz- und Löschkonzept
+serverseitiger Zugriff
+kein direkter öffentlicher Firestore-Zugriff

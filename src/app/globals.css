@@ -3,24 +3,64 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --surface: #f5f5f3;
+  --surface-strong: #ecece8;
+
+  /*
+   * Vorläufige Fallbacks.
+   * Im Design-Sprint durch die verbindlichen Energie-Kraft-CI-Werte ersetzen.
+   */
+  --brand-primary: #111827;
+  --brand-secondary: #374151;
+  --brand-accent: #d1a000;
+
+  --border-default: #ddddda;
+  --focus-ring: #2563eb;
+
+  --container-width: 80rem;
+  --header-height: 5rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-accent: var(--brand-accent);
+
+  --color-border-default: var(--border-default);
+  --color-focus-ring: var(--focus-ring);
+
+  --spacing-header: var(--header-height);
+  --container-content: var(--container-width);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  outline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
 }

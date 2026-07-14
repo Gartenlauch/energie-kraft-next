@@ -1,0 +1,58 @@
+name: Quality
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Install functions dependencies
+        run: npm ci --prefix functions
+
+      - name: Create CI environment
+        run: |
+          cat <<EOF > .env.local
+          NEXT_PUBLIC_SITE_ENV=staging
+          NEXT_PUBLIC_CANONICAL_BASE_URL=https://www.energie-kraft.de
+          NEXT_PUBLIC_FIREBASE_API_KEY=ci-placeholder
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=ci-placeholder.firebaseapp.com
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID=ci-placeholder
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=ci-placeholder.firebasestorage.app
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=000000000000
+          NEXT_PUBLIC_FIREBASE_APP_ID=1:000000000000:web:placeholder
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS=false
+          EOF
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build functions
+        run: npm run functions:check
+
+      - name: Build Next.js
+        run: npm run build
