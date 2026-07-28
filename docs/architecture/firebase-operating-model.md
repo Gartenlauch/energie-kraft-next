@@ -39,6 +39,12 @@ Verwendete Emulatoren:
 
 Der Emulator-Aufruf verwendet ausdrücklich die Projekt-ID:
 
+Lokale Emulator-Projekt-ID: demo-energie-kraft-next
+Produktives Firebase-Projekt: energie-kraft-next
+
+Die Demo-ID ist kein zweites Firebase-Projekt.
+Sie existiert ausschließlich als lokaler Emulator-Namespace.
+
 ```bash
 firebase emulators:start --project energie-kraft-next
 ```
