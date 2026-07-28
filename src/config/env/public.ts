@@ -1,6 +1,11 @@
 import { z } from "zod";
+import {
+  FIREBASE_EMULATOR_PROJECT_ID,
+  FIREBASE_PRODUCTION_PROJECT_ID,
+} from "@/config/firebase";
 
-const FIREBASE_PROJECT_ID = "energie-kraft-next";
+
+
 const PRODUCTION_CANONICAL_BASE_URL = "https://www.energie-kraft.de";
 
 const optionalNonEmptyString = z.preprocess(
@@ -31,6 +36,50 @@ const publicEnvSchema = z
   .superRefine((value, context) => {
     const useFirebaseEmulators =
       value.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === "true";
+    const siteEnv = value.NEXT_PUBLIC_SITE_ENV;
+    const projectId = value.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
+    if (
+      siteEnv === "local" &&
+      projectId !== FIREBASE_EMULATOR_PROJECT_ID
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["NEXT_PUBLIC_FIREBASE_PROJECT_ID"],
+        message:
+
+          `Lokal muss die Emulator-Projekt-ID ` +
+          `"${FIREBASE_EMULATOR_PROJECT_ID}" verwendet werden.`,
+      });
+    }
+
+    if (
+      siteEnv === "production" &&
+      projectId !== FIREBASE_PRODUCTION_PROJECT_ID
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["NEXT_PUBLIC_FIREBASE_PROJECT_ID"],
+        message:
+          `In Produktion muss die Firebase-Projekt-ID ` +
+          `"${FIREBASE_PRODUCTION_PROJECT_ID}" verwendet werden.`,
+      });
+    }
+
+    if (
+      siteEnv === "ci" &&
+      (
+        projectId === FIREBASE_PRODUCTION_PROJECT_ID ||
+        projectId === FIREBASE_EMULATOR_PROJECT_ID
+      )
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["NEXT_PUBLIC_FIREBASE_PROJECT_ID"],
+        message:
+          "CI muss eine eigene nicht produktive Platzhalter-ID verwenden.",
+      });
+    }
 
     if (value.NEXT_PUBLIC_SITE_ENV === "local" && !useFirebaseEmulators) {
       context.addIssue({
@@ -51,19 +100,13 @@ const publicEnvSchema = z
     }
 
     if (
-      value.NEXT_PUBLIC_SITE_ENV !== "ci" &&
-      value.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== FIREBASE_PROJECT_ID
+      value.NEXT_PUBLIC_SITE_ENV !== "ci"
     ) {
-      context.addIssue({
-        code: "custom",
-        path: ["NEXT_PUBLIC_FIREBASE_PROJECT_ID"],
-        message: `Für lokale Entwicklung und Produktion muss die Projekt-ID "${FIREBASE_PROJECT_ID}" verwendet werden.`,
-      });
+
     }
 
     if (
-      value.NEXT_PUBLIC_SITE_ENV === "ci" &&
-      value.NEXT_PUBLIC_FIREBASE_PROJECT_ID === FIREBASE_PROJECT_ID
+      value.NEXT_PUBLIC_SITE_ENV === "ci"
     ) {
       context.addIssue({
         code: "custom",

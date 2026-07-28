@@ -17,6 +17,11 @@ import {
 
 import { publicEnv } from "@/config/env/public";
 
+import {
+  FIREBASE_FUNCTIONS_REGION,
+  firebaseEmulators,
+} from "@/config/firebase";
+
 const firebaseConfig = {
   apiKey: publicEnv.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: publicEnv.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -36,7 +41,7 @@ export const firestore = getFirestore(firebaseApp);
 export const firebaseStorage = getStorage(firebaseApp);
 export const firebaseFunctions = getFunctions(
   firebaseApp,
-  "europe-west4",
+  FIREBASE_FUNCTIONS_REGION,
 );
 
 declare global {
@@ -50,20 +55,32 @@ if (
   publicEnv.useFirebaseEmulators &&
   !globalThis.__energieKraftFirebaseEmulatorsConnected
 ) {
+  const { host, ports } = firebaseEmulators;
+
   connectAuthEmulator(
     firebaseAuth,
-    "http://127.0.0.1:9099",
+    `http://${host}:${ports.auth}`,
     {
       disableWarnings: true,
     },
   );
 
-  connectFirestoreEmulator(firestore, "127.0.0.1", 8080);
-  connectStorageEmulator(firebaseStorage, "127.0.0.1", 9199);
+  connectFirestoreEmulator(
+    firestore,
+    host,
+    ports.firestore,
+  );
+
+  connectStorageEmulator(
+    firebaseStorage,
+    host,
+    ports.storage,
+  );
+
   connectFunctionsEmulator(
     firebaseFunctions,
-    "127.0.0.1",
-    5001,
+    host,
+    ports.functions,
   );
 
   globalThis.__energieKraftFirebaseEmulatorsConnected = true;
