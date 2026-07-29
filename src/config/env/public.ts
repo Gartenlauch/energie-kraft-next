@@ -100,19 +100,17 @@ const publicEnvSchema = z
     }
 
     if (
-      value.NEXT_PUBLIC_SITE_ENV !== "ci"
-    ) {
-
-    }
-
-    if (
-      value.NEXT_PUBLIC_SITE_ENV === "ci"
+      siteEnv === "ci" &&
+      (
+        projectId === FIREBASE_PRODUCTION_PROJECT_ID ||
+        projectId === FIREBASE_EMULATOR_PROJECT_ID
+      )
     ) {
       context.addIssue({
         code: "custom",
         path: ["NEXT_PUBLIC_FIREBASE_PROJECT_ID"],
         message:
-          "Die CI-Umgebung darf nicht mit der produktiven Firebase-Projekt-ID konfiguriert werden.",
+          "CI muss eine eigene nicht produktive Platzhalter-ID verwenden.",
       });
     }
 
