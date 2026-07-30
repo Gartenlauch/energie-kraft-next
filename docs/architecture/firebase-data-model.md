@@ -28,6 +28,11 @@ Beispiel:
 ```text
 faqCategories/photovoltaik
 
+
+Der Slug und die Dokument-ID sind nach der
+Erstellung unveränderlich. Dadurch bleiben
+Referenzen über `faqs.categoryId` stabil.
+
 ## FAQ-Einträge
 
 Collection:

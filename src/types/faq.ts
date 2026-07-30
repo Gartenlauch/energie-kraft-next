@@ -2,10 +2,7 @@ import type { FaqRouteKey } from "@/config/routes";
 import type { FirestoreAuditFields } from "@/types/firestore";
 
 export type { FaqRouteKey } from "@/config/routes";
-export type {
-  FirestoreAuditFields,
-  FirestoreTimestamp,
-} from "@/types/firestore";
+export type { FirestoreAuditFields, FirestoreTimestamp } from "@/types/firestore";
 
 export interface FaqPlacement {
   routeKey: FaqRouteKey;
@@ -19,8 +16,7 @@ export interface FaqPlacement {
  *
  * Die Dokument-ID wird nicht zusätzlich im Dokument gespeichert.
  */
-export interface FaqCategoryDocument
-  extends FirestoreAuditFields {
+export interface FaqCategoryDocument extends FirestoreAuditFields {
   name: string;
   slug: string;
   sortOrder: number;
@@ -30,8 +26,7 @@ export interface FaqCategoryDocument
 /**
  * Anwendungsobjekt nach dem Lesen aus Firestore.
  */
-export interface FaqCategory
-  extends FaqCategoryDocument {
+export interface FaqCategory extends FaqCategoryDocument {
   id: string;
 }
 
@@ -41,8 +36,7 @@ export interface FaqCategory
  *
  * Die Dokument-ID wird nicht zusätzlich im Dokument gespeichert.
  */
-export interface FaqEntryDocument
-  extends FirestoreAuditFields {
+export interface FaqEntryDocument extends FirestoreAuditFields {
   question: string;
   answer: string;
   categoryId: string;
@@ -72,8 +66,7 @@ export type FaqCategoryCreateInput = Pick<
  *
  * Die Runtime-Validierung verhindert später ein leeres Update.
  */
-export type FaqCategoryUpdateInput =
-  Partial<FaqCategoryCreateInput>;
+export type FaqCategoryUpdateInput = Partial<FaqCategoryCreateInput>;
 
 /**
  * Fachliche Eingabedaten zum Erstellen eines FAQ-Eintrags.
@@ -82,11 +75,7 @@ export type FaqCategoryUpdateInput =
  */
 export type FaqEntryCreateInput = Pick<
   FaqEntryDocument,
-  | "question"
-  | "answer"
-  | "categoryId"
-  | "placements"
-  | "isPublished"
+  "question" | "answer" | "categoryId" | "placements" | "isPublished"
 >;
 
 /**
@@ -94,10 +83,9 @@ export type FaqEntryCreateInput = Pick<
  *
  * Die Runtime-Validierung verhindert später ein leeres Update.
  */
-export type FaqEntryUpdateInput =
-  Partial<FaqEntryCreateInput>;
+export type FaqEntryUpdateInput = Partial<FaqEntryCreateInput>;
 
-  /**
+/**
  * Im Admin änderbare Felder einer bestehenden FAQ-Kategorie.
  *
  * Der Slug und damit die Dokument-ID bleiben unveränderlich.
@@ -106,3 +94,11 @@ export type FaqCategoryAdminUpdateInput = Pick<
   FaqCategoryCreateInput,
   "name" | "sortOrder" | "isActive"
 >;
+
+/**
+ * Vollständige fachliche Eingabedaten zum Bearbeiten
+ * eines bestehenden FAQ-Eintrags im Adminbereich.
+ *
+ * Dokument-ID und Audit-Felder sind nicht enthalten.
+ */
+export type FaqEntryAdminUpdateInput = FaqEntryCreateInput;
