@@ -96,3 +96,13 @@ export type FaqEntryCreateInput = Pick<
  */
 export type FaqEntryUpdateInput =
   Partial<FaqEntryCreateInput>;
+
+  /**
+ * Im Admin änderbare Felder einer bestehenden FAQ-Kategorie.
+ *
+ * Der Slug und damit die Dokument-ID bleiben unveränderlich.
+ */
+export type FaqCategoryAdminUpdateInput = Pick<
+  FaqCategoryCreateInput,
+  "name" | "sortOrder" | "isActive"
+>;

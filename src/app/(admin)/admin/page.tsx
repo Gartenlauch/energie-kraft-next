@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AdminPage() {
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
@@ -13,7 +15,10 @@ export default function AdminPage() {
       </div>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <Link
+          href="/admin/faqs/categories"
+          className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
+        >
           <p className="text-sm font-medium text-emerald-800">
             Inhalte
           </p>
@@ -27,7 +32,11 @@ export default function AdminPage() {
             Veröffentlichungsstatus und
             Seitenausspielungen verwalten.
           </p>
-        </section>
+
+          <p className="mt-5 text-sm font-semibold text-emerald-800 group-hover:underline">
+            Kategorien verwalten →
+          </p>
+        </Link>
 
         <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-medium text-emerald-800">

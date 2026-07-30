@@ -21,6 +21,13 @@ Persistierte Felder:
 
 Die Firestore-Dokument-ID wird nicht zusätzlich als Feld gespeichert.
 
+Die Dokument-ID entspricht dem Slug der Kategorie.
+
+Beispiel:
+
+```text
+faqCategories/photovoltaik
+
 ## FAQ-Einträge
 
 Collection:
