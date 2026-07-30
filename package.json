@@ -23,6 +23,7 @@
     "firebase:projects": "firebase projects:list",
     "emulators": "firebase emulators:start --project demo-energie-kraft-next --only auth,firestore,functions,storage",
     "emulators:smoke": "firebase emulators:exec --project demo-energie-kraft-next --only auth,firestore,functions,storage \"node scripts/emulators/smoke.mjs\"",
+    "auth:local:set-admin": "node scripts/auth/set-local-admin.mjs",
     "test": "vitest run --config vitest.config.mjs",
     "test:watch": "vitest --config vitest.config.mjs",
     "test:rules:run": "vitest run --config vitest.rules.config.mjs",
