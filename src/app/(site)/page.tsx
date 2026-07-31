@@ -1,12 +1,22 @@
+import { FaqJsonLd } from "@/components/faq/faq-json-ld";
+import { PublicFaqSection } from "@/components/faq/public-faq-section";
 import { homeContent } from "@/content";
+import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 
-export default function HomePage() {
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const faqs = await getPublicFaqEntriesByRoute("home");
+
   return (
     <main>
-      <section className="flex min-h-screen items-center bg-background px-6">
+      <FaqJsonLd faqs={faqs} />
+
+      <section className="bg-background flex min-h-screen items-center px-6">
         <div className="mx-auto w-full max-w-7xl">
           {homeContent.hero.eyebrow ? (
-            <p className="mb-4 text-sm font-semibold uppercase tracking-widest">
+            <p className="mb-4 text-sm font-semibold tracking-widest uppercase">
               {homeContent.hero.eyebrow}
             </p>
           ) : null}
@@ -15,11 +25,18 @@ export default function HomePage() {
             {homeContent.hero.title}
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-foreground/70">
+          <p className="text-foreground/70 mt-6 max-w-2xl text-lg leading-8">
             {homeContent.hero.description}
           </p>
         </div>
       </section>
+
+      <PublicFaqSection
+        faqs={faqs}
+        eyebrow="Fragen & Antworten"
+        title="Häufige Fragen zu Energie-Kraft"
+        description="Antworten auf häufige Fragen zu unseren Lösungen, zur Planung und zur Umsetzung."
+      />
     </main>
   );
 }

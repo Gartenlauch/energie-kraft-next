@@ -102,3 +102,20 @@ export type FaqCategoryAdminUpdateInput = Pick<
  * Dokument-ID und Audit-Felder sind nicht enthalten.
  */
 export type FaqEntryAdminUpdateInput = FaqEntryCreateInput;
+
+/**
+ * Öffentlich auslieferbare FAQ-Daten.
+ *
+ * Audit-Felder und interne Verwaltungsdaten werden
+ * bewusst nicht an öffentliche Komponenten übergeben.
+ */
+export interface PublicFaqEntry {
+  id: string;
+  question: string;
+  answer: string;
+  categoryId: string;
+  categoryName: string;
+  routeKey: FaqRouteKey;
+  sortOrder: number;
+  showInSchema: boolean;
+}
