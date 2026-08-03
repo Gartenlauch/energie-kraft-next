@@ -11,6 +11,14 @@ export interface CtaContent {
   href: string;
 }
 
+export interface ContentLink {
+  eyebrow?: string;
+  label: string;
+  description?: string;
+  href: string;
+  external?: boolean;
+}
+
 export interface HeroContent {
   eyebrow?: string;
   title: string;
@@ -25,6 +33,7 @@ export interface ContentSection {
   title: string;
   text: string[];
   items?: string[];
+  links?: ContentLink[];
   cta?: CtaContent;
 }
 

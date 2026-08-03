@@ -1,34 +1,15 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-import { publicEnv } from "@/config/env/public";
-import { siteConfig } from "@/config/site";
-
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.canonicalBaseUrl),
-
   title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    default: "Energie-Kraft Süd",
+    template: "%s | Energie-Kraft Süd",
   },
-
-  robots: publicEnv.isProduction
-    ? {
-        index: true,
-        follow: true,
-      }
-    : {
-        index: false,
-        follow: false,
-        noarchive: true,
-        googleBot: {
-          index: false,
-          follow: false,
-          noimageindex: true,
-        },
-      },
+  description:
+    "Individuelle Lösungen für Photovoltaik, Stromspeicher, Wallboxen, Klimaanlagen und Wärmepumpen.",
 };
 
 interface RootLayoutProps {
@@ -37,7 +18,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang={siteConfig.language}>
+    <html lang="de">
       <body>{children}</body>
     </html>
   );

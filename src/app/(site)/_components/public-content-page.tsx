@@ -91,6 +91,61 @@ export async function PublicContentPage({ content }: PublicContentPageProps) {
                 </ul>
               ) : null}
 
+              {section.links && section.links.length > 0 ? (
+                <div className="mt-8 grid max-w-5xl gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {section.links.map((link, linkIndex) => {
+                    const className =
+                      "group rounded-lg border border-foreground/10 bg-foreground/[0.02] p-6 transition hover:border-foreground/30 hover:bg-foreground/[0.04]";
+
+                    const content = (
+                      <>
+                        {link.eyebrow ? (
+                          <span className="text-foreground/60 block text-xs font-semibold tracking-widest uppercase">
+                            {link.eyebrow}
+                          </span>
+                        ) : null}
+
+                        <span className="mt-2 block text-lg font-semibold">{link.label}</span>
+
+                        {link.description ? (
+                          <span className="text-foreground/70 mt-2 block leading-7">
+                            {link.description}
+                          </span>
+                        ) : null}
+
+                        <span aria-hidden="true" className="mt-4 block text-sm font-semibold">
+                          Öffnen →
+                        </span>
+                      </>
+                    );
+
+                    if (link.external) {
+                      return (
+                        <a
+                          key={`${section.id ?? section.title}-link-${linkIndex}`}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={className}
+                        >
+                          {content}
+                        </a>
+                      );
+                    }
+
+                    return (
+                      <Link
+                        key={`${section.id ?? section.title}-link-${linkIndex}`}
+                        href={link.href}
+                        className={className}
+                      >
+                        {content}
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : null}
+
               {section.cta ? (
                 <div className="mt-8">
                   <Link
