@@ -12,6 +12,36 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
 
+  async redirects() {
+    return [
+      {
+        source: "/energieloesungen/photovoltaik-kaufen",
+        destination: "/photovoltaik",
+        permanent: true,
+      },
+      {
+        source: "/energieloesungen/batteriespeicher-photovoltaik",
+        destination: "/stromspeicher",
+        permanent: true,
+      },
+      {
+        source: "/energieloesungen/wallbox-kaufen",
+        destination: "/wallbox",
+        permanent: true,
+      },
+      {
+        source: "/energieloesungen/waermepumpe-mit-pv",
+        destination: "/waermepumpen",
+        permanent: true,
+      },
+      {
+        source: "/kontakt-photovoltaik",
+        destination: "/kontakt",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     if (isProduction) {
       return [];
