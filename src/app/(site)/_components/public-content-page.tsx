@@ -9,9 +9,7 @@ interface PublicContentPageProps {
   content: PublicPageContent;
 }
 
-export async function PublicContentPage({
-  content,
-}: PublicContentPageProps) {
+export async function PublicContentPage({ content }: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
 
   return (
@@ -19,10 +17,10 @@ export async function PublicContentPage({
       <FaqJsonLd faqs={faqs} />
 
       <main>
-        <section className="flex min-h-[70vh] items-center bg-background px-6 py-20">
+        <section className="bg-background flex min-h-[70vh] items-center px-6 py-20">
           <div className="mx-auto w-full max-w-7xl">
             {content.hero.eyebrow ? (
-              <p className="mb-4 text-sm font-semibold uppercase tracking-widest">
+              <p className="mb-4 text-sm font-semibold tracking-widest uppercase">
                 {content.hero.eyebrow}
               </p>
             ) : null}
@@ -31,14 +29,14 @@ export async function PublicContentPage({
               {content.hero.title}
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-foreground/70">
+            <p className="text-foreground/70 mt-6 max-w-2xl text-lg leading-8">
               {content.hero.description}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
                 href={content.hero.primaryCta.href}
-                className="inline-flex min-h-11 items-center justify-center rounded-md bg-foreground px-5 py-3 text-sm font-semibold text-background"
+                className="bg-foreground text-background inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-semibold"
               >
                 {content.hero.primaryCta.label}
               </Link>
@@ -46,7 +44,7 @@ export async function PublicContentPage({
               {content.hero.secondaryCta ? (
                 <Link
                   href={content.hero.secondaryCta.href}
-                  className="inline-flex min-h-11 items-center justify-center rounded-md border border-foreground/20 px-5 py-3 text-sm font-semibold"
+                  className="border-foreground/20 inline-flex min-h-11 items-center justify-center rounded-md border px-5 py-3 text-sm font-semibold"
                 >
                   {content.hero.secondaryCta.label}
                 </Link>
@@ -59,11 +57,11 @@ export async function PublicContentPage({
           <section
             id={section.id}
             key={`${section.title}-${index}`}
-            className="scroll-mt-24 border-t border-foreground/10 px-6 py-20"
+            className="border-foreground/10 scroll-mt-24 border-t px-6 py-20"
           >
             <div className="mx-auto w-full max-w-7xl">
               {section.eyebrow ? (
-                <p className="mb-3 text-sm font-semibold uppercase tracking-widest">
+                <p className="mb-3 text-sm font-semibold tracking-widest uppercase">
                   {section.eyebrow}
                 </p>
               ) : null}
@@ -72,15 +70,37 @@ export async function PublicContentPage({
                 {section.title}
               </h2>
 
-              <div className="mt-6 max-w-3xl space-y-4 text-lg leading-8 text-foreground/70">
+              <div className="text-foreground/70 mt-6 max-w-3xl space-y-4 text-lg leading-8">
                 {section.text.map((paragraph, paragraphIndex) => (
-                  <p
-                    key={`${section.id ?? section.title}-${paragraphIndex}`}
-                  >
+                  <p key={`${section.id ?? section.title}-paragraph-${paragraphIndex}`}>
                     {paragraph}
                   </p>
                 ))}
               </div>
+
+              {section.items && section.items.length > 0 ? (
+                <ul className="mt-8 grid max-w-5xl gap-4 md:grid-cols-2">
+                  {section.items.map((item, itemIndex) => (
+                    <li
+                      key={`${section.id ?? section.title}-item-${itemIndex}`}
+                      className="border-foreground/10 bg-foreground/[0.02] rounded-lg border p-5 leading-7"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {section.cta ? (
+                <div className="mt-8">
+                  <Link
+                    href={section.cta.href}
+                    className="border-foreground/20 inline-flex min-h-11 items-center justify-center rounded-md border px-5 py-3 text-sm font-semibold"
+                  >
+                    {section.cta.label}
+                  </Link>
+                </div>
+              ) : null}
             </div>
           </section>
         ))}

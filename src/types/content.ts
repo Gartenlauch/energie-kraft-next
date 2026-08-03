@@ -24,6 +24,8 @@ export interface ContentSection {
   eyebrow?: string;
   title: string;
   text: string[];
+  items?: string[];
+  cta?: CtaContent;
 }
 
 export interface HomePageContent {
