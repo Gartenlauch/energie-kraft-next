@@ -41,12 +41,15 @@ auf die neue Next.js-Webseite.
 | `/service-und-wartung/service-und-team/` | target-required | Unternehmens-/Team-Inhalte erhalten |
 | `/pv-referenzen/` | target-required | starke Vertrauens- und lokale SEO-Inhalte erhalten |
 | `/jobs/` | target-required | eigene Route erforderlich |
-| `/impressum/` | keep | rechtliche Seite erforderlich |
-| `/datenschutzerklaerung/` | keep | rechtliche Seite erforderlich |
-| `/agb/` | keep | geschäftliche/rechtliche Seite erhalten |
 
----
+| Legacy URL | Neue URL | Status | Maßnahme |
+| --- | --- | --- | --- |
+| `/impressum/` | `/impressum` | target-created | Inhalt vor Go-live offiziell prüfen |
+| `/datenschutzerklaerung/` | `/datenschutz` | target-created | permanenter Redirect; finalen Datenschutztext nach technischer Fertigstellung erstellen |
+| `/agb/` | `/agb` | target-created | freigegebene Originalfassung vor Go-live übernehmen |
 
+
+--
 ## Fachliche Migrationshinweise
 
 ### Photovoltaik

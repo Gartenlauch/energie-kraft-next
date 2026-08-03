@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+import { LEGAL_ROUTE_LIST } from "@/config/legal-routes";
 import { PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 
@@ -89,12 +89,25 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-foreground/10 text-foreground/60 mx-auto mt-12 flex w-full max-w-7xl flex-col gap-4 border-t pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto mt-12 flex w-full max-w-7xl flex-col gap-5 border-t border-foreground/10 pt-6 text-sm text-foreground/60 lg:flex-row lg:items-center lg:justify-between">
         <p>
           © {currentYear} {siteConfig.legalName}
         </p>
 
-        <p>Alle Angaben werden vor dem Produktivstart final geprüft.</p>
+        <nav aria-label="Rechtliche Informationen">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {LEGAL_ROUTE_LIST.map((route) => (
+              <li key={route.href}>
+                <Link
+                  href={route.href}
+                  className="transition hover:text-foreground"
+                >
+                  {route.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
     </footer>
   );

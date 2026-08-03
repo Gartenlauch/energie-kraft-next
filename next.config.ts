@@ -39,6 +39,11 @@ const nextConfig: NextConfig = {
         destination: "/kontakt",
         permanent: true,
       },
+      {
+        source: "/datenschutzerklaerung",
+        destination: "/datenschutz",
+        permanent: true,
+      }
     ];
   },
 
