@@ -1,4 +1,5 @@
-import { buildFaqPageJsonLd, serializeJsonLd } from "@/lib/seo/faq-json-ld";
+import { buildFaqPageJsonLd } from "@/lib/seo/faq-json-ld";
+import { serializeJsonLd } from "@/lib/seo/json-ld";
 import type { PublicFaqEntry } from "@/types/faq";
 
 interface FaqJsonLdProps {

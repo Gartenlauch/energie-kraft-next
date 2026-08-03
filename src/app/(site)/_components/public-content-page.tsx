@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
 import { PublicFaqSection } from "@/components/faq/public-faq-section";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { PublicPageJsonLd } from "@/components/seo/public-page-json-ld";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import type { PublicPageContent } from "@/types/content";
 
@@ -12,11 +14,16 @@ interface PublicContentPageProps {
 export async function PublicContentPage({ content }: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
 
+  const breadcrumbLabel = content.hero.eyebrow ?? content.hero.title;
+
   return (
     <>
+      <PublicPageJsonLd content={content} />
       <FaqJsonLd faqs={faqs} />
 
       <main>
+        <Breadcrumbs currentLabel={breadcrumbLabel} />
+
         <section className="bg-background flex min-h-[70vh] items-center px-6 py-20">
           <div className="mx-auto w-full max-w-7xl">
             {content.hero.eyebrow ? (
@@ -97,7 +104,7 @@ export async function PublicContentPage({ content }: PublicContentPageProps) {
                     const className =
                       "group rounded-lg border border-foreground/10 bg-foreground/[0.02] p-6 transition hover:border-foreground/30 hover:bg-foreground/[0.04]";
 
-                    const content = (
+                    const linkContent = (
                       <>
                         {link.eyebrow ? (
                           <span className="text-foreground/60 block text-xs font-semibold tracking-widest uppercase">
@@ -128,7 +135,7 @@ export async function PublicContentPage({ content }: PublicContentPageProps) {
                           rel="noreferrer"
                           className={className}
                         >
-                          {content}
+                          {linkContent}
                         </a>
                       );
                     }
@@ -139,7 +146,7 @@ export async function PublicContentPage({ content }: PublicContentPageProps) {
                         href={link.href}
                         className={className}
                       >
-                        {content}
+                        {linkContent}
                       </Link>
                     );
                   })}

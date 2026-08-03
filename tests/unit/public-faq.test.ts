@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { selectPublicFaqEntriesForRoute } from "@/lib/faq/public-selection";
-import { buildFaqPageJsonLd, serializeJsonLd } from "@/lib/seo/faq-json-ld";
+import { buildFaqPageJsonLd } from "@/lib/seo/faq-json-ld";
+import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 const categories = [
   {

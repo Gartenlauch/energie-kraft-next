@@ -19,7 +19,10 @@ export function buildMetadata({
   const canonicalUrl = buildCanonicalUrl(canonicalPath);
 
   return {
-    title,
+    title: {
+      absolute: title,
+    },
+
     description,
 
     alternates: {

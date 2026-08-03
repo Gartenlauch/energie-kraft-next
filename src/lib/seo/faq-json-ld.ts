@@ -35,7 +35,3 @@ export function buildFaqPageJsonLd(faqs: readonly PublicFaqEntry[]): FaqPageJson
     })),
   };
 }
-
-export function serializeJsonLd(value: unknown): string {
-  return JSON.stringify(value).replace(/</g, "\\u003c");
-}
