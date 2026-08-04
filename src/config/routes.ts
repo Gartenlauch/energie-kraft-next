@@ -27,6 +27,7 @@ export function isFaqRouteKey(value: string): value is FaqRouteKey {
 export const PUBLIC_ROUTE_KEYS = [
   "home",
   "photovoltaik",
+  "pv-rechner",
   "stromspeicher",
   "wallbox",
   "klimaanlagen",
@@ -41,15 +42,14 @@ export interface PublicRouteConfig {
   href: string;
   label: string;
   faqRouteKey: FaqRouteKey;
+
+  navigation: {
+    header: boolean;
+    footer: boolean;
+  };
+
   sitemap: {
-    changeFrequency:
-      | "always"
-      | "hourly"
-      | "daily"
-      | "weekly"
-      | "monthly"
-      | "yearly"
-      | "never";
+    changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
     priority: number;
   };
 }
@@ -60,66 +60,115 @@ export const PUBLIC_ROUTES = {
     href: "/",
     label: "Startseite",
     faqRouteKey: "home",
+    navigation: {
+      header: false,
+      footer: false,
+    },
     sitemap: {
       changeFrequency: "weekly",
       priority: 1,
     },
   },
+
   photovoltaik: {
     key: "photovoltaik",
     href: "/photovoltaik",
     label: "Photovoltaik",
     faqRouteKey: "photovoltaik",
+    navigation: {
+      header: true,
+      footer: true,
+    },
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.9,
     },
   },
-  stromspeicher: {
-    key: "stromspeicher",
-    href: "/stromspeicher",
-    label: "Stromspeicher",
-    faqRouteKey: "stromspeicher",
-    sitemap: {
-      changeFrequency: "monthly",
-      priority: 0.9,
+
+  "pv-rechner": {
+    key: "pv-rechner",
+    href: "/rechner/photovoltaik",
+    label: "PV-Rechner",
+    faqRouteKey: "photovoltaik",
+    navigation: {
+      header: false,
+      footer: false,
     },
-  },
-  wallbox: {
-    key: "wallbox",
-    href: "/wallbox",
-    label: "Wallbox",
-    faqRouteKey: "wallbox",
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.8,
     },
   },
+
+  stromspeicher: {
+    key: "stromspeicher",
+    href: "/stromspeicher",
+    label: "Stromspeicher",
+    faqRouteKey: "stromspeicher",
+    navigation: {
+      header: true,
+      footer: true,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+  },
+
+  wallbox: {
+    key: "wallbox",
+    href: "/wallbox",
+    label: "Wallbox",
+    faqRouteKey: "wallbox",
+    navigation: {
+      header: true,
+      footer: true,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+  },
+
   klimaanlagen: {
     key: "klimaanlagen",
     href: "/klimaanlagen",
     label: "Klimaanlagen",
     faqRouteKey: "klimaanlagen",
+    navigation: {
+      header: true,
+      footer: true,
+    },
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.9,
     },
   },
+
   waermepumpen: {
     key: "waermepumpen",
     href: "/waermepumpen",
     label: "Wärmepumpen",
     faqRouteKey: "waermepumpen",
+    navigation: {
+      header: true,
+      footer: true,
+    },
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.9,
     },
   },
+
   kontakt: {
     key: "kontakt",
     href: "/kontakt",
     label: "Kontakt",
     faqRouteKey: "kontakt",
+    navigation: {
+      header: true,
+      footer: false,
+    },
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.7,
@@ -127,6 +176,4 @@ export const PUBLIC_ROUTES = {
   },
 } satisfies Record<PublicRouteKey, PublicRouteConfig>;
 
-export const PUBLIC_ROUTE_LIST = PUBLIC_ROUTE_KEYS.map(
-  (routeKey) => PUBLIC_ROUTES[routeKey],
-);
+export const PUBLIC_ROUTE_LIST = PUBLIC_ROUTE_KEYS.map((routeKey) => PUBLIC_ROUTES[routeKey]);

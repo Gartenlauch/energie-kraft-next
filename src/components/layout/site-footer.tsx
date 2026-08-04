@@ -3,9 +3,7 @@ import { LEGAL_ROUTE_LIST } from "@/config/legal-routes";
 import { PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 
-const serviceRoutes = PUBLIC_ROUTE_LIST.filter(
-  (route) => route.key !== "home" && route.key !== "kontakt",
-);
+const serviceRoutes = PUBLIC_ROUTE_LIST.filter((route) => route.navigation.footer);
 
 export function SiteFooter() {
   const currentYear = new Date().getFullYear();
@@ -89,7 +87,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 flex w-full max-w-7xl flex-col gap-5 border-t border-foreground/10 pt-6 text-sm text-foreground/60 lg:flex-row lg:items-center lg:justify-between">
+      <div className="border-foreground/10 text-foreground/60 mx-auto mt-12 flex w-full max-w-7xl flex-col gap-5 border-t pt-6 text-sm lg:flex-row lg:items-center lg:justify-between">
         <p>
           © {currentYear} {siteConfig.legalName}
         </p>
@@ -98,10 +96,7 @@ export function SiteFooter() {
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {LEGAL_ROUTE_LIST.map((route) => (
               <li key={route.href}>
-                <Link
-                  href={route.href}
-                  className="transition hover:text-foreground"
-                >
+                <Link href={route.href} className="hover:text-foreground transition">
                   {route.label}
                 </Link>
               </li>

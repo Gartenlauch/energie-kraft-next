@@ -57,6 +57,19 @@ export const photovoltaikContent = {
       },
     },
     {
+      id: "pv-rechner",
+      eyebrow: "Unverbindliche Modellrechnung",
+      title: "PV-Rendite und Amortisation vorab berechnen",
+      text: [
+        "Mit unserem PV-Rechner erhalten Sie eine erste Orientierung zu möglichem Solarertrag, Eigenverbrauch, Stromkostenersparnis und Einspeiseerlösen.",
+        "Die Modellrechnung zeigt außerdem, wann sich die angenommene Investition unter den gewählten Voraussetzungen amortisieren könnte. Für eine belastbare Planung müssen anschließend Dach, Standort, Komponenten und Verbrauchsprofil individuell geprüft werden.",
+      ],
+      cta: {
+        label: "PV-Rechner öffnen",
+        href: "/rechner/photovoltaik",
+      },
+    },
+    {
       id: "komponenten",
       eyebrow: "Technik, die zusammenpasst",
       title: "Module, Wechselrichter und Montagesystem als Gesamtsystem",

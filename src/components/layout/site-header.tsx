@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 
-const navigationRoutes = PUBLIC_ROUTE_LIST.filter((route) => route.key !== "home");
+const navigationRoutes = PUBLIC_ROUTE_LIST.filter((route) => route.navigation.header);
 
 export function SiteHeader() {
   return (

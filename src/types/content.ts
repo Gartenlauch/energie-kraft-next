@@ -1,4 +1,5 @@
 import type { FaqRouteKey } from "@/config/routes";
+import type { PvCalculatorInput } from "@/types/pv-calculator";
 
 export interface SeoContent {
   title: string;
@@ -47,4 +48,31 @@ export interface PublicPageContent {
   faqRouteKey: FaqRouteKey;
   hero: HeroContent;
   sections: ContentSection[];
+}
+
+export interface CalculatorFieldContent {
+  name: keyof PvCalculatorInput;
+  label: string;
+  helpText: string;
+  unit: string;
+  min: number;
+  max: number;
+  step: number;
+}
+
+export interface PvCalculatorPageContent {
+  seo: SeoContent;
+
+  breadcrumbLabel: string;
+
+  hero: {
+    eyebrow: string;
+    title: string;
+    description: string;
+  };
+
+  primaryFields: readonly CalculatorFieldContent[];
+  advancedFields: readonly CalculatorFieldContent[];
+
+  disclaimer: string;
 }
