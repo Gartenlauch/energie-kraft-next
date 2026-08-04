@@ -58,16 +58,28 @@ export const photovoltaikContent = {
     },
     {
       id: "pv-rechner",
-      eyebrow: "Unverbindliche Modellrechnung",
-      title: "PV-Rendite und Amortisation vorab berechnen",
+      eyebrow: "Unverbindliche Modellrechnungen",
+      title: "PV-Anlagengröße, Kosten und Wirtschaftlichkeit vorab berechnen",
       text: [
-        "Mit unserem PV-Rechner erhalten Sie eine erste Orientierung zu möglichem Solarertrag, Eigenverbrauch, Stromkostenersparnis und Einspeiseerlösen.",
-        "Die Modellrechnung zeigt außerdem, wann sich die angenommene Investition unter den gewählten Voraussetzungen amortisieren könnte. Für eine belastbare Planung müssen anschließend Dach, Standort, Komponenten und Verbrauchsprofil individuell geprüft werden.",
+        "Unsere beiden PV-Rechner bieten eine erste Orientierung für die mögliche Anlagengröße, den erwarteten Solarertrag, die Projektkosten sowie die langfristige Wirtschaftlichkeit.",
+        "Die Ergebnisse basieren auf veränderbaren Modellannahmen. Für eine belastbare Planung müssen Dach, Standort, Verbrauchsprofil, Komponenten und projektspezifische Kosten anschließend individuell geprüft werden.",
       ],
-      cta: {
-        label: "PV-Rechner öffnen",
-        href: "/rechner/photovoltaik",
-      },
+      links: [
+        {
+          eyebrow: "Dimensionierung und Kosten",
+          label: "PV-Größe und Kosten schätzen",
+          description:
+            "Dachfläche, Modulanzahl, Anlagenleistung, Speicherorientierung und Kostenkorridor berechnen.",
+          href: "/rechner/photovoltaik-kosten",
+        },
+        {
+          eyebrow: "Wirtschaftlichkeit",
+          label: "PV-Rendite und Amortisation berechnen",
+          description:
+            "Ertrag, Eigenverbrauch, Einspeisung, Stromkostenersparnis, Rendite und Amortisation projizieren.",
+          href: "/rechner/photovoltaik",
+        },
+      ],
     },
     {
       id: "komponenten",

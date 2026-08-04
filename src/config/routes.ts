@@ -28,6 +28,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "home",
   "photovoltaik",
   "pv-rechner",
+  "pv-kostenrechner",
   "stromspeicher",
   "wallbox",
   "klimaanlagen",
@@ -89,6 +90,20 @@ export const PUBLIC_ROUTES = {
     key: "pv-rechner",
     href: "/rechner/photovoltaik",
     label: "PV-Rechner",
+    faqRouteKey: "photovoltaik",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+  },
+  "pv-kostenrechner": {
+    key: "pv-kostenrechner",
+    href: "/rechner/photovoltaik-kosten",
+    label: "PV-Kostenrechner",
     faqRouteKey: "photovoltaik",
     navigation: {
       header: false,

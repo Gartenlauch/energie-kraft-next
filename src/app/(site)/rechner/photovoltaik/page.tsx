@@ -53,6 +53,12 @@ export default function PvCalculatorPage() {
               >
                 Photovoltaik-Beratung
               </Link>
+              <Link
+                href="/rechner/photovoltaik-kosten"
+                className="border-foreground/20 inline-flex min-h-11 items-center justify-center rounded-md border px-5 py-3 text-sm font-semibold"
+              >
+                PV-Größe und Kosten
+              </Link>
             </div>
           </div>
         </section>
