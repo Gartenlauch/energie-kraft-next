@@ -44,6 +44,20 @@ export const waermepumpenContent = {
       ],
     },
     {
+      id: "waermepumpen-rechner",
+      eyebrow: "Unverbindliche Modellrechnung",
+      title:
+        "Wärmepumpenleistung, Stromverbrauch und Kosten vorab einordnen",
+      text: [
+        "Mit unserem Wärmepumpen-Rechner erhalten Sie anhand von beheizter Fläche, Wärmebedarf, Vorlauftemperatur und Jahresarbeitszahl eine erste Orientierung für die erforderliche Leistung und den möglichen Stromverbrauch.",
+        "Zusätzlich vergleicht das Modell die jährlichen Energiekosten mit dem bestehenden Heizsystem und berechnet einen veränderbaren Investitionskostenkorridor. Eine Heizlastberechnung und technische Vor-Ort-Prüfung bleiben dennoch erforderlich.",
+      ],
+      cta: {
+        label: "Wärmepumpen-Rechner öffnen",
+        href: "/rechner/waermepumpe-kosten",
+      },
+    },
+    {
       id: "photovoltaik-kombination",
       eyebrow: "Strom und Wärme verbinden",
       title: "Wärmepumpe mit Photovoltaik kombinieren",

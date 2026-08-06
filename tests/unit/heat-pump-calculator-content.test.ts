@@ -4,6 +4,10 @@ import {
   defaultHeatPumpCalculatorInput,
   heatPumpCalculatorContent,
 } from "@/content/pages/waermepumpen-rechner";
+import {
+  PUBLIC_ROUTE_LIST,
+  PUBLIC_ROUTES,
+} from "@/config/routes";
 import { heatPumpCalculatorInputSchema } from "@/lib/validation/heat-pump-calculator";
 import { HEAT_PUMP_FLOW_TEMPERATURE_ASSESSMENTS } from "@/types/heat-pump-calculator";
 
@@ -46,5 +50,23 @@ describe("heat pump calculator page configuration", () => {
         ...HEAT_PUMP_FLOW_TEMPERATURE_ASSESSMENTS,
       ].sort(),
     );
+  });
+
+  it("registers the route without adding it to navigation", () => {
+    const route =
+      PUBLIC_ROUTES["waermepumpen-rechner"];
+
+    expect(route.href).toBe(
+      "/rechner/waermepumpe-kosten",
+    );
+
+    expect(route.faqRouteKey).toBe("waermepumpen");
+
+    expect(route.navigation).toEqual({
+      header: false,
+      footer: false,
+    });
+
+    expect(PUBLIC_ROUTE_LIST).toContain(route);
   });
 });
