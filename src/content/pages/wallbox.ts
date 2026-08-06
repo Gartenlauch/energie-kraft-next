@@ -44,6 +44,20 @@ export const wallboxContent = {
       ],
     },
     {
+      id: "wallbox-rechner",
+      eyebrow: "Unverbindliche Modellrechnung",
+      title:
+        "Ladezeit, Fahrstrombedarf und Wallbox-Kosten vorab berechnen",
+      text: [
+        "Mit unserem Wallbox-Rechner erhalten Sie anhand von Fahrleistung, Fahrzeugverbrauch, Batteriekapazität und Ladeleistung eine erste Orientierung für den jährlichen Fahrstrombedarf und die typische Ladedauer.",
+        "Zusätzlich berücksichtigt das Modell einen möglichen Photovoltaik-Anteil, veränderbare Strompreise sowie einen Kostenkorridor für Wallbox und Installation.",
+      ],
+      cta: {
+        label: "Wallbox-Rechner öffnen",
+        href: "/rechner/wallbox-kosten",
+      },
+    },
+    {
       id: "pv-ueberschussladen",
       eyebrow: "Sonnenenergie für das Elektroauto",
       title: "Mit PV-Überschussladen mehr Solarstrom selbst nutzen",

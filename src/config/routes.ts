@@ -31,6 +31,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "pv-kostenrechner",
   "klima-kostenrechner",
   "waermepumpen-rechner",
+  "wallbox-rechner",
   "stromspeicher",
   "wallbox",
   "klimaanlagen",
@@ -142,6 +143,20 @@ export const PUBLIC_ROUTES = {
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+  },
+    "wallbox-rechner": {
+    key: "wallbox-rechner",
+    href: "/rechner/wallbox-kosten",
+    label: "Wallbox-Rechner",
+    faqRouteKey: "wallbox",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
   },
   stromspeicher: {
