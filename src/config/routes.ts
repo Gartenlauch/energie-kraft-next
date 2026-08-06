@@ -29,6 +29,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "photovoltaik",
   "pv-rechner",
   "pv-kostenrechner",
+  "klima-kostenrechner",
   "stromspeicher",
   "wallbox",
   "klimaanlagen",
@@ -114,7 +115,20 @@ export const PUBLIC_ROUTES = {
       priority: 0.8,
     },
   },
-
+  "klima-kostenrechner": {
+    key: "klima-kostenrechner",
+    href: "/rechner/klimaanlage-kosten",
+    label: "Klimaanlagen-Kostenrechner",
+    faqRouteKey: "klimaanlagen",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+  },
   stromspeicher: {
     key: "stromspeicher",
     href: "/stromspeicher",
