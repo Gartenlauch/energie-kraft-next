@@ -73,9 +73,8 @@ function CalculatorField({ field, value, error, onChange }: CalculatorFieldProps
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           onChange={(event) => onChange(field.name, event.currentTarget.value)}
-          className={`bg-background min-h-12 min-w-0 flex-1 rounded-l-md border px-4 py-3 text-base ${
-            error ? "border-red-600" : "border-foreground/20"
-          }`}
+          className={`bg-background min-h-12 min-w-0 flex-1 rounded-l-md border px-4 py-3 text-base ${error ? "border-red-600" : "border-foreground/20"
+            }`}
         />
 
         <span className="border-foreground/20 bg-foreground/[0.04] text-foreground/70 inline-flex min-w-24 items-center justify-center rounded-r-md border border-l-0 px-3 text-sm">
@@ -197,8 +196,8 @@ export function PvRoiCalculator() {
 
   return (
     <section id="pv-berechnung" className="border-foreground/10 border-t px-6 py-20">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div>
+      <div className="mx-auto grid min-w-0 w-full max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="min-w-0">
           <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
 
           <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -277,7 +276,11 @@ export function PvRoiCalculator() {
           </form>
         </div>
 
-        <div aria-live="polite" aria-atomic="false" className="lg:sticky lg:top-28 lg:self-start">
+        <div
+          aria-live="polite"
+          aria-atomic="false"
+          className="min-w-0 lg:sticky lg:top-28 lg:self-start"
+        >
           <div className="bg-foreground/[0.035] rounded-2xl p-5 md:p-7">
             <p className="text-sm font-semibold tracking-widest uppercase">Berechnungsergebnis</p>
 
@@ -334,7 +337,7 @@ export function PvRoiCalculator() {
                 </p>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="max-w-full overflow-x-auto">
                 <table className="w-full min-w-[900px] text-left text-sm">
                   <thead className="bg-foreground/[0.04]">
                     <tr>
