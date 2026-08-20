@@ -1,21 +1,15 @@
 import type { Metadata } from "next";
-
+import type { SeoContent } from "@/types/content";
 import { siteConfig } from "@/config/site";
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
 
-interface BuildMetadataInput {
-  title: string;
-  description: string;
-  canonicalPath: string;
-  noIndex?: boolean;
-}
 
 export function buildMetadata({
   title,
   description,
   canonicalPath,
   noIndex = false,
-}: BuildMetadataInput): Metadata {
+}: SeoContent): Metadata {
   const canonicalUrl = buildCanonicalUrl(canonicalPath);
 
   return {

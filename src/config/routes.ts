@@ -1,5 +1,6 @@
 export const FAQ_ROUTE_KEYS = [
   "home",
+  "konfigurator",
   "photovoltaik",
   "stromspeicher",
   "wallbox",
@@ -12,6 +13,7 @@ export type FaqRouteKey = (typeof FAQ_ROUTE_KEYS)[number];
 
 export const FAQ_ROUTE_LABELS = {
   home: "Startseite",
+  konfigurator: "Energie-Konfigurator",
   photovoltaik: "Photovoltaik",
   stromspeicher: "Stromspeicher",
   wallbox: "Wallbox",
@@ -26,6 +28,7 @@ export function isFaqRouteKey(value: string): value is FaqRouteKey {
 
 export const PUBLIC_ROUTE_KEYS = [
   "home",
+  "konfigurator",
   "photovoltaik",
   "pv-rechner",
   "pv-kostenrechner",
@@ -71,6 +74,20 @@ export const PUBLIC_ROUTES = {
     sitemap: {
       changeFrequency: "weekly",
       priority: 1,
+    },
+  },
+  konfigurator: {
+    key: "konfigurator",
+    href: "/konfigurator",
+    label: "Energie-Konfigurator",
+    faqRouteKey: "konfigurator",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
   },
 
@@ -145,7 +162,7 @@ export const PUBLIC_ROUTES = {
       priority: 0.8,
     },
   },
-    "wallbox-rechner": {
+  "wallbox-rechner": {
     key: "wallbox-rechner",
     href: "/rechner/wallbox-kosten",
     label: "Wallbox-Rechner",

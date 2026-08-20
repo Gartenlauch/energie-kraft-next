@@ -5,6 +5,7 @@ export interface SeoContent {
   title: string;
   description: string;
   canonicalPath: string;
+  noIndex?: boolean;
 }
 
 export interface CtaContent {
