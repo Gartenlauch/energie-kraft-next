@@ -6,6 +6,13 @@ import {
 } from "firebase-functions/v2/https";
 
 import { contactLeadPayloadSchema } from "./contact-lead-validation";
+import {
+  mailgunSendingKey,
+} from "./mailgun";
+
+import {
+  sendContactLeadMail,
+} from "./contact-lead-mail";
 
 const LEADS_COLLECTION = "leads";
 const ADMIN_REALTIME_COLLECTION = "adminRealtime";
@@ -22,6 +29,7 @@ function optionalValue(value: string | undefined): string | null {
 export const submitContactLead = onCall(
   {
     maxInstances: 10,
+    secrets: [mailgunSendingKey],
   },
   async (request) => {
     const parsed = contactLeadPayloadSchema.safeParse(
@@ -139,6 +147,67 @@ export const submitContactLead = onCall(
 
     await batch.commit();
 
+    let mailStatus:
+      | "accepted"
+      | "failed" = "accepted";
+
+    let mailMessageId: string | null = null;
+
+    try {
+      const mailResult =
+        await sendContactLeadMail({
+          leadId: leadReference.id,
+          lead: input,
+        });
+
+      mailMessageId = mailResult.id;
+
+      await leadReference.update({
+        "mail.internal.status": "accepted",
+        "mail.internal.provider": "mailgun",
+        "mail.internal.messageId":
+          mailMessageId,
+        "mail.internal.updatedAt":
+          FieldValue.serverTimestamp(),
+      });
+
+      logger.info(
+        "Contact lead notification accepted",
+        {
+          leadId: leadReference.id,
+          provider: "mailgun",
+          messageId: mailMessageId,
+        },
+      );
+    } catch (error) {
+      mailStatus = "failed";
+
+      await leadReference
+        .update({
+          "mail.internal.status": "failed",
+          "mail.internal.provider": "mailgun",
+          "mail.internal.messageId": null,
+          "mail.internal.updatedAt":
+            FieldValue.serverTimestamp(),
+        })
+        .catch(() => undefined);
+
+      logger.error(
+        "Contact lead notification failed",
+        {
+          leadId: leadReference.id,
+          provider: "mailgun",
+          error:
+            error instanceof Error
+              ? {
+                name: error.name,
+                message: error.message,
+              }
+              : "Unknown mail error",
+        },
+      );
+    }
+
     logger.info("Contact lead created", {
       leadId: leadReference.id,
       source: "kontakt",
@@ -147,6 +216,7 @@ export const submitContactLead = onCall(
     return {
       ok: true,
       leadId: leadReference.id,
+      mailStatus,
     };
   },
 );
