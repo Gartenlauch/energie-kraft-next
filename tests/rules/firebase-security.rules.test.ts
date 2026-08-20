@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 
 import {
   assertFails,
+  assertSucceeds,
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
@@ -112,6 +113,90 @@ describe("Firestore Security Rules – deny by default", () => {
       ),
     );
   });
+  it("verweigert nicht authentifizierten Zugriff auf das Admin-Realtime-Signal", async () => {
+    const firestore =
+      testEnvironment
+        .unauthenticatedContext()
+        .firestore();
+
+    await assertFails(
+      getDoc(
+        doc(
+          firestore,
+          "adminRealtime",
+          "leads",
+        ),
+      ),
+    );
+  });
+
+  it("verweigert normalen Benutzern Zugriff auf das Admin-Realtime-Signal", async () => {
+    const firestore =
+      testEnvironment
+        .authenticatedContext(
+          "authenticated-user",
+        )
+        .firestore();
+
+    await assertFails(
+      getDoc(
+        doc(
+          firestore,
+          "adminRealtime",
+          "leads",
+        ),
+      ),
+    );
+  });
+
+  it("erlaubt Admins das Lesen des Admin-Realtime-Signals", async () => {
+    const firestore =
+      testEnvironment
+        .authenticatedContext(
+          "admin-user",
+          {
+            admin: true,
+            email: "admin@example.test",
+          },
+        )
+        .firestore();
+
+    await assertSucceeds(
+      getDoc(
+        doc(
+          firestore,
+          "adminRealtime",
+          "leads",
+        ),
+      ),
+    );
+  });
+
+  it("verweigert Admins Schreibzugriff auf das Admin-Realtime-Signal", async () => {
+    const firestore =
+      testEnvironment
+        .authenticatedContext(
+          "admin-user",
+          {
+            admin: true,
+            email: "admin@example.test",
+          },
+        )
+        .firestore();
+
+    await assertFails(
+      setDoc(
+        doc(
+          firestore,
+          "adminRealtime",
+          "leads",
+        ),
+        {
+          revision: 999,
+        },
+      ),
+    );
+  });
 
   it("verweigert auch Benutzern mit Admin-Claim Schreibzugriffe", async () => {
     const firestore =
@@ -170,6 +255,9 @@ describe("Firestore Security Rules – deny by default", () => {
     );
   });
 });
+
+
+
 
 describe("Storage Security Rules – deny by default", () => {
   const bucketUrl =

@@ -29,15 +29,27 @@ export default function AdminPage() {
           </p>
         </Link>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-emerald-800">Vertrieb</p>
+        <Link
+          href="/admin/anfragen"
+          className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md"
+        >
+          <p className="text-sm font-medium text-emerald-800">
+            Vertrieb
+          </p>
 
-          <h2 className="mt-2 text-xl font-semibold text-slate-950">Anfragen</h2>
+          <h2 className="mt-2 text-xl font-semibold text-slate-950">
+            Anfragen
+          </h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Eingehende Kontakt-, Rechner- und Beratungsanfragen bearbeiten.
+            Eingehende Kontakt-, Rechner- und
+            Beratungsanfragen bearbeiten.
           </p>
-        </section>
+
+          <p className="mt-5 text-sm font-semibold text-emerald-800 group-hover:underline">
+            Anfragen öffnen →
+          </p>
+        </Link>
 
         <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-medium text-emerald-800">Personal</p>

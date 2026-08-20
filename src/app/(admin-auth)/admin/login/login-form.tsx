@@ -2,7 +2,7 @@
 
 import { FirebaseError } from "firebase/app";
 import {
-  inMemoryPersistence,
+  browserLocalPersistence,
   setPersistence,
   signInWithEmailAndPassword,
   signOut,
@@ -72,12 +72,12 @@ export function AdminLoginForm() {
     setErrorMessage(null);
     setIsSubmitting(true);
 
-    let clientLoginCreated = false;
+
 
     try {
       await setPersistence(
         firebaseAuth,
-        inMemoryPersistence,
+        browserLocalPersistence,
       );
 
       const credential =
@@ -87,7 +87,7 @@ export function AdminLoginForm() {
           password,
         );
 
-      clientLoginCreated = true;
+
 
       const idToken =
         await credential.user.getIdToken(true);
@@ -118,24 +118,23 @@ export function AdminLoginForm() {
 
         throw new Error(
           responseBody?.error ??
-            "Die Admin-Sitzung konnte nicht erstellt werden.",
+          "Die Admin-Sitzung konnte nicht erstellt werden.",
         );
       }
 
       router.replace(ADMIN_HOME_PATH);
       router.refresh();
     } catch (error) {
+      await signOut(firebaseAuth).catch(
+        () => undefined,
+      );
+
       setPassword("");
+
       setErrorMessage(
         getFirebaseLoginError(error),
       );
     } finally {
-      if (clientLoginCreated) {
-        await signOut(firebaseAuth).catch(
-          () => undefined,
-        );
-      }
-
       setIsSubmitting(false);
     }
   }

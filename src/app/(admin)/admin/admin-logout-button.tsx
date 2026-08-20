@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+import { signOut } from "firebase/auth";
 import { ADMIN_LOGIN_PATH } from "@/config/auth";
+import { firebaseAuth } from "@/lib/firebase/client";
+
 
 export function AdminLogoutButton() {
   const router = useRouter();
@@ -34,7 +36,9 @@ export function AdminLogoutButton() {
           "Die Abmeldung ist fehlgeschlagen.",
         );
       }
-
+      await signOut(firebaseAuth).catch(
+        () => undefined,
+      );
       router.replace(ADMIN_LOGIN_PATH);
       router.refresh();
     } catch {

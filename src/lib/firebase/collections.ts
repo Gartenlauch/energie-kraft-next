@@ -5,6 +5,7 @@ export const FIRESTORE_COLLECTIONS = {
   faqs: "faqs",
   leads: "leads",
   jobApplications: "jobApplications",
+  adminRealtime: "adminRealtime",
 } as const;
 
 export type FirestoreCollectionName =

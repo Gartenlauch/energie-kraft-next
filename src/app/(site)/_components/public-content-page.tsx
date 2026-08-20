@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
-
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
 import { PublicFaqSection } from "@/components/faq/public-faq-section";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
@@ -9,9 +9,13 @@ import type { PublicPageContent } from "@/types/content";
 
 interface PublicContentPageProps {
   content: PublicPageContent;
+  beforeFaq?: ReactNode;
 }
 
-export async function PublicContentPage({ content }: PublicContentPageProps) {
+export async function PublicContentPage({
+  content,
+  beforeFaq,
+}: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
 
   const breadcrumbLabel = content.hero.eyebrow ?? content.hero.title;
@@ -166,7 +170,7 @@ export async function PublicContentPage({ content }: PublicContentPageProps) {
             </div>
           </section>
         ))}
-
+        {beforeFaq}
         <PublicFaqSection faqs={faqs} />
       </main>
     </>

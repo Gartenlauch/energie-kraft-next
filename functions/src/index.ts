@@ -17,3 +17,5 @@ export const health = onRequest((_request, response) => {
     service: "energie-kraft-functions",
   });
 });
+
+export { submitContactLead } from "./contact-lead";
