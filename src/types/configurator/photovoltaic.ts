@@ -8,7 +8,16 @@ export type PhotovoltaicStepId =
   | "roof_pitch"
   | "roof_material"
   | "roof_orientation"
-  | "roof_renovation";
+  | "roof_renovation"
+  | "future_consumption"
+  | "battery_storage"
+  | "additional_interests"
+  | "notes";
+
+export type PhotovoltaicAdditionalInterest =
+  | "climate"
+  | "heatPump"
+  | "wallbox";
 
 export type PhotovoltaicStepDefinition = Omit<
   ConfiguratorStepDefinition,

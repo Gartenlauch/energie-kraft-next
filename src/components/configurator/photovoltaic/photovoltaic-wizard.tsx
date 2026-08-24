@@ -18,6 +18,12 @@ import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { getPhotovoltaicHouseholdConsumptionDefault } from "@/lib/configurator/photovoltaic";
 import { useConfiguratorWizard } from "@/lib/configurator/use-configurator-wizard";
 import { isPhotovoltaicStepComplete } from "@/lib/validation/configurator/photovoltaic";
+import { AdditionalInterestsStep } from "@/components/configurator/photovoltaic/additional-interests-step";
+import { BatteryStorageStep } from "@/components/configurator/photovoltaic/battery-storage-step";
+import { FutureConsumptionStep } from "@/components/configurator/photovoltaic/future-consumption-step";
+import { NotesStep } from "@/components/configurator/photovoltaic/notes-step";
+
+
 import type {
   BuildingOwnership,
   BuildingType,
@@ -27,6 +33,8 @@ import type {
   RoofOrientation,
   RoofPitch,
   RoofRenovationPeriod,
+  ConfiguratorInterests,
+  PhotovoltaicAdditionalInterest,
 } from "@/types/configurator";
 
 export function PhotovoltaicWizard() {
@@ -188,6 +196,94 @@ export function PhotovoltaicWizard() {
     });
   }
 
+  function handleFutureIncreaseChange(
+    futureIncreasePercent: number,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_HOUSEHOLD",
+      payload: {
+        futureIncreasePercent,
+      },
+    });
+  }
+
+  function handleBatteryStorageChange(
+    batteryStorage: boolean,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_INTERESTS",
+      payload: {
+        batteryStorage,
+      },
+    });
+  }
+
+  function handleAdditionalInterestToggle(
+    interest: PhotovoltaicAdditionalInterest,
+  ) {
+    activatePhotovoltaic();
+
+    let payload: Partial<ConfiguratorInterests>;
+
+    switch (interest) {
+      case "climate":
+        payload = {
+          climate: !state.interests.climate,
+        };
+        break;
+
+      case "heatPump":
+        payload = {
+          heatPump: !state.interests.heatPump,
+        };
+        break;
+
+      case "wallbox":
+        payload = {
+          wallbox: !state.interests.wallbox,
+        };
+        break;
+    }
+
+    dispatch({
+      type: "UPDATE_INTERESTS",
+      payload,
+    });
+  }
+
+  function handleHasNotesChange(
+    hasNotes: boolean,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_NOTES",
+      payload: {
+        hasNotes,
+        ...(hasNotes
+          ? {}
+          : {
+            text: "",
+          }),
+      },
+    });
+  }
+
+  function handleNotesTextChange(text: string) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_NOTES",
+      payload: {
+        text,
+      },
+    });
+  }
+
   function handleNext() {
     if (!currentStepComplete) {
       return;
@@ -277,6 +373,44 @@ export function PhotovoltaicWizard() {
         />
       ) : null}
 
+      {currentStepId === "future_consumption" ? (
+        <FutureConsumptionStep
+          annualConsumptionKwh={
+            state.household.annualConsumptionKwh
+          }
+          futureIncreasePercent={
+            state.household.futureIncreasePercent
+          }
+          projectedConsumptionKwh={
+            state.household.projectedConsumptionKwh
+          }
+          onChange={handleFutureIncreaseChange}
+        />
+      ) : null}
+
+      {currentStepId === "battery_storage" ? (
+        <BatteryStorageStep
+          selected={state.interests.batteryStorage}
+          onChange={handleBatteryStorageChange}
+        />
+      ) : null}
+
+      {currentStepId === "additional_interests" ? (
+        <AdditionalInterestsStep
+          interests={state.interests}
+          onToggle={handleAdditionalInterestToggle}
+        />
+      ) : null}
+
+      {currentStepId === "notes" ? (
+        <NotesStep
+          hasNotes={state.notes.hasNotes}
+          text={state.notes.text ?? ""}
+          onHasNotesChange={handleHasNotesChange}
+          onTextChange={handleNotesTextChange}
+        />
+      ) : null}
+
       <WizardActions
         onBack={isFirstStep ? undefined : goBack}
         onNext={handleNext}
@@ -285,7 +419,7 @@ export function PhotovoltaicWizard() {
         }
         nextLabel={
           isLastStep
-            ? "Weiter zu Verbrauch & Speicher"
+            ? "Weiter zum Ergebnis"
             : "Weiter"
         }
       />

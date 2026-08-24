@@ -4,6 +4,7 @@ import { photovoltaicWizardSteps } from "@/content/configurators";
 import {
   getPhotovoltaicHouseholdConsumptionDefault,
   PHOTOVOLTAIC_HOUSEHOLD_CONSUMPTION_DEFAULTS_KWH,
+  calculateAdditionalConsumptionKwh,
 } from "@/lib/configurator/photovoltaic";
 import {
   configuratorReducer,
@@ -37,7 +38,23 @@ describe("photovoltaic configurator", () => {
     ).toBe(4500);
   });
 
-  it("defines the first eight wizard steps in the expected order", () => {
+  it("calculates future additional consumption", () => {
+    expect(
+      calculateAdditionalConsumptionKwh(
+        3000,
+        10,
+      ),
+    ).toBe(300);
+
+    expect(
+      calculateAdditionalConsumptionKwh(
+        3000,
+        50,
+      ),
+    ).toBe(1500);
+  });
+
+  it("defines all technical photovoltaic wizard steps in the expected order", () => {
     expect(
       photovoltaicWizardSteps.map((step) => step.id),
     ).toEqual([
@@ -49,7 +66,90 @@ describe("photovoltaic configurator", () => {
       "roof_material",
       "roof_orientation",
       "roof_renovation",
+      "future_consumption",
+      "battery_storage",
+      "additional_interests",
+      "notes",
     ]);
+  });
+
+  it("uses ten percent as the default future consumption increase", () => {
+    const state = createInitialConfiguratorState();
+
+    expect(
+      state.household.futureIncreasePercent,
+    ).toBe(10);
+
+    expect(
+      isPhotovoltaicStepComplete(
+        "future_consumption",
+        state,
+      ),
+    ).toBe(true);
+  });
+
+  it("allows the optional storage and interest steps", () => {
+    const state = createInitialConfiguratorState();
+
+    expect(
+      isPhotovoltaicStepComplete(
+        "battery_storage",
+        state,
+      ),
+    ).toBe(true);
+
+    expect(
+      isPhotovoltaicStepComplete(
+        "additional_interests",
+        state,
+      ),
+    ).toBe(true);
+  });
+
+  it("requires an explicit notes decision", () => {
+    let state = createInitialConfiguratorState();
+
+    expect(
+      isPhotovoltaicStepComplete("notes", state),
+    ).toBe(false);
+
+    state = configuratorReducer(state, {
+      type: "UPDATE_NOTES",
+      payload: {
+        hasNotes: false,
+      },
+    });
+
+    expect(
+      isPhotovoltaicStepComplete("notes", state),
+    ).toBe(true);
+  });
+
+  it("requires text when the user selects notes", () => {
+    let state = configuratorReducer(
+      createInitialConfiguratorState(),
+      {
+        type: "UPDATE_NOTES",
+        payload: {
+          hasNotes: true,
+        },
+      },
+    );
+
+    expect(
+      isPhotovoltaicStepComplete("notes", state),
+    ).toBe(false);
+
+    state = configuratorReducer(state, {
+      type: "UPDATE_NOTES",
+      payload: {
+        text: "Carport soll später ebenfalls berücksichtigt werden.",
+      },
+    });
+
+    expect(
+      isPhotovoltaicStepComplete("notes", state),
+    ).toBe(true);
   });
 
   it("validates the photovoltaic roof steps", () => {

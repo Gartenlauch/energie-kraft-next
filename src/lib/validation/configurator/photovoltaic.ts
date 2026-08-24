@@ -2,6 +2,7 @@ import {
   annualConsumptionKwhSchema,
   buildingOwnershipSchema,
   buildingTypeSchema,
+  futureIncreasePercentSchema,
   householdPersonsSchema,
   roofMaterialSchema,
   roofOrientationSchema,
@@ -58,6 +59,28 @@ export function isPhotovoltaicStepComplete(
         state.roof.renovationPeriod,
       ).success;
 
+    case "future_consumption":
+      return futureIncreasePercentSchema.safeParse(
+        state.household.futureIncreasePercent,
+      ).success;
+
+    case "battery_storage":
+      return true;
+
+    case "additional_interests":
+      return true;
+
+    case "notes":
+      if (state.notes.hasNotes === false) {
+        return true;
+      }
+
+      if (state.notes.hasNotes !== true) {
+        return false;
+      }
+
+      return Boolean(state.notes.text?.trim());
+
     default: {
       const exhaustiveCheck: never = stepId;
       return exhaustiveCheck;
@@ -74,6 +97,16 @@ export function getAnnualConsumptionValidationMessage(
 
   if (!annualConsumptionKwhSchema.safeParse(value).success) {
     return "Bitte gib einen Jahresverbrauch zwischen 500 und 100.000 kWh ein.";
+  }
+
+  return undefined;
+}
+
+export function getFutureIncreaseValidationMessage(
+  value: number,
+): string | undefined {
+  if (!futureIncreasePercentSchema.safeParse(value).success) {
+    return "Bitte gib eine Erhöhung zwischen 0 und 200 % ein.";
   }
 
   return undefined;

@@ -9,7 +9,7 @@ export interface ConfiguratorStepDefinition {
 }
 
 export interface ConfiguratorSelectionOption<
-  TValue extends string | number,
+  TValue extends string | number | boolean,
 > {
   value: TValue;
   title: string;

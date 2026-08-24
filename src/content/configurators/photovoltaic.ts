@@ -11,6 +11,7 @@ import type {
   RoofOrientation,
   RoofPitch,
   RoofRenovationPeriod,
+  PhotovoltaicAdditionalInterest,
 } from "@/types/configurator";
 
 function formatKwh(value: number): string {
@@ -80,6 +81,38 @@ export const photovoltaicWizardSteps = [
     shortLabel: "Dachalter",
     description:
       "Diese Angabe hilft uns bei der Vorbereitung der späteren technischen Prüfung.",
+    phase: "configuration",
+  },
+  {
+    id: "future_consumption",
+    title: "Wird sich dein Stromverbrauch künftig erhöhen?",
+    shortLabel: "Mehrverbrauch",
+    description:
+      "Berücksichtige zum Beispiel ein Elektroauto, eine Wärmepumpe oder eine Klimaanlage.",
+    phase: "configuration",
+  },
+  {
+    id: "battery_storage",
+    title: "Möchtest du einen Stromspeicher berücksichtigen?",
+    shortLabel: "Speicher",
+    description:
+      "Ein Stromspeicher kann einen größeren Anteil deines Solarstroms für die spätere Nutzung verfügbar machen.",
+    phase: "configuration",
+  },
+  {
+    id: "additional_interests",
+    title: "Interessierst du dich für weitere Energielösungen?",
+    shortLabel: "Interessen",
+    description:
+      "Die Auswahl ist optional und hilft uns, deine Anfrage besser einzuordnen.",
+    phase: "configuration",
+  },
+  {
+    id: "notes",
+    title: "Gibt es weitere Informationen, die berücksichtigt werden sollen?",
+    shortLabel: "Anmerkungen",
+    description:
+      "Teile uns Besonderheiten, Wünsche oder bekannte Einschränkungen mit.",
     phase: "configuration",
   },
 ] as const satisfies readonly [
@@ -263,6 +296,61 @@ export const photovoltaicRoofRenovationOptions = [
     title: "Weiß ich nicht",
   },
 ] satisfies readonly ConfiguratorSelectionOption<RoofRenovationPeriod>[];
+
+export const photovoltaicFutureIncreaseOptions = [
+  {
+    value: 0,
+    title: "Keine Erhöhung",
+    description: "0 %",
+  },
+  {
+    value: 10,
+    title: "Leichte Erhöhung",
+    description: "+10 %",
+  },
+  {
+    value: 25,
+    title: "Deutliche Erhöhung",
+    description: "+25 %",
+  },
+  {
+    value: 50,
+    title: "Starke Erhöhung",
+    description: "+50 %",
+  },
+] satisfies readonly ConfiguratorSelectionOption<number>[];
+
+export const photovoltaicAdditionalInterestOptions = [
+  {
+    value: "climate",
+    title: "Klimaanlage",
+    description:
+      "Räume effizient kühlen und je nach System auch heizen.",
+  },
+  {
+    value: "heatPump",
+    title: "Wärmepumpe",
+    description:
+      "Strom künftig zusätzlich für die Gebäudeheizung nutzen.",
+  },
+  {
+    value: "wallbox",
+    title: "Wallbox",
+    description:
+      "Ein Elektroauto komfortabel zu Hause laden.",
+  },
+] satisfies readonly ConfiguratorSelectionOption<PhotovoltaicAdditionalInterest>[];
+
+export const photovoltaicNotesOptions = [
+  {
+    value: true,
+    title: "Ja, ich habe weitere Anmerkungen",
+  },
+  {
+    value: false,
+    title: "Nein, aktuell nicht",
+  },
+] satisfies readonly ConfiguratorSelectionOption<boolean>[];
 
 export const photovoltaicConfiguratorContent = {
   eyebrow: "Photovoltaik-Konfigurator",

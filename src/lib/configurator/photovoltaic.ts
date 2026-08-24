@@ -18,3 +18,16 @@ export function getPhotovoltaicHouseholdConsumptionDefault(
 ): number {
   return PHOTOVOLTAIC_HOUSEHOLD_CONSUMPTION_DEFAULTS_KWH[persons];
 }
+
+export function calculateAdditionalConsumptionKwh(
+  annualConsumptionKwh: number | undefined,
+  futureIncreasePercent: number,
+): number | undefined {
+  if (annualConsumptionKwh === undefined) {
+    return undefined;
+  }
+
+  return Math.round(
+    annualConsumptionKwh * (futureIncreasePercent / 100),
+  );
+}

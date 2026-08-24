@@ -5,9 +5,12 @@ export {
 } from "./landing";
 
 export {
+  photovoltaicAdditionalInterestOptions,
   photovoltaicBuildingTypeOptions,
   photovoltaicConfiguratorContent,
+  photovoltaicFutureIncreaseOptions,
   photovoltaicHouseholdPersonOptions,
+  photovoltaicNotesOptions,
   photovoltaicOwnershipOptions,
   photovoltaicRoofMaterialOptions,
   photovoltaicRoofOrientationOptions,
