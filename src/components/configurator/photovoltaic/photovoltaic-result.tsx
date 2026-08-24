@@ -1,7 +1,7 @@
 "use client";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
-
+import Link from "next/link";
 import type { PhotovoltaicConfiguratorResult } from "@/types/configurator";
 
 interface PhotovoltaicResultProps {
@@ -150,6 +150,14 @@ export function PhotovoltaicResult({
           >
             Angaben ändern
           </button>
+          {result.batteryStorageRequested ? (
+            <Link
+              href="/konfigurator/stromspeicher"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-brand-primary px-6 py-3 text-center font-semibold text-brand-primary transition hover:bg-surface"
+            >
+              Stromspeicher konfigurieren
+            </Link>
+          ) : null}
 
           <button
             type="button"

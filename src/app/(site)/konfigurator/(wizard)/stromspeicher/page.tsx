@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 
-import { ConfiguratorPlaceholder } from "@/components/configurator/configurator-placeholder";
+import { BatteryStorageEntry } from "@/components/configurator/battery-storage/battery-storage-entry";
 import { configuratorProducts } from "@/content/configurators";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-const product = configuratorProducts.battery_storage;
+const product =
+  configuratorProducts.battery_storage;
 
-export const metadata: Metadata = buildMetadata(product.seo);
+export const metadata: Metadata =
+  buildMetadata(product.seo);
 
 export default function StromspeicherConfiguratorPage() {
-  return (
-    <ConfiguratorPlaceholder
-      title={product.title}
-      serviceHref={product.serviceHref}
-    />
-  );
+  return <BatteryStorageEntry />;
 }

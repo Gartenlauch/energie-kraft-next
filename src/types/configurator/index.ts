@@ -3,3 +3,4 @@ export * from "./photovoltaic";
 export * from "./state";
 export * from "./wizard";
 export * from "./lead";
+export * from "./battery-storage";
