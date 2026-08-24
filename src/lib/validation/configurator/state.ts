@@ -83,7 +83,7 @@ export const roofRenovationPeriodSchema = z.enum([
   "unknown",
 ]);
 
-const photovoltaicResultSchema = z.object({
+export const photovoltaicResultSchema = z.object({
   recommendedPowerKwpMin: z.number().int().positive(),
   recommendedPowerKwpMax: z.number().int().positive(),
 
