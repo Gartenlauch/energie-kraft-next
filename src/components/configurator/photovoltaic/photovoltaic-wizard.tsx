@@ -23,6 +23,17 @@ import { BatteryStorageStep } from "@/components/configurator/photovoltaic/batte
 import { FutureConsumptionStep } from "@/components/configurator/photovoltaic/future-consumption-step";
 import { NotesStep } from "@/components/configurator/photovoltaic/notes-step";
 import { PhotovoltaicResult } from "@/components/configurator/photovoltaic/photovoltaic-result";
+import { ConfiguratorContactForm } from "@/components/configurator/configurator-contact-form";
+import { ConfiguratorSubmitSuccess } from "@/components/configurator/configurator-submit-success";
+import { PhotovoltaicSubmitReview } from "@/components/configurator/photovoltaic/photovoltaic-submit-review";
+import { buildPhotovoltaicConfiguratorLeadInput } from "@/lib/configurator/lead";
+import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
+import { photovoltaicConfiguratorLeadInputSchema } from "@/lib/validation/configurator/lead";
+
+import type {
+  ConfiguratorContactFormValues,
+  SubmitPhotovoltaicConfiguratorLeadInput,
+} from "@/types/configurator";
 
 import type {
   BuildingOwnership,
@@ -41,6 +52,7 @@ export function PhotovoltaicWizard() {
   const {
     state,
     dispatch,
+    reset,
     isHydrated,
   } = useConfigurator();
 
@@ -50,13 +62,40 @@ export function PhotovoltaicWizard() {
     isLastStep,
     goNext,
     goBack,
+    goTo,
   } = useConfiguratorWizard<PhotovoltaicStepId>(
     photovoltaicWizardSteps,
     "household_persons",
   );
 
   const [showTenantStop, setShowTenantStop] = useState(false);
-  const [showResult, setShowResult] = useState(false);
+  type PostWizardStage =
+    | "result"
+    | "contact"
+    | "submit"
+    | "success";
+
+  const [postWizardStage, setPostWizardStage] =
+    useState<PostWizardStage | null>(null);
+
+  const [contactDraft, setContactDraft] =
+    useState<ConfiguratorContactFormValues | null>(
+      null,
+    );
+
+  const [
+    contactFormStartedAt,
+    setContactFormStartedAt,
+  ] = useState<number | null>(null);
+
+  const [submittedLeadId, setSubmittedLeadId] =
+    useState<string | null>(null);
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const [submissionError, setSubmissionError] =
+    useState<string | null>(null);
 
   if (!isHydrated) {
     return (
@@ -311,11 +350,57 @@ export function PhotovoltaicWizard() {
         payload: result,
       });
 
-      setShowResult(true);
+      setPostWizardStage("result");
       return;
     }
 
     goNext();
+  }
+
+  async function handleSubmitConfiguratorLead(
+    input: SubmitPhotovoltaicConfiguratorLeadInput,
+  ) {
+    if (isSubmitting) {
+      return;
+    }
+
+    const parsed =
+      photovoltaicConfiguratorLeadInputSchema.safeParse(
+        input,
+      );
+
+    if (!parsed.success) {
+      setSubmissionError(
+        "Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.",
+      );
+      return;
+    }
+
+    setSubmissionError(null);
+    setIsSubmitting(true);
+
+    try {
+      const result =
+        await submitConfiguratorLead(
+          parsed.data,
+        );
+
+      setSubmittedLeadId(result.leadId);
+
+      /*
+       * Technische Wizard-Daten erst nach
+       * erfolgreicher Speicherung löschen.
+       */
+      reset();
+
+      setPostWizardStage("success");
+    } catch {
+      setSubmissionError(
+        "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (showTenantStop) {
@@ -325,14 +410,113 @@ export function PhotovoltaicWizard() {
       />
     );
   }
-  if (showResult && state.results.photovoltaic) {
-  return (
-    <PhotovoltaicResult
-      result={state.results.photovoltaic}
-      onBack={() => setShowResult(false)}
-    />
-  );
-}
+  if (
+    postWizardStage === "success" &&
+    submittedLeadId
+  ) {
+    return (
+      <ConfiguratorSubmitSuccess
+        leadId={submittedLeadId}
+        onRestart={() => {
+          setSubmittedLeadId(null);
+          setContactDraft(null);
+          setContactFormStartedAt(null);
+          setSubmissionError(null);
+          setPostWizardStage(null);
+          goTo("household_persons");
+        }}
+      />
+    );
+  }
+
+  if (postWizardStage === "contact") {
+    return (
+      <ConfiguratorContactForm
+        initialValues={
+          contactDraft ?? undefined
+        }
+        initialFormStartedAt={
+          contactFormStartedAt ??
+          undefined
+        }
+        onBack={() =>
+          setPostWizardStage("result")
+        }
+        onContinue={(
+          values,
+          formStartedAt,
+        ) => {
+          setContactDraft(values);
+          setContactFormStartedAt(
+            formStartedAt,
+          );
+          setSubmissionError(null);
+          setPostWizardStage("submit");
+        }}
+      />
+    );
+  }
+
+  if (
+    postWizardStage === "submit" &&
+    contactDraft &&
+    contactFormStartedAt
+  ) {
+    const input =
+      buildPhotovoltaicConfiguratorLeadInput(
+        state,
+        contactDraft,
+        contactFormStartedAt,
+      );
+
+    if (!input) {
+      return (
+        <div
+          role="alert"
+          className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800"
+        >
+          Die Anfrage konnte nicht vorbereitet werden.
+          Bitte gehe zurück und prüfe deine Angaben.
+        </div>
+      );
+    }
+
+    return (
+      <PhotovoltaicSubmitReview
+        input={input}
+        isSubmitting={isSubmitting}
+        error={submissionError}
+        onBack={() =>
+          setPostWizardStage("contact")
+        }
+        onSubmit={() => {
+          void handleSubmitConfiguratorLead(
+            input,
+          );
+        }}
+      />
+    );
+  }
+
+  if (
+    postWizardStage === "result" &&
+    state.results.photovoltaic
+  ) {
+    return (
+      <PhotovoltaicResult
+        result={
+          state.results.photovoltaic
+        }
+        onBack={() =>
+          setPostWizardStage(null)
+        }
+        onContinue={() =>
+          setPostWizardStage("contact")
+        }
+      />
+    );
+  }
+
 
   return (
     <>

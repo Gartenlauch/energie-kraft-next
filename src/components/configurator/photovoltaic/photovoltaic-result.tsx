@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 
 import type { PhotovoltaicConfiguratorResult } from "@/types/configurator";
 
 interface PhotovoltaicResultProps {
   result: PhotovoltaicConfiguratorResult;
   onBack: () => void;
+  onContinue: () => void;
 }
 
 function formatKwh(value: number): string {
@@ -16,9 +17,13 @@ function formatKwh(value: number): string {
 export function PhotovoltaicResult({
   result,
   onBack,
+  onContinue,
 }: PhotovoltaicResultProps) {
   return (
     <section aria-labelledby="photovoltaic-result-heading">
+      <ConfiguratorPhaseIndicator
+        currentPhase="configuration"
+      />
       <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
         Deine erste Orientierung
       </p>
@@ -146,12 +151,13 @@ export function PhotovoltaicResult({
             Angaben ändern
           </button>
 
-          <Link
-            href="/kontakt"
-            className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
+          <button
+            type="button"
+            onClick={onContinue}
+            className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
           >
-            Kontakt aufnehmen
-          </Link>
+            Kontaktdaten ergänzen
+          </button>
         </div>
       </div>
 

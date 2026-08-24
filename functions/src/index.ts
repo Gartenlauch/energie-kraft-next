@@ -20,3 +20,4 @@ export const health = onRequest((_request, response) => {
 });
 
 export { submitContactLead } from "./contact-lead";
+export { submitConfiguratorLead } from "./configurator-lead";

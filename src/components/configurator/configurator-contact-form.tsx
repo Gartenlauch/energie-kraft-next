@@ -17,6 +17,9 @@ type ContactFieldErrors = Partial<
 >;
 
 interface ConfiguratorContactFormProps {
+  initialValues?: ConfiguratorContactFormValues;
+  initialFormStartedAt?: number;
+
   onBack: () => void;
 
   onContinue: (
@@ -64,16 +67,26 @@ function FieldError({
 }
 
 export function ConfiguratorContactForm({
+  initialValues,
+  initialFormStartedAt,
   onBack,
   onContinue,
 }: ConfiguratorContactFormProps) {
+
+
   const [values, setValues] =
     useState<ConfiguratorContactFormValues>(
-      createInitialValues,
+      () =>
+        initialValues ??
+        createInitialValues(),
     );
 
   const [formStartedAt] =
-    useState(() => Date.now());
+    useState(
+      () =>
+        initialFormStartedAt ??
+        Date.now(),
+    );
 
   const [errors, setErrors] =
     useState<ContactFieldErrors>({});
