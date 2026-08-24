@@ -6,19 +6,21 @@ import { ZodError } from "zod";
 
 import { requireAdminSession } from "@/lib/auth/session";
 import {
-  ContactLeadNotFoundError,
-  deleteContactLead,
-  updateContactLeadStatus,
-} from "@/lib/leads/contact-lead-repository";
+  deleteLead,
+  LeadNotFoundError,
+  updateLeadStatus,
+} from "@/lib/leads/lead-repository";
 import {
-  parseContactLeadDeleteFormData,
-  parseContactLeadStatusUpdateFormData,
-} from "@/lib/validation/contact-lead-admin";
+  parseLeadDeleteFormData,
+  parseLeadStatusUpdateFormData,
+} from "@/lib/validation/lead-admin";
 
-const CONTACT_LEAD_ADMIN_PATH =
+const LEAD_ADMIN_PATH =
   "/admin/anfragen";
 
-type ActionStatus = "success" | "error";
+type ActionStatus =
+  | "success"
+  | "error";
 
 function getActionErrorMessage(
   error: unknown,
@@ -31,9 +33,7 @@ function getActionErrorMessage(
     );
   }
 
-  if (
-    error instanceof ContactLeadNotFoundError
-  ) {
+  if (error instanceof LeadNotFoundError) {
     return error.message;
   }
 
@@ -44,33 +44,35 @@ function redirectToLeadAdmin(
   result: ActionStatus,
   message: string,
 ): never {
-  const parameters = new URLSearchParams({
-    result,
-    message,
-  });
+  const parameters =
+    new URLSearchParams({
+      result,
+      message,
+    });
 
   redirect(
-    `${CONTACT_LEAD_ADMIN_PATH}?${parameters.toString()}`,
+    `${LEAD_ADMIN_PATH}?${parameters.toString()}`,
   );
 }
 
 function revalidateLeadAdmin(): void {
-  revalidatePath(CONTACT_LEAD_ADMIN_PATH);
+  revalidatePath(LEAD_ADMIN_PATH);
   revalidatePath("/admin");
 }
 
-export async function updateContactLeadStatusAction(
+export async function updateLeadStatusAction(
   formData: FormData,
 ) {
-  const session = await requireAdminSession();
+  const session =
+    await requireAdminSession();
 
   try {
     const { id, status } =
-      parseContactLeadStatusUpdateFormData(
+      parseLeadStatusUpdateFormData(
         formData,
       );
 
-    await updateContactLeadStatus(
+    await updateLeadStatus(
       id,
       status,
       session.uid,
@@ -93,18 +95,18 @@ export async function updateContactLeadStatusAction(
   );
 }
 
-export async function deleteContactLeadAction(
+export async function deleteLeadAction(
   formData: FormData,
 ) {
   await requireAdminSession();
 
   try {
     const id =
-      parseContactLeadDeleteFormData(
+      parseLeadDeleteFormData(
         formData,
       );
 
-    await deleteContactLead(id);
+    await deleteLead(id);
   } catch (error) {
     redirectToLeadAdmin(
       "error",

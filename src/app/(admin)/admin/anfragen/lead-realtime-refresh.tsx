@@ -13,10 +13,13 @@ import {
   firestore,
 } from "@/lib/firebase/client";
 
-const REALTIME_COLLECTION = "adminRealtime";
-const REALTIME_DOCUMENT = "leads";
+const REALTIME_COLLECTION =
+  "adminRealtime";
 
-export function ContactLeadRealtimeRefresh() {
+const REALTIME_DOCUMENT =
+  "leads";
+
+export function LeadRealtimeRefresh() {
   const router = useRouter();
 
   useEffect(() => {
@@ -27,27 +30,19 @@ export function ContactLeadRealtimeRefresh() {
     let disposed = false;
 
     void (async () => {
-      /*
-       * Besonders nach F5 oder in einem zweiten Tab kann
-       * Firebase Auth einen kurzen Moment benötigen, bis
-       * der persistierte Benutzer wiederhergestellt wurde.
-       */
       await firebaseAuth.authStateReady();
 
       if (disposed) {
         return;
       }
 
-      const user = firebaseAuth.currentUser;
+      const user =
+        firebaseAuth.currentUser;
 
       if (!user) {
         return;
       }
 
-      /*
-       * Token bewusst aktualisieren, damit ein eventuell
-       * neu gesetzter Admin-Custom-Claim sicher enthalten ist.
-       */
       await user.getIdToken(true);
 
       if (disposed) {
@@ -61,24 +56,24 @@ export function ContactLeadRealtimeRefresh() {
       );
 
       let initialized = false;
-      let lastRevision: number | null = null;
+      let lastRevision:
+        | number
+        | null = null;
 
       unsubscribe = onSnapshot(
         realtimeReference,
         (snapshot) => {
-          const data = snapshot.exists()
-            ? snapshot.data()
-            : null;
+          const data =
+            snapshot.exists()
+              ? snapshot.data()
+              : null;
 
           const revision =
-            typeof data?.revision === "number"
+            typeof data?.revision ===
+            "number"
               ? data.revision
               : null;
 
-          /*
-           * Der erste Snapshot ist nur der aktuelle
-           * Ausgangsstand und soll keinen Refresh auslösen.
-           */
           if (!initialized) {
             initialized = true;
             lastRevision = revision;
@@ -86,7 +81,9 @@ export function ContactLeadRealtimeRefresh() {
             return;
           }
 
-          if (revision === lastRevision) {
+          if (
+            revision === lastRevision
+          ) {
             return;
           }
 
@@ -95,11 +92,6 @@ export function ContactLeadRealtimeRefresh() {
           router.refresh();
         },
         (error) => {
-          /*
-           * Absichtlich als Runtime-Fehler sichtbar machen.
-           * Ohne Error-Callback beendet Firestore den Listener
-           * bei Berechtigungsfehlern und wir sehen im UI nichts.
-           */
           throw error;
         },
       );

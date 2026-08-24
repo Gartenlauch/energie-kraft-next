@@ -1,4 +1,9 @@
 import type { FirestoreTimestamp } from "@/types/firestore";
+import {
+  LEAD_STATUS_VALUES,
+  type LeadMailInfo,
+  type LeadStatus,
+} from "@/types/lead";
 
 export const CONTACT_INTEREST_VALUES = [
   "photovoltaik",
@@ -37,14 +42,10 @@ export const OWNERSHIP_VALUES = [
 
 export type Ownership = (typeof OWNERSHIP_VALUES)[number];
 
-export const CONTACT_LEAD_STATUS_VALUES = [
-  "new",
-  "in_progress",
-  "completed",
-  "rejected",
-] as const;
+export const CONTACT_LEAD_STATUS_VALUES =
+  LEAD_STATUS_VALUES;
 
-export type ContactLeadStatus = (typeof CONTACT_LEAD_STATUS_VALUES)[number];
+export type ContactLeadStatus = LeadStatus;
 
 export interface ContactLeadInput {
   firstName: string;
@@ -120,7 +121,8 @@ export interface ContactLeadDocument {
     source: "kontakt";
     schemaVersion: 1;
   };
-
+  mail?: LeadMailInfo;
+  
   createdAt: FirestoreTimestamp;
   updatedAt: FirestoreTimestamp;
 

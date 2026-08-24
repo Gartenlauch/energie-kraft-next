@@ -1,23 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DeleteContactLeadButton } from "./delete-contact-lead-button";
-import { listContactLeads } from "@/lib/leads/contact-lead-repository";
-import { ContactLeadRealtimeRefresh } from "./contact-lead-realtime-refresh";
-import type {
-  ContactInterest,
-  ContactLead,
-  ContactLeadStatus,
-} from "@/types/contact-lead";
 
-import { updateContactLeadStatusAction } from "./actions";
+import { ContactLeadCard } from "./contact-lead-card";
+import { LeadRealtimeRefresh } from "./lead-realtime-refresh";
+import { PhotovoltaicConfiguratorLeadCard } from "./photovoltaic-configurator-lead-card";
+
+import { listLeads } from "@/lib/leads/lead-repository";
+import {
+  isAdminLeadType,
+  isContactAdminLead,
+} from "@/types/admin-lead";
+import {
+  LEAD_STATUS_VALUES,
+  type LeadStatus,
+} from "@/types/lead";
 
 export const metadata: Metadata = {
   title: "Anfragen",
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic =
+  "force-dynamic";
 
-interface ContactLeadAdminPageProps {
+interface LeadAdminPageProps {
   searchParams: Promise<
     Record<
       string,
@@ -26,112 +31,45 @@ interface ContactLeadAdminPageProps {
   >;
 }
 
-const STATUS_LABELS: Record<
-  ContactLeadStatus,
-  string
-> = {
-  new: "Neu",
-  in_progress: "In Bearbeitung",
-  completed: "Erledigt",
-  rejected: "Abgelehnt",
-};
-
-const INTEREST_LABELS: Record<
-  ContactInterest,
-  string
-> = {
-  photovoltaik: "Photovoltaik",
-  stromspeicher: "Stromspeicher",
-  wallbox: "Wallbox",
-  klimaanlage: "Klimaanlage",
-  waermepumpe: "Wärmepumpe",
-  sonstiges: "Sonstiges",
-};
-
-const BUILDING_TYPE_LABELS = {
-  einfamilienhaus: "Einfamilienhaus",
-  mehrfamilienhaus: "Mehrfamilienhaus",
-  gewerbe: "Gewerbe",
-  sonstiges: "Sonstiges",
-} as const;
-
-const OWNERSHIP_LABELS = {
-  eigentuemer: "Eigentümer",
-  mieter: "Mieter",
-  sonstiges: "Sonstiges",
-} as const;
-
-const CONTACT_PREFERENCE_LABELS = {
-  telefon: "Telefon",
-  email: "E-Mail",
-  egal: "Keine Präferenz",
-} as const;
-
 function getFirstSearchParameter(
-  value: string | string[] | undefined,
+  value:
+    | string
+    | string[]
+    | undefined,
 ): string | undefined {
   return Array.isArray(value)
     ? value[0]
     : value;
 }
 
-function isContactLeadStatus(
+function isLeadStatus(
   value: string | undefined,
-): value is ContactLeadStatus {
+): value is LeadStatus {
   return (
-    value === "new" ||
-    value === "in_progress" ||
-    value === "completed" ||
-    value === "rejected"
+    value !== undefined &&
+    (
+      LEAD_STATUS_VALUES as readonly string[]
+    ).includes(value)
   );
 }
 
-function formatDate(
-  lead: ContactLead,
-): string {
-  try {
-    return new Intl.DateTimeFormat(
-      "de-DE",
-      {
-        dateStyle: "medium",
-        timeStyle: "short",
-      },
-    ).format(lead.createdAt.toDate());
-  } catch {
-    return "Zeitpunkt nicht verfügbar";
-  }
-}
-
-function getStatusClassName(
-  status: ContactLeadStatus,
-): string {
-  switch (status) {
-    case "new":
-      return "border-blue-200 bg-blue-50 text-blue-800";
-
-    case "in_progress":
-      return "border-amber-200 bg-amber-50 text-amber-800";
-
-    case "completed":
-      return "border-emerald-200 bg-emerald-50 text-emerald-800";
-
-    case "rejected":
-      return "border-slate-300 bg-slate-100 text-slate-700";
-  }
-}
-
-export default async function ContactLeadAdminPage({
+export default async function LeadAdminPage({
   searchParams,
-}: ContactLeadAdminPageProps) {
+}: LeadAdminPageProps) {
   const [leads, parameters] =
     await Promise.all([
-      listContactLeads(),
+      listLeads(),
       searchParams,
     ]);
 
   const selectedStatus =
     getFirstSearchParameter(
       parameters.filterStatus,
+    );
+
+  const selectedType =
+    getFirstSearchParameter(
+      parameters.filterType,
     );
 
   const actionResult =
@@ -145,30 +83,52 @@ export default async function ContactLeadAdminPage({
     );
 
   const filteredLeads =
-    isContactLeadStatus(selectedStatus)
-      ? leads.filter(
-        (lead) =>
-          lead.status === selectedStatus,
-      )
-      : leads;
+    leads.filter((lead) => {
+      if (
+        isLeadStatus(
+          selectedStatus,
+        ) &&
+        lead.status !== selectedStatus
+      ) {
+        return false;
+      }
 
-  const newCount = leads.filter(
-    (lead) => lead.status === "new",
-  ).length;
+      if (
+        isAdminLeadType(
+          selectedType,
+        ) &&
+        lead.type !== selectedType
+      ) {
+        return false;
+      }
 
-  const inProgressCount = leads.filter(
-    (lead) =>
-      lead.status === "in_progress",
-  ).length;
+      return true;
+    });
 
-  const completedCount = leads.filter(
-    (lead) =>
-      lead.status === "completed",
-  ).length;
+  const newCount =
+    leads.filter(
+      (lead) =>
+        lead.status === "new",
+    ).length;
+
+  const inProgressCount =
+    leads.filter(
+      (lead) =>
+        lead.status ===
+        "in_progress",
+    ).length;
+
+  const completedCount =
+    leads.filter(
+      (lead) =>
+        lead.status ===
+        "completed",
+    ).length;
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <ContactLeadRealtimeRefresh />
+      <LeadRealtimeRefresh />
+
       <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
         <div>
           <Link
@@ -183,9 +143,9 @@ export default async function ContactLeadAdminPage({
           </h1>
 
           <p className="mt-2 max-w-3xl text-slate-600">
-            Eingehende Projekt- und
-            Kontaktanfragen zentral prüfen und
-            bearbeiten.
+            Eingehende Kontakt- und
+            Konfigurator-Anfragen zentral
+            prüfen und bearbeiten.
           </p>
         </div>
 
@@ -269,7 +229,7 @@ export default async function ContactLeadAdminPage({
               id="filter-status"
               name="filterStatus"
               defaultValue={
-                isContactLeadStatus(
+                isLeadStatus(
                   selectedStatus,
                 )
                   ? selectedStatus
@@ -310,11 +270,25 @@ export default async function ContactLeadAdminPage({
             <select
               id="filter-type"
               name="filterType"
-              defaultValue="contact"
+              defaultValue={
+                isAdminLeadType(
+                  selectedType,
+                )
+                  ? selectedType
+                  : ""
+              }
               className="mt-2 min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
             >
+              <option value="">
+                Alle Anfragearten
+              </option>
+
               <option value="contact">
                 Kontaktformular
+              </option>
+
+              <option value="configurator">
+                PV-Konfigurator
               </option>
             </select>
           </div>
@@ -348,303 +322,22 @@ export default async function ContactLeadAdminPage({
         </section>
       ) : (
         <div className="space-y-6">
-          {filteredLeads.map((lead) => (
-            <article
-              key={lead.id}
-              className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 bg-slate-50 px-6 py-5">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-xl font-semibold text-slate-950">
-                      {lead.contact.firstName}{" "}
-                      {lead.contact.lastName}
-                    </h2>
-
-                    <span
-                      className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClassName(
-                        lead.status,
-                      )}`}
-                    >
-                      {
-                        STATUS_LABELS[
-                        lead.status
-                        ]
-                      }
-                    </span>
-                  </div>
-
-                  <p className="mt-2 text-sm text-slate-500">
-                    Eingegangen:{" "}
-                    {formatDate(lead)}
-                  </p>
-
-                  <p className="mt-1 font-mono text-xs text-slate-400">
-                    {lead.id}
-                  </p>
-                </div>
-
-                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-                  Kontaktformular
-                </span>
-              </div>
-
-              <div className="grid gap-8 p-6 lg:grid-cols-[0.8fr_1.2fr]">
-                <div className="space-y-7">
-                  <section>
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                      Kontaktdaten
-                    </h3>
-
-                    <dl className="mt-4 space-y-3 text-sm">
-                      {lead.contact.company ? (
-                        <div>
-                          <dt className="text-slate-500">
-                            Firma
-                          </dt>
-
-                          <dd className="font-medium text-slate-900">
-                            {
-                              lead.contact
-                                .company
-                            }
-                          </dd>
-                        </div>
-                      ) : null}
-
-                      <div>
-                        <dt className="text-slate-500">
-                          E-Mail
-                        </dt>
-
-                        <dd>
-                          <a
-                            href={`mailto:${lead.contact.email}`}
-                            className="font-medium text-emerald-800 hover:underline"
-                          >
-                            {
-                              lead.contact
-                                .email
-                            }
-                          </a>
-                        </dd>
-                      </div>
-
-                      {lead.contact.phone ? (
-                        <div>
-                          <dt className="text-slate-500">
-                            Telefon
-                          </dt>
-
-                          <dd>
-                            <a
-                              href={`tel:${lead.contact.phone}`}
-                              className="font-medium text-emerald-800 hover:underline"
-                            >
-                              {
-                                lead.contact
-                                  .phone
-                              }
-                            </a>
-                          </dd>
-                        </div>
-                      ) : null}
-
-                      <div>
-                        <dt className="text-slate-500">
-                          Ort
-                        </dt>
-
-                        <dd className="font-medium text-slate-900">
-                          {
-                            lead.location
-                              .postalCode
-                          }{" "}
-                          {lead.location.city}
-                        </dd>
-                      </div>
-
-                      <div>
-                        <dt className="text-slate-500">
-                          Bevorzugter Kontakt
-                        </dt>
-
-                        <dd className="font-medium text-slate-900">
-                          {
-                            CONTACT_PREFERENCE_LABELS[
-                            lead
-                              .preferredContact
-                            ]
-                          }
-                        </dd>
-                      </div>
-                    </dl>
-                  </section>
-
-                  <section>
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                      Projekt
-                    </h3>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {lead.project.interests.map(
-                        (interest) => (
-                          <span
-                            key={interest}
-                            className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700"
-                          >
-                            {
-                              INTEREST_LABELS[
-                              interest
-                              ]
-                            }
-                          </span>
-                        ),
-                      )}
-                    </div>
-
-                    <dl className="mt-4 space-y-3 text-sm">
-                      {lead.project
-                        .buildingType ? (
-                        <div>
-                          <dt className="text-slate-500">
-                            Gebäudetyp
-                          </dt>
-
-                          <dd className="font-medium text-slate-900">
-                            {
-                              BUILDING_TYPE_LABELS[
-                              lead
-                                .project
-                                .buildingType
-                              ]
-                            }
-                          </dd>
-                        </div>
-                      ) : null}
-
-                      {lead.project
-                        .ownership ? (
-                        <div>
-                          <dt className="text-slate-500">
-                            Nutzung /
-                            Eigentum
-                          </dt>
-
-                          <dd className="font-medium text-slate-900">
-                            {
-                              OWNERSHIP_LABELS[
-                              lead
-                                .project
-                                .ownership
-                              ]
-                            }
-                          </dd>
-                        </div>
-                      ) : null}
-                    </dl>
-                  </section>
-                </div>
-
-                <div className="space-y-7">
-                  <section>
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                      Nachricht
-                    </h3>
-
-                    <p className="mt-4 whitespace-pre-wrap rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-800">
-                      {lead.message}
-                    </p>
-                  </section>
-
-                  <section className="rounded-xl border border-slate-200 p-5">
-                    <h3 className="font-semibold text-slate-950">
-                      Bearbeitungsstatus
-                    </h3>
-
-                    <form
-                      action={
-                        updateContactLeadStatusAction
-                      }
-                      className="mt-4 flex flex-wrap items-end gap-3"
-                    >
-                      <input
-                        type="hidden"
-                        name="id"
-                        value={lead.id}
-                      />
-
-                      <div className="min-w-52 flex-1">
-                        <label
-                          htmlFor={`status-${lead.id}`}
-                          className="block text-sm font-medium text-slate-700"
-                        >
-                          Status
-                        </label>
-
-                        <select
-                          id={`status-${lead.id}`}
-                          name="status"
-                          defaultValue={
-                            lead.status
-                          }
-                          className="mt-2 min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
-                        >
-                          <option value="new">
-                            Neu
-                          </option>
-
-                          <option value="in_progress">
-                            In Bearbeitung
-                          </option>
-
-                          <option value="completed">
-                            Erledigt
-                          </option>
-
-                          <option value="rejected">
-                            Abgelehnt
-                          </option>
-                        </select>
-                      </div>
-
-                      <button
-                        type="submit"
-                        className="min-h-11 rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-                      >
-                        Status speichern
-                      </button>
-                    </form>
-                    <div className="mt-6 border-t border-slate-200 pt-5">
-                      <p className="text-sm font-semibold text-red-800">
-                        Anfrage endgültig löschen
-                      </p>
-
-                      <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600">
-                        Beim Löschen werden die gespeicherten
-                        personenbezogenen Daten dieser Anfrage
-                        dauerhaft aus Firestore entfernt. Diese
-                        Aktion kann nicht rückgängig gemacht werden.
-                      </p>
-
-                      <div className="mt-4">
-                        <DeleteContactLeadButton
-                          leadId={lead.id}
-                          leadName={`${lead.contact.firstName} ${lead.contact.lastName}`}
-                        />
-                      </div>
-                    </div>
-                  </section>
-
-                  <section className="text-xs leading-5 text-slate-500">
-                    Datenschutz wurde bei
-                    Übermittlung der Anfrage
-                    bestätigt.
-                  </section>
-                </div>
-              </div>
-            </article>
-          ))}
+          {filteredLeads.map(
+            (lead) =>
+              isContactAdminLead(
+                lead,
+              ) ? (
+                <ContactLeadCard
+                  key={lead.id}
+                  lead={lead}
+                />
+              ) : (
+                <PhotovoltaicConfiguratorLeadCard
+                  key={lead.id}
+                  lead={lead}
+                />
+              ),
+          )}
         </div>
       )}
     </main>

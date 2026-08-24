@@ -1,19 +1,19 @@
 "use client";
 
-import { deleteContactLeadAction } from "./actions";
+import { deleteLeadAction } from "./actions";
 
-interface DeleteContactLeadButtonProps {
+interface DeleteLeadButtonProps {
   leadId: string;
   leadName: string;
 }
 
-export function DeleteContactLeadButton({
+export function DeleteLeadButton({
   leadId,
   leadName,
-}: DeleteContactLeadButtonProps) {
+}: DeleteLeadButtonProps) {
   return (
     <form
-      action={deleteContactLeadAction}
+      action={deleteLeadAction}
       onSubmit={(event) => {
         const confirmed = window.confirm(
           `Möchten Sie die Anfrage von "${leadName}" wirklich endgültig löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`,
