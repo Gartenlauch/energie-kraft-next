@@ -84,10 +84,22 @@ export const roofRenovationPeriodSchema = z.enum([
 ]);
 
 const photovoltaicResultSchema = z.object({
-  recommendedPowerKwpMin: z.number().positive(),
-  recommendedPowerKwpMax: z.number().positive(),
-  estimatedAnnualYieldKwhMin: z.number().positive().optional(),
-  estimatedAnnualYieldKwhMax: z.number().positive().optional(),
+  recommendedPowerKwpMin: z.number().int().positive(),
+  recommendedPowerKwpMax: z.number().int().positive(),
+
+  estimatedAnnualYieldKwhMin: z.number().int().positive(),
+  estimatedAnnualYieldKwhMax: z.number().int().positive(),
+
+  projectedAnnualConsumptionKwh: z.number().int().positive(),
+  targetAnnualGenerationKwh: z.number().int().positive(),
+
+  orientationFactor: z.number().positive().max(1),
+
+  specificYieldKwhPerKwpMin: z.number().int().positive(),
+  specificYieldKwhPerKwpMax: z.number().int().positive(),
+
+  batteryStorageRequested: z.boolean(),
+  technicalReviewRecommended: z.boolean(),
 });
 
 const projectedConsumptionMaxKwh =

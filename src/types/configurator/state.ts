@@ -78,8 +78,20 @@ export interface ConfiguratorNotes {
 export interface PhotovoltaicConfiguratorResult {
   recommendedPowerKwpMin: number;
   recommendedPowerKwpMax: number;
-  estimatedAnnualYieldKwhMin?: number;
-  estimatedAnnualYieldKwhMax?: number;
+
+  estimatedAnnualYieldKwhMin: number;
+  estimatedAnnualYieldKwhMax: number;
+
+  projectedAnnualConsumptionKwh: number;
+  targetAnnualGenerationKwh: number;
+
+  orientationFactor: number;
+
+  specificYieldKwhPerKwpMin: number;
+  specificYieldKwhPerKwpMax: number;
+
+  batteryStorageRequested: boolean;
+  technicalReviewRecommended: boolean;
 }
 
 export interface ConfiguratorResults {
@@ -100,37 +112,37 @@ export interface ConfiguratorState {
 
 export type ConfiguratorAction =
   | {
-      type: "SET_ACTIVE_CONFIGURATOR";
-      payload: ConfiguratorType | null;
-    }
+    type: "SET_ACTIVE_CONFIGURATOR";
+    payload: ConfiguratorType | null;
+  }
   | {
-      type: "UPDATE_HOUSEHOLD";
-      payload: Partial<HouseholdConfiguratorState>;
-    }
+    type: "UPDATE_HOUSEHOLD";
+    payload: Partial<HouseholdConfiguratorState>;
+  }
   | {
-      type: "UPDATE_BUILDING";
-      payload: Partial<BuildingConfiguratorState>;
-    }
+    type: "UPDATE_BUILDING";
+    payload: Partial<BuildingConfiguratorState>;
+  }
   | {
-      type: "UPDATE_ROOF";
-      payload: Partial<RoofConfiguratorState>;
-    }
+    type: "UPDATE_ROOF";
+    payload: Partial<RoofConfiguratorState>;
+  }
   | {
-      type: "UPDATE_INTERESTS";
-      payload: Partial<ConfiguratorInterests>;
-    }
+    type: "UPDATE_INTERESTS";
+    payload: Partial<ConfiguratorInterests>;
+  }
   | {
-      type: "UPDATE_NOTES";
-      payload: Partial<ConfiguratorNotes>;
-    }
+    type: "UPDATE_NOTES";
+    payload: Partial<ConfiguratorNotes>;
+  }
   | {
-      type: "SET_PHOTOVOLTAIC_RESULT";
-      payload: PhotovoltaicConfiguratorResult;
-    }
+    type: "SET_PHOTOVOLTAIC_RESULT";
+    payload: PhotovoltaicConfiguratorResult;
+  }
   | {
-      type: "REPLACE_STATE";
-      payload: ConfiguratorState;
-    }
+    type: "REPLACE_STATE";
+    payload: ConfiguratorState;
+  }
   | {
-      type: "RESET";
-    };
+    type: "RESET";
+  };

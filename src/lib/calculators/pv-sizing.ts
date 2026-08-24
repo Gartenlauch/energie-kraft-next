@@ -1,24 +1,14 @@
+import {
+  PV_ORIENTATION_FACTORS,
+  PV_SHADING_FACTORS,
+} from "@/lib/calculators/pv-model";
 import { parsePvSizingCalculatorInput } from "@/lib/validation/pv-sizing-calculator";
 import type {
-  PvRoofOrientation,
-  PvShadingLevel,
   PvSizingCalculatorInput,
   PvSizingCalculatorResult,
 } from "@/types/pv-sizing-calculator";
 
-const ORIENTATION_FACTORS: Record<PvRoofOrientation, number> = {
-  south: 1,
-  southEastSouthWest: 0.95,
-  eastWest: 0.85,
-  north: 0.65,
-};
 
-const SHADING_FACTORS: Record<PvShadingLevel, number> = {
-  none: 1,
-  light: 0.95,
-  medium: 0.85,
-  strong: 0.7,
-};
 
 function round(value: number, fractionDigits = 2): number {
   const factor = 10 ** fractionDigits;
@@ -52,9 +42,9 @@ function roundToStep(value: number, step: number): number {
 export function calculatePvSizing(input: PvSizingCalculatorInput): PvSizingCalculatorResult {
   const values = parsePvSizingCalculatorInput(input);
 
-  const orientationFactor = ORIENTATION_FACTORS[values.roofOrientation];
+  const orientationFactor = PV_ORIENTATION_FACTORS[values.roofOrientation];
 
-  const shadingFactor = SHADING_FACTORS[values.shadingLevel];
+  const shadingFactor = PV_SHADING_FACTORS[values.shadingLevel];
 
   const adjustedSpecificYieldKwhPerKwp =
     values.baseSpecificYieldKwhPerKwp * orientationFactor * shadingFactor;
