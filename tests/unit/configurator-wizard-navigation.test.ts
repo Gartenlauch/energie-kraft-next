@@ -46,8 +46,38 @@ describe("configurator wizard navigation", () => {
     expect(
       getNextConfiguratorStepId(
         photovoltaicWizardSteps,
-        "annual_consumption",
+        "roof_renovation",
       ),
     ).toBeNull();
+  });
+
+  it("continues from consumption into the roof questions", () => {
+    expect(
+      getNextConfiguratorStepId(
+        photovoltaicWizardSteps,
+        "annual_consumption",
+      ),
+    ).toBe("roof_pitch");
+
+    expect(
+      getNextConfiguratorStepId(
+        photovoltaicWizardSteps,
+        "roof_pitch",
+      ),
+    ).toBe("roof_material");
+
+    expect(
+      getNextConfiguratorStepId(
+        photovoltaicWizardSteps,
+        "roof_material",
+      ),
+    ).toBe("roof_orientation");
+
+    expect(
+      getNextConfiguratorStepId(
+        photovoltaicWizardSteps,
+        "roof_orientation",
+      ),
+    ).toBe("roof_renovation");
   });
 });

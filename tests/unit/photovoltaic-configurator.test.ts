@@ -37,7 +37,7 @@ describe("photovoltaic configurator", () => {
     ).toBe(4500);
   });
 
-  it("defines the first four wizard steps in the expected order", () => {
+  it("defines the first eight wizard steps in the expected order", () => {
     expect(
       photovoltaicWizardSteps.map((step) => step.id),
     ).toEqual([
@@ -45,7 +45,57 @@ describe("photovoltaic configurator", () => {
       "ownership",
       "building_type",
       "annual_consumption",
+      "roof_pitch",
+      "roof_material",
+      "roof_orientation",
+      "roof_renovation",
     ]);
+  });
+
+  it("validates the photovoltaic roof steps", () => {
+    let state = createInitialConfiguratorState();
+
+    expect(
+      isPhotovoltaicStepComplete("roof_pitch", state),
+    ).toBe(false);
+
+    expect(
+      isPhotovoltaicStepComplete("roof_material", state),
+    ).toBe(false);
+
+    expect(
+      isPhotovoltaicStepComplete("roof_orientation", state),
+    ).toBe(false);
+
+    expect(
+      isPhotovoltaicStepComplete("roof_renovation", state),
+    ).toBe(false);
+
+    state = configuratorReducer(state, {
+      type: "UPDATE_ROOF",
+      payload: {
+        pitch: 30,
+        material: "roof_tile",
+        orientation: "south_east_south_west",
+        renovationPeriod: "after_1990",
+      },
+    });
+
+    expect(
+      isPhotovoltaicStepComplete("roof_pitch", state),
+    ).toBe(true);
+
+    expect(
+      isPhotovoltaicStepComplete("roof_material", state),
+    ).toBe(true);
+
+    expect(
+      isPhotovoltaicStepComplete("roof_orientation", state),
+    ).toBe(true);
+
+    expect(
+      isPhotovoltaicStepComplete("roof_renovation", state),
+    ).toBe(true);
   });
 
   it("requires a household size for the first step", () => {

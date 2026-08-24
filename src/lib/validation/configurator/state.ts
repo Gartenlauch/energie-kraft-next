@@ -49,14 +49,14 @@ export const futureIncreasePercentSchema = z
   .min(PHOTOVOLTAIC_FUTURE_INCREASE_MIN_PERCENT)
   .max(PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT);
 
-const roofPitchSchema = z.union([
+export const roofPitchSchema = z.union([
   z.literal(0),
   z.literal(15),
   z.literal(30),
   z.literal(45),
 ]);
 
-const roofMaterialSchema = z.enum([
+export const roofMaterialSchema = z.enum([
   "roof_tile",
   "beaver_tail",
   "slate",
@@ -68,14 +68,14 @@ const roofMaterialSchema = z.enum([
   "unknown",
 ]);
 
-const roofOrientationSchema = z.enum([
+export const roofOrientationSchema = z.enum([
   "south",
   "south_east_south_west",
   "east_west",
   "north",
 ]);
 
-const roofRenovationPeriodSchema = z.enum([
+export const roofRenovationPeriodSchema = z.enum([
   "new_build",
   "after_1990",
   "before_1990",

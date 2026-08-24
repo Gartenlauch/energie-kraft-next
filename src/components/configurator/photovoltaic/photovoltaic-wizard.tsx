@@ -7,6 +7,10 @@ import { AnnualConsumptionStep } from "@/components/configurator/photovoltaic/an
 import { BuildingTypeStep } from "@/components/configurator/photovoltaic/building-type-step";
 import { HouseholdPersonsStep } from "@/components/configurator/photovoltaic/household-persons-step";
 import { OwnershipStep } from "@/components/configurator/photovoltaic/ownership-step";
+import { RoofMaterialStep } from "@/components/configurator/photovoltaic/roof-material-step";
+import { RoofOrientationStep } from "@/components/configurator/photovoltaic/roof-orientation-step";
+import { RoofPitchStep } from "@/components/configurator/photovoltaic/roof-pitch-step";
+import { RoofRenovationStep } from "@/components/configurator/photovoltaic/roof-renovation-step";
 import { TenantStop } from "@/components/configurator/photovoltaic/tenant-stop";
 import { WizardActions } from "@/components/configurator/wizard-actions";
 import { photovoltaicWizardSteps } from "@/content/configurators";
@@ -19,6 +23,10 @@ import type {
   BuildingType,
   HouseholdPersons,
   PhotovoltaicStepId,
+  RoofMaterial,
+  RoofOrientation,
+  RoofPitch,
+  RoofRenovationPeriod,
 } from "@/types/configurator";
 
 export function PhotovoltaicWizard() {
@@ -128,6 +136,58 @@ export function PhotovoltaicWizard() {
     });
   }
 
+  function handleRoofPitchSelect(
+    pitch: RoofPitch,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_ROOF",
+      payload: {
+        pitch,
+      },
+    });
+  }
+
+  function handleRoofMaterialSelect(
+    material: RoofMaterial,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_ROOF",
+      payload: {
+        material,
+      },
+    });
+  }
+
+  function handleRoofOrientationSelect(
+    orientation: RoofOrientation,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_ROOF",
+      payload: {
+        orientation,
+      },
+    });
+  }
+
+  function handleRoofRenovationSelect(
+    renovationPeriod: RoofRenovationPeriod,
+  ) {
+    activatePhotovoltaic();
+
+    dispatch({
+      type: "UPDATE_ROOF",
+      payload: {
+        renovationPeriod,
+      },
+    });
+  }
+
   function handleNext() {
     if (!currentStepComplete) {
       return;
@@ -189,6 +249,34 @@ export function PhotovoltaicWizard() {
         />
       ) : null}
 
+      {currentStepId === "roof_pitch" ? (
+        <RoofPitchStep
+          selected={state.roof.pitch}
+          onSelect={handleRoofPitchSelect}
+        />
+      ) : null}
+
+      {currentStepId === "roof_material" ? (
+        <RoofMaterialStep
+          selected={state.roof.material}
+          onSelect={handleRoofMaterialSelect}
+        />
+      ) : null}
+
+      {currentStepId === "roof_orientation" ? (
+        <RoofOrientationStep
+          selected={state.roof.orientation}
+          onSelect={handleRoofOrientationSelect}
+        />
+      ) : null}
+
+      {currentStepId === "roof_renovation" ? (
+        <RoofRenovationStep
+          selected={state.roof.renovationPeriod}
+          onSelect={handleRoofRenovationSelect}
+        />
+      ) : null}
+
       <WizardActions
         onBack={isFirstStep ? undefined : goBack}
         onNext={handleNext}
@@ -197,7 +285,7 @@ export function PhotovoltaicWizard() {
         }
         nextLabel={
           isLastStep
-            ? "Weiter zu den Dachangaben"
+            ? "Weiter zu Verbrauch & Speicher"
             : "Weiter"
         }
       />

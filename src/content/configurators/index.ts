@@ -9,5 +9,9 @@ export {
   photovoltaicConfiguratorContent,
   photovoltaicHouseholdPersonOptions,
   photovoltaicOwnershipOptions,
+  photovoltaicRoofMaterialOptions,
+  photovoltaicRoofOrientationOptions,
+  photovoltaicRoofPitchOptions,
+  photovoltaicRoofRenovationOptions,
   photovoltaicWizardSteps,
 } from "./photovoltaic";
