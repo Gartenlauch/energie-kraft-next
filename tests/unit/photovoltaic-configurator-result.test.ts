@@ -194,4 +194,63 @@ describe("photovoltaic configurator result", () => {
       state.results.photovoltaic,
     ).toBeUndefined();
   });
+  it("does not invalidate the result when notes change", () => {
+    let state = createCompleteResultState();
+
+    const result =
+      buildPhotovoltaicConfiguratorResult(state);
+
+    if (!result) {
+      throw new Error(
+        "Expected photovoltaic configurator result.",
+      );
+    }
+
+    state = configuratorReducer(state, {
+      type: "SET_PHOTOVOLTAIC_RESULT",
+      payload: result,
+    });
+
+    state = configuratorReducer(state, {
+      type: "UPDATE_NOTES",
+      payload: {
+        hasNotes: true,
+        text: "Carport später berücksichtigen.",
+      },
+    });
+
+    expect(
+      state.results.photovoltaic,
+    ).toEqual(result);
+  });
+
+  it("invalidates the result when the roof changes", () => {
+    let state = createCompleteResultState();
+
+    const result =
+      buildPhotovoltaicConfiguratorResult(state);
+
+    if (!result) {
+      throw new Error(
+        "Expected photovoltaic configurator result.",
+      );
+    }
+
+    state = configuratorReducer(state, {
+      type: "SET_PHOTOVOLTAIC_RESULT",
+      payload: result,
+    });
+
+    state = configuratorReducer(state, {
+      type: "UPDATE_ROOF",
+      payload: {
+        orientation: "east_west",
+      },
+    });
+
+    expect(
+      state.results.photovoltaic,
+    ).toBeUndefined();
+  });
+
 });

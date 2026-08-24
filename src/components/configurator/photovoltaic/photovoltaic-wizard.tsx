@@ -15,14 +15,14 @@ import { TenantStop } from "@/components/configurator/photovoltaic/tenant-stop";
 import { WizardActions } from "@/components/configurator/wizard-actions";
 import { photovoltaicWizardSteps } from "@/content/configurators";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
-import { getPhotovoltaicHouseholdConsumptionDefault } from "@/lib/configurator/photovoltaic";
+import { buildPhotovoltaicConfiguratorResult, getPhotovoltaicHouseholdConsumptionDefault } from "@/lib/configurator/photovoltaic";
 import { useConfiguratorWizard } from "@/lib/configurator/use-configurator-wizard";
 import { isPhotovoltaicStepComplete } from "@/lib/validation/configurator/photovoltaic";
 import { AdditionalInterestsStep } from "@/components/configurator/photovoltaic/additional-interests-step";
 import { BatteryStorageStep } from "@/components/configurator/photovoltaic/battery-storage-step";
 import { FutureConsumptionStep } from "@/components/configurator/photovoltaic/future-consumption-step";
 import { NotesStep } from "@/components/configurator/photovoltaic/notes-step";
-
+import { PhotovoltaicResult } from "@/components/configurator/photovoltaic/photovoltaic-result";
 
 import type {
   BuildingOwnership,
@@ -55,8 +55,8 @@ export function PhotovoltaicWizard() {
     "household_persons",
   );
 
-  const [showTenantStop, setShowTenantStop] =
-    useState(false);
+  const [showTenantStop, setShowTenantStop] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   if (!isHydrated) {
     return (
@@ -297,9 +297,25 @@ export function PhotovoltaicWizard() {
       return;
     }
 
-    if (!isLastStep) {
-      goNext();
+
+    if (isLastStep) {
+      const result =
+        buildPhotovoltaicConfiguratorResult(state);
+
+      if (!result) {
+        return;
+      }
+
+      dispatch({
+        type: "SET_PHOTOVOLTAIC_RESULT",
+        payload: result,
+      });
+
+      setShowResult(true);
+      return;
     }
+
+    goNext();
   }
 
   if (showTenantStop) {
@@ -309,6 +325,14 @@ export function PhotovoltaicWizard() {
       />
     );
   }
+  if (showResult && state.results.photovoltaic) {
+  return (
+    <PhotovoltaicResult
+      result={state.results.photovoltaic}
+      onBack={() => setShowResult(false)}
+    />
+  );
+}
 
   return (
     <>
@@ -414,9 +438,7 @@ export function PhotovoltaicWizard() {
       <WizardActions
         onBack={isFirstStep ? undefined : goBack}
         onNext={handleNext}
-        nextDisabled={
-          !currentStepComplete || isLastStep
-        }
+        nextDisabled={!currentStepComplete}
         nextLabel={
           isLastStep
             ? "Weiter zum Ergebnis"
