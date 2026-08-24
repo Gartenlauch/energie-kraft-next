@@ -40,6 +40,45 @@ class MemoryStorage implements Storage {
 }
 
 describe("configurator storage", () => {
+  it("does not overwrite persisted state with an invalid transient state", () => {
+    const storage = new MemoryStorage();
+
+    const validState = configuratorReducer(
+      createInitialConfiguratorState(),
+      {
+        type: "UPDATE_HOUSEHOLD",
+        payload: {
+          annualConsumptionKwh: 3000,
+        },
+      },
+    );
+
+    expect(
+      writeConfiguratorState(storage, validState),
+    ).toBe(true);
+
+    const invalidState = configuratorReducer(
+      validState,
+      {
+        type: "UPDATE_HOUSEHOLD",
+        payload: {
+          annualConsumptionKwh: 200,
+        },
+      },
+    );
+
+    expect(
+      writeConfiguratorState(storage, invalidState),
+    ).toBe(false);
+
+    const restored =
+      readConfiguratorState(storage);
+
+    expect(
+      restored?.household.annualConsumptionKwh,
+    ).toBe(3000);
+  });
+
   it("persists and restores configurator state", () => {
     const storage = new MemoryStorage();
 

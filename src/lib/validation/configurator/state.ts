@@ -1,10 +1,16 @@
 import { z } from "zod";
 
+import {
+  PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH,
+  PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MIN_KWH,
+  PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT,
+  PHOTOVOLTAIC_FUTURE_INCREASE_MIN_PERCENT,
+} from "@/lib/configurator/photovoltaic";
 import { calculateProjectedConsumptionKwh } from "@/lib/configurator/state";
 import type { ConfiguratorState } from "@/types/configurator";
 import { CONFIGURATOR_STATE_VERSION } from "@/types/configurator";
 
-const householdPersonsSchema = z.union([
+export const householdPersonsSchema = z.union([
   z.literal(1),
   z.literal(2),
   z.literal(3),
@@ -19,15 +25,29 @@ const configuratorTypeSchema = z.enum([
   "wallbox",
 ]);
 
-const buildingOwnershipSchema = z.enum(["owner", "tenant"]);
+export const buildingOwnershipSchema = z.enum([
+  "owner",
+  "tenant",
+]);
 
-const buildingTypeSchema = z.enum([
+export const buildingTypeSchema = z.enum([
   "detached_house",
   "semi_detached_house",
   "mid_terrace_house",
   "end_terrace_house",
   "multi_family_house",
 ]);
+
+export const annualConsumptionKwhSchema = z
+  .number()
+  .int()
+  .min(PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MIN_KWH)
+  .max(PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH);
+
+export const futureIncreasePercentSchema = z
+  .number()
+  .min(PHOTOVOLTAIC_FUTURE_INCREASE_MIN_PERCENT)
+  .max(PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT);
 
 const roofPitchSchema = z.union([
   z.literal(0),
@@ -70,51 +90,56 @@ const photovoltaicResultSchema = z.object({
   estimatedAnnualYieldKwhMax: z.number().positive().optional(),
 });
 
-export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
-  version: z.literal(CONFIGURATOR_STATE_VERSION),
+const projectedConsumptionMaxKwh =
+  PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH *
+  (1 + PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT / 100);
 
-  activeConfigurator: configuratorTypeSchema.nullable(),
+export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
+  z.object({
+    version: z.literal(CONFIGURATOR_STATE_VERSION),
 
-  household: z.object({
-    persons: householdPersonsSchema.optional(),
-    annualConsumptionKwh: z.number().int().min(500).max(100_000).optional(),
-    futureIncreasePercent: z.number().min(0).max(200),
-    projectedConsumptionKwh: z
-      .number()
-      .int()
-      .min(500)
-      .max(300_000)
-      .optional(),
-  }),
+    activeConfigurator: configuratorTypeSchema.nullable(),
 
-  building: z.object({
-    ownership: buildingOwnershipSchema.optional(),
-    type: buildingTypeSchema.optional(),
-  }),
+    household: z.object({
+      persons: householdPersonsSchema.optional(),
+      annualConsumptionKwh: annualConsumptionKwhSchema.optional(),
+      futureIncreasePercent: futureIncreasePercentSchema,
+      projectedConsumptionKwh: z
+        .number()
+        .int()
+        .min(PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MIN_KWH)
+        .max(projectedConsumptionMaxKwh)
+        .optional(),
+    }),
 
-  roof: z.object({
-    pitch: roofPitchSchema.optional(),
-    material: roofMaterialSchema.optional(),
-    orientation: roofOrientationSchema.optional(),
-    renovationPeriod: roofRenovationPeriodSchema.optional(),
-  }),
+    building: z.object({
+      ownership: buildingOwnershipSchema.optional(),
+      type: buildingTypeSchema.optional(),
+    }),
 
-  interests: z.object({
-    batteryStorage: z.boolean(),
-    climate: z.boolean(),
-    heatPump: z.boolean(),
-    wallbox: z.boolean(),
-  }),
+    roof: z.object({
+      pitch: roofPitchSchema.optional(),
+      material: roofMaterialSchema.optional(),
+      orientation: roofOrientationSchema.optional(),
+      renovationPeriod: roofRenovationPeriodSchema.optional(),
+    }),
 
-  notes: z.object({
-    hasNotes: z.boolean().optional(),
-    text: z.string().max(2_000).optional(),
-  }),
+    interests: z.object({
+      batteryStorage: z.boolean(),
+      climate: z.boolean(),
+      heatPump: z.boolean(),
+      wallbox: z.boolean(),
+    }),
 
-  results: z.object({
-    photovoltaic: photovoltaicResultSchema.optional(),
-  }),
-});
+    notes: z.object({
+      hasNotes: z.boolean().optional(),
+      text: z.string().max(2_000).optional(),
+    }),
+
+    results: z.object({
+      photovoltaic: photovoltaicResultSchema.optional(),
+    }),
+  });
 
 export function parseConfiguratorState(
   input: unknown,

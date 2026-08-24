@@ -1,5 +1,13 @@
 export {
-    configuratorLandingContent,
-    configuratorProductList,
-    configuratorProducts,
-  } from "./landing";
+  configuratorLandingContent,
+  configuratorProductList,
+  configuratorProducts,
+} from "./landing";
+
+export {
+  photovoltaicBuildingTypeOptions,
+  photovoltaicConfiguratorContent,
+  photovoltaicHouseholdPersonOptions,
+  photovoltaicOwnershipOptions,
+  photovoltaicWizardSteps,
+} from "./photovoltaic";

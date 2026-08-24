@@ -7,3 +7,11 @@ export interface ConfiguratorStepDefinition {
   description?: string;
   phase: ConfiguratorPhase;
 }
+
+export interface ConfiguratorSelectionOption<
+  TValue extends string | number,
+> {
+  value: TValue;
+  title: string;
+  description?: string;
+}

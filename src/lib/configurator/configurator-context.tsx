@@ -7,7 +7,7 @@ import {
   useContext,
   useEffect,
   useReducer,
-  useRef,
+  useState,
 } from "react";
 
 import {
@@ -28,6 +28,7 @@ interface ConfiguratorContextValue {
   state: ConfiguratorState;
   dispatch: Dispatch<ConfiguratorAction>;
   reset: () => void;
+  isHydrated: boolean;
 }
 
 const ConfiguratorContext =
@@ -45,12 +46,14 @@ export function ConfiguratorProvider({
     createInitialConfiguratorState(),
   );
 
-  const hydratedRef = useRef(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    const persistedState = readConfiguratorState(window.sessionStorage);
+    const persistedState = readConfiguratorState(
+      window.sessionStorage,
+    );
 
     queueMicrotask(() => {
       if (cancelled) {
@@ -64,7 +67,7 @@ export function ConfiguratorProvider({
         });
       }
 
-      hydratedRef.current = true;
+      setIsHydrated(true);
     });
 
     return () => {
@@ -73,16 +76,22 @@ export function ConfiguratorProvider({
   }, []);
 
   useEffect(() => {
-    if (!hydratedRef.current) {
+    if (!isHydrated) {
       return;
     }
 
-    writeConfiguratorState(window.sessionStorage, state);
-  }, [state]);
+    writeConfiguratorState(
+      window.sessionStorage,
+      state,
+    );
+  }, [isHydrated, state]);
 
   function reset() {
     clearConfiguratorState(window.sessionStorage);
-    dispatch({ type: "RESET" });
+
+    dispatch({
+      type: "RESET",
+    });
   }
 
   return (
@@ -91,6 +100,7 @@ export function ConfiguratorProvider({
         state,
         dispatch,
         reset,
+        isHydrated,
       }}
     >
       {children}

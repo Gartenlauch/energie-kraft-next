@@ -23,17 +23,19 @@ export function readConfiguratorState(
 export function writeConfiguratorState(
   storage: Storage,
   state: ConfiguratorState,
-): void {
+): boolean {
   const validatedState = parseConfiguratorState(state);
 
   if (!validatedState) {
-    throw new Error("Configurator state is invalid and cannot be persisted.");
+    return false;
   }
 
   storage.setItem(
     CONFIGURATOR_STORAGE_KEY,
     JSON.stringify(validatedState),
   );
+
+  return true;
 }
 
 export function clearConfiguratorState(storage: Storage): void {
