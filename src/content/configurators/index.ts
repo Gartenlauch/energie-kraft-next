@@ -40,3 +40,9 @@ export {
   heatPumpOccupancyOptions,
   heatPumpWizardSteps,
 } from "./heat-pump";
+
+export {
+  climateInsulationOptions,
+  climateSolarLoadOptions,
+  climateWizardSteps,
+} from "./climate";

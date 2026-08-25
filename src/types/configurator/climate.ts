@@ -4,6 +4,20 @@ import type {
     ClimateSolarLoad,
     ClimateSystemRecommendation,
 } from "@/types/climate-calculator";
+import type { ConfiguratorStepDefinition } from "./wizard";
+
+export type ClimateStepId =
+    | "rooms"
+    | "insulation"
+    | "solar_load"
+    | "occupancy";
+
+export type ClimateStepDefinition = Omit<
+    ConfiguratorStepDefinition,
+    "id"
+> & {
+    id: ClimateStepId;
+};
 
 export interface ClimateConfiguratorState {
     conditionedAreaM2?: number;

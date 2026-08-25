@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
 
-import { ConfiguratorPlaceholder } from "@/components/configurator/configurator-placeholder";
+import { ClimateEntry } from "@/components/configurator/climate/climate-entry";
+import { ConfiguratorShell } from "@/components/configurator/configurator-shell";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { configuratorProducts } from "@/content/configurators";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-const product = configuratorProducts.climate;
+const product =
+  configuratorProducts.climate;
 
-export const metadata: Metadata = buildMetadata(product.seo);
+export const metadata: Metadata =
+  buildMetadata(product.seo);
 
-export default function KlimaanlageConfiguratorPage() {
+export default function ClimateConfiguratorPage() {
   return (
-    <ConfiguratorPlaceholder
-      title={product.title}
-      serviceHref={product.serviceHref}
-    />
+    <>
+      <Breadcrumbs currentLabel="Klimaanlagen-Konfigurator" />
+
+      <ConfiguratorShell>
+        <ClimateEntry />
+      </ConfiguratorShell>
+    </>
   );
 }
