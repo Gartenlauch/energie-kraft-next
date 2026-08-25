@@ -34,6 +34,7 @@ export function createInitialConfiguratorState(): ConfiguratorState {
 
     batteryStorage: {},
     wallbox: {},
+    heatPump: {},
 
     interests: {
       batteryStorage: false,
@@ -103,6 +104,18 @@ function withoutWallboxResult(
   };
 
   delete nextResults.wallbox;
+
+  return nextResults;
+}
+
+function withoutHeatPumpResult(
+  results: ConfiguratorResults,
+): ConfiguratorResults {
+  const nextResults = {
+    ...results,
+  };
+
+  delete nextResults.heatPump;
 
   return nextResults;
 }
@@ -245,7 +258,7 @@ export function configuratorReducer(
           batteryStorage: action.payload,
         },
       };
-      
+
     case "SET_WALLBOX_RESULT":
       return {
         ...state,
@@ -260,6 +273,29 @@ export function configuratorReducer(
       return normalizeConfiguratorState(
         action.payload,
       );
+    case "UPDATE_HEAT_PUMP":
+      return {
+        ...state,
+
+        heatPump: {
+          ...state.heatPump,
+          ...action.payload,
+        },
+
+        results:
+          withoutHeatPumpResult(
+            state.results,
+          ),
+      };
+    case "SET_HEAT_PUMP_RESULT":
+      return {
+        ...state,
+
+        results: {
+          ...state.results,
+          heatPump: action.payload,
+        },
+      };
 
     case "RESET":
       return createInitialConfiguratorState();

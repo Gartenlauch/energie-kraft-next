@@ -17,6 +17,8 @@ import {
 } from "@/lib/configurator/battery-storage";
 import { wallboxCalculatorInputSchema, } from "@/lib/validation/wallbox-calculator";
 import { WALLBOX_CHARGING_POWER_OPTIONS, } from "@/types/configurator";
+import { heatPumpCalculatorInputSchema, } from "@/lib/validation/heat-pump-calculator";
+
 
 export const householdPersonsSchema = z.union([
   z.literal(1),
@@ -308,6 +310,85 @@ export const wallboxConfiguratorResultSchema =
       z.boolean(),
   });
 
+export const heatPumpHeatedAreaSchema =
+  z
+    .number()
+    .finite()
+    .min(20)
+    .max(5_000);
+
+export const heatPumpSpecificHeatingDemandSchema =
+  z
+    .number()
+    .finite()
+    .min(10)
+    .max(400);
+
+export const heatPumpOccupancyPersonsSchema =
+  z
+    .number()
+    .int()
+    .min(1)
+    .max(100);
+
+export const heatPumpFlowTemperatureSchema =
+  z
+    .number()
+    .finite()
+    .min(25)
+    .max(80);
+
+export const heatPumpAnnualPerformanceFactorSchema =
+  z
+    .number()
+    .finite()
+    .min(2)
+    .max(7);
+
+export const heatPumpConfiguratorResultSchema =
+  z.object({
+    calculationInput:
+      heatPumpCalculatorInputSchema,
+
+    recommendedHeatPumpCapacityKw:
+      z.number().positive(),
+
+    totalAnnualHeatDemandKwh:
+      z.number().nonnegative(),
+
+    spaceHeatingDemandKwh:
+      z.number().nonnegative(),
+
+    hotWaterDemandKwh:
+      z.number().nonnegative(),
+
+    annualHeatPumpElectricityConsumptionKwh:
+      z.number().nonnegative(),
+
+    annualHeatPumpOperatingCostEuro:
+      z.number().nonnegative(),
+
+    estimatedTotalCostEuro:
+      z.number().nonnegative(),
+
+    estimatedMinimumCostEuro:
+      z.number().nonnegative(),
+
+    estimatedMaximumCostEuro:
+      z.number().nonnegative(),
+
+    flowTemperatureAssessment:
+      z.enum([
+        "ntReady",
+        "individualReview",
+      ]),
+
+    ntReady:
+      z.boolean(),
+
+    technicalReviewRecommended:
+      z.boolean(),
+  });
 
 export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
   z.object({
@@ -376,6 +457,23 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
         wallboxPvChargingShareSchema.optional(),
     }),
 
+    heatPump: z.object({
+      heatedAreaM2:
+        heatPumpHeatedAreaSchema.optional(),
+
+      specificSpaceHeatingDemandKwhPerM2Year:
+        heatPumpSpecificHeatingDemandSchema.optional(),
+
+      occupancyPersons:
+        heatPumpOccupancyPersonsSchema.optional(),
+
+      requiredFlowTemperatureC:
+        heatPumpFlowTemperatureSchema.optional(),
+
+      annualPerformanceFactor:
+        heatPumpAnnualPerformanceFactorSchema.optional(),
+    }),
+
     interests: z.object({
       batteryStorage: z.boolean(),
       climate: z.boolean(),
@@ -391,6 +489,7 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
     results: z.object({
       photovoltaic: photovoltaicResultSchema.optional(),
       wallbox: wallboxConfiguratorResultSchema.optional(),
+      heatPump: heatPumpConfiguratorResultSchema.optional(),
     }),
   });
 

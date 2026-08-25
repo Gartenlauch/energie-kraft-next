@@ -10,7 +10,8 @@ describe("configurator state", () => {
   it("creates the expected initial state", () => {
     const state = createInitialConfiguratorState();
 
-    expect(state.version).toBe(3);
+    expect(state.version).toBe(4);
+
     expect(state.wallbox).toEqual({});
     expect(state.activeConfigurator).toBeNull();
     expect(state.batteryStorage).toEqual({});
@@ -24,7 +25,10 @@ describe("configurator state", () => {
       heatPump: false,
       wallbox: false,
     });
+
+    expect(state.heatPump).toEqual({});
   });
+
 
   it("calculates projected consumption", () => {
     expect(calculateProjectedConsumptionKwh(3000, 10)).toBe(3300);

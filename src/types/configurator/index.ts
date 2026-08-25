@@ -5,3 +5,4 @@ export * from "./wizard";
 export * from "./lead";
 export * from "./battery-storage";
 export * from "./wallbox";
+export * from "./heat-pump";

@@ -1,10 +1,11 @@
 import { parseConfiguratorState } from "@/lib/validation/configurator/state";
 import type { ConfiguratorState } from "@/types/configurator";
 
-export const CONFIGURATOR_STORAGE_KEY = "energie-kraft:configurator:state:v2";
+export const CONFIGURATOR_STORAGE_KEY = "energie-kraft:configurator:state:v4";
 const LEGACY_CONFIGURATOR_STORAGE_KEYS = [
   "energie-kraft:configurator:state:v1",
   "energie-kraft:configurator:state:v2",
+  "energie-kraft:configurator:state:v3",
 ] as const;
 
 

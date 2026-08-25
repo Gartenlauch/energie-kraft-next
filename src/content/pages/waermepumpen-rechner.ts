@@ -1,9 +1,12 @@
 import type { SeoContent } from "@/types/content";
 import type {
-  HeatPumpCalculatorInput,
   HeatPumpFlowTemperatureAssessment,
   HeatPumpNumericInputKey,
 } from "@/types/heat-pump-calculator";
+import {
+  DEFAULT_HEAT_PUMP_CALCULATOR_INPUT,
+} from "@/lib/calculators/heat-pump-model";
+
 
 export interface HeatPumpNumberFieldContent {
   name: HeatPumpNumericInputKey;
@@ -43,23 +46,7 @@ interface HeatPumpCalculatorPageContent {
   modelNotes: readonly string[];
 }
 
-export const defaultHeatPumpCalculatorInput = {
-  heatedAreaM2: 160,
-  specificSpaceHeatingDemandKwhPerM2Year: 90,
-  occupancyPersons: 4,
-  hotWaterDemandKwhPerPersonYear: 800,
-  annualPerformanceFactor: 3.5,
-  equivalentFullLoadHours: 2_000,
-  capacityReservePercent: 15,
-  requiredFlowTemperatureC: 50,
-  electricityPriceEuroPerKwh: 0.3,
-  currentHeatingEnergyPriceEuroPerKwh: 0.12,
-  currentHeatingEfficiencyPercent: 85,
-  heatPumpCostEuroPerKw: 1_200,
-  installationBaseCostEuro: 12_000,
-  fixedAdditionalCostEuro: 3_000,
-  costUncertaintyPercent: 15,
-} satisfies HeatPumpCalculatorInput;
+export const defaultHeatPumpCalculatorInput = DEFAULT_HEAT_PUMP_CALCULATOR_INPUT;
 
 const primaryFields = [
   {
