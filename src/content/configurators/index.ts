@@ -25,3 +25,10 @@ export {
   batteryStorageGoalOptions,
   batteryStorageWizardSteps,
 } from "./battery-storage";
+
+export {
+  wallboxChargingPowerOptions,
+  wallboxHomeChargingOptions,
+  wallboxPvChargingOptions,
+  wallboxWizardSteps,
+} from "./wallbox";
