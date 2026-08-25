@@ -1,4 +1,17 @@
 import type {
+  BatteryStorageBackupPreference,
+  BatteryStorageConfiguratorResult,
+  BatteryStorageConsumptionPattern,
+  BatteryStorageGoal,
+} from "./battery-storage";
+import type {
+  ClimateInsulationLevel,
+  ClimateSolarLoad,
+} from "@/types/climate-calculator";
+import type {
+  HeatPumpFlowTemperatureAssessment,
+} from "@/types/heat-pump-calculator";
+import type {
   BuildingConfiguratorState,
   BuildingType,
   ConfiguratorInterests,
@@ -19,6 +32,20 @@ import type {
   LeadMailInfo,
   LeadStatus,
 } from "@/types/lead";
+
+export type ConfiguratorLeadType =
+  | "photovoltaic"
+  | "battery_storage"
+  | "wallbox"
+  | "heat_pump"
+  | "climate";
+
+export type ConfiguratorLeadSource =
+  | "konfigurator/photovoltaik"
+  | "konfigurator/stromspeicher"
+  | "konfigurator/wallbox"
+  | "konfigurator/waermepumpe"
+  | "konfigurator/klimaanlage";
 
 export interface ConfiguratorContactFormValues {
   firstName: string;
@@ -54,22 +81,8 @@ export interface ConfiguratorInstallationLocation {
   city: string;
 }
 
-export interface PhotovoltaicConfiguratorLeadAnswers {
-  household: HouseholdConfiguratorState;
-  building: BuildingConfiguratorState;
-  roof: RoofConfiguratorState;
-  interests: ConfiguratorInterests;
-  notes: ConfiguratorNotes;
-}
-
-export interface SubmitPhotovoltaicConfiguratorLeadInput {
+export interface SubmitConfiguratorLeadCommonInput {
   type: "configurator";
-
-  configurator: {
-    type: "photovoltaic";
-    answers: PhotovoltaicConfiguratorLeadAnswers;
-    result: PhotovoltaicConfiguratorResult;
-  };
 
   contact: ConfiguratorLeadContact;
 
@@ -78,14 +91,209 @@ export interface SubmitPhotovoltaicConfiguratorLeadInput {
   privacyAccepted: boolean;
 
   website?: string;
+
   formStartedAt: number;
 }
+
+/*
+ * Photovoltaik
+ */
+
+export interface PhotovoltaicConfiguratorLeadAnswers {
+  household: HouseholdConfiguratorState;
+  building: BuildingConfiguratorState;
+  roof: RoofConfiguratorState;
+  interests: ConfiguratorInterests;
+  notes: ConfiguratorNotes;
+}
+
+export interface SubmitPhotovoltaicConfiguratorLeadInput
+  extends SubmitConfiguratorLeadCommonInput {
+  configurator: {
+    type: "photovoltaic";
+    answers: PhotovoltaicConfiguratorLeadAnswers;
+    result: PhotovoltaicConfiguratorResult;
+  };
+}
+
+/*
+ * Stromspeicher
+ */
+
+export interface BatteryStorageConfiguratorLeadAnswers {
+  annualConsumptionKwh?: number;
+  pvPowerKwp?: number;
+
+  consumptionPattern: BatteryStorageConsumptionPattern;
+  backupPreference: BatteryStorageBackupPreference;
+  goal: BatteryStorageGoal;
+}
+
+export interface SubmitBatteryStorageConfiguratorLeadInput
+  extends SubmitConfiguratorLeadCommonInput {
+  configurator: {
+    type: "battery_storage";
+    answers: BatteryStorageConfiguratorLeadAnswers;
+    result: BatteryStorageConfiguratorResult;
+  };
+}
+
+/*
+ * Wallbox
+ *
+ * calculationInput wird bewusst nicht in den Lead
+ * übernommen. Die Nutzereingaben stehen in answers;
+ * das Lead-Ergebnis enthält nur die relevanten
+ * Ergebniswerte.
+ */
+
+export interface WallboxConfiguratorLeadAnswers {
+  annualDrivingKm: number;
+  vehicleConsumptionKwhPer100Km: number;
+  batteryCapacityKwh: number;
+  homeChargingSharePercent: number;
+  chargingPowerKw: 3.7 | 11 | 22;
+  pvChargingSharePercent: number;
+}
+
+export interface WallboxConfiguratorLeadResult {
+  annualVehicleEnergyDemandKwh: number;
+  annualHomeChargingInputEnergyKwh: number;
+  annualPvChargingEnergyKwh: number;
+  annualGridChargingEnergyKwh: number;
+
+  typicalChargingTimeHours: number;
+
+  annualHomeChargingCostEuro: number;
+  monthlyHomeChargingCostEuro: number;
+
+  estimatedTotalCostEuro: number;
+  estimatedMinimumCostEuro: number;
+  estimatedMaximumCostEuro: number;
+
+  usesPhotovoltaicCharging: boolean;
+  technicalReviewRecommended: boolean;
+}
+
+export interface SubmitWallboxConfiguratorLeadInput
+  extends SubmitConfiguratorLeadCommonInput {
+  configurator: {
+    type: "wallbox";
+    answers: WallboxConfiguratorLeadAnswers;
+    result: WallboxConfiguratorLeadResult;
+  };
+}
+
+/*
+ * Wärmepumpe
+ */
+
+export interface HeatPumpConfiguratorLeadAnswers {
+  heatedAreaM2: number;
+  specificSpaceHeatingDemandKwhPerM2Year: number;
+  occupancyPersons: number;
+  requiredFlowTemperatureC: number;
+  annualPerformanceFactor: number;
+}
+
+export interface HeatPumpConfiguratorLeadResult {
+  recommendedHeatPumpCapacityKw: number;
+
+  totalAnnualHeatDemandKwh: number;
+  spaceHeatingDemandKwh: number;
+  hotWaterDemandKwh: number;
+
+  annualHeatPumpElectricityConsumptionKwh: number;
+  annualHeatPumpOperatingCostEuro: number;
+
+  estimatedTotalCostEuro: number;
+  estimatedMinimumCostEuro: number;
+  estimatedMaximumCostEuro: number;
+
+  flowTemperatureAssessment:
+  HeatPumpFlowTemperatureAssessment;
+
+  ntReady: boolean;
+  technicalReviewRecommended: boolean;
+}
+
+export interface SubmitHeatPumpConfiguratorLeadInput
+  extends SubmitConfiguratorLeadCommonInput {
+  configurator: {
+    type: "heat_pump";
+    answers: HeatPumpConfiguratorLeadAnswers;
+    result: HeatPumpConfiguratorLeadResult;
+  };
+}
+
+/*
+ * Klimaanlage
+ */
+
+export interface ClimateConfiguratorLeadAnswers {
+  conditionedAreaM2: number;
+  roomCount: number;
+  insulationLevel: ClimateInsulationLevel;
+  solarLoad: ClimateSolarLoad;
+  occupancyPersons: number;
+}
+
+export interface ClimateConfiguratorLeadResult {
+  calculatedCoolingLoadKw: number;
+  recommendedCoolingCapacityKw: number;
+  recommendedIndoorUnitCount: number;
+  averageCapacityPerRoomKw: number;
+
+  systemRecommendation:
+  | "singleSplit"
+  | "multiSplit"
+  | "projectPlanning";
+
+  annualElectricityConsumptionKwh: number;
+  annualOperatingCostEuro: number;
+
+  estimatedTotalCostEuro: number;
+  estimatedMinimumCostEuro: number;
+  estimatedMaximumCostEuro: number;
+
+  individualPlanningRecommended: boolean;
+}
+
+export interface SubmitClimateConfiguratorLeadInput
+  extends SubmitConfiguratorLeadCommonInput {
+  configurator: {
+    type: "climate";
+    answers: ClimateConfiguratorLeadAnswers;
+    result: ClimateConfiguratorLeadResult;
+  };
+}
+
+/*
+ * Gemeinsamer Submit-Vertrag.
+ *
+ * configurator.type ist der Discriminator.
+ */
+
+export type SubmitConfiguratorLeadInput =
+  | SubmitPhotovoltaicConfiguratorLeadInput
+  | SubmitBatteryStorageConfiguratorLeadInput
+  | SubmitWallboxConfiguratorLeadInput
+  | SubmitHeatPumpConfiguratorLeadInput
+  | SubmitClimateConfiguratorLeadInput;
 
 export interface SubmitConfiguratorLeadResult {
   ok: true;
   leadId: string;
   mailStatus?: "accepted" | "failed";
 }
+
+/*
+ * Persistierte PV-Struktur.
+ *
+ * Für bestehende PV-Leads bleibt schemaVersion 1
+ * gültig. Neue Leads dürfen ab 6.8 schemaVersion 2
+ * verwenden.
+ */
 
 export interface StoredPhotovoltaicConfiguratorAnswers {
   household: {
@@ -146,7 +354,7 @@ export interface PhotovoltaicConfiguratorLeadDocument {
 
   meta: {
     source: "konfigurator/photovoltaik";
-    schemaVersion: 1;
+    schemaVersion: 1 | 2;
   };
 
   mail?: LeadMailInfo;

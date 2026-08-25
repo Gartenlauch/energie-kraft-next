@@ -4,26 +4,26 @@ import { httpsCallable } from "firebase/functions";
 
 import { firebaseFunctions } from "@/lib/firebase/client";
 import type {
-    SubmitConfiguratorLeadResult,
-    SubmitPhotovoltaicConfiguratorLeadInput,
+  SubmitConfiguratorLeadInput,
+  SubmitConfiguratorLeadResult,
 } from "@/types/configurator";
 
 const submitConfiguratorLeadCallable =
-    httpsCallable<
-        SubmitPhotovoltaicConfiguratorLeadInput,
-        SubmitConfiguratorLeadResult
-    >(
-        firebaseFunctions,
-        "submitConfiguratorLead",
-    );
+  httpsCallable<
+    SubmitConfiguratorLeadInput,
+    SubmitConfiguratorLeadResult
+  >(
+    firebaseFunctions,
+    "submitConfiguratorLead",
+  );
 
 export async function submitConfiguratorLead(
-    input: SubmitPhotovoltaicConfiguratorLeadInput,
+  input: SubmitConfiguratorLeadInput,
 ): Promise<SubmitConfiguratorLeadResult> {
-    const result =
-        await submitConfiguratorLeadCallable(
-            input,
-        );
+  const result =
+    await submitConfiguratorLeadCallable(
+      input,
+    );
 
-    return result.data;
+  return result.data;
 }
