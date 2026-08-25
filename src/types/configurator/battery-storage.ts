@@ -1,3 +1,5 @@
+import type { ConfiguratorStepDefinition } from "./wizard";
+
 export type BatteryStorageConsumptionPattern =
   | "mostly_daytime"
   | "mixed"
@@ -72,3 +74,16 @@ export interface BatteryStorageConfiguratorResult {
 
   technicalReviewRecommended: boolean;
 }
+
+export type BatteryStorageStepId =
+  | "system_data"
+  | "consumption_pattern"
+  | "backup_preference"
+  | "goal";
+
+export type BatteryStorageStepDefinition = Omit<
+  ConfiguratorStepDefinition,
+  "id"
+> & {
+  id: BatteryStorageStepId;
+};

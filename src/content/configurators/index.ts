@@ -18,3 +18,10 @@ export {
   photovoltaicRoofRenovationOptions,
   photovoltaicWizardSteps,
 } from "./photovoltaic";
+
+export {
+  batteryStorageBackupOptions,
+  batteryStorageConsumptionPatternOptions,
+  batteryStorageGoalOptions,
+  batteryStorageWizardSteps,
+} from "./battery-storage";
