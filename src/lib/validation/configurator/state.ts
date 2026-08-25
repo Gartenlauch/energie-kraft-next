@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import {
   PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH,
   PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MIN_KWH,
@@ -16,7 +15,8 @@ import {
   BATTERY_STORAGE_PV_POWER_MAX_KWP,
   BATTERY_STORAGE_PV_POWER_MIN_KWP,
 } from "@/lib/configurator/battery-storage";
-
+import { wallboxCalculatorInputSchema, } from "@/lib/validation/wallbox-calculator";
+import { WALLBOX_CHARGING_POWER_OPTIONS, } from "@/types/configurator";
 
 export const householdPersonsSchema = z.union([
   z.literal(1),
@@ -210,6 +210,105 @@ const projectedConsumptionMaxKwh =
   PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH *
   (1 + PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT / 100);
 
+export const wallboxAnnualDrivingKmSchema =
+  z
+    .number()
+    .finite()
+    .min(1_000)
+    .max(100_000);
+
+export const wallboxVehicleConsumptionSchema =
+  z
+    .number()
+    .finite()
+    .min(8)
+    .max(50);
+
+export const wallboxBatteryCapacitySchema =
+  z
+    .number()
+    .finite()
+    .min(10)
+    .max(250);
+
+export const wallboxHomeChargingShareSchema =
+  z
+    .number()
+    .finite()
+    .min(0)
+    .max(100);
+
+export const wallboxChargingPowerSchema =
+  z.union([
+    z.literal(
+      WALLBOX_CHARGING_POWER_OPTIONS[0],
+    ),
+    z.literal(
+      WALLBOX_CHARGING_POWER_OPTIONS[1],
+    ),
+    z.literal(
+      WALLBOX_CHARGING_POWER_OPTIONS[2],
+    ),
+  ]);
+
+export const wallboxPvChargingShareSchema =
+  z
+    .number()
+    .finite()
+    .min(0)
+    .max(100);
+
+
+export const wallboxConfiguratorResultSchema =
+  z.object({
+    systemRecommendation:
+      z.enum([
+        "basicCharging",
+        "standard11Kw",
+        "highPowerReview",
+      ]),
+
+    calculationInput:
+      wallboxCalculatorInputSchema,
+
+    annualVehicleEnergyDemandKwh:
+      z.number().nonnegative(),
+
+    annualHomeChargingInputEnergyKwh:
+      z.number().nonnegative(),
+
+    annualPvChargingEnergyKwh:
+      z.number().nonnegative(),
+
+    annualGridChargingEnergyKwh:
+      z.number().nonnegative(),
+
+    typicalChargingTimeHours:
+      z.number().positive(),
+
+    annualHomeChargingCostEuro:
+      z.number().nonnegative(),
+
+    monthlyHomeChargingCostEuro:
+      z.number().nonnegative(),
+
+    estimatedTotalCostEuro:
+      z.number().nonnegative(),
+
+    estimatedMinimumCostEuro:
+      z.number().nonnegative(),
+
+    estimatedMaximumCostEuro:
+      z.number().nonnegative(),
+
+    usesPhotovoltaicCharging:
+      z.boolean(),
+
+    technicalReviewRecommended:
+      z.boolean(),
+  });
+
+
 export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
   z.object({
     version: z.literal(CONFIGURATOR_STATE_VERSION),
@@ -257,6 +356,26 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
         batteryStorageGoalSchema.optional(),
     }),
 
+    wallbox: z.object({
+      annualDrivingKm:
+        wallboxAnnualDrivingKmSchema.optional(),
+
+      vehicleConsumptionKwhPer100Km:
+        wallboxVehicleConsumptionSchema.optional(),
+
+      batteryCapacityKwh:
+        wallboxBatteryCapacitySchema.optional(),
+
+      homeChargingSharePercent:
+        wallboxHomeChargingShareSchema.optional(),
+
+      chargingPowerKw:
+        wallboxChargingPowerSchema.optional(),
+
+      pvChargingSharePercent:
+        wallboxPvChargingShareSchema.optional(),
+    }),
+
     interests: z.object({
       batteryStorage: z.boolean(),
       climate: z.boolean(),
@@ -271,6 +390,7 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
 
     results: z.object({
       photovoltaic: photovoltaicResultSchema.optional(),
+      wallbox: wallboxConfiguratorResultSchema.optional(),
     }),
   });
 

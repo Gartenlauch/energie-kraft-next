@@ -2,9 +2,12 @@ import type {
   BatteryStorageConfiguratorResult,
   BatteryStorageConfiguratorState,
 } from "./battery-storage";
+import type {
+  WallboxConfiguratorResult,
+  WallboxConfiguratorState,
+} from "./wallbox";
 
-
-export const CONFIGURATOR_STATE_VERSION = 2 as const;
+export const CONFIGURATOR_STATE_VERSION = 3 as const;
 
 export type ConfiguratorType =
   | "photovoltaic"
@@ -103,6 +106,7 @@ export interface PhotovoltaicConfiguratorResult {
 export interface ConfiguratorResults {
   photovoltaic?: PhotovoltaicConfiguratorResult;
   batteryStorage?: BatteryStorageConfiguratorResult;
+  wallbox?: WallboxConfiguratorResult;
 }
 
 export interface ConfiguratorState {
@@ -113,6 +117,7 @@ export interface ConfiguratorState {
   building: BuildingConfiguratorState;
   roof: RoofConfiguratorState;
   batteryStorage: BatteryStorageConfiguratorState;
+  wallbox: WallboxConfiguratorState;
   interests: ConfiguratorInterests;
   notes: ConfiguratorNotes;
   results: ConfiguratorResults;
@@ -158,6 +163,14 @@ export type ConfiguratorAction =
   | {
     type: "REPLACE_STATE";
     payload: ConfiguratorState;
+  }
+  | {
+    type: "UPDATE_WALLBOX";
+    payload: Partial<WallboxConfiguratorState>;
+  }
+  | {
+    type: "SET_WALLBOX_RESULT";
+    payload: WallboxConfiguratorResult;
   }
   | {
     type: "RESET";

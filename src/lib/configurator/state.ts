@@ -33,6 +33,7 @@ export function createInitialConfiguratorState(): ConfiguratorState {
     roof: {},
 
     batteryStorage: {},
+    wallbox: {},
 
     interests: {
       batteryStorage: false,
@@ -91,6 +92,17 @@ function withoutBatteryStorageResult(
   };
 
   delete nextResults.batteryStorage;
+
+  return nextResults;
+}
+function withoutWallboxResult(
+  results: ConfiguratorResults,
+): ConfiguratorResults {
+  const nextResults = {
+    ...results,
+  };
+
+  delete nextResults.wallbox;
 
   return nextResults;
 }
@@ -168,6 +180,20 @@ export function configuratorReducer(
             state.results,
           ),
       };
+    case "UPDATE_WALLBOX":
+      return {
+        ...state,
+
+        wallbox: {
+          ...state.wallbox,
+          ...action.payload,
+        },
+
+        results:
+          withoutWallboxResult(
+            state.results,
+          ),
+      };
 
     case "UPDATE_INTERESTS":
       return {
@@ -217,6 +243,16 @@ export function configuratorReducer(
         results: {
           ...state.results,
           batteryStorage: action.payload,
+        },
+      };
+      
+    case "SET_WALLBOX_RESULT":
+      return {
+        ...state,
+
+        results: {
+          ...state.results,
+          wallbox: action.payload,
         },
       };
 
