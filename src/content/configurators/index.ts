@@ -32,3 +32,11 @@ export {
   wallboxPvChargingOptions,
   wallboxWizardSteps,
 } from "./wallbox";
+
+export {
+  heatPumpEfficiencyOptions,
+  heatPumpFlowTemperatureOptions,
+  heatPumpHeatingDemandOptions,
+  heatPumpOccupancyOptions,
+  heatPumpWizardSteps,
+} from "./heat-pump";
