@@ -1,4 +1,10 @@
-export const CONFIGURATOR_STATE_VERSION = 1 as const;
+import type {
+  BatteryStorageConfiguratorResult,
+  BatteryStorageConfiguratorState,
+} from "./battery-storage";
+
+
+export const CONFIGURATOR_STATE_VERSION = 2 as const;
 
 export type ConfiguratorType =
   | "photovoltaic"
@@ -96,6 +102,7 @@ export interface PhotovoltaicConfiguratorResult {
 
 export interface ConfiguratorResults {
   photovoltaic?: PhotovoltaicConfiguratorResult;
+  batteryStorage?: BatteryStorageConfiguratorResult;
 }
 
 export interface ConfiguratorState {
@@ -105,6 +112,7 @@ export interface ConfiguratorState {
   household: HouseholdConfiguratorState;
   building: BuildingConfiguratorState;
   roof: RoofConfiguratorState;
+  batteryStorage: BatteryStorageConfiguratorState;
   interests: ConfiguratorInterests;
   notes: ConfiguratorNotes;
   results: ConfiguratorResults;
@@ -138,6 +146,14 @@ export type ConfiguratorAction =
   | {
     type: "SET_PHOTOVOLTAIC_RESULT";
     payload: PhotovoltaicConfiguratorResult;
+  }
+  | {
+    type: "UPDATE_BATTERY_STORAGE";
+    payload: Partial<BatteryStorageConfiguratorState>;
+  }
+  | {
+    type: "SET_BATTERY_STORAGE_RESULT";
+    payload: BatteryStorageConfiguratorResult;
   }
   | {
     type: "REPLACE_STATE";

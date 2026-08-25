@@ -10,9 +10,9 @@ describe("configurator state", () => {
   it("creates the expected initial state", () => {
     const state = createInitialConfiguratorState();
 
-    expect(state.version).toBe(1);
+    expect(state.version).toBe(2);
     expect(state.activeConfigurator).toBeNull();
-
+    expect(state.batteryStorage).toEqual({});
     expect(state.household).toEqual({
       futureIncreasePercent: 10,
     });

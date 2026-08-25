@@ -1,8 +1,8 @@
 import type {
   ConfiguratorAction,
+  ConfiguratorResults,
   ConfiguratorState,
   HouseholdConfiguratorState,
-  ConfiguratorResults,
 } from "@/types/configurator";
 import { CONFIGURATOR_STATE_VERSION } from "@/types/configurator";
 
@@ -32,6 +32,8 @@ export function createInitialConfiguratorState(): ConfiguratorState {
 
     roof: {},
 
+    batteryStorage: {},
+
     interests: {
       batteryStorage: false,
       climate: false,
@@ -40,7 +42,6 @@ export function createInitialConfiguratorState(): ConfiguratorState {
     },
 
     notes: {},
-
     results: {},
   };
 }
@@ -62,11 +63,14 @@ export function normalizeConfiguratorState(
 ): ConfiguratorState {
   return {
     ...state,
-    household: normalizeHouseholdState(state.household),
+
+    household: normalizeHouseholdState(
+      state.household,
+    ),
   };
 }
 
-function withoutPhotovoltaicResult(
+function withoutPhotovoltaicAndBatteryStorageResults(
   results: ConfiguratorResults,
 ): ConfiguratorResults {
   const nextResults = {
@@ -74,6 +78,19 @@ function withoutPhotovoltaicResult(
   };
 
   delete nextResults.photovoltaic;
+  delete nextResults.batteryStorage;
+
+  return nextResults;
+}
+
+function withoutBatteryStorageResult(
+  results: ConfiguratorResults,
+): ConfiguratorResults {
+  const nextResults = {
+    ...results,
+  };
+
+  delete nextResults.batteryStorage;
 
   return nextResults;
 }
@@ -90,74 +107,130 @@ export function configuratorReducer(
       };
 
     case "UPDATE_HOUSEHOLD": {
-      const household = normalizeHouseholdState({
-        ...state.household,
-        ...action.payload,
-      });
+      const household =
+        normalizeHouseholdState({
+          ...state.household,
+          ...action.payload,
+        });
 
       return {
         ...state,
         household,
-        results: withoutPhotovoltaicResult(state.results),
+
+        results:
+          withoutPhotovoltaicAndBatteryStorageResults(
+            state.results,
+          ),
       };
     }
 
     case "UPDATE_BUILDING":
       return {
         ...state,
+
         building: {
           ...state.building,
           ...action.payload,
         },
-        results: withoutPhotovoltaicResult(state.results),
+
+        results:
+          withoutPhotovoltaicAndBatteryStorageResults(
+            state.results,
+          ),
       };
 
     case "UPDATE_ROOF":
       return {
         ...state,
+
         roof: {
           ...state.roof,
           ...action.payload,
         },
-        results: withoutPhotovoltaicResult(state.results),
+
+        results:
+          withoutPhotovoltaicAndBatteryStorageResults(
+            state.results,
+          ),
+      };
+
+    case "UPDATE_BATTERY_STORAGE":
+      return {
+        ...state,
+
+        batteryStorage: {
+          ...state.batteryStorage,
+          ...action.payload,
+        },
+
+        results:
+          withoutBatteryStorageResult(
+            state.results,
+          ),
       };
 
     case "UPDATE_INTERESTS":
       return {
         ...state,
+
         interests: {
           ...state.interests,
           ...action.payload,
         },
-        results: withoutPhotovoltaicResult(state.results),
+
+        results:
+          withoutPhotovoltaicAndBatteryStorageResults(
+            state.results,
+          ),
       };
 
     case "UPDATE_NOTES":
       return {
         ...state,
+
         notes: {
           ...state.notes,
           ...action.payload,
         },
       };
 
-    case "SET_PHOTOVOLTAIC_RESULT":
+    case "SET_PHOTOVOLTAIC_RESULT": {
+      const results =
+        withoutBatteryStorageResult(
+          state.results,
+        );
+
       return {
         ...state,
+
+        results: {
+          ...results,
+          photovoltaic: action.payload,
+        },
+      };
+    }
+
+    case "SET_BATTERY_STORAGE_RESULT":
+      return {
+        ...state,
+
         results: {
           ...state.results,
-          photovoltaic: action.payload,
+          batteryStorage: action.payload,
         },
       };
 
     case "REPLACE_STATE":
-      return normalizeConfiguratorState(action.payload);
+      return normalizeConfiguratorState(
+        action.payload,
+      );
 
     case "RESET":
       return createInitialConfiguratorState();
 
     default: {
       const exhaustiveCheck: never = action;
+
       return exhaustiveCheck;
     }
   }

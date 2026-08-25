@@ -1,8 +1,9 @@
 import { parseConfiguratorState } from "@/lib/validation/configurator/state";
 import type { ConfiguratorState } from "@/types/configurator";
 
-export const CONFIGURATOR_STORAGE_KEY =
-  "energie-kraft:configurator:state:v1";
+export const CONFIGURATOR_STORAGE_KEY = "energie-kraft:configurator:state:v2";
+const LEGACY_CONFIGURATOR_STORAGE_KEYS = ["energie-kraft:configurator:state:v1"] as const;
+
 
 export function readConfiguratorState(
   storage: Storage,
@@ -38,6 +39,17 @@ export function writeConfiguratorState(
   return true;
 }
 
-export function clearConfiguratorState(storage: Storage): void {
-  storage.removeItem(CONFIGURATOR_STORAGE_KEY);
+export function clearConfiguratorState(
+  storage: Storage,
+): void {
+  storage.removeItem(
+    CONFIGURATOR_STORAGE_KEY,
+  );
+
+  for (
+    const legacyKey of
+    LEGACY_CONFIGURATOR_STORAGE_KEYS
+  ) {
+    storage.removeItem(legacyKey);
+  }
 }
