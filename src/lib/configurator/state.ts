@@ -35,6 +35,7 @@ export function createInitialConfiguratorState(): ConfiguratorState {
     batteryStorage: {},
     wallbox: {},
     heatPump: {},
+    climate: {},
 
     interests: {
       batteryStorage: false,
@@ -116,6 +117,18 @@ function withoutHeatPumpResult(
   };
 
   delete nextResults.heatPump;
+
+  return nextResults;
+}
+
+function withoutClimateResult(
+  results: ConfiguratorResults,
+): ConfiguratorResults {
+  const nextResults = {
+    ...results,
+  };
+
+  delete nextResults.climate;
 
   return nextResults;
 }
@@ -294,6 +307,29 @@ export function configuratorReducer(
         results: {
           ...state.results,
           heatPump: action.payload,
+        },
+      };
+    case "UPDATE_CLIMATE":
+      return {
+        ...state,
+
+        climate: {
+          ...state.climate,
+          ...action.payload,
+        },
+
+        results:
+          withoutClimateResult(
+            state.results,
+          ),
+      };
+    case "SET_CLIMATE_RESULT":
+      return {
+        ...state,
+
+        results: {
+          ...state.results,
+          climate: action.payload,
         },
       };
 

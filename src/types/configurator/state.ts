@@ -10,8 +10,13 @@ import type {
   HeatPumpConfiguratorResult,
   HeatPumpConfiguratorState,
 } from "./heat-pump";
+import type {
+  ClimateConfiguratorResult,
+  ClimateConfiguratorState,
+} from "./climate";
 
-export const CONFIGURATOR_STATE_VERSION = 4 as const;
+
+export const CONFIGURATOR_STATE_VERSION = 5 as const;
 
 export type ConfiguratorType =
   | "photovoltaic"
@@ -112,6 +117,7 @@ export interface ConfiguratorResults {
   batteryStorage?: BatteryStorageConfiguratorResult;
   wallbox?: WallboxConfiguratorResult;
   heatPump?: HeatPumpConfiguratorResult;
+  climate?: ClimateConfiguratorResult;
 }
 
 export interface ConfiguratorState {
@@ -124,6 +130,7 @@ export interface ConfiguratorState {
   batteryStorage: BatteryStorageConfiguratorState;
   heatPump: HeatPumpConfiguratorState;
   wallbox: WallboxConfiguratorState;
+  climate: ClimateConfiguratorState;
   interests: ConfiguratorInterests;
   notes: ConfiguratorNotes;
   results: ConfiguratorResults;
@@ -185,6 +192,14 @@ export type ConfiguratorAction =
   | {
     type: "SET_HEAT_PUMP_RESULT";
     payload: HeatPumpConfiguratorResult;
+  }
+  | {
+    type: "UPDATE_CLIMATE";
+    payload: Partial<ClimateConfiguratorState>;
+  }
+  | {
+    type: "SET_CLIMATE_RESULT";
+    payload: ClimateConfiguratorResult;
   }
   | {
     type: "RESET";

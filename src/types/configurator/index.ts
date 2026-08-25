@@ -6,3 +6,4 @@ export * from "./lead";
 export * from "./battery-storage";
 export * from "./wallbox";
 export * from "./heat-pump";
+export * from "./climate";

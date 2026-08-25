@@ -10,14 +10,13 @@ describe("configurator state", () => {
   it("creates the expected initial state", () => {
     const state = createInitialConfiguratorState();
 
-    expect(state.version).toBe(4);
+    expect(state.version).toBe(5);
 
     expect(state.wallbox).toEqual({});
     expect(state.activeConfigurator).toBeNull();
     expect(state.batteryStorage).toEqual({});
-    expect(state.household).toEqual({
-      futureIncreasePercent: 10,
-    });
+    expect(state.household).toEqual({ futureIncreasePercent: 10, });
+    expect(state.climate).toEqual({});
 
     expect(state.interests).toEqual({
       batteryStorage: false,

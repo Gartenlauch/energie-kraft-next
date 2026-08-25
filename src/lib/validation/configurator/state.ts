@@ -18,7 +18,11 @@ import {
 import { wallboxCalculatorInputSchema, } from "@/lib/validation/wallbox-calculator";
 import { WALLBOX_CHARGING_POWER_OPTIONS, } from "@/types/configurator";
 import { heatPumpCalculatorInputSchema, } from "@/lib/validation/heat-pump-calculator";
-
+import { climateCalculatorInputSchema, } from "@/lib/validation/climate-calculator";
+import {
+  CLIMATE_INSULATION_LEVELS,
+  CLIMATE_SOLAR_LOADS,
+} from "@/types/climate-calculator";
 
 export const householdPersonsSchema = z.union([
   z.literal(1),
@@ -134,6 +138,33 @@ export const batteryStoragePvPowerKwpSchema =
     .max(
       BATTERY_STORAGE_PV_POWER_MAX_KWP,
     );
+
+export const climateConditionedAreaSchema =
+  z
+    .number()
+    .finite()
+    .min(10)
+    .max(2_000);
+
+export const climateRoomCountSchema =
+  z
+    .number()
+    .int()
+    .min(1)
+    .max(30);
+
+export const climateInsulationLevelSchema =
+  z.enum(CLIMATE_INSULATION_LEVELS);
+
+export const climateSolarLoadSchema =
+  z.enum(CLIMATE_SOLAR_LOADS);
+
+export const climateOccupancyPersonsSchema =
+  z
+    .number()
+    .int()
+    .min(1)
+    .max(200);
 
 export const photovoltaicResultSchema = z.object({
   recommendedPowerKwpMin: z.number().int().positive(),
@@ -390,6 +421,50 @@ export const heatPumpConfiguratorResultSchema =
       z.boolean(),
   });
 
+export const climateConfiguratorResultSchema =
+  z.object({
+    calculationInput:
+      climateCalculatorInputSchema,
+
+    calculatedCoolingLoadKw:
+      z.number().positive(),
+
+    recommendedCoolingCapacityKw:
+      z.number().positive(),
+
+    recommendedIndoorUnitCount:
+      z.number().int().positive(),
+
+    averageCapacityPerRoomKw:
+      z.number().positive(),
+
+    systemRecommendation:
+      z.enum([
+        "singleSplit",
+        "multiSplit",
+        "projectPlanning",
+      ]),
+
+    annualElectricityConsumptionKwh:
+      z.number().nonnegative(),
+
+    annualOperatingCostEuro:
+      z.number().nonnegative(),
+
+    estimatedTotalCostEuro:
+      z.number().nonnegative(),
+
+    estimatedMinimumCostEuro:
+      z.number().nonnegative(),
+
+    estimatedMaximumCostEuro:
+      z.number().nonnegative(),
+
+    individualPlanningRecommended:
+      z.boolean(),
+  });
+  
+
 export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
   z.object({
     version: z.literal(CONFIGURATOR_STATE_VERSION),
@@ -474,6 +549,23 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
         heatPumpAnnualPerformanceFactorSchema.optional(),
     }),
 
+    climate: z.object({
+      conditionedAreaM2:
+        climateConditionedAreaSchema.optional(),
+
+      roomCount:
+        climateRoomCountSchema.optional(),
+
+      insulationLevel:
+        climateInsulationLevelSchema.optional(),
+
+      solarLoad:
+        climateSolarLoadSchema.optional(),
+
+      occupancyPersons:
+        climateOccupancyPersonsSchema.optional(),
+    }),
+
     interests: z.object({
       batteryStorage: z.boolean(),
       climate: z.boolean(),
@@ -490,6 +582,7 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
       photovoltaic: photovoltaicResultSchema.optional(),
       wallbox: wallboxConfiguratorResultSchema.optional(),
       heatPump: heatPumpConfiguratorResultSchema.optional(),
+      climate: climateConfiguratorResultSchema.optional(),
     }),
   });
 
