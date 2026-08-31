@@ -10,6 +10,7 @@ import type {
 interface BatteryStorageResultProps {
   result: BatteryStorageConfiguratorResult;
   onBack: () => void;
+  onContinue: () => void;
 }
 
 function formatNumber(
@@ -40,6 +41,7 @@ const BACKUP_LABELS = {
 export function BatteryStorageResult({
   result,
   onBack,
+  onContinue,
 }: BatteryStorageResultProps) {
   return (
     <section aria-labelledby="battery-result-heading">
@@ -113,20 +115,20 @@ export function BatteryStorageResult({
 
           <p className="mt-2 text-xl font-semibold text-brand-primary">
             {result.pvPowerKwpMin ===
-            result.pvPowerKwpMax
+              result.pvPowerKwpMax
               ? `${formatNumber(
-                  result.pvPowerKwpMin,
-                )} kWp`
+                result.pvPowerKwpMin,
+              )} kWp`
               : `ca. ${formatNumber(
-                  result.pvPowerKwpMin,
-                )}–${formatNumber(
-                  result.pvPowerKwpMax,
-                )} kWp`}
+                result.pvPowerKwpMin,
+              )}–${formatNumber(
+                result.pvPowerKwpMax,
+              )} kWp`}
           </p>
 
           <p className="mt-2 text-sm text-foreground/60">
             {result.source ===
-            "photovoltaic"
+              "photovoltaic"
               ? "Aus deiner PV-Konfiguration übernommen."
               : "Von dir angegeben."}
           </p>
@@ -150,7 +152,7 @@ export function BatteryStorageResult({
           <p className="mt-2 text-xl font-semibold text-brand-primary">
             {
               BACKUP_LABELS[
-                result.backupPreference
+              result.backupPreference
               ]
             }
           </p>
@@ -225,12 +227,13 @@ export function BatteryStorageResult({
           Angaben ändern
         </button>
 
-        <Link
-          href="/kontakt"
+        <button
+          type="button"
+          onClick={onContinue}
           className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
         >
           Beratung anfragen
-        </Link>
+        </button>
 
         <Link
           href="/konfigurator"

@@ -11,6 +11,7 @@ import type {
 interface WallboxResultProps {
   result: WallboxConfiguratorResult;
   onBack: () => void;
+  onContinue: () => void;
 }
 
 const numberFormatter =
@@ -52,12 +53,13 @@ function formatChargingDuration(
 export function WallboxResult({
   result,
   onBack,
+  onContinue,
 }: WallboxResultProps) {
   const recommendation =
     wallboxCalculatorContent
       .recommendationContent[
-        result.systemRecommendation
-      ];
+    result.systemRecommendation
+    ];
 
   return (
     <section aria-labelledby="wallbox-result-heading">
@@ -217,12 +219,13 @@ export function WallboxResult({
           Angaben ändern
         </button>
 
-        <Link
-          href="/kontakt"
+        <button
+          type="button"
+          onClick={onContinue}
           className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
         >
           Beratung anfragen
-        </Link>
+        </button>
 
         <Link
           href="/konfigurator"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { ConfiguratorLeadFlow } from "@/components/configurator/configurator-lead-flow";
 import { ClimateInsulationStep } from "@/components/configurator/climate/climate-insulation-step";
 import { ClimateOccupancyStep } from "@/components/configurator/climate/climate-occupancy-step";
 import { ClimateResult } from "@/components/configurator/climate/climate-result";
@@ -134,16 +134,45 @@ export function ClimateWizard() {
         );
     }
 
-    if (
-        showResult &&
-        state.results.climate
-    ) {
+    if (showResult) {
         return (
-            <ClimateResult
-                result={state.results.climate}
-                onBack={() =>
-                    setShowResult(false)
-                }
+            <ConfiguratorLeadFlow
+                configuratorType="climate"
+                renderResult={(onContinue) => {
+                    const result =
+                        state.results.climate;
+
+                    if (!result) {
+                        return (
+                            <div
+                                role="alert"
+                                className="rounded-2xl border border-border-default bg-surface p-6"
+                            >
+                                Das Klimaanlagen-Ergebnis ist nicht
+                                mehr verfügbar.
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <ClimateResult
+                            result={result}
+                            onBack={() =>
+                                setShowResult(false)
+                            }
+                            onContinue={
+                                onContinue
+                            }
+                        />
+                    );
+                }}
+                onRestart={() => {
+                    setShowResult(false);
+
+                    setCurrentStepId(
+                        "rooms",
+                    );
+                }}
             />
         );
     }

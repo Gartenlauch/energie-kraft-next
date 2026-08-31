@@ -30,9 +30,9 @@ export function ConfiguratorSubmitSuccess({
         </h1>
 
         <p className="mt-5 max-w-2xl text-lg leading-8 text-foreground/70">
-          Deine Photovoltaik-Konfiguration wurde
-          erfolgreich gespeichert. Wir prüfen deine
-          Angaben und melden uns bei dir.
+          Deine Konfiguration wurde erfolgreich
+          gespeichert. Wir prüfen deine Angaben und
+          melden uns bei dir.
         </p>
 
         <div className="mt-8 rounded-2xl border border-border-default bg-surface p-6">

@@ -11,6 +11,7 @@ import type {
 interface HeatPumpResultProps {
     result: HeatPumpConfiguratorResult;
     onBack: () => void;
+    onContinue: () => void;
 }
 
 const numberFormatter =
@@ -28,6 +29,7 @@ const currencyFormatter =
 export function HeatPumpResult({
     result,
     onBack,
+    onContinue,
 }: HeatPumpResultProps) {
     const assessment =
         heatPumpCalculatorContent
@@ -202,12 +204,13 @@ export function HeatPumpResult({
                     Angaben ändern
                 </button>
 
-                <Link
-                    href="/kontakt"
+                <button
+                    type="button"
+                    onClick={onContinue}
                     className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
                 >
                     Beratung anfragen
-                </Link>
+                </button>
 
                 <Link
                     href="/rechner/waermepumpe-kosten"

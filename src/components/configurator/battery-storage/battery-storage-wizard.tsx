@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { ConfiguratorLeadFlow } from "@/components/configurator/configurator-lead-flow";
 import { BatteryStorageBackupStep } from "./battery-storage-backup-step";
 import { BatteryStorageConsumptionPatternStep } from "./battery-storage-consumption-pattern-step";
 import { BatteryStorageGoalStep } from "./battery-storage-goal-step";
@@ -27,8 +27,8 @@ import type {
 
 interface BatteryStorageWizardProps {
   photovoltaicHandoff:
-    | BatteryStoragePhotovoltaicHandoff
-    | null;
+  | BatteryStoragePhotovoltaicHandoff
+  | null;
 }
 
 export function BatteryStorageWizard({
@@ -42,9 +42,9 @@ export function BatteryStorageWizard({
   const steps: readonly BatteryStorageStepDefinition[] =
     photovoltaicHandoff
       ? batteryStorageWizardSteps.filter(
-          (step) =>
-            step.id !== "system_data",
-        )
+        (step) =>
+          step.id !== "system_data",
+      )
       : batteryStorageWizardSteps;
 
   const initialStepId: BatteryStorageStepId =
@@ -161,18 +161,45 @@ export function BatteryStorageWizard({
     );
   }
 
-  if (
-    showResult &&
-    state.results.batteryStorage
-  ) {
+  if (showResult) {
     return (
-      <BatteryStorageResult
-        result={
-          state.results.batteryStorage
-        }
-        onBack={() =>
-          setShowResult(false)
-        }
+      <ConfiguratorLeadFlow
+        configuratorType="battery_storage"
+        renderResult={(onContinue) => {
+          const result =
+            state.results.batteryStorage;
+
+          if (!result) {
+            return (
+              <div
+                role="alert"
+                className="rounded-2xl border border-border-default bg-surface p-6"
+              >
+                Das Stromspeicher-Ergebnis ist nicht
+                mehr verfügbar.
+              </div>
+            );
+          }
+
+          return (
+            <BatteryStorageResult
+              result={result}
+              onBack={() =>
+                setShowResult(false)
+              }
+              onContinue={
+                onContinue
+              }
+            />
+          );
+        }}
+        onRestart={() => {
+          setShowResult(false);
+
+          setCurrentStepId(
+            initialStepId,
+          );
+        }}
       />
     );
   }
@@ -226,7 +253,7 @@ export function BatteryStorageWizard({
 
         <div className="mt-8">
           {currentStep.id ===
-          "system_data" ? (
+            "system_data" ? (
             <BatteryStorageSystemDataStep
               annualConsumptionKwh={
                 state.batteryStorage
@@ -259,7 +286,7 @@ export function BatteryStorageWizard({
           ) : null}
 
           {currentStep.id ===
-          "consumption_pattern" ? (
+            "consumption_pattern" ? (
             <BatteryStorageConsumptionPatternStep
               value={
                 state.batteryStorage
@@ -278,7 +305,7 @@ export function BatteryStorageWizard({
           ) : null}
 
           {currentStep.id ===
-          "backup_preference" ? (
+            "backup_preference" ? (
             <BatteryStorageBackupStep
               value={
                 state.batteryStorage
@@ -297,7 +324,7 @@ export function BatteryStorageWizard({
           ) : null}
 
           {currentStep.id ===
-          "goal" ? (
+            "goal" ? (
             <BatteryStorageGoalStep
               value={
                 state.batteryStorage.goal

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { ConfiguratorLeadFlow } from "@/components/configurator/configurator-lead-flow";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { HeatPumpEfficiencyStep } from "@/components/configurator/heat-pump/heat-pump-efficiency-step";
 import { HeatPumpFlowTemperatureStep } from "@/components/configurator/heat-pump/heat-pump-flow-temperature-step";
@@ -44,8 +44,8 @@ export function HeatPumpWizard() {
   const currentStep =
     currentStepIndex >= 0
       ? heatPumpWizardSteps[
-          currentStepIndex
-        ]
+      currentStepIndex
+      ]
       : undefined;
 
   if (!currentStep) {
@@ -86,7 +86,7 @@ export function HeatPumpWizard() {
 
     const previousStep =
       heatPumpWizardSteps[
-        currentStepIndex - 1
+      currentStepIndex - 1
       ];
 
     if (!previousStep) {
@@ -125,7 +125,7 @@ export function HeatPumpWizard() {
 
     const nextStep =
       heatPumpWizardSteps[
-        currentStepIndex + 1
+      currentStepIndex + 1
       ];
 
     if (!nextStep) {
@@ -137,16 +137,45 @@ export function HeatPumpWizard() {
     );
   }
 
-  if (
-    showResult &&
-    state.results.heatPump
-  ) {
+  if (showResult) {
     return (
-      <HeatPumpResult
-        result={state.results.heatPump}
-        onBack={() =>
-          setShowResult(false)
-        }
+      <ConfiguratorLeadFlow
+        configuratorType="heat_pump"
+        renderResult={(onContinue) => {
+          const result =
+            state.results.heatPump;
+
+          if (!result) {
+            return (
+              <div
+                role="alert"
+                className="rounded-2xl border border-border-default bg-surface p-6"
+              >
+                Das Wärmepumpen-Ergebnis ist nicht
+                mehr verfügbar.
+              </div>
+            );
+          }
+
+          return (
+            <HeatPumpResult
+              result={result}
+              onBack={() =>
+                setShowResult(false)
+              }
+              onContinue={
+                onContinue
+              }
+            />
+          );
+        }}
+        onRestart={() => {
+          setShowResult(false);
+
+          setCurrentStepId(
+            "heated_area",
+          );
+        }}
       />
     );
   }
@@ -184,7 +213,7 @@ export function HeatPumpWizard() {
 
         <div className="mt-8">
           {currentStep.id ===
-          "heated_area" ? (
+            "heated_area" ? (
             <HeatPumpHeatedAreaStep
               value={
                 state.heatPump
@@ -203,7 +232,7 @@ export function HeatPumpWizard() {
           ) : null}
 
           {currentStep.id ===
-          "heating_demand" ? (
+            "heating_demand" ? (
             <HeatPumpHeatingDemandStep
               value={
                 state.heatPump
@@ -222,7 +251,7 @@ export function HeatPumpWizard() {
           ) : null}
 
           {currentStep.id ===
-          "occupancy" ? (
+            "occupancy" ? (
             <HeatPumpOccupancyStep
               value={
                 state.heatPump
@@ -241,7 +270,7 @@ export function HeatPumpWizard() {
           ) : null}
 
           {currentStep.id ===
-          "flow_temperature" ? (
+            "flow_temperature" ? (
             <HeatPumpFlowTemperatureStep
               value={
                 state.heatPump
@@ -260,7 +289,7 @@ export function HeatPumpWizard() {
           ) : null}
 
           {currentStep.id ===
-          "efficiency" ? (
+            "efficiency" ? (
             <HeatPumpEfficiencyStep
               value={
                 state.heatPump

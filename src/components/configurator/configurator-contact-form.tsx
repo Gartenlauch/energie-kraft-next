@@ -309,8 +309,8 @@ export function ConfiguratorContactForm({
 
         <fieldset className="mt-10">
           <legend className="text-lg font-semibold text-brand-primary">
-            Soll die Photovoltaikanlage an deinem
-            Wohnort installiert werden?
+            Soll die Installation an deinem
+            Wohnort erfolgen?
           </legend>
 
           <div className="mt-5">

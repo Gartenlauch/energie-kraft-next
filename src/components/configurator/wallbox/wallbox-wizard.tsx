@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { ConfiguratorLeadFlow } from "@/components/configurator/configurator-lead-flow";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { WallboxChargingPowerStep } from "@/components/configurator/wallbox/wallbox-charging-power-step";
 import { WallboxHomeChargingStep } from "@/components/configurator/wallbox/wallbox-home-charging-step";
@@ -49,8 +49,8 @@ export function WallboxWizard({
   const currentStep =
     currentStepIndex >= 0
       ? wallboxWizardSteps[
-          currentStepIndex
-        ]
+      currentStepIndex
+      ]
       : undefined;
 
   if (!currentStep) {
@@ -91,7 +91,7 @@ export function WallboxWizard({
 
     const previousStep =
       wallboxWizardSteps[
-        currentStepIndex - 1
+      currentStepIndex - 1
       ];
 
     if (!previousStep) {
@@ -130,7 +130,7 @@ export function WallboxWizard({
 
     const nextStep =
       wallboxWizardSteps[
-        currentStepIndex + 1
+      currentStepIndex + 1
       ];
 
     if (!nextStep) {
@@ -142,16 +142,45 @@ export function WallboxWizard({
     );
   }
 
-  if (
-    showResult &&
-    state.results.wallbox
-  ) {
+  if (showResult) {
     return (
-      <WallboxResult
-        result={state.results.wallbox}
-        onBack={() =>
-          setShowResult(false)
-        }
+      <ConfiguratorLeadFlow
+        configuratorType="wallbox"
+        renderResult={(onContinue) => {
+          const result =
+            state.results.wallbox;
+
+          if (!result) {
+            return (
+              <div
+                role="alert"
+                className="rounded-2xl border border-border-default bg-surface p-6"
+              >
+                Das Wallbox-Ergebnis ist nicht mehr
+                verfügbar.
+              </div>
+            );
+          }
+
+          return (
+            <WallboxResult
+              result={result}
+              onBack={() =>
+                setShowResult(false)
+              }
+              onContinue={
+                onContinue
+              }
+            />
+          );
+        }}
+        onRestart={() => {
+          setShowResult(false);
+
+          setCurrentStepId(
+            "vehicle_data",
+          );
+        }}
       />
     );
   }
@@ -189,7 +218,7 @@ export function WallboxWizard({
 
         <div className="mt-8">
           {currentStep.id ===
-          "vehicle_data" ? (
+            "vehicle_data" ? (
             <WallboxVehicleDataStep
               annualDrivingKm={
                 state.wallbox
@@ -240,7 +269,7 @@ export function WallboxWizard({
           ) : null}
 
           {currentStep.id ===
-          "home_charging" ? (
+            "home_charging" ? (
             <WallboxHomeChargingStep
               value={
                 state.wallbox
@@ -259,7 +288,7 @@ export function WallboxWizard({
           ) : null}
 
           {currentStep.id ===
-          "charging_power" ? (
+            "charging_power" ? (
             <WallboxChargingPowerStep
               value={
                 state.wallbox
@@ -278,7 +307,7 @@ export function WallboxWizard({
           ) : null}
 
           {currentStep.id ===
-          "photovoltaics" ? (
+            "photovoltaics" ? (
             <WallboxPhotovoltaicStep
               value={
                 state.wallbox

@@ -13,8 +13,8 @@ import type {
 interface ClimateResultProps {
   result: ClimateConfiguratorResult;
   onBack: () => void;
+  onContinue: () => void;
 }
-
 const numberFormatter =
   new Intl.NumberFormat("de-DE", {
     maximumFractionDigits: 1,
@@ -40,6 +40,7 @@ const SYSTEM_LABELS: Record<
 export function ClimateResult({
   result,
   onBack,
+  onContinue,
 }: ClimateResultProps) {
   return (
     <section aria-labelledby="climate-result-heading">
@@ -86,7 +87,7 @@ export function ClimateResult({
         <p className="mt-2 text-2xl font-semibold text-brand-primary">
           {
             SYSTEM_LABELS[
-              result.systemRecommendation
+            result.systemRecommendation
             ]
           }
         </p>
@@ -211,12 +212,13 @@ export function ClimateResult({
           Angaben ändern
         </button>
 
-        <Link
-          href="/kontakt"
+        <button
+          type="button"
+          onClick={onContinue}
           className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
         >
           Beratung anfragen
-        </Link>
+        </button>
 
         <Link
           href="/rechner/klimaanlage-kosten"
