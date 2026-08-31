@@ -16,7 +16,7 @@ import type {
 } from "./climate";
 
 
-export const CONFIGURATOR_STATE_VERSION = 5 as const;
+export const CONFIGURATOR_STATE_VERSION = 6 as const;
 
 export type ConfiguratorType =
   | "photovoltaic"
@@ -25,6 +25,13 @@ export type ConfiguratorType =
   | "heat_pump"
   | "wallbox";
 
+export interface ConfiguratorJourneyState {
+  entryPoint: ConfiguratorType | null;
+
+  selectedProducts: ConfiguratorType[];
+
+  completedProducts: ConfiguratorType[];
+}
 export type HouseholdPersons = 1 | 2 | 3 | "4_5";
 
 export type BuildingOwnership = "owner" | "tenant";
@@ -123,7 +130,7 @@ export interface ConfiguratorResults {
 export interface ConfiguratorState {
   version: typeof CONFIGURATOR_STATE_VERSION;
   activeConfigurator: ConfiguratorType | null;
-
+  journey: ConfiguratorJourneyState;
   household: HouseholdConfiguratorState;
   building: BuildingConfiguratorState;
   roof: RoofConfiguratorState;

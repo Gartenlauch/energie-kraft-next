@@ -370,6 +370,172 @@ export interface PhotovoltaicConfiguratorLead
   id: string;
 }
 
+interface StoredConfiguratorLeadDocumentBase {
+  type: "configurator";
+  status: LeadStatus;
+
+  contact: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string | null;
+  };
+
+  installation: {
+    atResidence: boolean;
+    street: string;
+    postalCode: string;
+    city: string;
+  };
+
+  consent: {
+    privacyAccepted: true;
+    acceptedAt: FirestoreTimestamp;
+  };
+
+  mail?: LeadMailInfo;
+
+  createdAt: FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
+
+  updatedBy?: string;
+}
+
+export interface BatteryStorageConfiguratorLeadDocument
+  extends StoredConfiguratorLeadDocumentBase {
+  configurator: {
+    type: "battery_storage";
+    answers: BatteryStorageConfiguratorLeadAnswers;
+    result: BatteryStorageConfiguratorResult;
+  };
+
+  meta: {
+    source: "konfigurator/stromspeicher";
+    schemaVersion: 2;
+  };
+}
+
+export interface BatteryStorageConfiguratorLead
+  extends BatteryStorageConfiguratorLeadDocument {
+  id: string;
+}
+
+export interface WallboxConfiguratorLeadDocument
+  extends StoredConfiguratorLeadDocumentBase {
+  configurator: {
+    type: "wallbox";
+    answers: WallboxConfiguratorLeadAnswers;
+    result: WallboxConfiguratorLeadResult;
+  };
+
+  meta: {
+    source: "konfigurator/wallbox";
+    schemaVersion: 2;
+  };
+}
+
+export interface WallboxConfiguratorLead
+  extends WallboxConfiguratorLeadDocument {
+  id: string;
+}
+
+export interface HeatPumpConfiguratorLeadDocument
+  extends StoredConfiguratorLeadDocumentBase {
+  configurator: {
+    type: "heat_pump";
+    answers: HeatPumpConfiguratorLeadAnswers;
+    result: HeatPumpConfiguratorLeadResult;
+  };
+
+  meta: {
+    source: "konfigurator/waermepumpe";
+    schemaVersion: 2;
+  };
+}
+
+export interface HeatPumpConfiguratorLead
+  extends HeatPumpConfiguratorLeadDocument {
+  id: string;
+}
+
+export interface ClimateConfiguratorLeadDocument
+  extends StoredConfiguratorLeadDocumentBase {
+  configurator: {
+    type: "climate";
+    answers: ClimateConfiguratorLeadAnswers;
+    result: ClimateConfiguratorLeadResult;
+  };
+
+  meta: {
+    source: "konfigurator/klimaanlage";
+    schemaVersion: 2;
+  };
+}
+
+export interface ClimateConfiguratorLead
+  extends ClimateConfiguratorLeadDocument {
+  id: string;
+}
+
+export type ConfiguratorLeadDocument =
+  | PhotovoltaicConfiguratorLeadDocument
+  | BatteryStorageConfiguratorLeadDocument
+  | WallboxConfiguratorLeadDocument
+  | HeatPumpConfiguratorLeadDocument
+  | ClimateConfiguratorLeadDocument;
+
+export type ConfiguratorLead =
+  | PhotovoltaicConfiguratorLead
+  | BatteryStorageConfiguratorLead
+  | WallboxConfiguratorLead
+  | HeatPumpConfiguratorLead
+  | ClimateConfiguratorLead;
+
+export function isPhotovoltaicConfiguratorLead(
+  lead: ConfiguratorLead,
+): lead is PhotovoltaicConfiguratorLead {
+  return (
+    lead.configurator.type ===
+    "photovoltaic"
+  );
+}
+
+export function isBatteryStorageConfiguratorLead(
+  lead: ConfiguratorLead,
+): lead is BatteryStorageConfiguratorLead {
+  return (
+    lead.configurator.type ===
+    "battery_storage"
+  );
+}
+
+export function isWallboxConfiguratorLead(
+  lead: ConfiguratorLead,
+): lead is WallboxConfiguratorLead {
+  return (
+    lead.configurator.type ===
+    "wallbox"
+  );
+}
+
+export function isHeatPumpConfiguratorLead(
+  lead: ConfiguratorLead,
+): lead is HeatPumpConfiguratorLead {
+  return (
+    lead.configurator.type ===
+    "heat_pump"
+  );
+}
+
+export function isClimateConfiguratorLead(
+  lead: ConfiguratorLead,
+): lead is ClimateConfiguratorLead {
+  return (
+    lead.configurator.type ===
+    "climate"
+  );
+}
+
 export function hasPhotovoltaicConfiguratorResult(
   state: ConfiguratorState,
 ): state is ConfiguratorState & {

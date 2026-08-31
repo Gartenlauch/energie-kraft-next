@@ -3,12 +3,13 @@ import Link from "next/link";
 
 import { ContactLeadCard } from "./contact-lead-card";
 import { LeadRealtimeRefresh } from "./lead-realtime-refresh";
-import { PhotovoltaicConfiguratorLeadCard } from "./photovoltaic-configurator-lead-card";
+import { ConfiguratorLeadCard } from "./configurator-lead-card";
 
 import { listLeads } from "@/lib/leads/lead-repository";
 import {
-  isAdminLeadType,
+  isAdminLeadFilterType,
   isContactAdminLead,
+  matchesAdminLeadFilter,
 } from "@/types/admin-lead";
 import {
   LEAD_STATUS_VALUES,
@@ -94,10 +95,13 @@ export default async function LeadAdminPage({
       }
 
       if (
-        isAdminLeadType(
+        isAdminLeadFilterType(
           selectedType,
         ) &&
-        lead.type !== selectedType
+        !matchesAdminLeadFilter(
+          lead,
+          selectedType,
+        )
       ) {
         return false;
       }
@@ -271,7 +275,7 @@ export default async function LeadAdminPage({
               id="filter-type"
               name="filterType"
               defaultValue={
-                isAdminLeadType(
+                isAdminLeadFilterType(
                   selectedType,
                 )
                   ? selectedType
@@ -287,8 +291,24 @@ export default async function LeadAdminPage({
                 Kontaktformular
               </option>
 
-              <option value="configurator">
-                PV-Konfigurator
+              <option value="photovoltaic">
+                Photovoltaik
+              </option>
+
+              <option value="battery_storage">
+                Stromspeicher
+              </option>
+
+              <option value="wallbox">
+                Wallbox
+              </option>
+
+              <option value="heat_pump">
+                Wärmepumpe
+              </option>
+
+              <option value="climate">
+                Klimaanlage
               </option>
             </select>
           </div>
@@ -332,7 +352,7 @@ export default async function LeadAdminPage({
                   lead={lead}
                 />
               ) : (
-                <PhotovoltaicConfiguratorLeadCard
+                <ConfiguratorLeadCard
                   key={lead.id}
                   lead={lead}
                 />

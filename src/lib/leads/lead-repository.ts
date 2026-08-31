@@ -9,7 +9,13 @@ import { adminFirestore } from "@/lib/firebase/admin";
 import { FIRESTORE_COLLECTIONS } from "@/lib/firebase/collections";
 import type { AdminLead } from "@/types/admin-lead";
 import type { ContactLeadDocument } from "@/types/contact-lead";
-import type { PhotovoltaicConfiguratorLeadDocument } from "@/types/configurator";
+import type {
+  BatteryStorageConfiguratorLeadDocument,
+  ClimateConfiguratorLeadDocument,
+  HeatPumpConfiguratorLeadDocument,
+  PhotovoltaicConfiguratorLeadDocument,
+  WallboxConfiguratorLeadDocument,
+} from "@/types/configurator";
 import type { LeadStatus } from "@/types/lead";
 
 export class LeadNotFoundError extends Error {
@@ -47,20 +53,43 @@ function mapLead(
   }
 
   if (data.type === "configurator") {
-    const configuratorData =
-      data as PhotovoltaicConfiguratorLeadDocument;
+    const configuratorType =
+      data.configurator?.type;
 
-    if (
-      configuratorData.configurator?.type !==
-      "photovoltaic"
-    ) {
-      return null;
+    switch (configuratorType) {
+      case "photovoltaic":
+        return {
+          id: document.id,
+          ...(data as PhotovoltaicConfiguratorLeadDocument),
+        };
+
+      case "battery_storage":
+        return {
+          id: document.id,
+          ...(data as BatteryStorageConfiguratorLeadDocument),
+        };
+
+      case "wallbox":
+        return {
+          id: document.id,
+          ...(data as WallboxConfiguratorLeadDocument),
+        };
+
+      case "heat_pump":
+        return {
+          id: document.id,
+          ...(data as HeatPumpConfiguratorLeadDocument),
+        };
+
+      case "climate":
+        return {
+          id: document.id,
+          ...(data as ClimateConfiguratorLeadDocument),
+        };
+
+      default:
+        return null;
     }
-
-    return {
-      id: document.id,
-      ...configuratorData,
-    };
   }
 
   return null;

@@ -70,7 +70,7 @@ export function LeadRealtimeRefresh() {
 
           const revision =
             typeof data?.revision ===
-            "number"
+              "number"
               ? data.revision
               : null;
 
@@ -92,7 +92,10 @@ export function LeadRealtimeRefresh() {
           router.refresh();
         },
         (error) => {
-          throw error;
+          console.warn(
+            "[LeadRealtimeRefresh] Firestore listener stopped:",
+            error,
+          );
         },
       );
     })();

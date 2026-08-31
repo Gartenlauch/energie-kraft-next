@@ -463,13 +463,27 @@ export const climateConfiguratorResultSchema =
     individualPlanningRecommended:
       z.boolean(),
   });
-  
+
 
 export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
   z.object({
     version: z.literal(CONFIGURATOR_STATE_VERSION),
 
     activeConfigurator: configuratorTypeSchema.nullable(),
+    journey: z.object({
+      entryPoint:
+        configuratorTypeSchema.nullable(),
+
+      selectedProducts:
+        z.array(
+          configuratorTypeSchema,
+        ),
+
+      completedProducts:
+        z.array(
+          configuratorTypeSchema,
+        ),
+    }),
 
     household: z.object({
       persons: householdPersonsSchema.optional(),
@@ -579,10 +593,20 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
     }),
 
     results: z.object({
-      photovoltaic: photovoltaicResultSchema.optional(),
-      wallbox: wallboxConfiguratorResultSchema.optional(),
-      heatPump: heatPumpConfiguratorResultSchema.optional(),
-      climate: climateConfiguratorResultSchema.optional(),
+      photovoltaic:
+        photovoltaicResultSchema.optional(),
+
+      batteryStorage:
+        batteryStorageResultSchema.optional(),
+
+      wallbox:
+        wallboxConfiguratorResultSchema.optional(),
+
+      heatPump:
+        heatPumpConfiguratorResultSchema.optional(),
+
+      climate:
+        climateConfiguratorResultSchema.optional(),
     }),
   });
 

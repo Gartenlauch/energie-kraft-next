@@ -5,6 +5,7 @@ import type {
   HouseholdConfiguratorState,
 } from "@/types/configurator";
 import { CONFIGURATOR_STATE_VERSION } from "@/types/configurator";
+import { buildConfiguratorJourney, } from "@/lib/configurator/journey";
 
 export function calculateProjectedConsumptionKwh(
   annualConsumptionKwh: number | undefined,
@@ -23,6 +24,11 @@ export function createInitialConfiguratorState(): ConfiguratorState {
   return {
     version: CONFIGURATOR_STATE_VERSION,
     activeConfigurator: null,
+    journey: {
+      entryPoint: null,
+      selectedProducts: [],
+      completedProducts: [],
+    },
 
     household: {
       futureIncreasePercent: 10,
@@ -64,12 +70,22 @@ function normalizeHouseholdState(
 export function normalizeConfiguratorState(
   state: ConfiguratorState,
 ): ConfiguratorState {
+  const household =
+    normalizeHouseholdState(
+      state.household,
+    );
+
   return {
     ...state,
 
-    household: normalizeHouseholdState(
-      state.household,
-    ),
+    household,
+
+    journey:
+      buildConfiguratorJourney(
+        state.journey.entryPoint,
+        state.interests,
+        state.results,
+      ),
   };
 }
 
@@ -133,7 +149,7 @@ function withoutClimateResult(
   return nextResults;
 }
 
-export function configuratorReducer(
+function reduceConfiguratorState(
   state: ConfiguratorState,
   action: ConfiguratorAction,
 ): ConfiguratorState {
@@ -141,7 +157,17 @@ export function configuratorReducer(
     case "SET_ACTIVE_CONFIGURATOR":
       return {
         ...state,
-        activeConfigurator: action.payload,
+
+        activeConfigurator:
+          action.payload,
+
+        journey: {
+          ...state.journey,
+
+          entryPoint:
+            state.journey.entryPoint ??
+            action.payload,
+        },
       };
 
     case "UPDATE_HOUSEHOLD": {
@@ -342,4 +368,16 @@ export function configuratorReducer(
       return exhaustiveCheck;
     }
   }
+}
+
+export function configuratorReducer(
+  state: ConfiguratorState,
+  action: ConfiguratorAction,
+): ConfiguratorState {
+  return normalizeConfiguratorState(
+    reduceConfiguratorState(
+      state,
+      action,
+    ),
+  );
 }
