@@ -56,9 +56,10 @@ export function matchesAdminLeadFilter(
   if (filter === "contact") {
     return lead.type === "contact";
   }
-
   return (
     lead.type === "configurator" &&
-    lead.configurator.type === filter
+    lead.products.includes(
+      filter,
+    )
   );
 }

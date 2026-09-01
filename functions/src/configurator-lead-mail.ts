@@ -1049,6 +1049,109 @@ function buildConfiguratorMailContent(
   }
 }
 
+const CONFIGURATOR_LABELS: Record<
+  ConfiguratorPayload["type"],
+  string
+> = {
+  photovoltaic:
+    "Photovoltaik",
+
+  battery_storage:
+    "Stromspeicher",
+
+  wallbox:
+    "Wallbox",
+
+  heat_pump:
+    "Wärmepumpe",
+
+  climate:
+    "Klimaanlage",
+};
+
+function buildProjectMailContent(
+  lead: ConfiguratorLeadPayload,
+): ConfiguratorMailContent {
+  const productContents =
+    lead.configurators.map(
+      (configurator) => ({
+        configurator,
+        content:
+          buildConfiguratorMailContent(
+            configurator,
+          ),
+      }),
+    );
+
+  const productLabels =
+    lead.products.map(
+      (product) =>
+        CONFIGURATOR_LABELS[
+        product
+        ],
+    );
+
+  return {
+    title:
+      "Neue Energieprojekt-Konfigurator-Anfrage",
+
+    subject:
+      `Neue Energieprojekt-Anfrage – ${productLabels.join(
+        " + ",
+      )}`,
+
+    sections: [
+      {
+        heading:
+          "Energieprojekt",
+
+        rows: [
+          [
+            "Produkte",
+            productLabels.join(", "),
+          ],
+
+          [
+            "Einstieg",
+            CONFIGURATOR_LABELS[
+            lead.journey
+              .entryPoint
+            ],
+          ],
+
+          [
+            "Abgeschlossene Konfiguratoren",
+            String(
+              lead.journey
+                .completedProducts
+                .length,
+            ),
+          ],
+        ],
+      },
+
+      ...productContents.flatMap(
+        ({
+          configurator,
+          content,
+        }) => [
+            {
+              heading:
+                CONFIGURATOR_LABELS[
+                configurator.type
+                ],
+
+              paragraph:
+                "Konfigurator abgeschlossen",
+            },
+
+            ...content.sections,
+          ],
+      ),
+    ],
+  };
+}
+
 function renderTextSection(
   section: MailSection,
 ): string {
@@ -1118,8 +1221,8 @@ export async function sendConfiguratorLeadMail({
   lead,
 }: SendConfiguratorLeadMailInput) {
   const content =
-    buildConfiguratorMailContent(
-      lead.configurator,
+    buildProjectMailContent(
+      lead,
     );
 
   const phone =

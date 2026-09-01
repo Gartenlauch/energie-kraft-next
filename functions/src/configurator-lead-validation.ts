@@ -561,13 +561,90 @@ const configuratorSchema =
       .strict(),
   ]);
 
+
+const configuratorTypeSchema = z.enum([
+  "photovoltaic",
+  "battery_storage",
+  "wallbox",
+  "heat_pump",
+  "climate",
+]);
+
+const CONFIGURATOR_ORDER = [
+  "photovoltaic",
+  "battery_storage",
+  "wallbox",
+  "heat_pump",
+  "climate",
+] as const;
+
+type ConfiguratorType =
+  z.infer<typeof configuratorTypeSchema>;
+
+function hasDuplicates(
+  values: readonly ConfiguratorType[],
+): boolean {
+  return (
+    new Set(values).size !==
+    values.length
+  );
+}
+
+function sameProductOrder(
+  left: readonly ConfiguratorType[],
+  right: readonly ConfiguratorType[],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (value, index) =>
+        value === right[index],
+    )
+  );
+}
+
 export const configuratorLeadPayloadSchema =
   z
     .object({
       type: z.literal("configurator"),
 
-      configurator:
-        configuratorSchema,
+      products: z
+        .array(
+          configuratorTypeSchema,
+        )
+        .min(1)
+        .max(5),
+
+      journey: z
+        .object({
+          entryPoint:
+            configuratorTypeSchema,
+
+          selectedProducts:
+            z
+              .array(
+                configuratorTypeSchema,
+              )
+              .min(1)
+              .max(5),
+
+          completedProducts:
+            z
+              .array(
+                configuratorTypeSchema,
+              )
+              .min(1)
+              .max(5),
+        })
+        .strict(),
+
+      configurators:
+        z
+          .array(
+            configuratorSchema,
+          )
+          .min(1)
+          .max(5),
 
       contact: z
         .object({
@@ -639,7 +716,127 @@ export const configuratorLeadPayloadSchema =
           .int()
           .positive(),
     })
-    .strict();
+    .strict()
+    .superRefine(
+      (values, context) => {
+        if (
+          hasDuplicates(
+            values.products,
+          ) ||
+          hasDuplicates(
+            values.journey
+              .selectedProducts,
+          ) ||
+          hasDuplicates(
+            values.journey
+              .completedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["journey"],
+            message:
+              "Konfigurator-Produkte dürfen nicht doppelt vorkommen.",
+          });
+        }
+
+        if (
+          !values.journey
+            .selectedProducts
+            .includes(
+              values.journey
+                .entryPoint,
+            )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: [
+              "journey",
+              "entryPoint",
+            ],
+            message:
+              "Der Einstiegspunkt muss Teil der ausgewählten Produkte sein.",
+          });
+        }
+
+        if (
+          !sameProductOrder(
+            values.products,
+            values.journey
+              .selectedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["products"],
+            message:
+              "Produkte und Journey stimmen nicht überein.",
+          });
+        }
+
+        if (
+          !sameProductOrder(
+            values.journey
+              .selectedProducts,
+            values.journey
+              .completedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: [
+              "journey",
+              "completedProducts",
+            ],
+            message:
+              "Alle ausgewählten Konfiguratoren müssen abgeschlossen sein.",
+          });
+        }
+
+        const configuratorTypes =
+          values.configurators.map(
+            (configurator) =>
+              configurator.type,
+          );
+
+        if (
+          !sameProductOrder(
+            configuratorTypes,
+            values.journey
+              .completedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["configurators"],
+            message:
+              "Konfigurator-Ergebnisse und Journey stimmen nicht überein.",
+          });
+        }
+
+        const canonicalProducts =
+          CONFIGURATOR_ORDER.filter(
+            (product) =>
+              values.products.includes(
+                product,
+              ),
+          );
+
+        if (
+          !sameProductOrder(
+            values.products,
+            canonicalProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["products"],
+            message:
+              "Die Konfiguratoren befinden sich nicht in der vorgesehenen Reihenfolge.",
+          });
+        }
+      },
+    );
 
 export type ConfiguratorPayload =
   z.infer<typeof configuratorSchema>;

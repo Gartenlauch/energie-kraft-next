@@ -318,85 +318,92 @@ export interface SubmitConfiguratorLeadResult {
  * gültig. Neue Leads dürfen ab 6.8 schemaVersion 2
  * verwenden.
  */
+/*
+ * Persistierter Gesamtprojekt-Lead.
+ *
+ * Seit schemaVersion 3 wird eine Kundenanfrage
+ * immer als ein gemeinsames Energieprojekt mit
+ * mehreren configurators[] gespeichert.
+ */
 
 export interface StoredPhotovoltaicConfiguratorAnswers {
   household: {
     persons: HouseholdPersons;
+
     annualConsumptionKwh: number;
+
     futureIncreasePercent: number;
+
     projectedConsumptionKwh: number;
   };
 
   building: {
     ownership: "owner";
+
     type: BuildingType;
   };
 
   roof: {
     pitch: RoofPitch;
+
     material: RoofMaterial;
+
     orientation: RoofOrientation;
-    renovationPeriod: RoofRenovationPeriod;
+
+    renovationPeriod:
+    RoofRenovationPeriod;
   };
 
-  interests: ConfiguratorInterests;
+  interests:
+  ConfiguratorInterests;
 
   notes: {
     hasNotes: boolean;
+
     text: string | null;
   };
 }
 
-export interface PhotovoltaicConfiguratorLeadDocument {
-  type: "configurator";
-  status: LeadStatus;
+export interface StoredPhotovoltaicConfiguratorLeadPayload {
+  type: "photovoltaic";
 
-  contact: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string | null;
-  };
+  answers:
+  StoredPhotovoltaicConfiguratorAnswers;
 
-  installation: {
-    atResidence: boolean;
-    street: string;
-    postalCode: string;
-    city: string;
-  };
-
-  configurator: {
-    type: "photovoltaic";
-    answers: StoredPhotovoltaicConfiguratorAnswers;
-    result: PhotovoltaicConfiguratorResult;
-  };
-
-  consent: {
-    privacyAccepted: true;
-    acceptedAt: FirestoreTimestamp;
-  };
-
-  meta: {
-    source: "konfigurator/photovoltaik";
-    schemaVersion: 1 | 2;
-  };
-
-  mail?: LeadMailInfo;
-
-  createdAt: FirestoreTimestamp;
-  updatedAt: FirestoreTimestamp;
-
-  updatedBy?: string;
+  result:
+  PhotovoltaicConfiguratorResult;
 }
 
-export interface PhotovoltaicConfiguratorLead
-  extends PhotovoltaicConfiguratorLeadDocument {
-  id: string;
-}
+export type StoredConfiguratorLeadPayload =
+  | StoredPhotovoltaicConfiguratorLeadPayload
+  | Exclude<
+    ConfiguratorLeadPayload,
+    {
+      type: "photovoltaic";
+    }
+  >;
 
-interface StoredConfiguratorLeadDocumentBase {
+export interface ConfiguratorLeadDocument {
   type: "configurator";
+
   status: LeadStatus;
+
+  products:
+  ConfiguratorLeadType[];
+
+  journey: {
+    entryPoint:
+    ConfiguratorLeadType;
+
+    selectedProducts:
+    ConfiguratorLeadType[];
+
+    completedProducts:
+    ConfiguratorLeadType[];
+  };
+
+  configurators:
+  StoredConfiguratorLeadPayload[];
 
   contact: {
     firstName: string;
@@ -417,147 +424,27 @@ interface StoredConfiguratorLeadDocumentBase {
     acceptedAt: FirestoreTimestamp;
   };
 
+  meta: {
+    source:
+    ConfiguratorLeadSource;
+
+    schemaVersion: 3;
+  };
+
   mail?: LeadMailInfo;
 
-  createdAt: FirestoreTimestamp;
-  updatedAt: FirestoreTimestamp;
+  createdAt:
+  FirestoreTimestamp;
+
+  updatedAt:
+  FirestoreTimestamp;
 
   updatedBy?: string;
 }
 
-export interface BatteryStorageConfiguratorLeadDocument
-  extends StoredConfiguratorLeadDocumentBase {
-  configurator: {
-    type: "battery_storage";
-    answers: BatteryStorageConfiguratorLeadAnswers;
-    result: BatteryStorageConfiguratorResult;
-  };
-
-  meta: {
-    source: "konfigurator/stromspeicher";
-    schemaVersion: 2;
-  };
-}
-
-export interface BatteryStorageConfiguratorLead
-  extends BatteryStorageConfiguratorLeadDocument {
+export interface ConfiguratorLead
+  extends ConfiguratorLeadDocument {
   id: string;
-}
-
-export interface WallboxConfiguratorLeadDocument
-  extends StoredConfiguratorLeadDocumentBase {
-  configurator: {
-    type: "wallbox";
-    answers: WallboxConfiguratorLeadAnswers;
-    result: WallboxConfiguratorLeadResult;
-  };
-
-  meta: {
-    source: "konfigurator/wallbox";
-    schemaVersion: 2;
-  };
-}
-
-export interface WallboxConfiguratorLead
-  extends WallboxConfiguratorLeadDocument {
-  id: string;
-}
-
-export interface HeatPumpConfiguratorLeadDocument
-  extends StoredConfiguratorLeadDocumentBase {
-  configurator: {
-    type: "heat_pump";
-    answers: HeatPumpConfiguratorLeadAnswers;
-    result: HeatPumpConfiguratorLeadResult;
-  };
-
-  meta: {
-    source: "konfigurator/waermepumpe";
-    schemaVersion: 2;
-  };
-}
-
-export interface HeatPumpConfiguratorLead
-  extends HeatPumpConfiguratorLeadDocument {
-  id: string;
-}
-
-export interface ClimateConfiguratorLeadDocument
-  extends StoredConfiguratorLeadDocumentBase {
-  configurator: {
-    type: "climate";
-    answers: ClimateConfiguratorLeadAnswers;
-    result: ClimateConfiguratorLeadResult;
-  };
-
-  meta: {
-    source: "konfigurator/klimaanlage";
-    schemaVersion: 2;
-  };
-}
-
-export interface ClimateConfiguratorLead
-  extends ClimateConfiguratorLeadDocument {
-  id: string;
-}
-
-export type ConfiguratorLeadDocument =
-  | PhotovoltaicConfiguratorLeadDocument
-  | BatteryStorageConfiguratorLeadDocument
-  | WallboxConfiguratorLeadDocument
-  | HeatPumpConfiguratorLeadDocument
-  | ClimateConfiguratorLeadDocument;
-
-export type ConfiguratorLead =
-  | PhotovoltaicConfiguratorLead
-  | BatteryStorageConfiguratorLead
-  | WallboxConfiguratorLead
-  | HeatPumpConfiguratorLead
-  | ClimateConfiguratorLead;
-
-export function isPhotovoltaicConfiguratorLead(
-  lead: ConfiguratorLead,
-): lead is PhotovoltaicConfiguratorLead {
-  return (
-    lead.configurator.type ===
-    "photovoltaic"
-  );
-}
-
-export function isBatteryStorageConfiguratorLead(
-  lead: ConfiguratorLead,
-): lead is BatteryStorageConfiguratorLead {
-  return (
-    lead.configurator.type ===
-    "battery_storage"
-  );
-}
-
-export function isWallboxConfiguratorLead(
-  lead: ConfiguratorLead,
-): lead is WallboxConfiguratorLead {
-  return (
-    lead.configurator.type ===
-    "wallbox"
-  );
-}
-
-export function isHeatPumpConfiguratorLead(
-  lead: ConfiguratorLead,
-): lead is HeatPumpConfiguratorLead {
-  return (
-    lead.configurator.type ===
-    "heat_pump"
-  );
-}
-
-export function isClimateConfiguratorLead(
-  lead: ConfiguratorLead,
-): lead is ClimateConfiguratorLead {
-  return (
-    lead.configurator.type ===
-    "climate"
-  );
 }
 
 export function hasPhotovoltaicConfiguratorResult(

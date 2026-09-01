@@ -1,21 +1,11 @@
 import "server-only";
 
-import {
-  FieldValue,
-  type QueryDocumentSnapshot,
-} from "firebase-admin/firestore";
-
+import { FieldValue, type QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { adminFirestore } from "@/lib/firebase/admin";
 import { FIRESTORE_COLLECTIONS } from "@/lib/firebase/collections";
 import type { AdminLead } from "@/types/admin-lead";
 import type { ContactLeadDocument } from "@/types/contact-lead";
-import type {
-  BatteryStorageConfiguratorLeadDocument,
-  ClimateConfiguratorLeadDocument,
-  HeatPumpConfiguratorLeadDocument,
-  PhotovoltaicConfiguratorLeadDocument,
-  WallboxConfiguratorLeadDocument,
-} from "@/types/configurator";
+import type { ConfiguratorLeadDocument } from "@/types/configurator";
 import type { LeadStatus } from "@/types/lead";
 
 export class LeadNotFoundError extends Error {
@@ -53,43 +43,23 @@ function mapLead(
   }
 
   if (data.type === "configurator") {
-    const configuratorType =
-      data.configurator?.type;
-
-    switch (configuratorType) {
-      case "photovoltaic":
-        return {
-          id: document.id,
-          ...(data as PhotovoltaicConfiguratorLeadDocument),
-        };
-
-      case "battery_storage":
-        return {
-          id: document.id,
-          ...(data as BatteryStorageConfiguratorLeadDocument),
-        };
-
-      case "wallbox":
-        return {
-          id: document.id,
-          ...(data as WallboxConfiguratorLeadDocument),
-        };
-
-      case "heat_pump":
-        return {
-          id: document.id,
-          ...(data as HeatPumpConfiguratorLeadDocument),
-        };
-
-      case "climate":
-        return {
-          id: document.id,
-          ...(data as ClimateConfiguratorLeadDocument),
-        };
-
-      default:
-        return null;
+    if (
+      data.meta?.schemaVersion !== 3 ||
+      !Array.isArray(
+        data.products,
+      ) ||
+      !Array.isArray(
+        data.configurators,
+      ) ||
+      !data.journey
+    ) {
+      return null;
     }
+
+    return {
+      id: document.id,
+      ...(data as ConfiguratorLeadDocument),
+    };
   }
 
   return null;

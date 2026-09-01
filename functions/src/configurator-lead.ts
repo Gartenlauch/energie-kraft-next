@@ -219,12 +219,9 @@ export const submitConfiguratorLead =
         );
       }
 
-      const configuratorType =
-        input.configurator.type;
-
       const source =
         CONFIGURATOR_SOURCE[
-        configuratorType
+        input.journey.entryPoint
         ];
 
       const firestore =
@@ -293,9 +290,28 @@ export const submitConfiguratorLead =
                 .city,
           },
 
-          configurator:
-            buildStoredConfigurator(
-              input.configurator,
+          products: [
+            ...input.products,
+          ],
+
+          journey: {
+            entryPoint:
+              input.journey.entryPoint,
+
+            selectedProducts: [
+              ...input.journey
+                .selectedProducts,
+            ],
+
+            completedProducts: [
+              ...input.journey
+                .completedProducts,
+            ],
+          },
+
+          configurators:
+            input.configurators.map(
+              buildStoredConfigurator,
             ),
 
           consent: {
@@ -308,7 +324,7 @@ export const submitConfiguratorLead =
           meta: {
             source,
 
-            schemaVersion: 2,
+            schemaVersion: 3,
           },
 
           createdAt:
@@ -385,7 +401,11 @@ export const submitConfiguratorLead =
             leadId:
               leadReference.id,
 
-            configuratorType,
+            products:
+              input.products,
+
+            productCount:
+              input.products.length,
 
             provider:
               "mailgun",
@@ -422,7 +442,11 @@ export const submitConfiguratorLead =
             leadId:
               leadReference.id,
 
-            configuratorType,
+            products:
+              input.products,
+
+            productCount:
+              input.products.length,
 
             provider:
               "mailgun",
@@ -447,7 +471,14 @@ export const submitConfiguratorLead =
           leadId:
             leadReference.id,
 
-          configuratorType,
+          products:
+            input.products,
+
+          productCount:
+            input.products.length,
+
+          entryPoint:
+            input.journey.entryPoint,
 
           source,
         },
