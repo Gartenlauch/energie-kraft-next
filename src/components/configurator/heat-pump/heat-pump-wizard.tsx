@@ -13,6 +13,7 @@ import { heatPumpWizardSteps } from "@/content/configurators";
 import { buildHeatPumpConfiguratorResult } from "@/lib/configurator/heat-pump";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isHeatPumpStepComplete } from "@/lib/validation/configurator/heat-pump";
+import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
 import type {
   HeatPumpStepId,
 } from "@/types/configurator";
@@ -156,16 +157,22 @@ export function HeatPumpWizard() {
               </div>
             );
           }
+          const nextConfigurator =
+            getNextConfiguratorProduct(
+              state.journey,
+              "heat_pump",
+            );
 
           return (
             <HeatPumpResult
               result={result}
+              nextConfigurator={
+                nextConfigurator
+              }
               onBack={() =>
                 setShowResult(false)
               }
-              onContinue={
-                onContinue
-              }
+              onContinue={onContinue}
             />
           );
         }}

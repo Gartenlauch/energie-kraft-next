@@ -11,7 +11,7 @@ import type {
   RoofOrientation,
   RoofPitch,
   RoofRenovationPeriod,
-  PhotovoltaicAdditionalInterest,
+  PhotovoltaicEnergySolution,
 } from "@/types/configurator";
 
 function formatKwh(value: number): string {
@@ -92,19 +92,12 @@ export const photovoltaicWizardSteps = [
     phase: "configuration",
   },
   {
-    id: "battery_storage",
-    title: "Möchtest du einen Stromspeicher berücksichtigen?",
-    shortLabel: "Speicher",
+    id: "energy_solutions",
+    title:
+      "Welche weiteren Energielösungen möchtest du berücksichtigen?",
+    shortLabel: "Energielösungen",
     description:
-      "Ein Stromspeicher kann einen größeren Anteil deines Solarstroms für die spätere Nutzung verfügbar machen.",
-    phase: "configuration",
-  },
-  {
-    id: "additional_interests",
-    title: "Interessierst du dich für weitere Energielösungen?",
-    shortLabel: "Interessen",
-    description:
-      "Die Auswahl ist optional und hilft uns, deine Anfrage besser einzuordnen.",
+      "Wähle optional die Bereiche aus, die für dein Energieprojekt relevant sind.",
     phase: "configuration",
   },
   {
@@ -320,26 +313,32 @@ export const photovoltaicFutureIncreaseOptions = [
   },
 ] satisfies readonly ConfiguratorSelectionOption<number>[];
 
-export const photovoltaicAdditionalInterestOptions = [
+export const photovoltaicEnergySolutionOptions = [
+  {
+    value: "batteryStorage",
+    title: "Stromspeicher",
+    description:
+      "Solarstrom auch abends und nachts nutzen. Der Speicherwunsch wird bereits in deiner PV-Empfehlung berücksichtigt.",
+  },
+  {
+    value: "wallbox",
+    title: "Wallbox",
+    description:
+      "Ein Elektroauto komfortabel zu Hause laden und vorhandenen Solarstrom nutzen.",
+  },
+  {
+    value: "heatPump",
+    title: "Wärmepumpe",
+    description:
+      "Das Gebäude effizient beheizen und Photovoltaikstrom für die Wärmeerzeugung nutzen.",
+  },
   {
     value: "climate",
     title: "Klimaanlage",
     description:
       "Räume effizient kühlen und je nach System auch heizen.",
   },
-  {
-    value: "heatPump",
-    title: "Wärmepumpe",
-    description:
-      "Strom künftig zusätzlich für die Gebäudeheizung nutzen.",
-  },
-  {
-    value: "wallbox",
-    title: "Wallbox",
-    description:
-      "Ein Elektroauto komfortabel zu Hause laden.",
-  },
-] satisfies readonly ConfiguratorSelectionOption<PhotovoltaicAdditionalInterest>[];
+] satisfies readonly ConfiguratorSelectionOption<PhotovoltaicEnergySolution>[];
 
 export const photovoltaicNotesOptions = [
   {

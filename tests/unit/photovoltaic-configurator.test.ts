@@ -56,7 +56,9 @@ describe("photovoltaic configurator", () => {
 
   it("defines all technical photovoltaic wizard steps in the expected order", () => {
     expect(
-      photovoltaicWizardSteps.map((step) => step.id),
+      photovoltaicWizardSteps.map(
+        (step) => step.id,
+      ),
     ).toEqual([
       "household_persons",
       "ownership",
@@ -67,8 +69,7 @@ describe("photovoltaic configurator", () => {
       "roof_orientation",
       "roof_renovation",
       "future_consumption",
-      "battery_storage",
-      "additional_interests",
+      "energy_solutions",
       "notes",
     ]);
   });
@@ -88,23 +89,20 @@ describe("photovoltaic configurator", () => {
     ).toBe(true);
   });
 
-  it("allows the optional storage and interest steps", () => {
-    const state = createInitialConfiguratorState();
+  it(
+    "allows the optional energy solutions step without a selection",
+    () => {
+      const state =
+        createInitialConfiguratorState();
 
-    expect(
-      isPhotovoltaicStepComplete(
-        "battery_storage",
-        state,
-      ),
-    ).toBe(true);
-
-    expect(
-      isPhotovoltaicStepComplete(
-        "additional_interests",
-        state,
-      ),
-    ).toBe(true);
-  });
+      expect(
+        isPhotovoltaicStepComplete(
+          "energy_solutions",
+          state,
+        ),
+      ).toBe(true);
+    },
+  );
 
   it("requires an explicit notes decision", () => {
     let state = createInitialConfiguratorState();

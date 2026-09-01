@@ -51,35 +51,31 @@ describe("configurator wizard navigation", () => {
     ).toBeNull();
   });
 
-  it("continues from roof data into consumption and interests", () => {
-    expect(
-      getNextConfiguratorStepId(
-        photovoltaicWizardSteps,
-        "roof_renovation",
-      ),
-    ).toBe("future_consumption");
+  it(
+    "continues from roof data into consumption and energy solutions",
+    () => {
+      expect(
+        getNextConfiguratorStepId(
+          photovoltaicWizardSteps,
+          "roof_renovation",
+        ),
+      ).toBe("future_consumption");
 
-    expect(
-      getNextConfiguratorStepId(
-        photovoltaicWizardSteps,
-        "future_consumption",
-      ),
-    ).toBe("battery_storage");
+      expect(
+        getNextConfiguratorStepId(
+          photovoltaicWizardSteps,
+          "future_consumption",
+        ),
+      ).toBe("energy_solutions");
 
-    expect(
-      getNextConfiguratorStepId(
-        photovoltaicWizardSteps,
-        "battery_storage",
-      ),
-    ).toBe("additional_interests");
-
-    expect(
-      getNextConfiguratorStepId(
-        photovoltaicWizardSteps,
-        "additional_interests",
-      ),
-    ).toBe("notes");
-  });
+      expect(
+        getNextConfiguratorStepId(
+          photovoltaicWizardSteps,
+          "energy_solutions",
+        ),
+      ).toBe("notes");
+    },
+  );
 
   it("continues from consumption into the roof questions", () => {
     expect(

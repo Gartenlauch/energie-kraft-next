@@ -24,6 +24,7 @@ import type {
   BatteryStorageStepDefinition,
   BatteryStorageStepId,
 } from "@/types/configurator";
+import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
 
 interface BatteryStorageWizardProps {
   photovoltaicHandoff:
@@ -180,16 +181,22 @@ export function BatteryStorageWizard({
               </div>
             );
           }
+          const nextConfigurator =
+            getNextConfiguratorProduct(
+              state.journey,
+              "battery_storage",
+            );
 
           return (
             <BatteryStorageResult
               result={result}
+              nextConfigurator={
+                nextConfigurator
+              }
               onBack={() =>
                 setShowResult(false)
               }
-              onContinue={
-                onContinue
-              }
+              onContinue={onContinue}
             />
           );
         }}

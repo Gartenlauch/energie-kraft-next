@@ -1,11 +1,18 @@
 "use client";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
-import Link from "next/link";
-import type { PhotovoltaicConfiguratorResult } from "@/types/configurator";
+
+import type {
+  ConfiguratorType,
+  PhotovoltaicConfiguratorResult,
+} from "@/types/configurator";
+
+import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
+
 
 interface PhotovoltaicResultProps {
   result: PhotovoltaicConfiguratorResult;
+  nextConfigurator: ConfiguratorType | null;
   onBack: () => void;
   onContinue: () => void;
 }
@@ -16,6 +23,7 @@ function formatKwh(value: number): string {
 
 export function PhotovoltaicResult({
   result,
+  nextConfigurator,
   onBack,
   onContinue,
 }: PhotovoltaicResultProps) {
@@ -109,8 +117,8 @@ export function PhotovoltaicResult({
 
           {result.batteryStorageRequested ? (
             <p className="mt-3 text-sm leading-6 text-foreground/65">
-              Nach Abschluss kannst du die Speicherplanung mit den
-              bereits vorhandenen Angaben fortsetzen.
+              Der Stromspeicher ist Teil deines Energieprojekts und wird
+              im weiteren Konfigurator-Ablauf berücksichtigt.
             </p>
           ) : null}
         </article>
@@ -131,43 +139,14 @@ export function PhotovoltaicResult({
         </div>
       ) : null}
 
-      <div className="mt-8 rounded-2xl border border-border-default bg-background p-6">
-        <h2 className="text-lg font-semibold text-brand-primary">
-          Wie geht es weiter?
-        </h2>
-
-        <p className="mt-2 leading-7 text-foreground/70">
-          Im nächsten Schritt kannst du deine Kontaktdaten ergänzen.
-          Deine bisherigen Konfigurator-Angaben werden dabei
-          übernommen.
-        </p>
-
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <button
-            type="button"
-            onClick={onBack}
-            className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary transition hover:bg-surface"
-          >
-            Angaben ändern
-          </button>
-          {result.batteryStorageRequested ? (
-            <Link
-              href="/konfigurator/stromspeicher"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-brand-primary px-6 py-3 text-center font-semibold text-brand-primary transition hover:bg-surface"
-            >
-              Stromspeicher konfigurieren
-            </Link>
-          ) : null}
-
-          <button
-            type="button"
-            onClick={onContinue}
-            className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
-          >
-            Kontaktdaten ergänzen
-          </button>
-        </div>
-      </div>
+      <ConfiguratorJourneyActions
+        currentConfigurator="photovoltaic"
+        nextConfigurator={
+          nextConfigurator
+        }
+        onBack={onBack}
+        onContinue={onContinue}
+      />
 
       <p className="mt-6 text-sm leading-6 text-foreground/60">
         Diese Berechnung ist eine unverbindliche Orientierung und

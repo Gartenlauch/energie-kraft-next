@@ -12,9 +12,8 @@ import { climateWizardSteps } from "@/content/configurators";
 import { buildClimateConfiguratorResult } from "@/lib/configurator/climate";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isClimateStepComplete } from "@/lib/validation/configurator/climate";
-import type {
-    ClimateStepId,
-} from "@/types/configurator";
+import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
+import type { ClimateStepId } from "@/types/configurator";
 
 export function ClimateWizard() {
     const {
@@ -153,16 +152,22 @@ export function ClimateWizard() {
                             </div>
                         );
                     }
+                    const nextConfigurator =
+                        getNextConfiguratorProduct(
+                            state.journey,
+                            "climate",
+                        );
 
                     return (
                         <ClimateResult
                             result={result}
+                            nextConfigurator={
+                                nextConfigurator
+                            }
                             onBack={() =>
                                 setShowResult(false)
                             }
-                            onContinue={
-                                onContinue
-                            }
+                            onContinue={onContinue}
                         />
                     );
                 }}

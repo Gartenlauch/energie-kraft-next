@@ -12,9 +12,8 @@ import { wallboxWizardSteps } from "@/content/configurators";
 import { buildWallboxConfiguratorResult } from "@/lib/configurator/wallbox";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isWallboxStepComplete } from "@/lib/validation/configurator/wallbox";
-import type {
-  WallboxStepId,
-} from "@/types/configurator";
+import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
+import type { WallboxStepId } from "@/types/configurator";
 
 interface WallboxWizardProps {
   hasPhotovoltaicContext: boolean;
@@ -161,16 +160,22 @@ export function WallboxWizard({
               </div>
             );
           }
+          const nextConfigurator =
+            getNextConfiguratorProduct(
+              state.journey,
+              "wallbox",
+            );
 
           return (
             <WallboxResult
               result={result}
+              nextConfigurator={
+                nextConfigurator
+              }
               onBack={() =>
                 setShowResult(false)
               }
-              onContinue={
-                onContinue
-              }
+              onContinue={onContinue}
             />
           );
         }}

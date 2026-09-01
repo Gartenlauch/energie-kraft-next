@@ -122,5 +122,134 @@ describe(
                 );
             },
         );
+        it(
+            "adds photovoltaic energy-solution selections to the journey",
+            () => {
+                const state =
+                    createInitialConfiguratorState();
+
+                const journey =
+                    buildConfiguratorJourney(
+                        "photovoltaic",
+                        {
+                            batteryStorage: true,
+                            wallbox: true,
+                            heatPump: true,
+                            climate: true,
+                        },
+                        state.results,
+                    );
+
+                expect(
+                    journey.selectedProducts,
+                ).toEqual([
+                    "photovoltaic",
+                    "battery_storage",
+                    "wallbox",
+                    "heat_pump",
+                    "climate",
+                ]);
+            },
+        );
+        it(
+            "moves through a complete multi-configurator journey in order",
+            () => {
+                const selectedProducts = [
+                    "photovoltaic",
+                    "battery_storage",
+                    "wallbox",
+                    "heat_pump",
+                    "climate",
+                ] as const;
+
+                expect(
+                    getNextConfiguratorProduct(
+                        {
+                            entryPoint:
+                                "photovoltaic",
+                            selectedProducts: [
+                                ...selectedProducts,
+                            ],
+                            completedProducts: [
+                                "photovoltaic",
+                            ],
+                        },
+                        "photovoltaic",
+                    ),
+                ).toBe(
+                    "battery_storage",
+                );
+
+                expect(
+                    getNextConfiguratorProduct(
+                        {
+                            entryPoint:
+                                "photovoltaic",
+                            selectedProducts: [
+                                ...selectedProducts,
+                            ],
+                            completedProducts: [
+                                "photovoltaic",
+                                "battery_storage",
+                            ],
+                        },
+                        "battery_storage",
+                    ),
+                ).toBe("wallbox");
+
+                expect(
+                    getNextConfiguratorProduct(
+                        {
+                            entryPoint:
+                                "photovoltaic",
+                            selectedProducts: [
+                                ...selectedProducts,
+                            ],
+                            completedProducts: [
+                                "photovoltaic",
+                                "battery_storage",
+                                "wallbox",
+                            ],
+                        },
+                        "wallbox",
+                    ),
+                ).toBe("heat_pump");
+
+                expect(
+                    getNextConfiguratorProduct(
+                        {
+                            entryPoint:
+                                "photovoltaic",
+                            selectedProducts: [
+                                ...selectedProducts,
+                            ],
+                            completedProducts: [
+                                "photovoltaic",
+                                "battery_storage",
+                                "wallbox",
+                                "heat_pump",
+                            ],
+                        },
+                        "heat_pump",
+                    ),
+                ).toBe("climate");
+
+                expect(
+                    getNextConfiguratorProduct(
+                        {
+                            entryPoint:
+                                "photovoltaic",
+                            selectedProducts: [
+                                ...selectedProducts,
+                            ],
+                            completedProducts: [
+                                ...selectedProducts,
+                            ],
+                        },
+                        "climate",
+                    ),
+                ).toBeNull();
+            },
+        );
     },
 );

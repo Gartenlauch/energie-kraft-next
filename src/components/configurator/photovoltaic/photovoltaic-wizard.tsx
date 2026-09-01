@@ -18,8 +18,7 @@ import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { buildPhotovoltaicConfiguratorResult, getPhotovoltaicHouseholdConsumptionDefault } from "@/lib/configurator/photovoltaic";
 import { useConfiguratorWizard } from "@/lib/configurator/use-configurator-wizard";
 import { isPhotovoltaicStepComplete } from "@/lib/validation/configurator/photovoltaic";
-import { AdditionalInterestsStep } from "@/components/configurator/photovoltaic/additional-interests-step";
-import { BatteryStorageStep } from "@/components/configurator/photovoltaic/battery-storage-step";
+import { EnergySolutionsStep } from "@/components/configurator/photovoltaic/energy-solutions-step";
 import { FutureConsumptionStep } from "@/components/configurator/photovoltaic/future-consumption-step";
 import { NotesStep } from "@/components/configurator/photovoltaic/notes-step";
 import { PhotovoltaicResult } from "@/components/configurator/photovoltaic/photovoltaic-result";
@@ -29,7 +28,7 @@ import { PhotovoltaicSubmitReview } from "@/components/configurator/photovoltaic
 import { buildPhotovoltaicConfiguratorLeadInput } from "@/lib/configurator/lead";
 import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
 import { photovoltaicConfiguratorLeadInputSchema } from "@/lib/validation/configurator/lead";
-
+import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
 import type {
   ConfiguratorContactFormValues,
   SubmitPhotovoltaicConfiguratorLeadInput,
@@ -44,8 +43,7 @@ import type {
   RoofOrientation,
   RoofPitch,
   RoofRenovationPeriod,
-  ConfiguratorInterests,
-  PhotovoltaicAdditionalInterest,
+  PhotovoltaicEnergySolution,
 } from "@/types/configurator";
 
 export function PhotovoltaicWizard() {
@@ -248,50 +246,52 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleBatteryStorageChange(
-    batteryStorage: boolean,
+  function handleEnergySolutionToggle(
+    solution: PhotovoltaicEnergySolution,
   ) {
     activatePhotovoltaic();
 
-    dispatch({
-      type: "UPDATE_INTERESTS",
-      payload: {
-        batteryStorage,
-      },
-    });
-  }
-
-  function handleAdditionalInterestToggle(
-    interest: PhotovoltaicAdditionalInterest,
-  ) {
-    activatePhotovoltaic();
-
-    let payload: Partial<ConfiguratorInterests>;
-
-    switch (interest) {
-      case "climate":
-        payload = {
-          climate: !state.interests.climate,
-        };
-        break;
-
-      case "heatPump":
-        payload = {
-          heatPump: !state.interests.heatPump,
-        };
+    switch (solution) {
+      case "batteryStorage":
+        dispatch({
+          type: "UPDATE_INTERESTS",
+          payload: {
+            batteryStorage:
+              !state.interests.batteryStorage,
+          },
+        });
         break;
 
       case "wallbox":
-        payload = {
-          wallbox: !state.interests.wallbox,
-        };
+        dispatch({
+          type: "UPDATE_INTERESTS",
+          payload: {
+            wallbox:
+              !state.interests.wallbox,
+          },
+        });
+        break;
+
+      case "heatPump":
+        dispatch({
+          type: "UPDATE_INTERESTS",
+          payload: {
+            heatPump:
+              !state.interests.heatPump,
+          },
+        });
+        break;
+
+      case "climate":
+        dispatch({
+          type: "UPDATE_INTERESTS",
+          payload: {
+            climate:
+              !state.interests.climate,
+          },
+        });
         break;
     }
-
-    dispatch({
-      type: "UPDATE_INTERESTS",
-      payload,
-    });
   }
 
   function handleHasNotesChange(
@@ -502,10 +502,19 @@ export function PhotovoltaicWizard() {
     postWizardStage === "result" &&
     state.results.photovoltaic
   ) {
+    const nextConfigurator =
+      getNextConfiguratorProduct(
+        state.journey,
+        "photovoltaic",
+      );
+
     return (
       <PhotovoltaicResult
         result={
           state.results.photovoltaic
+        }
+        nextConfigurator={
+          nextConfigurator
         }
         onBack={() =>
           setPostWizardStage(null)
@@ -596,17 +605,10 @@ export function PhotovoltaicWizard() {
         />
       ) : null}
 
-      {currentStepId === "battery_storage" ? (
-        <BatteryStorageStep
-          selected={state.interests.batteryStorage}
-          onChange={handleBatteryStorageChange}
-        />
-      ) : null}
-
-      {currentStepId === "additional_interests" ? (
-        <AdditionalInterestsStep
+      {currentStepId === "energy_solutions" ? (
+        <EnergySolutionsStep
           interests={state.interests}
-          onToggle={handleAdditionalInterestToggle}
+          onToggle={handleEnergySolutionToggle}
         />
       ) : null}
 

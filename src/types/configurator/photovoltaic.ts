@@ -1,3 +1,4 @@
+import type { ConfiguratorInterests } from "./state";
 import type { ConfiguratorStepDefinition } from "./wizard";
 
 export type PhotovoltaicStepId =
@@ -10,14 +11,11 @@ export type PhotovoltaicStepId =
   | "roof_orientation"
   | "roof_renovation"
   | "future_consumption"
-  | "battery_storage"
-  | "additional_interests"
+  | "energy_solutions"
   | "notes";
 
-export type PhotovoltaicAdditionalInterest =
-  | "climate"
-  | "heatPump"
-  | "wallbox";
+export type PhotovoltaicEnergySolution =
+  keyof ConfiguratorInterests;
 
 export type PhotovoltaicStepDefinition = Omit<
   ConfiguratorStepDefinition,

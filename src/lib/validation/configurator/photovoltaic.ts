@@ -64,10 +64,7 @@ export function isPhotovoltaicStepComplete(
         state.household.futureIncreasePercent,
       ).success;
 
-    case "battery_storage":
-      return true;
-
-    case "additional_interests":
+    case "energy_solutions":
       return true;
 
     case "notes":

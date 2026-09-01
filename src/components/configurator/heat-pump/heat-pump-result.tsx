@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-
+import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { heatPumpCalculatorContent } from "@/content/pages/waermepumpen-rechner";
 import type {
+    ConfiguratorType,
     HeatPumpConfiguratorResult,
 } from "@/types/configurator";
 
 interface HeatPumpResultProps {
     result: HeatPumpConfiguratorResult;
+    nextConfigurator:
+    ConfiguratorType | null;
     onBack: () => void;
     onContinue: () => void;
 }
@@ -30,6 +33,7 @@ export function HeatPumpResult({
     result,
     onBack,
     onContinue,
+    nextConfigurator,
 }: HeatPumpResultProps) {
     const assessment =
         heatPumpCalculatorContent
@@ -195,37 +199,22 @@ export function HeatPumpResult({
                 </div>
             ) : null}
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <button
-                    type="button"
-                    onClick={onBack}
-                    className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary transition hover:bg-surface"
-                >
-                    Angaben ändern
-                </button>
-
-                <button
-                    type="button"
-                    onClick={onContinue}
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
-                >
-                    Beratung anfragen
-                </button>
-
-                <Link
-                    href="/rechner/waermepumpe-kosten"
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border-default px-6 py-3 text-center font-semibold text-brand-primary transition hover:bg-surface"
-                >
-                    Detailliert berechnen
-                </Link>
-
-                <Link
-                    href="/konfigurator"
-                    className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border-default px-6 py-3 text-center font-semibold text-brand-primary transition hover:bg-surface"
-                >
-                    Zur Übersicht
-                </Link>
-            </div>
+            <ConfiguratorJourneyActions
+                currentConfigurator="heat_pump"
+                nextConfigurator={
+                    nextConfigurator
+                }
+                onBack={onBack}
+                onContinue={onContinue}
+                secondaryActions={
+                    <Link
+                        href="/rechner/waermepumpe-kosten"
+                        className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border-default px-6 py-3 text-center font-semibold text-brand-primary transition hover:bg-surface"
+                    >
+                        Detailliert berechnen
+                    </Link>
+                }
+            />
 
             <p className="mt-6 text-sm leading-6 text-foreground/60">
                 Diese Berechnung ist eine unverbindliche

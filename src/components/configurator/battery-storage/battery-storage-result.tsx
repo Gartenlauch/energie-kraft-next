@@ -1,14 +1,16 @@
 "use client";
 
-import Link from "next/link";
-
+import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import type {
   BatteryStorageConfiguratorResult,
+  ConfiguratorType,
 } from "@/types/configurator";
 
 interface BatteryStorageResultProps {
   result: BatteryStorageConfiguratorResult;
+  nextConfigurator:
+  ConfiguratorType | null;
   onBack: () => void;
   onContinue: () => void;
 }
@@ -40,6 +42,7 @@ const BACKUP_LABELS = {
 
 export function BatteryStorageResult({
   result,
+  nextConfigurator,
   onBack,
   onContinue,
 }: BatteryStorageResultProps) {
@@ -218,30 +221,14 @@ export function BatteryStorageResult({
         </div>
       ) : null}
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <button
-          type="button"
-          onClick={onBack}
-          className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary transition hover:bg-surface"
-        >
-          Angaben ändern
-        </button>
-
-        <button
-          type="button"
-          onClick={onContinue}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
-        >
-          Beratung anfragen
-        </button>
-
-        <Link
-          href="/konfigurator"
-          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border-default px-6 py-3 text-center font-semibold text-brand-primary transition hover:bg-surface"
-        >
-          Zur Übersicht
-        </Link>
-      </div>
+      <ConfiguratorJourneyActions
+        currentConfigurator="battery_storage"
+        nextConfigurator={
+          nextConfigurator
+        }
+        onBack={onBack}
+        onContinue={onContinue}
+      />
 
       <p className="mt-6 text-sm leading-6 text-foreground/60">
         Die Empfehlung ist eine unverbindliche

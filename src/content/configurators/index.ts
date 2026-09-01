@@ -5,7 +5,7 @@ export {
 } from "./landing";
 
 export {
-  photovoltaicAdditionalInterestOptions,
+  photovoltaicEnergySolutionOptions,
   photovoltaicBuildingTypeOptions,
   photovoltaicConfiguratorContent,
   photovoltaicFutureIncreaseOptions,
