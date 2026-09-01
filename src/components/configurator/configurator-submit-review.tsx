@@ -1,8 +1,10 @@
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
+import { ConfiguratorProductBadge } from "@/components/configurator/configurator-product-badge";
 import type {
     ConfiguratorLeadPayload,
     SubmitConfiguratorLeadInput,
 } from "@/types/configurator";
+
 
 interface ConfiguratorSubmitReviewProps {
     input: SubmitConfiguratorLeadInput;
@@ -335,17 +337,21 @@ export function ConfiguratorSubmitReview({
                             Dein Energieprojekt
                         </h2>
 
-                        <p className="mt-2 leading-7 text-foreground/70">
-                            {summaries
-                                .map(
-                                    (summary) =>
-                                        summary.title.replace(
-                                            "-Empfehlung",
-                                            "",
-                                        ),
-                                )
-                                .join(" · ")}
+                        <p className="mt-2 text-sm leading-6 text-foreground/60">
+                            Diese Energielösungen gehören zu deiner
+                            gemeinsamen Konfiguration.
                         </p>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {input.products.map(
+                                (product) => (
+                                    <ConfiguratorProductBadge
+                                        key={product}
+                                        product={product}
+                                    />
+                                ),
+                            )}
+                        </div>
                     </article>
 
                     {summaries.map(

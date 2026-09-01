@@ -199,9 +199,23 @@ function reduceConfiguratorState(
         journey: {
           ...state.journey,
 
+          /*
+           * Photovoltaik ist immer der erste
+           * Baustein einer PV-basierten Journey.
+           *
+           * Dadurch kann ein alter Entry-Point
+           * aus einer vorherigen Standalone-
+           * Konfiguration (z. B. Wärmepumpe)
+           * nicht in ein neues PV-Projekt
+           * hineinragen.
+           */
           entryPoint:
-            state.journey.entryPoint ??
-            action.payload,
+            action.payload ===
+              "photovoltaic"
+              ? "photovoltaic"
+              : state.journey
+                .entryPoint ??
+              action.payload,
         },
       };
 

@@ -10,7 +10,7 @@ describe("configurator state", () => {
   it("creates the expected initial state", () => {
     const state = createInitialConfiguratorState();
 
-    expect(state.version).toBe(6);
+    expect(state.version).toBe(7);
 
     expect(state.wallbox).toEqual({});
     expect(state.activeConfigurator).toBeNull();
@@ -113,4 +113,65 @@ describe("configurator state", () => {
 
     expect(state).toEqual(createInitialConfiguratorState());
   });
+  it(
+    "starts a fresh photovoltaic journey instead of keeping an old standalone entry point",
+    () => {
+      let state =
+        createInitialConfiguratorState();
+
+      /*
+       * Vorherige Standalone-Wärmepumpen-
+       * Journey simulieren.
+       */
+      state =
+        configuratorReducer(
+          state,
+          {
+            type:
+              "SET_ACTIVE_CONFIGURATOR",
+
+            payload:
+              "heat_pump",
+          },
+        );
+
+      expect(
+        state.journey.entryPoint,
+      ).toBe("heat_pump");
+
+      /*
+       * Danach beginnt der Benutzer eine
+       * neue PV-Konfiguration.
+       */
+      state =
+        configuratorReducer(
+          state,
+          {
+            type:
+              "SET_ACTIVE_CONFIGURATOR",
+
+            payload:
+              "photovoltaic",
+          },
+        );
+
+      expect(
+        state.journey.entryPoint,
+      ).toBe("photovoltaic");
+
+      expect(
+        state.journey
+          .selectedProducts,
+      ).toEqual([
+        "photovoltaic",
+      ]);
+
+      expect(
+        state.journey
+          .selectedProducts,
+      ).not.toContain(
+        "heat_pump",
+      );
+    },
+  );
 });

@@ -16,7 +16,7 @@ import type {
 } from "./climate";
 
 
-export const CONFIGURATOR_STATE_VERSION = 6 as const;
+export const CONFIGURATOR_STATE_VERSION = 7 as const;
 
 export type ConfiguratorType =
   | "photovoltaic"
