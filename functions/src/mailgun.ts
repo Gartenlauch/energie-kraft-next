@@ -19,12 +19,19 @@ export const LEAD_MAIL_RECIPIENT =
 export const LEAD_MAIL_FROM =
   "Energie-Kraft Website <website@notify.energie-kraft.de>";
 
+export interface MailAttachment {
+  filename: string;
+  data: Buffer;
+  contentType?: string;
+}
+
 export interface SendMailInput {
   to: string;
   subject: string;
   text: string;
   html: string;
   replyTo?: string;
+  attachments?: readonly MailAttachment[];
 }
 
 export interface SendMailResult {
@@ -43,6 +50,17 @@ export async function sendMailgunMail(
     url: MAILGUN_API_URL,
   });
 
+  const attachments =
+    input.attachments?.map(
+      (attachment) => ({
+        data: attachment.data,
+        filename: attachment.filename,
+        contentType:
+          attachment.contentType ??
+          "application/octet-stream",
+      }),
+    );
+
   const result = await client.messages.create(
     MAILGUN_DOMAIN,
     {
@@ -52,10 +70,18 @@ export async function sendMailgunMail(
       text: input.text,
       html: input.html,
 
+      ...(attachments &&
+        attachments.length > 0
+        ? {
+          attachment:
+            attachments,
+        }
+        : {}),
+
       ...(input.replyTo
         ? {
-            "h:Reply-To": input.replyTo,
-          }
+          "h:Reply-To": input.replyTo,
+        }
         : {}),
     },
   );
