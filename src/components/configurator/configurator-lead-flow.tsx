@@ -22,7 +22,6 @@ import {
 } from "@/lib/validation/configurator/lead";
 import type {
     ConfiguratorContactFormValues,
-    ConfiguratorLeadType,
     SubmitConfiguratorLeadInput,
 } from "@/types/configurator";
 
@@ -33,9 +32,6 @@ type LeadFlowStage =
     | "success";
 
 interface ConfiguratorLeadFlowProps {
-    configuratorType:
-    ConfiguratorLeadType;
-
     renderResult: (
         onContinue: () => void,
     ) => ReactNode;
@@ -44,7 +40,6 @@ interface ConfiguratorLeadFlowProps {
 }
 
 export function ConfiguratorLeadFlow({
-    configuratorType,
     renderResult,
     onRestart,
 }: ConfiguratorLeadFlowProps) {
@@ -102,7 +97,6 @@ export function ConfiguratorLeadFlow({
         contactDraft &&
             contactFormStartedAt !== null
             ? buildConfiguratorLeadInput(
-                configuratorType,
                 state,
                 contactDraft,
                 contactFormStartedAt,
@@ -134,14 +128,9 @@ export function ConfiguratorLeadFlow({
         setIsSubmitting(true);
 
         try {
-            const result =
-                await submitConfiguratorLead(
-                    parsed.data,
-                );
+            const result = await submitConfiguratorLead(leadInput);
 
-            setSubmittedLeadId(
-                result.leadId,
-            );
+            setSubmittedLeadId( result.leadId );
 
             /*
              * Technische Konfigurator-Daten
@@ -169,13 +158,10 @@ export function ConfiguratorLeadFlow({
                 leadId={submittedLeadId}
                 onRestart={() => {
                     setContactDraft(null);
-                    setContactFormStartedAt(
-                        null,
-                    );
+                    setContactFormStartedAt(null);
                     setSubmittedLeadId(null);
                     setSubmissionError(null);
                     setStage("result");
-
                     onRestart();
                 }}
             />

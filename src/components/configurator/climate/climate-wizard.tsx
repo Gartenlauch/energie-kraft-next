@@ -136,7 +136,6 @@ export function ClimateWizard() {
     if (showResult) {
         return (
             <ConfiguratorLeadFlow
-                configuratorType="climate"
                 renderResult={(onContinue) => {
                     const result =
                         state.results.climate;

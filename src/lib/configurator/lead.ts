@@ -1,20 +1,16 @@
+import {
+  CONFIGURATOR_JOURNEY_ORDER,
+} from "@/lib/configurator/journey";
 import type {
   ClimateConfiguratorResult,
   ConfiguratorContactFormValues,
+  ConfiguratorLeadPayload,
   ConfiguratorLeadType,
   ConfiguratorState,
   HeatPumpConfiguratorResult,
-  SubmitBatteryStorageConfiguratorLeadInput,
-  SubmitClimateConfiguratorLeadInput,
   SubmitConfiguratorLeadCommonInput,
   SubmitConfiguratorLeadInput,
-  SubmitHeatPumpConfiguratorLeadInput,
-  SubmitPhotovoltaicConfiguratorLeadInput,
-  SubmitWallboxConfiguratorLeadInput,
   WallboxConfiguratorResult,
-} from "@/types/configurator";
-import {
-  hasPhotovoltaicConfiguratorResult,
 } from "@/types/configurator";
 
 function buildCommonLeadInput(
@@ -22,13 +18,14 @@ function buildCommonLeadInput(
   formStartedAt: number,
 ): SubmitConfiguratorLeadCommonInput | null {
   if (
-    contactValues.installationAtResidence ===
-    null
+    contactValues.installationAtResidence === null
   ) {
     return null;
   }
 
-  const phone = contactValues.phone.trim();
+  const phone =
+    contactValues.phone.trim();
+
   const website =
     contactValues.website.trim();
 
@@ -38,9 +35,12 @@ function buildCommonLeadInput(
     contact: {
       firstName:
         contactValues.firstName.trim(),
+
       lastName:
         contactValues.lastName.trim(),
-      email: contactValues.email.trim(),
+
+      email:
+        contactValues.email.trim(),
 
       ...(phone
         ? {
@@ -53,10 +53,14 @@ function buildCommonLeadInput(
       atResidence:
         contactValues.installationAtResidence,
 
-      street: contactValues.street.trim(),
+      street:
+        contactValues.street.trim(),
+
       postalCode:
         contactValues.postalCode.trim(),
-      city: contactValues.city.trim(),
+
+      city:
+        contactValues.city.trim(),
     },
 
     privacyAccepted:
@@ -72,69 +76,48 @@ function buildCommonLeadInput(
   };
 }
 
-export function buildPhotovoltaicConfiguratorLeadInput(
+function buildPhotovoltaicPayload(
   state: ConfiguratorState,
-  contactValues: ConfiguratorContactFormValues,
-  formStartedAt: number,
-): SubmitPhotovoltaicConfiguratorLeadInput | null {
-  const common = buildCommonLeadInput(
-    contactValues,
-    formStartedAt,
-  );
+): ConfiguratorLeadPayload | null {
+  const result =
+    state.results.photovoltaic;
 
-  if (
-    !common ||
-    !hasPhotovoltaicConfiguratorResult(
-      state,
-    )
-  ) {
+  if (!result) {
     return null;
   }
 
   return {
-    ...common,
+    type: "photovoltaic",
 
-    configurator: {
-      type: "photovoltaic",
-
-      answers: {
-        household: {
-          ...state.household,
-        },
-
-        building: {
-          ...state.building,
-        },
-
-        roof: {
-          ...state.roof,
-        },
-
-        interests: {
-          ...state.interests,
-        },
-
-        notes: {
-          ...state.notes,
-        },
+    answers: {
+      household: {
+        ...state.household,
       },
 
-      result:
-        state.results.photovoltaic,
+      building: {
+        ...state.building,
+      },
+
+      roof: {
+        ...state.roof,
+      },
+
+      interests: {
+        ...state.interests,
+      },
+
+      notes: {
+        ...state.notes,
+      },
     },
+
+    result,
   };
 }
 
-export function buildBatteryStorageConfiguratorLeadInput(
+function buildBatteryStoragePayload(
   state: ConfiguratorState,
-  contactValues: ConfiguratorContactFormValues,
-  formStartedAt: number,
-): SubmitBatteryStorageConfiguratorLeadInput | null {
-  const common = buildCommonLeadInput(
-    contactValues,
-    formStartedAt,
-  );
-
+): ConfiguratorLeadPayload | null {
   const result =
     state.results.batteryStorage;
 
@@ -147,7 +130,6 @@ export function buildBatteryStorageConfiguratorLeadInput(
   } = state.batteryStorage;
 
   if (
-    !common ||
     !result ||
     consumptionPattern === undefined ||
     backupPreference === undefined ||
@@ -157,31 +139,27 @@ export function buildBatteryStorageConfiguratorLeadInput(
   }
 
   return {
-    ...common,
+    type: "battery_storage",
 
-    configurator: {
-      type: "battery_storage",
+    answers: {
+      ...(annualConsumptionKwh !== undefined
+        ? {
+          annualConsumptionKwh,
+        }
+        : {}),
 
-      answers: {
-        ...(annualConsumptionKwh !== undefined
-          ? {
-            annualConsumptionKwh,
-          }
-          : {}),
+      ...(pvPowerKwp !== undefined
+        ? {
+          pvPowerKwp,
+        }
+        : {}),
 
-        ...(pvPowerKwp !== undefined
-          ? {
-            pvPowerKwp,
-          }
-          : {}),
-
-        consumptionPattern,
-        backupPreference,
-        goal,
-      },
-
-      result,
+      consumptionPattern,
+      backupPreference,
+      goal,
     },
+
+    result,
   };
 }
 
@@ -227,17 +205,11 @@ function buildWallboxLeadResult(
   };
 }
 
-export function buildWallboxConfiguratorLeadInput(
+function buildWallboxPayload(
   state: ConfiguratorState,
-  contactValues: ConfiguratorContactFormValues,
-  formStartedAt: number,
-): SubmitWallboxConfiguratorLeadInput | null {
-  const common = buildCommonLeadInput(
-    contactValues,
-    formStartedAt,
-  );
-
-  const result = state.results.wallbox;
+): ConfiguratorLeadPayload | null {
+  const result =
+    state.results.wallbox;
 
   const {
     annualDrivingKm,
@@ -249,7 +221,6 @@ export function buildWallboxConfiguratorLeadInput(
   } = state.wallbox;
 
   if (
-    !common ||
     !result ||
     annualDrivingKm === undefined ||
     vehicleConsumptionKwhPer100Km ===
@@ -263,23 +234,19 @@ export function buildWallboxConfiguratorLeadInput(
   }
 
   return {
-    ...common,
+    type: "wallbox",
 
-    configurator: {
-      type: "wallbox",
-
-      answers: {
-        annualDrivingKm,
-        vehicleConsumptionKwhPer100Km,
-        batteryCapacityKwh,
-        homeChargingSharePercent,
-        chargingPowerKw,
-        pvChargingSharePercent,
-      },
-
-      result:
-        buildWallboxLeadResult(result),
+    answers: {
+      annualDrivingKm,
+      vehicleConsumptionKwhPer100Km,
+      batteryCapacityKwh,
+      homeChargingSharePercent,
+      chargingPowerKw,
+      pvChargingSharePercent,
     },
+
+    result:
+      buildWallboxLeadResult(result),
   };
 }
 
@@ -318,24 +285,19 @@ function buildHeatPumpLeadResult(
     flowTemperatureAssessment:
       result.flowTemperatureAssessment,
 
-    ntReady: result.ntReady,
+    ntReady:
+      result.ntReady,
 
     technicalReviewRecommended:
       result.technicalReviewRecommended,
   };
 }
 
-export function buildHeatPumpConfiguratorLeadInput(
+function buildHeatPumpPayload(
   state: ConfiguratorState,
-  contactValues: ConfiguratorContactFormValues,
-  formStartedAt: number,
-): SubmitHeatPumpConfiguratorLeadInput | null {
-  const common = buildCommonLeadInput(
-    contactValues,
-    formStartedAt,
-  );
-
-  const result = state.results.heatPump;
+): ConfiguratorLeadPayload | null {
+  const result =
+    state.results.heatPump;
 
   const {
     heatedAreaM2,
@@ -346,7 +308,6 @@ export function buildHeatPumpConfiguratorLeadInput(
   } = state.heatPump;
 
   if (
-    !common ||
     !result ||
     heatedAreaM2 === undefined ||
     specificSpaceHeatingDemandKwhPerM2Year ===
@@ -359,22 +320,18 @@ export function buildHeatPumpConfiguratorLeadInput(
   }
 
   return {
-    ...common,
+    type: "heat_pump",
 
-    configurator: {
-      type: "heat_pump",
-
-      answers: {
-        heatedAreaM2,
-        specificSpaceHeatingDemandKwhPerM2Year,
-        occupancyPersons,
-        requiredFlowTemperatureC,
-        annualPerformanceFactor,
-      },
-
-      result:
-        buildHeatPumpLeadResult(result),
+    answers: {
+      heatedAreaM2,
+      specificSpaceHeatingDemandKwhPerM2Year,
+      occupancyPersons,
+      requiredFlowTemperatureC,
+      annualPerformanceFactor,
     },
+
+    result:
+      buildHeatPumpLeadResult(result),
   };
 }
 
@@ -417,17 +374,11 @@ function buildClimateLeadResult(
   };
 }
 
-export function buildClimateConfiguratorLeadInput(
+function buildClimatePayload(
   state: ConfiguratorState,
-  contactValues: ConfiguratorContactFormValues,
-  formStartedAt: number,
-): SubmitClimateConfiguratorLeadInput | null {
-  const common = buildCommonLeadInput(
-    contactValues,
-    formStartedAt,
-  );
-
-  const result = state.results.climate;
+): ConfiguratorLeadPayload | null {
+  const result =
+    state.results.climate;
 
   const {
     conditionedAreaM2,
@@ -438,7 +389,6 @@ export function buildClimateConfiguratorLeadInput(
   } = state.climate;
 
   if (
-    !common ||
     !result ||
     conditionedAreaM2 === undefined ||
     roomCount === undefined ||
@@ -450,65 +400,141 @@ export function buildClimateConfiguratorLeadInput(
   }
 
   return {
-    ...common,
+    type: "climate",
 
-    configurator: {
-      type: "climate",
-
-      answers: {
-        conditionedAreaM2,
-        roomCount,
-        insulationLevel,
-        solarLoad,
-        occupancyPersons,
-      },
-
-      result:
-        buildClimateLeadResult(result),
+    answers: {
+      conditionedAreaM2,
+      roomCount,
+      insulationLevel,
+      solarLoad,
+      occupancyPersons,
     },
+
+    result:
+      buildClimateLeadResult(result),
   };
 }
 
-export function buildConfiguratorLeadInput(
+function buildConfiguratorPayload(
   configuratorType: ConfiguratorLeadType,
+  state: ConfiguratorState,
+): ConfiguratorLeadPayload | null {
+  switch (configuratorType) {
+    case "photovoltaic":
+      return buildPhotovoltaicPayload(
+        state,
+      );
+
+    case "battery_storage":
+      return buildBatteryStoragePayload(
+        state,
+      );
+
+    case "wallbox":
+      return buildWallboxPayload(
+        state,
+      );
+
+    case "heat_pump":
+      return buildHeatPumpPayload(
+        state,
+      );
+
+    case "climate":
+      return buildClimatePayload(
+        state,
+      );
+  }
+}
+
+export function buildConfiguratorLeadInput(
   state: ConfiguratorState,
   contactValues: ConfiguratorContactFormValues,
   formStartedAt: number,
 ): SubmitConfiguratorLeadInput | null {
-  switch (configuratorType) {
-    case "photovoltaic":
-      return buildPhotovoltaicConfiguratorLeadInput(
-        state,
-        contactValues,
-        formStartedAt,
-      );
+  const common =
+    buildCommonLeadInput(
+      contactValues,
+      formStartedAt,
+    );
 
-    case "battery_storage":
-      return buildBatteryStorageConfiguratorLeadInput(
-        state,
-        contactValues,
-        formStartedAt,
-      );
+  const entryPoint =
+    state.journey.entryPoint;
 
-    case "wallbox":
-      return buildWallboxConfiguratorLeadInput(
-        state,
-        contactValues,
-        formStartedAt,
-      );
+  const selectedProducts = [
+    ...state.journey.selectedProducts,
+  ];
 
-    case "heat_pump":
-      return buildHeatPumpConfiguratorLeadInput(
-        state,
-        contactValues,
-        formStartedAt,
-      );
+  const completedProducts = [
+    ...state.journey.completedProducts,
+  ];
 
-    case "climate":
-      return buildClimateConfiguratorLeadInput(
-        state,
-        contactValues,
-        formStartedAt,
-      );
+  if (
+    !common ||
+    !entryPoint ||
+    selectedProducts.length === 0
+  ) {
+    return null;
   }
+
+  /*
+   * Zur Kontaktphase darf erst gewechselt
+   * werden, wenn alle ausgewählten Produkte
+   * abgeschlossen sind.
+   */
+  if (
+    selectedProducts.some(
+      (product) =>
+        !completedProducts.includes(
+          product,
+        ),
+    )
+  ) {
+    return null;
+  }
+
+  const configurators:
+    ConfiguratorLeadPayload[] = [];
+
+  for (
+    const product of
+    CONFIGURATOR_JOURNEY_ORDER
+  ) {
+    if (
+      !selectedProducts.includes(
+        product,
+      )
+    ) {
+      continue;
+    }
+
+    const payload =
+      buildConfiguratorPayload(
+        product,
+        state,
+      );
+
+    if (!payload) {
+      return null;
+    }
+
+    configurators.push(payload);
+  }
+
+  return {
+    ...common,
+
+    products:
+      selectedProducts,
+
+    journey: {
+      entryPoint,
+
+      selectedProducts,
+
+      completedProducts,
+    },
+
+    configurators,
+  };
 }

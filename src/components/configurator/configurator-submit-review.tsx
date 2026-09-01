@@ -1,5 +1,6 @@
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import type {
+    ConfiguratorLeadPayload,
     SubmitConfiguratorLeadInput,
 } from "@/types/configurator";
 
@@ -19,6 +20,7 @@ interface SummaryRow {
 }
 
 interface Summary {
+    type: ConfiguratorLeadPayload["type"];
     title: string;
     rows: SummaryRow[];
 }
@@ -36,14 +38,12 @@ const currencyFormatter =
     });
 
 function buildSummary(
-    input: SubmitConfiguratorLeadInput,
+    configurator: ConfiguratorLeadPayload,
 ): Summary {
-    const configurator =
-        input.configurator;
-
     switch (configurator.type) {
         case "photovoltaic":
             return {
+                type: configurator.type,
                 title: "Photovoltaik-Empfehlung",
 
                 rows: [
@@ -77,8 +77,8 @@ function buildSummary(
 
         case "battery_storage":
             return {
-                title:
-                    "Stromspeicher-Empfehlung",
+                type: configurator.type,
+                title: "Stromspeicher-Empfehlung",
 
                 rows: [
                     {
@@ -119,13 +119,12 @@ function buildSummary(
 
         case "wallbox":
             return {
-                title:
-                    "Wallbox-Empfehlung",
+                type: configurator.type,
+                title: "Wallbox-Empfehlung",
 
                 rows: [
                     {
-                        label:
-                            "Ladeleistung",
+                        label: "Ladeleistung",
 
                         value:
                             `${numberFormatter.format(
@@ -134,8 +133,7 @@ function buildSummary(
                             )} kW`,
                     },
                     {
-                        label:
-                            "Fahrleistung",
+                        label: "Fahrleistung",
 
                         value:
                             `${numberFormatter.format(
@@ -144,8 +142,7 @@ function buildSummary(
                             )} km/Jahr`,
                     },
                     {
-                        label:
-                            "Projektkosten",
+                        label: "Projektkosten",
 
                         value:
                             `${currencyFormatter.format(
@@ -161,8 +158,8 @@ function buildSummary(
 
         case "heat_pump":
             return {
-                title:
-                    "Wärmepumpen-Empfehlung",
+                type: configurator.type,
+                title: "Wärmepumpen-Empfehlung",
 
                 rows: [
                     {
@@ -186,8 +183,7 @@ function buildSummary(
                             )} kWh/Jahr`,
                     },
                     {
-                        label:
-                            "Projektkosten",
+                        label: "Projektkosten",
 
                         value:
                             `${currencyFormatter.format(
@@ -203,8 +199,8 @@ function buildSummary(
 
         case "climate":
             return {
-                title:
-                    "Klimaanlagen-Empfehlung",
+                type: configurator.type,
+                title: "Klimaanlagen-Empfehlung",
 
                 rows: [
                     {
@@ -218,8 +214,7 @@ function buildSummary(
                             )} kW`,
                     },
                     {
-                        label:
-                            "Innengeräte",
+                        label: "Innengeräte",
 
                         value:
                             String(
@@ -228,8 +223,7 @@ function buildSummary(
                             ),
                     },
                     {
-                        label:
-                            "Projektkosten",
+                        label: "Projektkosten",
 
                         value:
                             `${currencyFormatter.format(
@@ -252,8 +246,10 @@ export function ConfiguratorSubmitReview({
     onBack,
     onSubmit,
 }: ConfiguratorSubmitReviewProps) {
-    const summary =
-        buildSummary(input);
+    const summaries =
+        input.configurators.map(
+            buildSummary,
+        );
 
     return (
         <>
@@ -270,13 +266,13 @@ export function ConfiguratorSubmitReview({
                     id="configurator-submit-heading"
                     className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
                 >
-                    Möchtest du deine Anfrage absenden?
+                    Möchtest du dein Energieprojekt absenden?
                 </h1>
 
                 <p className="mt-4 max-w-2xl text-lg leading-8 text-foreground/70">
                     Prüfe die wichtigsten Angaben noch einmal.
-                    Nach dem Absenden wird deine Konfiguration
-                    zur persönlichen Bearbeitung übermittelt.
+                    Alle ausgewählten Konfigurationen werden
+                    gemeinsam als eine Anfrage übermittelt.
                 </p>
 
                 <div className="mt-8 grid gap-5 md:grid-cols-2">
@@ -334,27 +330,54 @@ export function ConfiguratorSubmitReview({
                         </p>
                     </article>
 
-                    <article className="rounded-2xl border border-border-default bg-surface p-6 md:col-span-2">
+                    <article className="rounded-2xl border border-brand-accent bg-surface p-6 md:col-span-2">
                         <h2 className="font-semibold text-brand-primary">
-                            {summary.title}
+                            Dein Energieprojekt
                         </h2>
 
-                        <dl className="mt-4 grid gap-4 sm:grid-cols-3">
-                            {summary.rows.map(
-                                (row) => (
-                                    <div key={row.label}>
-                                        <dt className="text-sm text-foreground/60">
-                                            {row.label}
-                                        </dt>
-
-                                        <dd className="mt-1 font-semibold text-brand-primary">
-                                            {row.value}
-                                        </dd>
-                                    </div>
-                                ),
-                            )}
-                        </dl>
+                        <p className="mt-2 leading-7 text-foreground/70">
+                            {summaries
+                                .map(
+                                    (summary) =>
+                                        summary.title.replace(
+                                            "-Empfehlung",
+                                            "",
+                                        ),
+                                )
+                                .join(" · ")}
+                        </p>
                     </article>
+
+                    {summaries.map(
+                        (summary) => (
+                            <article
+                                key={summary.type}
+                                className="rounded-2xl border border-border-default bg-surface p-6 md:col-span-2"
+                            >
+                                <h2 className="font-semibold text-brand-primary">
+                                    {summary.title}
+                                </h2>
+
+                                <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+                                    {summary.rows.map(
+                                        (row) => (
+                                            <div
+                                                key={row.label}
+                                            >
+                                                <dt className="text-sm text-foreground/60">
+                                                    {row.label}
+                                                </dt>
+
+                                                <dd className="mt-1 font-semibold text-brand-primary">
+                                                    {row.value}
+                                                </dd>
+                                            </div>
+                                        ),
+                                    )}
+                                </dl>
+                            </article>
+                        ),
+                    )}
                 </div>
 
                 {error ? (
@@ -384,7 +407,7 @@ export function ConfiguratorSubmitReview({
                     >
                         {isSubmitting
                             ? "Anfrage wird gesendet …"
-                            : "Anfrage absenden"}
+                            : "Energieprojekt absenden"}
                     </button>
                 </div>
             </section>

@@ -1,5 +1,6 @@
 import type {
   ConfiguratorAction,
+  ConfiguratorInterests,
   ConfiguratorResults,
   ConfiguratorState,
   HouseholdConfiguratorState,
@@ -149,6 +150,40 @@ function withoutClimateResult(
   return nextResults;
 }
 
+function withoutChangedInterestResults(
+  results: ConfiguratorResults,
+  currentInterests: ConfiguratorInterests,
+  nextInterests: ConfiguratorInterests,
+): ConfiguratorResults {
+  const nextResults =
+    withoutPhotovoltaicAndBatteryStorageResults(
+      results,
+    );
+
+  if (
+    currentInterests.wallbox !==
+    nextInterests.wallbox
+  ) {
+    delete nextResults.wallbox;
+  }
+
+  if (
+    currentInterests.heatPump !==
+    nextInterests.heatPump
+  ) {
+    delete nextResults.heatPump;
+  }
+
+  if (
+    currentInterests.climate !==
+    nextInterests.climate
+  ) {
+    delete nextResults.climate;
+  }
+
+  return nextResults;
+}
+
 function reduceConfiguratorState(
   state: ConfiguratorState,
   action: ConfiguratorAction,
@@ -247,20 +282,25 @@ function reduceConfiguratorState(
           ),
       };
 
-    case "UPDATE_INTERESTS":
+    case "UPDATE_INTERESTS": {
+      const interests = {
+        ...state.interests,
+        ...action.payload,
+      };
+
       return {
         ...state,
 
-        interests: {
-          ...state.interests,
-          ...action.payload,
-        },
+        interests,
 
         results:
-          withoutPhotovoltaicAndBatteryStorageResults(
+          withoutChangedInterestResults(
             state.results,
+            state.interests,
+            interests,
           ),
       };
+    }
 
     case "UPDATE_NOTES":
       return {

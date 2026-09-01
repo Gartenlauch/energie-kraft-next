@@ -144,7 +144,6 @@ export function WallboxWizard({
   if (showResult) {
     return (
       <ConfiguratorLeadFlow
-        configuratorType="wallbox"
         renderResult={(onContinue) => {
           const result =
             state.results.wallbox;

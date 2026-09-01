@@ -16,10 +16,11 @@ import type {
   ConfiguratorContactFormValues,
   SubmitBatteryStorageConfiguratorLeadInput,
   SubmitClimateConfiguratorLeadInput,
-  SubmitConfiguratorLeadInput,
   SubmitHeatPumpConfiguratorLeadInput,
   SubmitPhotovoltaicConfiguratorLeadInput,
   SubmitWallboxConfiguratorLeadInput,
+  ConfiguratorLeadPayload,
+  ConfiguratorLeadType,
 } from "@/types/configurator";
 
 const optionalPhoneSchema = z
@@ -656,15 +657,274 @@ export const climateConfiguratorLeadInputSchema:
     })
     .strict();
 
-export const configuratorLeadInputSchema:
-  z.ZodType<SubmitConfiguratorLeadInput> =
-  z.union([
-    photovoltaicConfiguratorLeadInputSchema,
-    batteryStorageConfiguratorLeadInputSchema,
-    wallboxConfiguratorLeadInputSchema,
-    heatPumpConfiguratorLeadInputSchema,
-    climateConfiguratorLeadInputSchema,
+const configuratorLeadTypeSchema =
+  z.enum([
+    "photovoltaic",
+    "battery_storage",
+    "wallbox",
+    "heat_pump",
+    "climate",
   ]);
+
+const configuratorPayloadEnvelopeSchema =
+  z
+    .object({
+      type:
+        configuratorLeadTypeSchema,
+
+      answers:
+        z.unknown(),
+
+      result:
+        z.unknown(),
+    })
+    .strict();
+
+function hasDuplicates(
+  values: readonly ConfiguratorLeadType[],
+): boolean {
+  return (
+    new Set(values).size !==
+    values.length
+  );
+}
+
+function sameProductOrder(
+  left: readonly ConfiguratorLeadType[],
+  right: readonly ConfiguratorLeadType[],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (value, index) =>
+        value === right[index],
+    )
+  );
+}
+
+function getSingleConfiguratorSchema(
+  type: ConfiguratorLeadType,
+) {
+  switch (type) {
+    case "photovoltaic":
+      return photovoltaicConfiguratorLeadInputSchema;
+
+    case "battery_storage":
+      return batteryStorageConfiguratorLeadInputSchema;
+
+    case "wallbox":
+      return wallboxConfiguratorLeadInputSchema;
+
+    case "heat_pump":
+      return heatPumpConfiguratorLeadInputSchema;
+
+    case "climate":
+      return climateConfiguratorLeadInputSchema;
+  }
+}
+
+export const configuratorLeadInputSchema =
+  z
+    .object({
+      ...commonConfiguratorLeadShape,
+
+      products:
+        z
+          .array(
+            configuratorLeadTypeSchema,
+          )
+          .min(1)
+          .max(5),
+
+      journey: z
+        .object({
+          entryPoint:
+            configuratorLeadTypeSchema,
+
+          selectedProducts:
+            z
+              .array(
+                configuratorLeadTypeSchema,
+              )
+              .min(1)
+              .max(5),
+
+          completedProducts:
+            z
+              .array(
+                configuratorLeadTypeSchema,
+              )
+              .min(1)
+              .max(5),
+        })
+        .strict(),
+
+      configurators:
+        z
+          .array(
+            configuratorPayloadEnvelopeSchema,
+          )
+          .min(1)
+          .max(5),
+    })
+    .strict()
+    .superRefine(
+      (values, context) => {
+        if (
+          hasDuplicates(
+            values.products,
+          ) ||
+          hasDuplicates(
+            values.journey
+              .selectedProducts,
+          ) ||
+          hasDuplicates(
+            values.journey
+              .completedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["journey"],
+            message:
+              "Konfigurator-Produkte dürfen nicht doppelt vorkommen.",
+          });
+        }
+
+        if (
+          !values.journey
+            .selectedProducts
+            .includes(
+              values.journey
+                .entryPoint,
+            )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: [
+              "journey",
+              "entryPoint",
+            ],
+            message:
+              "Der Einstiegspunkt muss Teil des Energieprojekts sein.",
+          });
+        }
+
+        if (
+          !sameProductOrder(
+            values.products,
+            values.journey
+              .selectedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["products"],
+            message:
+              "Produkte und ausgewählte Journey-Produkte stimmen nicht überein.",
+          });
+        }
+
+        /*
+         * Aktuell senden wir einen Lead erst,
+         * wenn die komplette ausgewählte
+         * Journey abgeschlossen wurde.
+         */
+        if (
+          !sameProductOrder(
+            values.journey
+              .selectedProducts,
+            values.journey
+              .completedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: [
+              "journey",
+              "completedProducts",
+            ],
+            message:
+              "Vor dem Absenden müssen alle ausgewählten Konfiguratoren abgeschlossen sein.",
+          });
+        }
+
+        const configuratorTypes =
+          values.configurators.map(
+            (configurator) =>
+              configurator.type,
+          );
+
+        if (
+          !sameProductOrder(
+            configuratorTypes,
+            values.journey
+              .completedProducts,
+          )
+        ) {
+          context.addIssue({
+            code: "custom",
+            path: ["configurators"],
+            message:
+              "Die gespeicherten Konfigurationen stimmen nicht mit der abgeschlossenen Journey überein.",
+          });
+        }
+
+        values.configurators.forEach(
+          (configurator, index) => {
+            const schema =
+              getSingleConfiguratorSchema(
+                configurator.type,
+              );
+
+            const singleLead = {
+              type:
+                values.type,
+
+              contact:
+                values.contact,
+
+              installation:
+                values.installation,
+
+              privacyAccepted:
+                values.privacyAccepted,
+
+              ...(values.website !==
+                undefined
+                ? {
+                  website:
+                    values.website,
+                }
+                : {}),
+
+              formStartedAt:
+                values.formStartedAt,
+
+              configurator:
+                configurator as ConfiguratorLeadPayload,
+            };
+
+            const result =
+              schema.safeParse(
+                singleLead,
+              );
+
+            if (!result.success) {
+              context.addIssue({
+                code: "custom",
+                path: [
+                  "configurators",
+                  index,
+                ],
+                message:
+                  `Die Daten für ${configurator.type} sind unvollständig oder ungültig.`,
+              });
+            }
+          },
+        );
+      },
+    );
 
 export function validateConfiguratorContactForm(
   values: ConfiguratorContactFormValues,

@@ -141,7 +141,6 @@ export function HeatPumpWizard() {
   if (showResult) {
     return (
       <ConfiguratorLeadFlow
-        configuratorType="heat_pump"
         renderResult={(onContinue) => {
           const result =
             state.results.heatPump;

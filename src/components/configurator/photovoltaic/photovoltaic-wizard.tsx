@@ -24,15 +24,11 @@ import { NotesStep } from "@/components/configurator/photovoltaic/notes-step";
 import { PhotovoltaicResult } from "@/components/configurator/photovoltaic/photovoltaic-result";
 import { ConfiguratorContactForm } from "@/components/configurator/configurator-contact-form";
 import { ConfiguratorSubmitSuccess } from "@/components/configurator/configurator-submit-success";
-import { PhotovoltaicSubmitReview } from "@/components/configurator/photovoltaic/photovoltaic-submit-review";
-import { buildPhotovoltaicConfiguratorLeadInput } from "@/lib/configurator/lead";
+import { ConfiguratorSubmitReview } from "@/components/configurator/configurator-submit-review";
+import { buildConfiguratorLeadInput } from "@/lib/configurator/lead";
 import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
-import { photovoltaicConfiguratorLeadInputSchema } from "@/lib/validation/configurator/lead";
+import { configuratorLeadInputSchema } from "@/lib/validation/configurator/lead";
 import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
-import type {
-  ConfiguratorContactFormValues,
-  SubmitPhotovoltaicConfiguratorLeadInput,
-} from "@/types/configurator";
 
 import type {
   BuildingOwnership,
@@ -44,6 +40,8 @@ import type {
   RoofPitch,
   RoofRenovationPeriod,
   PhotovoltaicEnergySolution,
+  ConfiguratorContactFormValues,
+  SubmitConfiguratorLeadInput,
 } from "@/types/configurator";
 
 export function PhotovoltaicWizard() {
@@ -358,16 +356,13 @@ export function PhotovoltaicWizard() {
   }
 
   async function handleSubmitConfiguratorLead(
-    input: SubmitPhotovoltaicConfiguratorLeadInput,
+    input: SubmitConfiguratorLeadInput,
   ) {
     if (isSubmitting) {
       return;
     }
 
-    const parsed =
-      photovoltaicConfiguratorLeadInputSchema.safeParse(
-        input,
-      );
+    const parsed = configuratorLeadInputSchema.safeParse(input)
 
     if (!parsed.success) {
       setSubmissionError(
@@ -382,10 +377,12 @@ export function PhotovoltaicWizard() {
     try {
       const result =
         await submitConfiguratorLead(
-          parsed.data,
+          input,
         );
 
-      setSubmittedLeadId(result.leadId);
+      setSubmittedLeadId(
+        result.leadId,
+      );
 
       /*
        * Technische Wizard-Daten erst nach
@@ -393,7 +390,9 @@ export function PhotovoltaicWizard() {
        */
       reset();
 
-      setPostWizardStage("success");
+      setPostWizardStage(
+        "success",
+      );
     } catch {
       setSubmissionError(
         "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
@@ -463,11 +462,11 @@ export function PhotovoltaicWizard() {
     contactFormStartedAt
   ) {
     const input =
-      buildPhotovoltaicConfiguratorLeadInput(
+      buildConfiguratorLeadInput(
         state,
         contactDraft,
         contactFormStartedAt,
-      );
+      )
 
     if (!input) {
       return (
@@ -482,7 +481,7 @@ export function PhotovoltaicWizard() {
     }
 
     return (
-      <PhotovoltaicSubmitReview
+      <ConfiguratorSubmitReview
         input={input}
         isSubmitting={isSubmitting}
         error={submissionError}

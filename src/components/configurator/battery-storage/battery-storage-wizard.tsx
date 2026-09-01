@@ -165,7 +165,6 @@ export function BatteryStorageWizard({
   if (showResult) {
     return (
       <ConfiguratorLeadFlow
-        configuratorType="battery_storage"
         renderResult={(onContinue) => {
           const result =
             state.results.batteryStorage;

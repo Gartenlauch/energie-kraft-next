@@ -274,12 +274,36 @@ export interface SubmitClimateConfiguratorLeadInput
  * configurator.type ist der Discriminator.
  */
 
-export type SubmitConfiguratorLeadInput =
-  | SubmitPhotovoltaicConfiguratorLeadInput
-  | SubmitBatteryStorageConfiguratorLeadInput
-  | SubmitWallboxConfiguratorLeadInput
-  | SubmitHeatPumpConfiguratorLeadInput
-  | SubmitClimateConfiguratorLeadInput;
+export type ConfiguratorLeadPayload =
+  | SubmitPhotovoltaicConfiguratorLeadInput["configurator"]
+  | SubmitBatteryStorageConfiguratorLeadInput["configurator"]
+  | SubmitWallboxConfiguratorLeadInput["configurator"]
+  | SubmitHeatPumpConfiguratorLeadInput["configurator"]
+  | SubmitClimateConfiguratorLeadInput["configurator"];
+
+export interface SubmitConfiguratorLeadInput
+  extends SubmitConfiguratorLeadCommonInput {
+  /**
+   * Alle vom Benutzer ausgewählten Produkte.
+   * Die Reihenfolge entspricht der zentralen
+   * Configurator-Journey.
+   */
+  products: ConfiguratorLeadType[];
+
+  journey: {
+    entryPoint: ConfiguratorLeadType;
+
+    selectedProducts: ConfiguratorLeadType[];
+
+    completedProducts: ConfiguratorLeadType[];
+  };
+
+  /**
+   * Alle tatsächlich abgeschlossenen
+   * Konfiguratoren mit Antworten und Ergebnis.
+   */
+  configurators: ConfiguratorLeadPayload[];
+}
 
 export interface SubmitConfiguratorLeadResult {
   ok: true;
