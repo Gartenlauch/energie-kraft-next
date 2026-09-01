@@ -307,8 +307,24 @@ export interface SubmitConfiguratorLeadInput
 
 export interface SubmitConfiguratorLeadResult {
   ok: true;
+
   leadId: string;
-  mailStatus?: "accepted" | "failed";
+
+  /**
+   * Bestehender Status der internen
+   * Energie-Kraft Benachrichtigung.
+   */
+  mailStatus?:
+  | "accepted"
+  | "failed";
+
+  customerMailStatus?:
+  | "accepted"
+  | "failed";
+
+  reportStatus?:
+  | "generated"
+  | "failed";
 }
 
 /*
@@ -383,6 +399,24 @@ export type StoredConfiguratorLeadPayload =
     }
   >;
 
+export interface ConfiguratorLeadReportInfo {
+  status:
+  | "generated"
+  | "failed";
+
+  filename:
+  string | null;
+
+  sizeBytes:
+  number | null;
+
+  generatedAt:
+  FirestoreTimestamp | null;
+
+  updatedAt:
+  FirestoreTimestamp;
+}
+
 export interface ConfiguratorLeadDocument {
   type: "configurator";
 
@@ -432,6 +466,9 @@ export interface ConfiguratorLeadDocument {
   };
 
   mail?: LeadMailInfo;
+
+  report?:
+  ConfiguratorLeadReportInfo;
 
   createdAt:
   FirestoreTimestamp;

@@ -10,11 +10,25 @@ export const LEAD_STATUS_VALUES = [
 export type LeadStatus =
   (typeof LEAD_STATUS_VALUES)[number];
 
+export interface LeadMailDeliveryInfo {
+  status:
+    | "accepted"
+    | "failed";
+
+  provider:
+    "mailgun";
+
+  messageId:
+    string | null;
+
+  updatedAt:
+    FirestoreTimestamp;
+}
+
 export interface LeadMailInfo {
-  internal?: {
-    status: "accepted" | "failed";
-    provider: "mailgun";
-    messageId: string | null;
-    updatedAt: FirestoreTimestamp;
-  };
+  internal?:
+    LeadMailDeliveryInfo;
+
+  customer?:
+    LeadMailDeliveryInfo;
 }

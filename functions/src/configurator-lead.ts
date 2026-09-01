@@ -3,22 +3,21 @@ import {
   getFirestore,
 } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
+import { mailgunSendingKey } from "./mailgun";
+import { sendConfiguratorCustomerMail } from "./configurator-customer-mail";
+import { generateConfiguratorProjectPdf } from "./configurator-project-pdf";
 import {
   HttpsError,
   onCall,
 } from "firebase-functions/v2/https";
 
-import {
-  sendConfiguratorLeadMail,
-} from "./configurator-lead-mail";
+import { sendConfiguratorLeadMail } from "./configurator-lead-mail";
 import {
   type ConfiguratorLeadPayload,
   type ConfiguratorPayload,
   configuratorLeadPayloadSchema,
 } from "./configurator-lead-validation";
-import {
-  mailgunSendingKey,
-} from "./mailgun";
+
 
 const LEADS_COLLECTION = "leads";
 
@@ -50,6 +49,8 @@ const CONFIGURATOR_SOURCE: Record<
   climate:
     "konfigurator/klimaanlage",
 };
+
+
 
 function optionalValue(
   value: string | undefined,
@@ -233,6 +234,8 @@ export const submitConfiguratorLead =
             LEADS_COLLECTION,
           )
           .doc();
+      const projectPdfFilename =
+        `energie-kraft-projektuebersicht-${leadReference.id}.pdf`;
 
       const realtimeReference =
         firestore
@@ -464,6 +467,284 @@ export const submitConfiguratorLead =
           },
         );
       }
+      let reportStatus:
+        | "generated"
+        | "failed" =
+        "failed";
+
+      let customerMailStatus:
+        | "accepted"
+        | "failed" =
+        "failed";
+
+      let projectPdf:
+        Buffer | null =
+        null;
+
+      /*
+       * PDF-Erzeugung ist bewusst von der
+       * Lead-Speicherung und der internen
+       * Benachrichtigung getrennt.
+       *
+       * Ein PDF-Fehler darf den bereits
+       * gespeicherten Lead niemals gefährden.
+       */
+      try {
+        projectPdf =
+          await generateConfiguratorProjectPdf(
+            {
+              leadId:
+                leadReference.id,
+
+              lead:
+                input,
+            },
+          );
+
+        reportStatus =
+          "generated";
+
+        await leadReference
+          .update({
+            "report.status":
+              "generated",
+
+            "report.filename":
+              projectPdfFilename,
+
+            "report.sizeBytes":
+              projectPdf.length,
+
+            "report.generatedAt":
+              FieldValue.serverTimestamp(),
+
+            "report.updatedAt":
+              FieldValue.serverTimestamp(),
+          })
+          .catch(
+            (error) => {
+              logger.error(
+                "Configurator report metadata update failed",
+                {
+                  leadId:
+                    leadReference.id,
+
+                  error:
+                    error instanceof Error
+                      ? {
+                        name:
+                          error.name,
+
+                        message:
+                          error.message,
+                      }
+                      : "Unknown Firestore error",
+                },
+              );
+            },
+          );
+
+        logger.info(
+          "Configurator project report generated",
+          {
+            leadId:
+              leadReference.id,
+
+            filename:
+              projectPdfFilename,
+
+            sizeBytes:
+              projectPdf.length,
+
+            productCount:
+              input.products.length,
+          },
+        );
+      } catch (error) {
+        reportStatus =
+          "failed";
+
+        await leadReference
+          .update({
+            "report.status":
+              "failed",
+
+            "report.filename":
+              null,
+
+            "report.sizeBytes":
+              null,
+
+            "report.generatedAt":
+              null,
+
+            "report.updatedAt":
+              FieldValue.serverTimestamp(),
+          })
+          .catch(
+            () => undefined,
+          );
+
+        logger.error(
+          "Configurator project report generation failed",
+          {
+            leadId:
+              leadReference.id,
+
+            products:
+              input.products,
+
+            error:
+              error instanceof Error
+                ? {
+                  name:
+                    error.name,
+
+                  message:
+                    error.message,
+                }
+                : "Unknown PDF error",
+          },
+        );
+      }
+
+      /*
+       * Kundenmail nur senden, wenn das PDF
+       * tatsächlich erfolgreich erzeugt wurde.
+       *
+       * Auch ein Mailgun-Fehler bleibt vollständig
+       * vom gespeicherten Lead getrennt.
+       */
+      if (projectPdf) {
+        try {
+          const customerMailResult =
+            await sendConfiguratorCustomerMail(
+              {
+                leadId:
+                  leadReference.id,
+
+                lead:
+                  input,
+
+                pdf:
+                  projectPdf,
+
+                filename:
+                  projectPdfFilename,
+              },
+            );
+
+          customerMailStatus =
+            "accepted";
+
+          await leadReference.update(
+            {
+              "mail.customer.status":
+                "accepted",
+
+              "mail.customer.provider":
+                "mailgun",
+
+              "mail.customer.messageId":
+                customerMailResult.id,
+
+              "mail.customer.updatedAt":
+                FieldValue.serverTimestamp(),
+            },
+          );
+
+          logger.info(
+            "Configurator customer mail accepted",
+            {
+              leadId:
+                leadReference.id,
+
+              recipient:
+                input.contact.email,
+
+              provider:
+                "mailgun",
+
+              messageId:
+                customerMailResult.id,
+
+              attachment:
+                projectPdfFilename,
+
+              attachmentSizeBytes:
+                projectPdf.length,
+            },
+          );
+        } catch (error) {
+          customerMailStatus =
+            "failed";
+
+          await leadReference
+            .update({
+              "mail.customer.status":
+                "failed",
+
+              "mail.customer.provider":
+                "mailgun",
+
+              "mail.customer.messageId":
+                null,
+
+              "mail.customer.updatedAt":
+                FieldValue.serverTimestamp(),
+            })
+            .catch(
+              () => undefined,
+            );
+
+          logger.error(
+            "Configurator customer mail failed",
+            {
+              leadId:
+                leadReference.id,
+
+              recipient:
+                input.contact.email,
+
+              provider:
+                "mailgun",
+
+              error:
+                error instanceof Error
+                  ? {
+                    name:
+                      error.name,
+
+                    message:
+                      error.message,
+                  }
+                  : "Unknown customer mail error",
+            },
+          );
+        }
+      } else {
+        /*
+         * Ohne PDF wird bewusst keine
+         * unvollständige Kundenmail verschickt.
+         */
+        await leadReference
+          .update({
+            "mail.customer.status":
+              "failed",
+
+            "mail.customer.provider":
+              "mailgun",
+
+            "mail.customer.messageId":
+              null,
+
+            "mail.customer.updatedAt":
+              FieldValue.serverTimestamp(),
+          })
+          .catch(
+            () => undefined,
+          );
+      }
 
       logger.info(
         "Configurator lead created",
@@ -491,6 +772,10 @@ export const submitConfiguratorLead =
           leadReference.id,
 
         mailStatus,
+
+        customerMailStatus,
+
+        reportStatus,
       };
     },
   );

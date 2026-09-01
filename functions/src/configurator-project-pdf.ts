@@ -1921,17 +1921,40 @@ function addPageFooters(
         index += 1
     ) {
         document.switchToPage(
-            index,
+            range.start + index,
         );
+
+        /*
+         * PDFKit startet sonst beim Schreiben
+         * innerhalb des unteren Seitenrandes
+         * automatisch eine neue Seite.
+         *
+         * Deshalb deaktivieren wir den unteren
+         * Margin nur temporär für die Fußzeile.
+         */
+        const originalBottomMargin =
+            document.page.margins.bottom;
+
+        document.page.margins.bottom = 0;
 
         const footerY =
             document.page.height - 32;
 
-        drawHorizontalLine(
-            document,
-            footerY - 8,
-            "#E6EBE7",
-        );
+        document
+            .save()
+            .strokeColor("#E6EBE7")
+            .lineWidth(1)
+            .moveTo(
+                document.page.margins.left,
+                footerY - 8,
+            )
+            .lineTo(
+                document.page.width -
+                document.page.margins.right,
+                footerY - 8,
+            )
+            .stroke()
+            .restore();
 
         document
             .font("Helvetica")
@@ -1963,10 +1986,15 @@ function addPageFooters(
                         getPageContentWidth(
                             document,
                         ),
+
                     align: "right",
+
                     lineBreak: false,
                 },
             );
+
+        document.page.margins.bottom =
+            originalBottomMargin;
     }
 }
 
