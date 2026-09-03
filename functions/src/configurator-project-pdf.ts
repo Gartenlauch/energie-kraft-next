@@ -419,7 +419,7 @@ function drawHighlightCards(
     const cardWidth =
         (totalWidth - gap) / 2;
 
-    const cardHeight = 66;
+    const cardHeight = 64;
 
     const startY =
         document.y;
@@ -443,7 +443,7 @@ function drawHighlightCards(
                         startY,
                         cardWidth,
                         cardHeight,
-                        10,
+                        9,
                     )
                     .fillAndStroke(
                         theme.background,
@@ -461,27 +461,27 @@ function drawHighlightCards(
                     )
                     .text(
                         highlight.value,
-                        x + 15,
-                        startY + 13,
+                        x + 14,
+                        startY + 12,
                         {
                             width:
-                                cardWidth - 30,
+                                cardWidth - 28,
                         },
                     );
 
                 document
                     .font("Helvetica")
-                    .fontSize(8.5)
+                    .fontSize(8)
                     .fillColor(
                         COLORS.muted,
                     )
                     .text(
                         highlight.label,
-                        x + 15,
+                        x + 14,
                         startY + 40,
                         {
                             width:
-                                cardWidth - 30,
+                                cardWidth - 28,
                         },
                     );
             },
@@ -490,7 +490,7 @@ function drawHighlightCards(
     document.y =
         startY +
         cardHeight +
-        16;
+        14;
 }
 
 
@@ -584,7 +584,7 @@ function drawPageHeader(
         54,
     );
 
-    document.y = 78;
+    document.y = 68;
 }
 
 function drawProductBadge(
@@ -697,19 +697,19 @@ function drawSectionTitle(
     ensureProductPageSpace(
         document,
         product,
-        42,
+        40,
     );
 
     document
         .font("Helvetica-Bold")
-        .fontSize(12)
+        .fontSize(11.5)
         .fillColor(
             COLORS.primary,
         )
         .text(title);
 
     document.moveDown(
-        0.35,
+        0.25,
     );
 }
 
@@ -802,67 +802,53 @@ function drawRows(
             document,
         );
 
-    const labelWidth = 190;
+    const labelWidth = 180;
 
     const valueWidth =
         totalWidth -
         labelWidth -
-        20;
+        18;
 
     for (
         const row of rows
     ) {
-        /*
-         * Höhe zuerst berechnen, bevor Text
-         * tatsächlich geschrieben wird.
-         */
         document
             .font("Helvetica")
-            .fontSize(9);
+            .fontSize(8.5);
 
         const labelHeight =
             document.heightOfString(
                 row.label,
                 {
                     width:
-                        labelWidth - 10,
+                        labelWidth - 8,
                 },
             );
 
         document
             .font("Helvetica-Bold")
-            .fontSize(9);
+            .fontSize(8.5);
 
         const valueHeight =
             document.heightOfString(
                 row.value,
                 {
                     width:
-                        valueWidth - 10,
+                        valueWidth - 8,
                 },
             );
 
         const rowHeight =
             Math.max(
-                24,
-                labelHeight + 10,
-                valueHeight + 10,
+                22,
+                labelHeight + 8,
+                valueHeight + 8,
             );
 
-        /*
-         * Entscheidender Fix:
-         *
-         * Eine komplette Zeile muss auf die
-         * aktuelle Seite passen.
-         *
-         * Falls nicht, erzeugen WIR die neue
-         * Seite, bevor PDFKit dies mitten
-         * zwischen Label und Wert tut.
-         */
         ensureProductPageSpace(
             document,
             product,
-            rowHeight + 6,
+            rowHeight + 3,
         );
 
         const rowTop =
@@ -870,23 +856,23 @@ function drawRows(
 
         document
             .font("Helvetica")
-            .fontSize(9)
+            .fontSize(8.5)
             .fillColor(
                 COLORS.muted,
             )
             .text(
                 row.label,
                 left,
-                rowTop + 5,
+                rowTop + 4,
                 {
                     width:
-                        labelWidth - 10,
+                        labelWidth - 8,
                 },
             );
 
         document
             .font("Helvetica-Bold")
-            .fontSize(9)
+            .fontSize(8.5)
             .fillColor(
                 COLORS.text,
             )
@@ -894,11 +880,11 @@ function drawRows(
                 row.value,
                 left +
                 labelWidth +
-                10,
-                rowTop + 7,
+                8,
+                rowTop + 4,
                 {
                     width:
-                        valueWidth - 10,
+                        valueWidth - 8,
                 },
             );
 
@@ -907,7 +893,7 @@ function drawRows(
             .strokeColor(
                 "#E7ECE8",
             )
-            .lineWidth(0.7)
+            .lineWidth(0.6)
             .moveTo(
                 left,
                 rowTop +
@@ -921,6 +907,7 @@ function drawRows(
             )
             .stroke()
             .restore();
+
         document.y =
             rowTop +
             rowHeight +
@@ -2021,9 +2008,9 @@ function drawProductPage(
         document.y;
 
     /*
-     * Ein kompakter Produktkopf ersetzt
-     * Badge + separaten Titel + zusätzliche
-     * Beschreibung.
+     * Ein einziger kompakter Produktkopf.
+     * Der bisherige zusätzliche Badge und
+     * der doppelte Beschreibungstext entfallen.
      */
     document
         .save()
@@ -2031,8 +2018,8 @@ function drawProductPage(
             left,
             headerY,
             width,
-            56,
-            10,
+            52,
+            9,
         )
         .fill(
             theme.background,
@@ -2041,35 +2028,31 @@ function drawProductPage(
 
     document
         .font("Helvetica-Bold")
-        .fontSize(20)
+        .fontSize(19)
         .fillColor(
             theme.accent,
         )
         .text(
             theme.label,
-            left + 16,
-            headerY + 11,
+            left + 15,
+            headerY + 9,
         );
 
     document
         .font("Helvetica")
-        .fontSize(8.5)
+        .fontSize(8)
         .fillColor(
             COLORS.muted,
         )
         .text(
             "Deine persönliche Energie-Kraft Einschätzung",
-            left + 16,
-            headerY + 36,
+            left + 15,
+            headerY + 33,
         );
 
     document.y =
-        headerY + 70;
+        headerY + 64;
 
-    /*
-     * Die zwei wichtigsten Ergebnisse
-     * stehen direkt unter dem Produktkopf.
-     */
     drawHighlightCards(
         document,
         configurator,
@@ -2095,7 +2078,7 @@ function drawProductPage(
     );
 
     document.moveDown(
-        0.35,
+        0.2,
     );
 
     drawSectionTitle(
