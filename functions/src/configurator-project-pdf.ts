@@ -15,6 +15,11 @@ interface PdfRow {
     value: string;
 }
 
+interface PdfHighlight {
+    value: string;
+    label: string;
+}
+
 interface ProductTheme {
     label: string;
     accent: string;
@@ -261,6 +266,234 @@ const currencyFormatter =
         },
     );
 
+function getProductHighlights(
+    configurator: ConfiguratorPayload,
+): PdfHighlight[] {
+    switch (configurator.type) {
+        case "photovoltaic":
+            return [
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.result
+                                .recommendedPowerKwpMin,
+                        )}–${formatNumber(
+                            configurator.result
+                                .recommendedPowerKwpMax,
+                        )} kWp`,
+                    label:
+                        "Empfohlene Anlagenleistung",
+                },
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.result
+                                .estimatedAnnualYieldKwhMin,
+                        )}–${formatNumber(
+                            configurator.result
+                                .estimatedAnnualYieldKwhMax,
+                        )} kWh`,
+                    label:
+                        "Erwarteter Jahresertrag",
+                },
+            ];
+
+        case "battery_storage":
+            return [
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.result
+                                .recommendedUsableCapacityKwhMin,
+                        )}–${formatNumber(
+                            configurator.result
+                                .recommendedUsableCapacityKwhMax,
+                        )} kWh`,
+                    label:
+                        "Empfohlene Speicherkapazität",
+                },
+                {
+                    value:
+                        formatBoolean(
+                            configurator.result
+                                .backupPowerRequested,
+                        ),
+                    label:
+                        "Ersatzstrom gewünscht",
+                },
+            ];
+
+        case "wallbox":
+            return [
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.answers
+                                .chargingPowerKw,
+                        )} kW`,
+                    label:
+                        "Gewählte Ladeleistung",
+                },
+                {
+                    value:
+                        `${formatCurrency(
+                            configurator.result
+                                .estimatedMinimumCostEuro,
+                        )}–${formatCurrency(
+                            configurator.result
+                                .estimatedMaximumCostEuro,
+                        )}`,
+                    label:
+                        "Projektkosten-Korridor",
+                },
+            ];
+
+        case "heat_pump":
+            return [
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.result
+                                .recommendedHeatPumpCapacityKw,
+                        )} kW`,
+                    label:
+                        "Empfohlene Leistung",
+                },
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.result
+                                .annualHeatPumpElectricityConsumptionKwh,
+                        )} kWh`,
+                    label:
+                        "Geschätzter Strombedarf/Jahr",
+                },
+            ];
+
+        case "climate":
+            return [
+                {
+                    value:
+                        `${formatNumber(
+                            configurator.result
+                                .recommendedCoolingCapacityKw,
+                        )} kW`,
+                    label:
+                        "Empfohlene Kühlleistung",
+                },
+                {
+                    value:
+                        `${configurator.result
+                            .recommendedIndoorUnitCount}`,
+                    label:
+                        "Empfohlene Innengeräte",
+                },
+            ];
+    }
+}
+
+function drawHighlightCards(
+    document: PDFKit.PDFDocument,
+    configurator: ConfiguratorPayload,
+): void {
+    const highlights =
+        getProductHighlights(
+            configurator,
+        );
+
+    const theme =
+        PRODUCT_THEMES[
+        configurator.type
+        ];
+
+    const left =
+        document.page.margins.left;
+
+    const totalWidth =
+        getPageContentWidth(
+            document,
+        );
+
+    const gap = 12;
+
+    const cardWidth =
+        (totalWidth - gap) / 2;
+
+    const cardHeight = 88;
+
+    const startY =
+        document.y;
+
+    highlights
+        .slice(0, 2)
+        .forEach(
+            (
+                highlight,
+                index,
+            ) => {
+                const x =
+                    left +
+                    index *
+                    (cardWidth + gap);
+
+                document
+                    .save()
+                    .roundedRect(
+                        x,
+                        startY,
+                        cardWidth,
+                        cardHeight,
+                        10,
+                    )
+                    .fillAndStroke(
+                        theme.background,
+                        theme.border,
+                    )
+                    .restore();
+
+                document
+                    .font(
+                        "Helvetica-Bold",
+                    )
+                    .fontSize(18)
+                    .fillColor(
+                        theme.accent,
+                    )
+                    .text(
+                        highlight.value,
+                        x + 15,
+                        startY + 17,
+                        {
+                            width:
+                                cardWidth - 30,
+                        },
+                    );
+
+                document
+                    .font("Helvetica")
+                    .fontSize(8.5)
+                    .fillColor(
+                        COLORS.muted,
+                    )
+                    .text(
+                        highlight.label,
+                        x + 15,
+                        startY + 51,
+                        {
+                            width:
+                                cardWidth - 30,
+                        },
+                    );
+            },
+        );
+
+    document.y =
+        startY +
+        cardHeight +
+        24;
+}
+
+
 function formatNumber(
     value: number,
 ): string {
@@ -459,19 +692,111 @@ function drawProductBadges(
 function drawSectionTitle(
     document: PDFKit.PDFDocument,
     title: string,
+    product: ConfiguratorPayload["type"],
 ): void {
+    /*
+     * Überschrift + mindestens erste
+     * Datenzeile sollen zusammenbleiben.
+     */
+    ensureProductPageSpace(
+        document,
+        product,
+        58,
+    );
+
     document
         .font("Helvetica-Bold")
         .fontSize(14)
-        .fillColor(COLORS.primary)
+        .fillColor(
+            COLORS.primary,
+        )
         .text(title);
 
-    document.moveDown(0.55);
+    document.moveDown(
+        0.55,
+    );
+}
+
+function getPageContentBottom(
+    document: PDFKit.PDFDocument,
+): number {
+    return (
+        document.page.height -
+        document.page.margins.bottom
+    );
+}
+
+function startProductContinuationPage(
+    document: PDFKit.PDFDocument,
+    product: ConfiguratorPayload["type"],
+): void {
+    document.addPage();
+
+    drawPageHeader(
+        document,
+    );
+
+    const theme =
+        PRODUCT_THEMES[
+        product
+        ];
+
+    const badgeY =
+        document.y;
+
+    drawProductBadge(
+        document,
+        product,
+        document.page.margins.left,
+        badgeY,
+    );
+
+    document.y =
+        badgeY + 36;
+
+    document
+        .font("Helvetica-Bold")
+        .fontSize(15)
+        .fillColor(
+            theme.accent,
+        )
+        .text(
+            `${theme.label} – Fortsetzung`,
+        );
+
+    document.moveDown(
+        0.8,
+    );
+}
+
+function ensureProductPageSpace(
+    document: PDFKit.PDFDocument,
+    product: ConfiguratorPayload["type"],
+    requiredHeight: number,
+): void {
+    const pageBottom =
+        getPageContentBottom(
+            document,
+        );
+
+    if (
+        document.y +
+        requiredHeight <=
+        pageBottom
+    ) {
+        return;
+    }
+
+    startProductContinuationPage(
+        document,
+        product,
+    );
 }
 
 function drawRows(
     document: PDFKit.PDFDocument,
     rows: readonly PdfRow[],
+    product: ConfiguratorPayload["type"],
 ): void {
     const left =
         document.page.margins.left;
@@ -491,34 +816,33 @@ function drawRows(
     for (
         const row of rows
     ) {
-        const rowTop =
-            document.y;
-
+        /*
+         * Höhe zuerst berechnen, bevor Text
+         * tatsächlich geschrieben wird.
+         */
         document
             .font("Helvetica")
-            .fontSize(9)
-            .fillColor(COLORS.muted);
+            .fontSize(9);
 
         const labelHeight =
             document.heightOfString(
                 row.label,
                 {
                     width:
-                        labelWidth - 12,
+                        labelWidth - 10,
                 },
             );
 
         document
             .font("Helvetica-Bold")
-            .fontSize(9)
-            .fillColor(COLORS.text);
+            .fontSize(9);
 
         const valueHeight =
             document.heightOfString(
                 row.value,
                 {
                     width:
-                        valueWidth - 12,
+                        valueWidth - 10,
                 },
             );
 
@@ -529,54 +853,83 @@ function drawRows(
                 valueHeight + 14,
             );
 
-        document
-            .save()
-            .roundedRect(
-                left,
-                rowTop,
-                totalWidth,
-                rowHeight,
-                5,
-            )
-            .fill(
-                COLORS.lightMuted,
-            )
-            .restore();
+        /*
+         * Entscheidender Fix:
+         *
+         * Eine komplette Zeile muss auf die
+         * aktuelle Seite passen.
+         *
+         * Falls nicht, erzeugen WIR die neue
+         * Seite, bevor PDFKit dies mitten
+         * zwischen Label und Wert tut.
+         */
+        ensureProductPageSpace(
+            document,
+            product,
+            rowHeight + 6,
+        );
+
+        const rowTop =
+            document.y;
 
         document
             .font("Helvetica")
             .fontSize(9)
-            .fillColor(COLORS.muted)
+            .fillColor(
+                COLORS.muted,
+            )
             .text(
                 row.label,
-                left + 9,
-                rowTop + 8,
+                left,
+                rowTop + 7,
                 {
                     width:
-                        labelWidth - 18,
+                        labelWidth - 10,
                 },
             );
 
         document
             .font("Helvetica-Bold")
             .fontSize(9)
-            .fillColor(COLORS.text)
+            .fillColor(
+                COLORS.text,
+            )
             .text(
                 row.value,
                 left +
                 labelWidth +
                 10,
-                rowTop + 8,
+                rowTop + 7,
                 {
                     width:
-                        valueWidth - 18,
+                        valueWidth - 10,
                 },
             );
+
+        document
+            .save()
+            .strokeColor(
+                "#E7ECE8",
+            )
+            .lineWidth(0.7)
+            .moveTo(
+                left,
+                rowTop +
+                rowHeight,
+            )
+            .lineTo(
+                left +
+                totalWidth,
+                rowTop +
+                rowHeight,
+            )
+            .stroke()
+            .restore();
 
         document.y =
             rowTop +
             rowHeight +
-            5;
+            2;
     }
 }
 
@@ -1643,10 +1996,6 @@ function drawCover(
         );
 
     document.y += 112;
-
-    drawDisclaimer(
-        document,
-    );
 }
 
 function drawProductPage(
@@ -1675,12 +2024,51 @@ function drawProductPage(
     document.y += 40;
 
     document
+        .save()
+        .roundedRect(
+            document.page.margins.left,
+            document.y,
+            getPageContentWidth(
+                document,
+            ),
+            68,
+            10,
+        )
+        .fill(
+            theme.background,
+        )
+        .restore();
+
+    const productHeaderY =
+        document.y + 15;
+
+    document
         .font("Helvetica-Bold")
-        .fontSize(24)
-        .fillColor(theme.accent)
+        .fontSize(22)
+        .fillColor(
+            theme.accent,
+        )
         .text(
             theme.label,
+            document.page.margins.left +
+            18,
+            productHeaderY,
         );
+
+    document
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor(
+            COLORS.muted,
+        )
+        .text(
+            "Deine persönliche Energie-Kraft Einschätzung",
+            document.page.margins.left +
+            18,
+            productHeaderY + 30,
+        );
+
+    document.y += 88;
 
     document
         .font("Helvetica")
@@ -1694,6 +2082,11 @@ function drawProductPage(
 
     document.moveDown(1.4);
 
+    drawHighlightCards(
+        document,
+        configurator,
+    );
+
     const {
         inputRows,
         resultRows,
@@ -1704,11 +2097,13 @@ function drawProductPage(
     drawSectionTitle(
         document,
         "Deine Angaben",
+        configurator.type,
     );
 
     drawRows(
         document,
         inputRows,
+        configurator.type,
     );
 
     document.moveDown(0.8);
@@ -1716,11 +2111,13 @@ function drawProductPage(
     drawSectionTitle(
         document,
         "Ergebnis",
+        configurator.type,
     );
 
     drawRows(
         document,
         resultRows,
+        configurator.type,
     );
 }
 
