@@ -419,7 +419,7 @@ function drawHighlightCards(
     const cardWidth =
         (totalWidth - gap) / 2;
 
-    const cardHeight = 88;
+    const cardHeight = 66;
 
     const startY =
         document.y;
@@ -455,14 +455,14 @@ function drawHighlightCards(
                     .font(
                         "Helvetica-Bold",
                     )
-                    .fontSize(18)
+                    .fontSize(16)
                     .fillColor(
                         theme.accent,
                     )
                     .text(
                         highlight.value,
                         x + 15,
-                        startY + 17,
+                        startY + 13,
                         {
                             width:
                                 cardWidth - 30,
@@ -478,7 +478,7 @@ function drawHighlightCards(
                     .text(
                         highlight.label,
                         x + 15,
-                        startY + 51,
+                        startY + 40,
                         {
                             width:
                                 cardWidth - 30,
@@ -490,7 +490,7 @@ function drawHighlightCards(
     document.y =
         startY +
         cardHeight +
-        24;
+        16;
 }
 
 
@@ -694,26 +694,22 @@ function drawSectionTitle(
     title: string,
     product: ConfiguratorPayload["type"],
 ): void {
-    /*
-     * Überschrift + mindestens erste
-     * Datenzeile sollen zusammenbleiben.
-     */
     ensureProductPageSpace(
         document,
         product,
-        58,
+        42,
     );
 
     document
         .font("Helvetica-Bold")
-        .fontSize(14)
+        .fontSize(12)
         .fillColor(
             COLORS.primary,
         )
         .text(title);
 
     document.moveDown(
-        0.55,
+        0.35,
     );
 }
 
@@ -848,9 +844,9 @@ function drawRows(
 
         const rowHeight =
             Math.max(
-                29,
-                labelHeight + 14,
-                valueHeight + 14,
+                24,
+                labelHeight + 10,
+                valueHeight + 10,
             );
 
         /*
@@ -881,7 +877,7 @@ function drawRows(
             .text(
                 row.label,
                 left,
-                rowTop + 7,
+                rowTop + 5,
                 {
                     width:
                         labelWidth - 10,
@@ -925,11 +921,10 @@ function drawRows(
             )
             .stroke()
             .restore();
-
         document.y =
             rowTop +
             rowHeight +
-            2;
+            1;
     }
 }
 
@@ -2014,24 +2009,29 @@ function drawProductPage(
         configurator.type
         ];
 
-    drawProductBadge(
-        document,
-        configurator.type,
-        document.page.margins.left,
-        document.y,
-    );
+    const left =
+        document.page.margins.left;
 
-    document.y += 40;
+    const width =
+        getPageContentWidth(
+            document,
+        );
 
+    const headerY =
+        document.y;
+
+    /*
+     * Ein kompakter Produktkopf ersetzt
+     * Badge + separaten Titel + zusätzliche
+     * Beschreibung.
+     */
     document
         .save()
         .roundedRect(
-            document.page.margins.left,
-            document.y,
-            getPageContentWidth(
-                document,
-            ),
-            68,
+            left,
+            headerY,
+            width,
+            56,
             10,
         )
         .fill(
@@ -2039,49 +2039,37 @@ function drawProductPage(
         )
         .restore();
 
-    const productHeaderY =
-        document.y + 15;
-
     document
         .font("Helvetica-Bold")
-        .fontSize(22)
+        .fontSize(20)
         .fillColor(
             theme.accent,
         )
         .text(
             theme.label,
-            document.page.margins.left +
-            18,
-            productHeaderY,
+            left + 16,
+            headerY + 11,
         );
 
     document
         .font("Helvetica")
-        .fontSize(9)
+        .fontSize(8.5)
         .fillColor(
             COLORS.muted,
         )
         .text(
             "Deine persönliche Energie-Kraft Einschätzung",
-            document.page.margins.left +
-            18,
-            productHeaderY + 30,
+            left + 16,
+            headerY + 36,
         );
 
-    document.y += 88;
+    document.y =
+        headerY + 70;
 
-    document
-        .font("Helvetica")
-        .fontSize(10)
-        .fillColor(
-            COLORS.muted,
-        )
-        .text(
-            "Deine Angaben und unsere rechnerische Orientierung",
-        );
-
-    document.moveDown(1.4);
-
+    /*
+     * Die zwei wichtigsten Ergebnisse
+     * stehen direkt unter dem Produktkopf.
+     */
     drawHighlightCards(
         document,
         configurator,
@@ -2106,7 +2094,9 @@ function drawProductPage(
         configurator.type,
     );
 
-    document.moveDown(0.8);
+    document.moveDown(
+        0.35,
+    );
 
     drawSectionTitle(
         document,
