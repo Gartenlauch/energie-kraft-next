@@ -854,6 +854,63 @@ function ProductSection({
     }
 }
 
+interface DeliveryStatusProps {
+    label: string;
+    status:
+    | "accepted"
+    | "generated"
+    | "failed"
+    | undefined;
+    detail?: string | null;
+}
+
+function DeliveryStatus({
+    label,
+    status,
+    detail,
+}: DeliveryStatusProps) {
+    const successful =
+        status === "accepted" ||
+        status === "generated";
+
+    const statusLabel =
+        status === "accepted"
+            ? "Akzeptiert"
+            : status === "generated"
+                ? "Erstellt"
+                : status === "failed"
+                    ? "Fehlgeschlagen"
+                    : "Nicht verfügbar";
+
+    return (
+        <div className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+            <div>
+                <p className="text-sm font-medium text-slate-900">
+                    {label}
+                </p>
+
+                {detail ? (
+                    <p className="mt-1 break-all text-xs text-slate-500">
+                        {detail}
+                    </p>
+                ) : null}
+            </div>
+
+            <span
+                className={
+                    successful
+                        ? "shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800"
+                        : status === "failed"
+                            ? "shrink-0 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800"
+                            : "shrink-0 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600"
+                }
+            >
+                {statusLabel}
+            </span>
+        </div>
+    );
+}
+
 export function ConfiguratorLeadCard({
     lead,
 }: ConfiguratorLeadCardProps) {
@@ -1052,6 +1109,61 @@ export function ConfiguratorLeadCard({
                     <LeadWorkflowPanel
                         lead={lead}
                     />
+                    <section className="rounded-xl border border-slate-200 p-5">
+                        <h3 className="font-semibold text-slate-950">
+                            Versand & Projektübersicht
+                        </h3>
+
+                        <p className="mt-1 text-sm text-slate-500">
+                            Status der automatisch erzeugten Dokumente
+                            und Benachrichtigungen.
+                        </p>
+
+                        <div className="mt-4 space-y-3">
+                            <DeliveryStatus
+                                label="Interne Benachrichtigung"
+                                status={
+                                    lead.mail?.internal?.status
+                                }
+                                detail={
+                                    lead.mail?.internal?.messageId
+                                }
+                            />
+
+                            <DeliveryStatus
+                                label="Kunden-E-Mail"
+                                status={
+                                    lead.mail?.customer?.status
+                                }
+                                detail={
+                                    lead.mail?.customer?.messageId
+                                }
+                            />
+
+                            <DeliveryStatus
+                                label="Projektübersicht PDF"
+                                status={
+                                    lead.report?.status
+                                }
+                                detail={
+                                    lead.report?.filename
+                                }
+                            />
+                        </div>
+
+                        {lead.report?.status ===
+                            "generated" &&
+                            lead.report.sizeBytes !== null ? (
+                            <p className="mt-4 text-xs text-slate-500">
+                                PDF-Größe:{" "}
+                                {Math.round(
+                                    lead.report.sizeBytes /
+                                    1024,
+                                )}{" "}
+                                KB
+                            </p>
+                        ) : null}
+                    </section>
 
                     <section className="rounded-xl border border-slate-200 p-5">
                         <h3 className="font-semibold text-slate-950">

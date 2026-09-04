@@ -32,6 +32,7 @@ export interface SendMailInput {
   html: string;
   replyTo?: string;
   attachments?: readonly MailAttachment[];
+  inlineAttachments?: readonly MailAttachment[];
 }
 
 export interface SendMailResult {
@@ -61,6 +62,17 @@ export async function sendMailgunMail(
       }),
     );
 
+  const inlineAttachments =
+    input.inlineAttachments?.map(
+      (attachment) => ({
+        data: attachment.data,
+        filename: attachment.filename,
+        contentType:
+          attachment.contentType ??
+          "application/octet-stream",
+      }),
+    );
+
   const result = await client.messages.create(
     MAILGUN_DOMAIN,
     {
@@ -78,6 +90,14 @@ export async function sendMailgunMail(
         }
         : {}),
 
+      ...(inlineAttachments &&
+        inlineAttachments.length > 0
+        ? {
+          inline:
+            inlineAttachments,
+        }
+        : {}),
+        
       ...(input.replyTo
         ? {
           "h:Reply-To": input.replyTo,

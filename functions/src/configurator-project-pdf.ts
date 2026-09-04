@@ -1,4 +1,5 @@
 import PDFDocument from "pdfkit";
+import path from "node:path";
 
 import type {
     ConfiguratorLeadPayload,
@@ -27,17 +28,81 @@ interface ProductTheme {
     border: string;
 }
 
+const FUNCTIONS_ROOT =
+    path.resolve(
+        __dirname,
+        "..",
+    );
+
+const BRAND_LOGO_PATH =
+    path.join(
+        FUNCTIONS_ROOT,
+        "assets",
+        "branding",
+        "energie-kraft-logo-transparent.png",
+    );
+
+const BRAND_SUPERSIGN_PATH =
+    path.join(
+        FUNCTIONS_ROOT,
+        "assets",
+        "branding",
+        "energie-kraft-supersign-transparent.png",
+    );
+
+const MONTSERRAT_REGULAR_PATH =
+    path.join(
+        FUNCTIONS_ROOT,
+        "assets",
+        "fonts",
+        "Montserrat-Regular.ttf",
+    );
+
+const MONTSERRAT_SEMIBOLD_PATH =
+    path.join(
+        FUNCTIONS_ROOT,
+        "assets",
+        "fonts",
+        "Montserrat-SemiBold.ttf",
+    );
+
+const MONTSERRAT_BOLD_PATH =
+    path.join(
+        FUNCTIONS_ROOT,
+        "assets",
+        "fonts",
+        "Montserrat-Bold.ttf",
+    );
+
+
+const FONT_REGULAR = "Montserrat-Regular";
+const FONT_SEMIBOLD = "Montserrat-SemiBold";
+const FONT_BOLD = "Montserrat-Bold";
+
 const COLORS = {
-    primary: "#12372A",
-    secondary: "#7A8F35",
-    text: "#17211B",
-    muted: "#66736B",
-    lightMuted: "#F4F6F3",
-    border: "#D9E0DA",
+    primary: "#005CA9",
+    secondary: "#175DA9",
+    accent: "#0DA1D1",
+
+    text: "#19364A",
+    muted: "#667D8C",
+
+    lightMuted: "#F3F8FB",
+    surfaceBlue: "#EDF6FB",
+    surfaceCyan: "#ECF9FC",
+
+    border: "#D1E4EF",
+
     white: "#FFFFFF",
-    warningBackground: "#FFF8E6",
-    warningBorder: "#E3B341",
-    warningText: "#654B00",
+
+    warningBackground:
+        "#F3F8FB",
+
+    warningBorder:
+        "#B9D8EA",
+
+    warningText:
+        "#35566D",
 } as const;
 
 const PRODUCT_THEMES: Record<
@@ -45,38 +110,73 @@ const PRODUCT_THEMES: Record<
     ProductTheme
 > = {
     photovoltaic: {
-        label: "Photovoltaik",
-        accent: "#B77A00",
-        background: "#FFF5D6",
-        border: "#E7BD56",
+        label:
+            "Photovoltaik",
+
+        accent:
+            COLORS.primary,
+
+        background:
+            "#EDF6FB",
+
+        border:
+            "#BCD9E9",
     },
 
     battery_storage: {
-        label: "Stromspeicher",
-        accent: "#26734D",
-        background: "#E8F5ED",
-        border: "#79B994",
+        label:
+            "Stromspeicher",
+
+        accent:
+            COLORS.accent,
+
+        background:
+            "#ECF9FC",
+
+        border:
+            "#B8E2EF",
     },
 
     wallbox: {
-        label: "Wallbox",
-        accent: "#3849A5",
-        background: "#EEF0FF",
-        border: "#929DE0",
+        label:
+            "Wallbox",
+
+        accent:
+            COLORS.secondary,
+
+        background:
+            "#EEF4FA",
+
+        border:
+            "#C3D5E8",
     },
 
     heat_pump: {
-        label: "Wärmepumpe",
-        accent: "#A44550",
-        background: "#FBEDEF",
-        border: "#D59098",
+        label:
+            "Wärmepumpe",
+
+        accent:
+            COLORS.primary,
+
+        background:
+            "#EDF6FB",
+
+        border:
+            "#BCD9E9",
     },
 
     climate: {
-        label: "Klimaanlage",
-        accent: "#277597",
-        background: "#EAF6FB",
-        border: "#7CB8D0",
+        label:
+            "Klimaanlage",
+
+        accent:
+            COLORS.accent,
+
+        background:
+            "#ECF9FC",
+
+        border:
+            "#B8E2EF",
     },
 };
 
@@ -265,6 +365,25 @@ const currencyFormatter =
             maximumFractionDigits: 0,
         },
     );
+
+function registerPdfFonts(
+    document: PDFKit.PDFDocument,
+): void {
+    document.registerFont(
+        FONT_REGULAR,
+        MONTSERRAT_REGULAR_PATH,
+    );
+
+    document.registerFont(
+        FONT_SEMIBOLD,
+        MONTSERRAT_SEMIBOLD_PATH,
+    );
+
+    document.registerFont(
+        FONT_BOLD,
+        MONTSERRAT_BOLD_PATH,
+    );
+}
 
 function getProductHighlights(
     configurator: ConfiguratorPayload,
@@ -470,7 +589,7 @@ function drawHighlightCards(
                     );
 
                 document
-                    .font("Helvetica")
+                    .font(FONT_REGULAR)
                     .fontSize(8)
                     .fillColor(
                         COLORS.muted,
@@ -528,62 +647,63 @@ function getPageContentWidth(
     );
 }
 
-function drawHorizontalLine(
-    document: PDFKit.PDFDocument,
-    y: number,
-    color: string = COLORS.border,
-): void {
-    document
-        .save()
-        .strokeColor(color)
-        .lineWidth(1)
-        .moveTo(
-            document.page.margins.left,
-            y,
-        )
-        .lineTo(
-            document.page.width -
-            document.page.margins.right,
-            y,
-        )
-        .stroke()
-        .restore();
-}
-
 function drawPageHeader(
     document: PDFKit.PDFDocument,
 ): void {
     const left =
         document.page.margins.left;
 
+    const width =
+        getPageContentWidth(
+            document,
+        );
+
+    document.image(
+        BRAND_LOGO_PATH,
+        left,
+        20,
+        {
+            width: 118,
+        },
+    );
+
     document
-        .font("Helvetica-Bold")
-        .fontSize(10)
-        .fillColor(COLORS.primary)
+        .font(FONT_REGULAR)
+        .fontSize(7.5)
+        .fillColor(
+            COLORS.muted,
+        )
         .text(
-            "ENERGIE-KRAFT",
+            "Persönliche Projektübersicht",
             left,
-            34,
+            38,
             {
-                continued: false,
+                width,
+                align: "right",
             },
         );
 
     document
-        .font("Helvetica")
-        .fontSize(8)
-        .fillColor(COLORS.muted)
-        .text(
-            "Persönliche Projektübersicht",
-            left + 95,
-            36,
-        );
+        .save()
+        .strokeColor(
+            COLORS.border,
+        )
+        .lineWidth(0.8)
+        .moveTo(
+            left,
+            54,
+        )
+        .lineTo(
+            left + width,
+            54,
+        )
+        .stroke()
+        .restore();
 
-    drawHorizontalLine(
-        document,
-        54,
-    );
-
+    /*
+     * Die bewährte Seitengeometrie
+     * aus D-1 bleibt bestehen.
+     */
     document.y = 68;
 }
 
@@ -598,7 +718,7 @@ function drawProductBadge(
         PRODUCT_THEMES[product];
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(9);
 
     const width =
@@ -622,7 +742,7 @@ function drawProductBadge(
         .restore();
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(9)
         .fillColor(theme.accent)
         .text(
@@ -657,7 +777,7 @@ function drawProductBadges(
         const product of products
     ) {
         document
-            .font("Helvetica-Bold")
+            .font(FONT_SEMIBOLD)
             .fontSize(9);
 
         const theme =
@@ -701,7 +821,7 @@ function drawSectionTitle(
     );
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(11.5)
         .fillColor(
             COLORS.primary,
@@ -751,7 +871,7 @@ function startProductContinuationPage(
         badgeY + 36;
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(15)
         .fillColor(
             theme.accent,
@@ -813,7 +933,7 @@ function drawRows(
         const row of rows
     ) {
         document
-            .font("Helvetica")
+            .font(FONT_REGULAR)
             .fontSize(8.5);
 
         const labelHeight =
@@ -826,7 +946,7 @@ function drawRows(
             );
 
         document
-            .font("Helvetica-Bold")
+            .font(FONT_SEMIBOLD)
             .fontSize(8.5);
 
         const valueHeight =
@@ -855,7 +975,7 @@ function drawRows(
             document.y;
 
         document
-            .font("Helvetica")
+            .font(FONT_REGULAR)
             .fontSize(8.5)
             .fillColor(
                 COLORS.muted,
@@ -871,7 +991,7 @@ function drawRows(
             );
 
         document
-            .font("Helvetica-Bold")
+            .font(FONT_SEMIBOLD)
             .fontSize(8.5)
             .fillColor(
                 COLORS.text,
@@ -936,7 +1056,7 @@ function drawDisclaimer(
         "sind erst nach fachlicher Prüfung und gegebenenfalls einer Vor-Ort-Besichtigung möglich.";
 
     document
-        .font("Helvetica")
+        .font(FONT_REGULAR)
         .fontSize(9);
 
     const textHeight =
@@ -967,7 +1087,7 @@ function drawDisclaimer(
         .restore();
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(10)
         .fillColor(
             COLORS.warningText,
@@ -979,7 +1099,7 @@ function drawDisclaimer(
         );
 
     document
-        .font("Helvetica")
+        .font(FONT_REGULAR)
         .fontSize(9)
         .fillColor(
             COLORS.warningText,
@@ -1808,61 +1928,105 @@ function drawCover(
             document,
         );
 
+    /*
+     * Original-Logo auf Weiß.
+     */
+    document.image(
+        BRAND_LOGO_PATH,
+        left,
+        42,
+        {
+            width: 235,
+        },
+    );
+
+    /*
+     * Corporate Hero.
+     */
     document
         .save()
-        .rect(
-            0,
-            0,
-            document.page.width,
-            190,
+        .roundedRect(
+            left,
+            125,
+            width,
+            155,
+            14,
         )
         .fill(
             COLORS.primary,
         )
         .restore();
 
+    /*
+     * Cyan-Akzent.
+     */
     document
-        .font("Helvetica-Bold")
-        .fontSize(14)
+        .save()
+        .roundedRect(
+            left,
+            125,
+            8,
+            155,
+            4,
+        )
+        .fill(
+            COLORS.accent,
+        )
+        .restore();
+
+    document
+        .font(FONT_BOLD)
+        .fontSize(29)
         .fillColor(
             COLORS.white,
         )
         .text(
-            "ENERGIE-KRAFT",
-            left,
-            52,
+            "Dein persönliches",
+            left + 28,
+            161,
+            {
+                width:
+                    width - 56,
+            },
         );
 
     document
-        .font("Helvetica-Bold")
-        .fontSize(30)
+        .font(FONT_BOLD)
+        .fontSize(29)
         .fillColor(
             COLORS.white,
         )
         .text(
-            "Deine persönliche",
-            left,
-            92,
+            "Energieprojekt",
+            left + 28,
+            197,
+            {
+                width:
+                    width - 56,
+            },
+        );
+
+    document
+        .font(FONT_REGULAR)
+        .fontSize(10)
+        .fillColor(
+            "#DCEFFA",
         )
         .text(
-            "Projektübersicht",
+            "Deine persönliche Projektübersicht von Energie-Kraft",
+            left + 28,
+            244,
+            {
+                width:
+                    width - 56,
+            },
         );
 
-    document
-        .font("Helvetica")
-        .fontSize(12)
-        .fillColor("#DCE8E1")
-        .text(
-            "Orientierung für dein Energieprojekt",
-            left,
-            164,
-        );
-
-    document.y = 235;
+    document.y = 318;
 
     document
-        .font("Helvetica-Bold")
-        .fontSize(19)
+        .font(FONT_BOLD)
+        .fontSize(17)
         .fillColor(
             COLORS.primary,
         )
@@ -1871,8 +2035,8 @@ function drawCover(
         );
 
     document
-        .font("Helvetica")
-        .fontSize(10)
+        .font(FONT_REGULAR)
+        .fontSize(9)
         .fillColor(
             COLORS.muted,
         )
@@ -1883,11 +2047,13 @@ function drawCover(
             },
         );
 
-    document.moveDown(1.5);
+    document.moveDown(
+        1.25,
+    );
 
     document
-        .font("Helvetica-Bold")
-        .fontSize(11)
+        .font(FONT_SEMIBOLD)
+        .fontSize(10)
         .fillColor(
             COLORS.text,
         )
@@ -1899,85 +2065,110 @@ function drawCover(
         drawProductBadges(
             document,
             lead.products,
-            document.y + 10,
+            document.y + 9,
         );
 
     document.y =
-        badgeBottom + 27;
+        badgeBottom + 22;
+
+    const infoY =
+        document.y;
 
     document
         .save()
         .roundedRect(
             left,
-            document.y,
+            infoY,
             width,
-            86,
-            8,
+            72,
+            10,
         )
-        .fill(
+        .fillAndStroke(
             COLORS.lightMuted,
+            COLORS.border,
         )
         .restore();
 
-    const infoTop =
-        document.y + 16;
-
     document
-        .font("Helvetica")
-        .fontSize(8)
+        .font(FONT_REGULAR)
+        .fontSize(7.5)
         .fillColor(
             COLORS.muted,
         )
         .text(
-            "Referenz",
-            left + 15,
-            infoTop,
+            "REFERENZ",
+            left + 16,
+            infoY + 13,
         );
 
     document
-        .font("Helvetica-Bold")
-        .fontSize(9)
+        .font(FONT_SEMIBOLD)
+        .fontSize(8.5)
         .fillColor(
             COLORS.text,
         )
         .text(
             leadId,
-            left + 15,
-            infoTop + 15,
-            {
-                width:
-                    width - 30,
-            },
+            left + 16,
+            infoY + 27,
         );
 
     document
-        .font("Helvetica")
-        .fontSize(8)
+        .font(FONT_REGULAR)
+        .fontSize(7.5)
         .fillColor(
             COLORS.muted,
         )
         .text(
-            "Einstieg",
-            left + 15,
-            infoTop + 43,
+            "EINSTIEG",
+            left + 285,
+            infoY + 13,
         );
 
     document
-        .font("Helvetica-Bold")
-        .fontSize(9)
+        .font(FONT_SEMIBOLD)
+        .fontSize(8.5)
         .fillColor(
-            COLORS.text,
+            COLORS.primary,
         )
         .text(
             PRODUCT_THEMES[
-                lead.journey
-                    .entryPoint
+                lead.journey.entryPoint
             ].label,
-            left + 15,
-            infoTop + 58,
+            left + 285,
+            infoY + 27,
         );
 
-    document.y += 112;
+    /*
+     * Supersign als Corporate-
+     * Gestaltungselement.
+     */
+    document.image(
+        BRAND_SUPERSIGN_PATH,
+        document.page.width -
+        document.page.margins.right -
+        95,
+        626,
+        {
+            width: 95,
+        },
+    );
+
+    document
+        .font(FONT_REGULAR)
+        .fontSize(7.5)
+        .fillColor(
+            COLORS.muted,
+        )
+        .text(
+            "Unverbindliche Projektorientierung · Keine technische Planung oder Angebotszusage",
+            left,
+            742,
+            {
+                width,
+                align: "left",
+            },
+        );
 }
 
 function drawProductPage(
@@ -2027,7 +2218,7 @@ function drawProductPage(
         .restore();
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(19)
         .fillColor(
             theme.accent,
@@ -2039,7 +2230,7 @@ function drawProductPage(
         );
 
     document
-        .font("Helvetica")
+        .font(FONT_REGULAR)
         .fontSize(8)
         .fillColor(
             COLORS.muted,
@@ -2106,7 +2297,7 @@ function drawNextStepsPage(
     );
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(25)
         .fillColor(
             COLORS.primary,
@@ -2116,7 +2307,7 @@ function drawNextStepsPage(
         );
 
     document
-        .font("Helvetica")
+        .font(FONT_REGULAR)
         .fontSize(11)
         .fillColor(
             COLORS.muted,
@@ -2186,7 +2377,7 @@ function drawNextStepsPage(
             .restore();
 
         document
-            .font("Helvetica-Bold")
+            .font(FONT_SEMIBOLD)
             .fontSize(18)
             .fillColor(
                 COLORS.secondary,
@@ -2201,7 +2392,7 @@ function drawNextStepsPage(
             );
 
         document
-            .font("Helvetica-Bold")
+            .font(FONT_SEMIBOLD)
             .fontSize(11)
             .fillColor(
                 COLORS.primary,
@@ -2217,7 +2408,7 @@ function drawNextStepsPage(
             );
 
         document
-            .font("Helvetica")
+            .font(FONT_REGULAR)
             .fontSize(9)
             .fillColor(
                 COLORS.muted,
@@ -2246,7 +2437,7 @@ function drawNextStepsPage(
     document.moveDown(1);
 
     document
-        .font("Helvetica")
+        .font(FONT_REGULAR)
         .fontSize(9)
         .fillColor(
             COLORS.muted,
@@ -2256,7 +2447,7 @@ function drawNextStepsPage(
         );
 
     document
-        .font("Helvetica-Bold")
+        .font(FONT_SEMIBOLD)
         .fontSize(10)
         .fillColor(
             COLORS.primary,
@@ -2266,7 +2457,7 @@ function drawNextStepsPage(
         );
 
     document
-        .font("Helvetica")
+        .font(FONT_REGULAR)
         .fontSize(9)
         .fillColor(
             COLORS.muted,
@@ -2312,7 +2503,9 @@ function addPageFooters(
 
         document
             .save()
-            .strokeColor("#E6EBE7")
+            .strokeColor(
+                COLORS.border,
+            )
             .lineWidth(1)
             .moveTo(
                 document.page.margins.left,
@@ -2327,7 +2520,7 @@ function addPageFooters(
             .restore();
 
         document
-            .font("Helvetica")
+            .font(FONT_REGULAR)
             .fontSize(7.5)
             .fillColor(
                 COLORS.muted,
@@ -2342,7 +2535,7 @@ function addPageFooters(
             );
 
         document
-            .font("Helvetica")
+            .font(FONT_REGULAR)
             .fontSize(7.5)
             .fillColor(
                 COLORS.muted,
@@ -2403,6 +2596,10 @@ export async function generateConfiguratorProjectPdf(
                             "Energie-Kraft Konfigurator",
                     },
                 });
+
+            registerPdfFonts(
+                document,
+            );
 
             const chunks:
                 Buffer[] = [];

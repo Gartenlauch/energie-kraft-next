@@ -11,15 +11,30 @@ import {
 
 interface ConfiguratorSubmitSuccessProps {
   leadId: string;
+
+  reportStatus?:
+  | "generated"
+  | "failed";
+
+  customerMailStatus?:
+  | "accepted"
+  | "failed";
+
   onRestart: () => void;
 }
 
 export function ConfiguratorSubmitSuccess({
   leadId,
+  reportStatus,
+  customerMailStatus,
   onRestart,
 }: ConfiguratorSubmitSuccessProps) {
   const router =
     useRouter();
+
+  const projectOverviewSent =
+    reportStatus === "generated" &&
+    customerMailStatus === "accepted";
 
   function handleRestart() {
     /*
@@ -60,14 +75,29 @@ export function ConfiguratorSubmitSuccess({
           id="configurator-success-heading"
           className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
         >
-          Vielen Dank für deine Anfrage
+          {projectOverviewSent
+            ? "Deine Projektübersicht ist unterwegs"
+            : "Deine Anfrage ist erfolgreich angekommen"}
         </h1>
 
         <p className="mt-5 max-w-2xl text-lg leading-8 text-foreground/70">
-          Deine Konfiguration wurde
-          erfolgreich gespeichert. Wir
-          prüfen deine Angaben und melden
-          uns bei dir.
+          {projectOverviewSent ? (
+            <>
+              Wir haben deine Konfiguration
+              erfolgreich erhalten. Du bekommst
+              deine persönliche Ergebnisübersicht
+              in wenigen Minuten per E-Mail.
+            </>
+          ) : (
+            <>
+              Wir haben deine Konfiguration
+              erfolgreich erhalten und gespeichert.
+              Die Projektübersicht konnte momentan
+              nicht automatisch per E-Mail
+              bereitgestellt werden. Wir kümmern
+              uns darum.
+            </>
+          )}
         </p>
 
         <div className="mt-8 rounded-2xl border border-border-default bg-surface p-6">

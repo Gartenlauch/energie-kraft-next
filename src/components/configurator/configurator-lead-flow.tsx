@@ -38,6 +38,17 @@ interface ConfiguratorLeadFlowProps {
 
     onRestart: () => void;
 }
+interface SubmissionOutcome {
+    leadId: string;
+
+    reportStatus?:
+    | "generated"
+    | "failed";
+
+    customerMailStatus?:
+    | "accepted"
+    | "failed";
+}
 
 export function ConfiguratorLeadFlow({
     renderResult,
@@ -72,10 +83,10 @@ export function ConfiguratorLeadFlow({
         );
 
     const [
-        submittedLeadId,
-        setSubmittedLeadId,
+        submissionOutcome,
+        setSubmissionOutcome,
     ] =
-        useState<string | null>(
+        useState<SubmissionOutcome | null>(
             null,
         );
 
@@ -130,7 +141,11 @@ export function ConfiguratorLeadFlow({
         try {
             const result = await submitConfiguratorLead(leadInput);
 
-            setSubmittedLeadId( result.leadId );
+            setSubmissionOutcome({
+                leadId: result.leadId,
+                reportStatus: result.reportStatus,
+                customerMailStatus: result.customerMailStatus,
+            });
 
             /*
              * Technische Konfigurator-Daten
@@ -149,24 +164,32 @@ export function ConfiguratorLeadFlow({
         }
     }
 
-    if (
-        stage === "success" &&
-        submittedLeadId
-    ) {
-        return (
-            <ConfiguratorSubmitSuccess
-                leadId={submittedLeadId}
-                onRestart={() => {
-                    setContactDraft(null);
-                    setContactFormStartedAt(null);
-                    setSubmittedLeadId(null);
-                    setSubmissionError(null);
-                    setStage("result");
-                    onRestart();
-                }}
-            />
-        );
-    }
+  if (
+    stage === "success" &&
+    submissionOutcome
+) {
+    return (
+        <ConfiguratorSubmitSuccess
+            leadId={
+                submissionOutcome.leadId
+            }
+            reportStatus={
+                submissionOutcome.reportStatus
+            }
+            customerMailStatus={
+                submissionOutcome.customerMailStatus
+            }
+            onRestart={() => {
+                setContactDraft(null);
+                setContactFormStartedAt(null);
+                setSubmissionOutcome(null);
+                setSubmissionError(null);
+                setStage("result");
+                onRestart();
+            }}
+        />
+    );
+}
 
     if (stage === "contact") {
         return (
