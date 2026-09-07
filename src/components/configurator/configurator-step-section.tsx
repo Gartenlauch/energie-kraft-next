@@ -18,14 +18,14 @@ export function ConfiguratorStepSection({
   return (
     <section aria-labelledby={headingId}>
       {eyebrow ? (
-        <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+        <p className="eyebrow">
           {eyebrow}
         </p>
       ) : null}
 
       <h1
         id={headingId}
-        className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
+        className="mt-4 text-3xl leading-tight tracking-tight text-brand-navy sm:text-4xl"
       >
         {title}
       </h1>

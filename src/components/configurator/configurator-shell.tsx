@@ -10,15 +10,17 @@ export function ConfiguratorShell({
   aside,
 }: ConfiguratorShellProps) {
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-[70vh] bg-surface-soft py-8 sm:py-10 lg:py-14">
       <div
         className={
           aside
-            ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
-            : "mx-auto max-w-4xl"
+            ? "section-shell grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]"
+            : "section-shell max-w-5xl"
         }
       >
-        <main className="min-w-0">{children}</main>
+        <main id="main-content" className="premium-card min-w-0 p-5 sm:p-8 lg:p-12">
+          {children}
+        </main>
 
         {aside ? (
           <aside className="min-w-0" aria-label="Zusätzliche Informationen">

@@ -22,40 +22,40 @@ export default function PvCalculatorPage() {
         })}
       />
 
-      <main>
+      <main id="main-content">
         <Breadcrumbs currentLabel={pvCalculatorContent.breadcrumbLabel} />
 
-        <section className="bg-background flex min-h-[65vh] items-center px-6 py-20">
-          <div className="mx-auto w-full max-w-7xl">
-            <p className="mb-4 text-sm font-semibold tracking-widest uppercase">
+        <section className="flex min-h-[36rem] items-center bg-brand-navy py-16 text-white md:py-24">
+          <div className="section-shell">
+            <p className="mb-4 text-xs font-bold tracking-[0.16em] text-cyan-200 uppercase">
               {pvCalculatorContent.hero.eyebrow}
             </p>
 
-            <h1 className="max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl">
+            <h1 className="max-w-4xl text-[clamp(2.35rem,4.6vw,4.75rem)] leading-[1.04] tracking-[-0.045em] text-white">
               {pvCalculatorContent.hero.title}
             </h1>
 
-            <p className="text-foreground/70 mt-6 max-w-3xl text-lg leading-8">
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-white/72 md:text-xl">
               {pvCalculatorContent.hero.description}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
               <a
                 href="#pv-berechnung"
-                className="bg-foreground text-background inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-semibold"
+                className="button-light"
               >
                 Berechnung starten
               </a>
 
               <Link
                 href="/photovoltaik"
-                className="border-foreground/20 inline-flex min-h-11 items-center justify-center rounded-md border px-5 py-3 text-sm font-semibold"
+                className="inline-flex min-h-13 items-center justify-center rounded-[var(--radius-md)] border border-white/30 px-5 py-3 text-sm font-semibold text-white"
               >
                 Photovoltaik-Beratung
               </Link>
               <Link
                 href="/rechner/photovoltaik-kosten"
-                className="border-foreground/20 inline-flex min-h-11 items-center justify-center rounded-md border px-5 py-3 text-sm font-semibold"
+                className="inline-flex min-h-13 items-center justify-center rounded-[var(--radius-md)] border border-white/30 px-5 py-3 text-sm font-semibold text-white"
               >
                 PV-Größe und Kosten
               </Link>
@@ -65,16 +65,16 @@ export default function PvCalculatorPage() {
 
         <PvRoiCalculator />
 
-        <section className="border-foreground/10 border-t px-6 py-20">
-          <div className="mx-auto w-full max-w-7xl">
-            <p className="text-sm font-semibold tracking-widest uppercase">Einordnung</p>
+        <section className="section-space bg-surface">
+          <div className="section-shell">
+            <p className="eyebrow">Einordnung</p>
 
-            <h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2 className="section-title mt-4">
               Was bei einer realen PV-Planung zusätzlich berücksichtigt wird
             </h2>
 
             <div className="mt-8 grid gap-5 md:grid-cols-3">
-              <article className="border-foreground/10 bg-foreground/[0.02] rounded-xl border p-6">
+              <article className="premium-card p-6">
                 <h3 className="text-xl font-semibold">Dach und Standort</h3>
 
                 <p className="text-foreground/70 mt-3 leading-7">
@@ -83,7 +83,7 @@ export default function PvCalculatorPage() {
                 </p>
               </article>
 
-              <article className="border-foreground/10 bg-foreground/[0.02] rounded-xl border p-6">
+              <article className="premium-card p-6">
                 <h3 className="text-xl font-semibold">Verbrauchsprofil</h3>
 
                 <p className="text-foreground/70 mt-3 leading-7">
@@ -92,7 +92,7 @@ export default function PvCalculatorPage() {
                 </p>
               </article>
 
-              <article className="border-foreground/10 bg-foreground/[0.02] rounded-xl border p-6">
+              <article className="premium-card p-6">
                 <h3 className="text-xl font-semibold">Gesamtsystem</h3>
 
                 <p className="text-foreground/70 mt-3 leading-7">
@@ -105,7 +105,7 @@ export default function PvCalculatorPage() {
             <div className="mt-8">
               <Link
                 href="/kontakt"
-                className="bg-foreground text-background inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-semibold"
+                className="button-primary"
               >
                 Individuelle PV-Planung anfragen
               </Link>

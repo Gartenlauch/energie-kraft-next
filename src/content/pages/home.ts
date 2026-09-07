@@ -15,8 +15,8 @@ export const homeContent = {
       "Individuelle Beratung, fachgerechte Planung und zuverlässige Umsetzung aus einer Hand.",
 
     primaryCta: {
-      label: "Beratung anfragen",
-      href: "/kontakt",
+      label: "Energieprojekt konfigurieren",
+      href: "/konfigurator",
     },
 
     secondaryCta: {

@@ -48,7 +48,7 @@ function createInitialValues(): ConfiguratorContactFormValues {
 }
 
 const inputClassName =
-  "mt-2 min-h-12 w-full min-w-0 rounded-xl border border-border-default bg-background px-4 py-3 text-base";
+  "mt-2 min-h-13 w-full min-w-0 rounded-xl border border-border-default bg-background px-4 py-3 text-base text-brand-navy";
 
 function FieldError({
   message,
@@ -175,13 +175,13 @@ export function ConfiguratorContactForm({
       <ConfiguratorPhaseIndicator currentPhase="contact" />
 
       <section aria-labelledby="configurator-contact-heading">
-        <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+        <p className="eyebrow">
           Fast geschafft
         </p>
 
         <h1
           id="configurator-contact-heading"
-          className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
+          className="mt-4 text-3xl leading-tight tracking-tight text-brand-navy sm:text-4xl"
         >
           Wie können wir dich erreichen?
         </h1>
@@ -504,7 +504,7 @@ export function ConfiguratorContactForm({
           <button
             type="button"
             onClick={onBack}
-            className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary hover:bg-surface"
+            className="button-secondary"
           >
             Zurück zum Ergebnis
           </button>
@@ -512,7 +512,7 @@ export function ConfiguratorContactForm({
           <button
             type="button"
             onClick={handleContinue}
-            className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white hover:opacity-90"
+            className="button-primary"
           >
             Weiter zur Anfrage
           </button>

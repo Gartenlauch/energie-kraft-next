@@ -103,7 +103,7 @@ interface ResultCardProps {
 
 function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="border-foreground/10 bg-background rounded-xl border p-6">
+    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
       <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
       <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
@@ -195,8 +195,8 @@ export function PvRoiCalculator() {
       : `${numberFormatter.format(result.paybackYears)} Jahre`;
 
   return (
-    <section id="pv-berechnung" className="border-foreground/10 border-t px-6 py-20">
-      <div className="mx-auto grid min-w-0 w-full max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+    <section id="pv-berechnung" className="section-space bg-surface-soft">
+      <div className="section-shell grid min-w-0 gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div className="min-w-0">
           <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
 
@@ -209,7 +209,7 @@ export function PvRoiCalculator() {
             werden nach dem Absenden neu berechnet.
           </p>
 
-          <form onSubmit={handleSubmit} noValidate className="mt-10">
+          <form onSubmit={handleSubmit} noValidate className="premium-card mt-10 p-5 sm:p-7">
             <fieldset>
               <legend className="text-xl font-semibold">Grunddaten</legend>
 
@@ -260,7 +260,7 @@ export function PvRoiCalculator() {
             <div className="mt-8 flex flex-wrap gap-4">
               <button
                 type="submit"
-                className="bg-foreground text-background inline-flex min-h-12 items-center justify-center rounded-md px-6 py-3 text-sm font-semibold"
+                className="button-primary"
               >
                 Berechnung aktualisieren
               </button>
@@ -268,7 +268,7 @@ export function PvRoiCalculator() {
               <button
                 type="button"
                 onClick={handleReset}
-                className="border-foreground/20 inline-flex min-h-12 items-center justify-center rounded-md border px-6 py-3 text-sm font-semibold"
+                className="button-secondary"
               >
                 Ausgangswerte wiederherstellen
               </button>
@@ -281,7 +281,7 @@ export function PvRoiCalculator() {
           aria-atomic="false"
           className="min-w-0 lg:sticky lg:top-28 lg:self-start"
         >
-          <div className="bg-foreground/[0.035] rounded-2xl p-5 md:p-7">
+          <div className="premium-card p-5 md:p-7">
             <p className="text-sm font-semibold tracking-widest uppercase">Berechnungsergebnis</p>
 
             <h2 className="mt-3 text-3xl font-semibold tracking-tight">

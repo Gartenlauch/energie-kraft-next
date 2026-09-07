@@ -16,7 +16,7 @@ export function SelectionGrid({
   columns = 2,
 }: SelectionGridProps) {
   return (
-    <div className={`grid gap-4 ${columnClasses[columns]}`}>
+    <div className={`grid min-w-0 gap-4 ${columnClasses[columns]}`}>
       {children}
     </div>
   );

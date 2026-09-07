@@ -34,7 +34,7 @@ export function LegalPage({
         })}
       />
 
-      <main>
+      <main id="main-content">
         <Breadcrumbs currentLabel={title} />
 
         <header className="border-b border-foreground/10 px-6 py-16 md:py-20">

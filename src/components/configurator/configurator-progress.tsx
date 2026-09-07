@@ -20,17 +20,17 @@ export function ConfiguratorProgress({
   const progress = Math.round((currentStep / steps.length) * 100);
 
   return (
-    <div className="mb-8">
+    <div className="mb-9 rounded-xl border border-border-default bg-surface p-4 sm:p-5">
       <div className="mb-2 flex items-center justify-between gap-4 text-sm">
-        <span className="font-medium text-brand-primary">
+        <span className="font-semibold text-brand-navy">
           Schritt {currentStep} von {steps.length}
         </span>
 
-        <span className="text-brand-secondary">{progress} %</span>
+        <span className="font-semibold text-brand-primary">{progress} %</span>
       </div>
 
       <div
-        className="h-2 overflow-hidden rounded-full bg-surface-strong"
+        className="h-1.5 overflow-hidden rounded-full bg-surface-strong"
         role="progressbar"
         aria-label="Fortschritt im Konfigurator"
         aria-valuemin={0}

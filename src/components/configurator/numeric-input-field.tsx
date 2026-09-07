@@ -69,7 +69,7 @@ export function NumericInputField({
             );
           }}
           className={[
-            "min-h-14 w-full min-w-0 rounded-xl border bg-background px-4 py-3",
+            "min-h-14 w-full min-w-0 rounded-xl border bg-background px-4 py-3 text-brand-navy",
             unit ? "pr-28" : "",
             error
               ? "border-red-600"

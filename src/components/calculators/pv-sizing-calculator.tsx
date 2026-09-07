@@ -174,7 +174,7 @@ interface ResultCardProps {
 
 function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="border-foreground/10 bg-background rounded-xl border p-6">
+    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
       <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
       <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
@@ -271,9 +271,9 @@ export function PvSizingCalculator() {
   return (
     <section
       id="pv-kosten-berechnung"
-      className="border-foreground/10 scroll-mt-24 border-t px-6 py-20"
+      className="section-space bg-surface-soft"
     >
-      <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <div className="section-shell grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div>
           <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
 
@@ -288,7 +288,7 @@ export function PvSizingCalculator() {
 
           <form
             noValidate
-            className="mt-10"
+            className="premium-card mt-10 p-5 sm:p-7"
             onSubmit={(event) => {
               event.preventDefault();
               handleSubmit();
@@ -448,7 +448,7 @@ export function PvSizingCalculator() {
             <div className="mt-8 flex flex-wrap gap-4">
               <button
                 type="submit"
-                className="bg-foreground text-background inline-flex min-h-12 items-center justify-center rounded-md px-6 py-3 text-sm font-semibold"
+                className="button-primary"
               >
                 Größe und Kosten berechnen
               </button>
@@ -456,7 +456,7 @@ export function PvSizingCalculator() {
               <button
                 type="button"
                 onClick={handleReset}
-                className="border-foreground/20 inline-flex min-h-12 items-center justify-center rounded-md border px-6 py-3 text-sm font-semibold"
+                className="button-secondary"
               >
                 Ausgangswerte wiederherstellen
               </button>
@@ -465,7 +465,7 @@ export function PvSizingCalculator() {
         </div>
 
         <div aria-live="polite" aria-atomic="false" className="lg:sticky lg:top-28 lg:self-start">
-          <div className="bg-foreground/[0.035] rounded-2xl p-5 md:p-7">
+          <div className="premium-card p-5 md:p-7">
             <p className="text-sm font-semibold tracking-widest uppercase">Ergebnis</p>
 
             <h2 className="mt-3 text-3xl font-semibold tracking-tight">

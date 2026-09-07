@@ -13,6 +13,9 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
     <>
       <SiteOrganizationJsonLd />
 
+      <a href="#main-content" className="skip-link">
+        Zum Inhalt springen
+      </a>
       <SiteHeader />
       {children}
       <SiteFooter />

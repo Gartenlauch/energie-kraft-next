@@ -35,7 +35,7 @@ export function ConfiguratorPhaseIndicator({
   return (
     <nav
       aria-label="Fortschritt der Anfrage"
-      className="mb-8"
+      className="mb-9"
     >
       <ol className="grid gap-3 sm:grid-cols-3">
         {phases.map((phase, index) => {
@@ -52,15 +52,15 @@ export function ConfiguratorPhaseIndicator({
                 active ? "step" : undefined
               }
               className={[
-                "rounded-xl border px-4 py-3",
+                "rounded-xl border px-4 py-3 transition",
                 active
-                  ? "border-brand-accent bg-surface"
+                  ? "border-brand-accent bg-cyan-50/60 shadow-[var(--shadow-sm)]"
                   : completed
-                    ? "border-border-default bg-surface"
+                    ? "border-brand-primary/25 bg-surface"
                     : "border-border-default bg-background",
               ].join(" ")}
             >
-              <span className="block text-xs font-semibold text-brand-secondary">
+              <span className="block text-xs font-semibold text-brand-primary">
                 {phase.number.toString().padStart(2, "0")}
               </span>
 

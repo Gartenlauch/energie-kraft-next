@@ -48,7 +48,7 @@ export function TextareaField({
           onChange(event.currentTarget.value)
         }
         className={[
-          "mt-2 w-full min-w-0 resize-y rounded-xl border bg-background px-4 py-3",
+          "mt-2 w-full min-w-0 resize-y rounded-xl border bg-background px-4 py-3 text-brand-navy",
           "leading-7",
           error
             ? "border-red-600"

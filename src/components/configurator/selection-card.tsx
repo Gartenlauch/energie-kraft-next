@@ -26,12 +26,12 @@ export function SelectionCard({
       disabled={disabled}
       onClick={onSelect}
       className={[
-        "min-h-28 w-full rounded-2xl border p-4 text-left",
-        "transition duration-150",
+        "min-h-32 w-full rounded-[var(--radius-md)] border p-5 text-left",
+        "transition duration-150 hover:-translate-y-0.5",
         "disabled:cursor-not-allowed disabled:opacity-50",
         selected
-          ? "border-brand-accent bg-surface shadow-sm ring-2 ring-brand-accent"
-          : "border-border-default bg-white hover:border-brand-secondary",
+          ? "border-brand-accent bg-cyan-50/60 shadow-[var(--shadow-card)] ring-1 ring-brand-accent"
+          : "border-border-default bg-white shadow-[var(--shadow-sm)] hover:border-brand-primary hover:shadow-[var(--shadow-card)]",
       ].join(" ")}
     >
       {media ? (
@@ -45,13 +45,13 @@ export function SelectionCard({
       </span>
 
       {description ? (
-        <span className="mt-1 block text-sm leading-6 text-brand-secondary">
+        <span className="mt-1.5 block text-sm leading-6 text-[var(--text-muted)]">
           {description}
         </span>
       ) : null}
 
       {selected ? (
-        <span className="mt-3 block text-sm font-medium text-brand-primary">
+        <span className="mt-3 block text-sm font-semibold text-brand-primary">
           Ausgewählt
         </span>
       ) : null}

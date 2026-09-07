@@ -73,9 +73,9 @@ function buildProductBadgesHtml(
                         display:inline-block;
                         margin:0 6px 8px 0;
                         padding:7px 12px;
-                        border:1px solid #b9dbea;
+                        border:1px solid #cfd8e7;
                         border-radius:999px;
-                        background:#edf7fb;
+                        background:#eaf7fb;
                         color:#005ca9;
                         font-size:13px;
                         font-weight:600;
@@ -147,9 +147,9 @@ export async function sendConfiguratorCustomerMail(
     style="
       margin:0;
       padding:0;
-      background:#f3f8fb;
+      background:#e9edf8;
       font-family:Montserrat,Arial,Helvetica,sans-serif;
-      color:#19364a;
+      color:#091433;
     "
   >
     <table
@@ -158,7 +158,7 @@ export async function sendConfiguratorCustomerMail(
       cellspacing="0"
       cellpadding="0"
       border="0"
-      style="background:#f3f8fb;"
+      style="background:#e9edf8;"
     >
       <tr>
         <td
@@ -176,7 +176,7 @@ export async function sendConfiguratorCustomerMail(
               background:#ffffff;
               border-radius:16px;
               overflow:hidden;
-              border:1px solid #d1e4ef;
+              border:1px solid #cfd8e7;
             "
           >
             <!-- Logo -->
@@ -206,7 +206,7 @@ export async function sendConfiguratorCustomerMail(
             <tr>
               <td
                 style="
-                  background:#005ca9;
+                  background:#091433;
                   border-left:6px solid #0da1d1;
                   padding:28px 34px;
                   color:#ffffff;
@@ -218,7 +218,7 @@ export async function sendConfiguratorCustomerMail(
                     font-weight:600;
                     letter-spacing:1.2px;
                     text-transform:uppercase;
-                    color:#cceefa;
+                    color:#bcebf8;
                   "
                 >
                   Dein Energieprojekt
@@ -267,9 +267,9 @@ export async function sendConfiguratorCustomerMail(
                   style="
                     margin:28px 0;
                     padding:20px;
-                    border:1px solid #d1e4ef;
+                    border:1px solid #cfd8e7;
                     border-radius:12px;
-                    background:#f3f8fb;
+                    background:#f6f8fc;
                   "
                 >
                   <div
@@ -277,7 +277,7 @@ export async function sendConfiguratorCustomerMail(
                       margin-bottom:12px;
                       font-size:13px;
                       font-weight:600;
-                      color:#667d8c;
+                      color:#526178;
                     "
                   >
                     Dein Energieprojekt
@@ -294,7 +294,7 @@ export async function sendConfiguratorCustomerMail(
                     margin:28px 0;
                     padding:18px 20px;
                     border-left:4px solid #0da1d1;
-                    background:#edf7fb;
+                    background:#eaf7fb;
                   "
                 >
                   <strong
@@ -316,10 +316,10 @@ export async function sendConfiguratorCustomerMail(
                   style="
                     margin:28px 0;
                     padding:18px;
-                    border:1px solid #b9dbea;
+                    border:1px solid #cfd8e7;
                     border-radius:10px;
-                    background:#f3f8fb;
-                    color:#35566d;
+                    background:#f6f8fc;
+                    color:#526178;
                     font-size:13px;
                     line-height:1.6;
                   "
@@ -342,7 +342,7 @@ export async function sendConfiguratorCustomerMail(
                 <p
                   style="
                     margin-bottom:4px;
-                    color:#667d8c;
+                    color:#526178;
                     font-size:12px;
                     text-transform:uppercase;
                     letter-spacing:.6px;
@@ -357,7 +357,7 @@ export async function sendConfiguratorCustomerMail(
                     font-family:Arial,Helvetica,sans-serif;
                     font-size:13px;
                     font-weight:600;
-                    color:#19364a;
+                    color:#091433;
                   "
                 >
                   ${escapeHtml(leadId)}
@@ -377,7 +377,7 @@ export async function sendConfiguratorCustomerMail(
               <td
                 style="
                   padding:20px 34px;
-                  background:#005ca9;
+                  background:#091433;
                   color:#ffffff;
                   font-size:12px;
                 "

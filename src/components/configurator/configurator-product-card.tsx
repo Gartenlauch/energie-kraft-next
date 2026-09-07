@@ -10,9 +10,9 @@ export function ConfiguratorProductCard({
   product,
 }: ConfiguratorProductCardProps) {
   return (
-    <article className="flex min-w-0 flex-col rounded-2xl border border-border-default bg-background p-6">
+    <article className="premium-card group flex min-w-0 flex-col p-6 transition hover:-translate-y-1 hover:border-brand-accent/60">
       <div>
-        <span className="inline-flex rounded-full bg-surface px-3 py-1 text-xs font-semibold text-brand-secondary">
+        <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-brand-primary">
           {product.statusLabel}
         </span>
 
@@ -28,14 +28,14 @@ export function ConfiguratorProductCard({
       <div className="mt-auto flex flex-col gap-3 pt-6">
         <Link
           href={product.href}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-center text-sm font-semibold text-white transition hover:opacity-90"
+          className="button-primary"
         >
           Konfigurator öffnen
         </Link>
 
         <Link
           href={product.serviceHref}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border-default px-5 py-3 text-center text-sm font-semibold text-brand-primary transition hover:bg-surface"
+          className="button-secondary"
         >
           Mehr zu {product.title}
         </Link>

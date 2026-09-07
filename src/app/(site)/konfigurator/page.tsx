@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { ArtDirectedImage } from "@/components/media/art-directed-image";
 import { ConfiguratorHouseNavigation } from "@/components/configurator/configurator-house-navigation";
 import { ConfiguratorProductCard } from "@/components/configurator/configurator-product-card";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
@@ -33,39 +34,55 @@ export default function ConfiguratorLandingPage() {
         })}
       />
 
-      <main>
+      <main id="main-content">
         <Breadcrumbs
           currentLabel={configuratorLandingContent.breadcrumbLabel}
         />
 
-        <section className="bg-background px-6 py-16 md:py-20">
-          <div className="mx-auto w-full max-w-7xl">
-            <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
-              {configuratorLandingContent.hero.eyebrow}
-            </p>
+        <section className="bg-surface-soft">
+          <div className="section-shell grid min-h-[36rem] items-center gap-10 py-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:py-18">
+            <div>
+              <p className="eyebrow">{configuratorLandingContent.hero.eyebrow}</p>
+              <h1 className="mt-5 max-w-[17ch] text-[clamp(2.35rem,4.5vw,4.65rem)] leading-[1.04] tracking-[-0.045em]">
+                {configuratorLandingContent.hero.title}
+              </h1>
+              <p className="lead-copy mt-6 max-w-3xl">
+                {configuratorLandingContent.hero.description}
+              </p>
+              <a href="#configurator-house-heading" className="button-primary mt-8">
+                Lösung auswählen
+              </a>
+            </div>
 
-            <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight text-brand-primary md:text-6xl">
-              {configuratorLandingContent.hero.title}
-            </h1>
-
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-foreground/70">
-              {configuratorLandingContent.hero.description}
-            </p>
+            <div className="media-frame aspect-[4/5] lg:aspect-[4/3]">
+              <ArtDirectedImage
+                desktopSrc="/images/home-premium/hero-energy-home-desktop.webp"
+                mobileSrc="/images/home-premium/hero-energy-home-mobile.webp"
+                desktopWidth={2000}
+                desktopHeight={1200}
+                mobileWidth={1200}
+                mobileHeight={1600}
+                alt="Modernes Energiesystem mit Photovoltaik, Wärmepumpe und Wallbox"
+                sizes="(max-width: 1023px) calc(100vw - 2rem), 52vw"
+                fetchPriority="high"
+                className="block"
+              />
+            </div>
           </div>
         </section>
 
         <section
-          className="border-y border-border-default bg-surface px-6 py-16 md:py-20"
+          className="section-space border-y border-border-default bg-background"
           aria-labelledby="configurator-house-heading"
         >
-          <div className="mx-auto w-full max-w-7xl">
-            <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+          <div className="section-shell">
+            <p className="eyebrow">
               {configuratorLandingContent.house.eyebrow}
             </p>
 
             <h2
               id="configurator-house-heading"
-              className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-brand-primary md:text-4xl"
+              className="section-title mt-4"
             >
               {configuratorLandingContent.house.title}
             </h2>
@@ -89,14 +106,14 @@ export default function ConfiguratorLandingPage() {
           </div>
         </section>
 
-        <section className="px-6 py-16 md:py-20">
-          <div className="mx-auto w-full max-w-7xl">
+        <section className="section-space bg-surface">
+          <div className="section-shell">
             <div className="max-w-3xl">
-              <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+              <p className="eyebrow">
                 Schritt für Schritt
               </p>
 
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary md:text-4xl">
+              <h2 className="section-title mt-4">
                 Wenige Fragen statt komplizierter Technik
               </h2>
 
@@ -109,7 +126,7 @@ export default function ConfiguratorLandingPage() {
             </div>
 
             <div className="mt-10 grid gap-5 md:grid-cols-3">
-              <article className="rounded-2xl border border-border-default p-6">
+              <article className="premium-card p-6">
                 <span className="text-sm font-semibold text-brand-secondary">
                   01
                 </span>
@@ -122,7 +139,7 @@ export default function ConfiguratorLandingPage() {
                 </p>
               </article>
 
-              <article className="rounded-2xl border border-border-default p-6">
+              <article className="premium-card p-6">
                 <span className="text-sm font-semibold text-brand-secondary">
                   02
                 </span>
@@ -135,7 +152,7 @@ export default function ConfiguratorLandingPage() {
                 </p>
               </article>
 
-              <article className="rounded-2xl border border-border-default p-6">
+              <article className="premium-card p-6">
                 <span className="text-sm font-semibold text-brand-secondary">
                   03
                 </span>

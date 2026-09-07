@@ -67,13 +67,13 @@ export function ConfiguratorSubmitSuccess({
       <section
         aria-labelledby="configurator-success-heading"
       >
-        <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+        <p className="eyebrow">
           Anfrage übermittelt
         </p>
 
         <h1
           id="configurator-success-heading"
-          className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
+          className="mt-4 text-3xl leading-tight tracking-tight text-brand-navy sm:text-4xl"
         >
           {projectOverviewSent
             ? "Deine Projektübersicht ist unterwegs"
@@ -100,7 +100,7 @@ export function ConfiguratorSubmitSuccess({
           )}
         </p>
 
-        <div className="mt-8 rounded-2xl border border-border-default bg-surface p-6">
+        <div className="mt-8 rounded-xl border border-border-default bg-surface p-6">
           <p className="text-sm text-foreground/60">
             Referenz
           </p>
@@ -114,14 +114,14 @@ export function ConfiguratorSubmitSuccess({
           <button
             type="button"
             onClick={handleRestart}
-            className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white"
+            className="button-primary"
           >
             Neue Konfiguration starten
           </button>
 
           <Link
             href="/konfigurator"
-            className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border-default px-6 py-3 font-semibold text-brand-primary"
+            className="button-secondary"
           >
             Zur Konfigurator-Übersicht
           </Link>

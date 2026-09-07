@@ -21,7 +21,7 @@ export function WizardActions({
         <button
           type="button"
           onClick={onBack}
-          className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary hover:bg-surface"
+          className="button-secondary min-w-32"
         >
           {backLabel}
         </button>
@@ -33,7 +33,7 @@ export function WizardActions({
         type="button"
         onClick={onNext}
         disabled={nextDisabled}
-        className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="button-primary min-w-32"
       >
         {nextLabel}
       </button>

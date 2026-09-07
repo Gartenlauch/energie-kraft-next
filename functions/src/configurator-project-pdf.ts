@@ -81,28 +81,29 @@ const FONT_BOLD = "Montserrat-Bold";
 
 const COLORS = {
     primary: "#005CA9",
-    secondary: "#175DA9",
+    secondary: "#182E4C",
     accent: "#0DA1D1",
+    navy: "#091433",
 
-    text: "#19364A",
-    muted: "#667D8C",
+    text: "#091433",
+    muted: "#526178",
 
-    lightMuted: "#F3F8FB",
-    surfaceBlue: "#EDF6FB",
-    surfaceCyan: "#ECF9FC",
+    lightMuted: "#F6F8FC",
+    surfaceBlue: "#E9EDF8",
+    surfaceCyan: "#EAF7FB",
 
-    border: "#D1E4EF",
+    border: "#CFD8E7",
 
     white: "#FFFFFF",
 
     warningBackground:
-        "#F3F8FB",
+        "#F6F8FC",
 
     warningBorder:
-        "#B9D8EA",
+        "#CFD8E7",
 
     warningText:
-        "#35566D",
+        "#526178",
 } as const;
 
 const PRODUCT_THEMES: Record<
@@ -117,10 +118,10 @@ const PRODUCT_THEMES: Record<
             COLORS.primary,
 
         background:
-            "#EDF6FB",
+            COLORS.surfaceBlue,
 
         border:
-            "#BCD9E9",
+            COLORS.border,
     },
 
     battery_storage: {
@@ -131,10 +132,10 @@ const PRODUCT_THEMES: Record<
             COLORS.accent,
 
         background:
-            "#ECF9FC",
+            COLORS.surfaceCyan,
 
         border:
-            "#B8E2EF",
+            COLORS.border,
     },
 
     wallbox: {
@@ -145,10 +146,10 @@ const PRODUCT_THEMES: Record<
             COLORS.secondary,
 
         background:
-            "#EEF4FA",
+            COLORS.surfaceBlue,
 
         border:
-            "#C3D5E8",
+            COLORS.border,
     },
 
     heat_pump: {
@@ -159,10 +160,10 @@ const PRODUCT_THEMES: Record<
             COLORS.primary,
 
         background:
-            "#EDF6FB",
+            COLORS.surfaceBlue,
 
         border:
-            "#BCD9E9",
+            COLORS.border,
     },
 
     climate: {
@@ -173,10 +174,10 @@ const PRODUCT_THEMES: Record<
             COLORS.accent,
 
         background:
-            "#ECF9FC",
+            COLORS.surfaceCyan,
 
         border:
-            "#B8E2EF",
+            COLORS.border,
     },
 };
 
@@ -824,7 +825,7 @@ function drawSectionTitle(
         .font(FONT_SEMIBOLD)
         .fontSize(11.5)
         .fillColor(
-            COLORS.primary,
+            COLORS.navy,
         )
         .text(title);
 

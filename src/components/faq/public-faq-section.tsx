@@ -18,39 +18,40 @@ export function PublicFaqSection({
   }
 
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="bg-white px-6 py-20 md:py-28">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-10 max-w-3xl">
-          <p className="text-sm font-semibold tracking-widest text-emerald-800 uppercase">
-            {eyebrow}
-          </p>
+    <section id="faq" aria-labelledby="faq-heading" className="section-space bg-surface">
+      <div className="section-shell max-w-5xl">
+        <div className="mb-10 max-w-3xl md:mb-14">
+          <p className="eyebrow">{eyebrow}</p>
 
           <h2
             id="faq-heading"
-            className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 md:text-4xl"
+            className="section-title mt-4"
           >
             {title}
           </h2>
 
-          <p className="mt-4 text-lg leading-8 text-slate-600">{description}</p>
+          <p className="lead-copy mt-5">{description}</p>
         </div>
 
-        <div className="divide-y divide-slate-200 border-y border-slate-200">
+        <div className="space-y-3">
           {faqs.map((faq) => (
-            <details key={faq.id} className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-left">
-                <span className="text-lg font-semibold text-slate-950">{faq.question}</span>
+            <details
+              key={faq.id}
+              className="group rounded-[var(--radius-md)] border border-border-default bg-background px-5 shadow-[var(--shadow-sm)] transition open:border-brand-accent/50 md:px-7"
+            >
+              <summary className="flex min-h-18 cursor-pointer list-none items-center justify-between gap-6 py-5 text-left [&::-webkit-details-marker]:hidden">
+                <span className="font-semibold text-brand-navy md:text-lg">{faq.question}</span>
 
                 <span
                   aria-hidden="true"
-                  className="text-2xl font-light text-emerald-800 transition-transform group-open:rotate-45"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-soft text-xl font-normal text-brand-primary transition-transform group-open:rotate-45"
                 >
                   +
                 </span>
               </summary>
 
-              <div className="pr-10 pb-6">
-                <p className="text-base leading-7 whitespace-pre-line text-slate-600">
+              <div className="max-w-3xl pr-8 pb-6">
+                <p className="text-base leading-7 whitespace-pre-line text-[var(--text-muted)]">
                   {faq.answer}
                 </p>
               </div>

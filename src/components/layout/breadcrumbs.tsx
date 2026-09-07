@@ -6,17 +6,19 @@ interface BreadcrumbsProps {
 
 export function Breadcrumbs({ currentLabel }: BreadcrumbsProps) {
   return (
-    <nav aria-label="Breadcrumb" className="border-foreground/10 border-b px-6">
-      <ol className="text-foreground/65 mx-auto flex min-h-12 w-full max-w-7xl items-center gap-2 text-sm">
+    <nav aria-label="Breadcrumb" className="border-b border-border-default bg-surface/70">
+      <ol className="section-shell flex min-h-12 items-center gap-2 overflow-hidden text-xs text-[var(--text-subtle)] sm:text-sm">
         <li>
-          <Link href="/" className="hover:text-foreground transition">
+          <Link href="/" className="transition hover:text-brand-primary">
             Startseite
           </Link>
         </li>
 
-        <li aria-hidden="true">/</li>
+        <li aria-hidden="true" className="text-border-strong">
+          /
+        </li>
 
-        <li aria-current="page" className="text-foreground font-medium">
+        <li aria-current="page" className="truncate font-medium text-brand-dark">
           {currentLabel}
         </li>
       </ol>

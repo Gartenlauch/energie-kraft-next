@@ -35,6 +35,9 @@ export const PUBLIC_ROUTE_KEYS = [
   "klima-kostenrechner",
   "waermepumpen-rechner",
   "wallbox-rechner",
+  "service-und-wartung",
+  "pv-referenzen",
+  "jobs",
   "stromspeicher",
   "wallbox",
   "klimaanlagen",
@@ -174,6 +177,48 @@ export const PUBLIC_ROUTES = {
     sitemap: {
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+  },
+  "service-und-wartung": {
+    key: "service-und-wartung",
+    href: "/service-und-wartung",
+    label: "Service & Wartung",
+    faqRouteKey: "kontakt",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+  },
+  "pv-referenzen": {
+    key: "pv-referenzen",
+    href: "/pv-referenzen",
+    label: "Referenzen",
+    faqRouteKey: "home",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+  },
+  jobs: {
+    key: "jobs",
+    href: "/jobs",
+    label: "Jobs",
+    faqRouteKey: "kontakt",
+    navigation: {
+      header: false,
+      footer: false,
+    },
+    sitemap: {
+      changeFrequency: "monthly",
+      priority: 0.6,
     },
   },
   stromspeicher: {

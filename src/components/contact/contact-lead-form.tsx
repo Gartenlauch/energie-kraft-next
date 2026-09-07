@@ -169,7 +169,7 @@ function FieldError({
 }
 
 const inputClassName =
-  "bg-background border-foreground/20 min-h-12 w-full min-w-0 rounded-md border px-4 py-3 text-base outline-none transition focus:border-foreground/50";
+  "min-h-13 w-full min-w-0 rounded-xl border border-border-default bg-background px-4 py-3 text-base text-brand-navy";
 
 export function ContactLeadForm() {
   const [formValues, setFormValues] =
@@ -310,15 +310,15 @@ export function ContactLeadForm() {
     return (
       <section
         id="projektanfrage"
-        className="border-foreground/10 scroll-mt-24 border-t px-6 py-20"
+        className="section-space bg-surface-soft"
       >
-        <div className="mx-auto w-full max-w-7xl">
-          <div className="border-foreground/10 bg-foreground/[0.025] max-w-3xl rounded-2xl border p-7 md:p-10">
-            <p className="text-sm font-semibold tracking-widest uppercase">
+        <div className="section-shell">
+          <div className="premium-card max-w-3xl p-7 md:p-10">
+            <p className="eyebrow">
               Anfrage übermittelt
             </p>
 
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2 className="section-title mt-4">
               Vielen Dank für Ihre Anfrage
             </h2>
 
@@ -338,7 +338,7 @@ export function ContactLeadForm() {
             <button
               type="button"
               onClick={resetForm}
-              className="border-foreground/20 mt-7 inline-flex min-h-12 items-center justify-center rounded-md border px-6 py-3 text-sm font-semibold"
+              className="button-secondary mt-7"
             >
               Weitere Anfrage senden
             </button>
@@ -351,23 +351,23 @@ export function ContactLeadForm() {
   return (
     <section
       id="projektanfrage"
-      className="border-foreground/10 scroll-mt-24 border-t px-6 py-20"
+      className="section-space bg-surface-soft"
     >
-      <div className="mx-auto grid w-full max-w-7xl gap-12 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
+      <div className="section-shell grid gap-12 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-18">
         <div>
-          <p className="text-sm font-semibold tracking-widest uppercase">
+          <p className="eyebrow">
             {contactFormContent.eyebrow}
           </p>
 
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="section-title mt-4">
             {contactFormContent.title}
           </h2>
 
-          <p className="text-foreground/70 mt-5 max-w-xl text-lg leading-8">
+          <p className="lead-copy mt-5 max-w-xl">
             {contactFormContent.description}
           </p>
 
-          <div className="border-foreground/10 bg-foreground/[0.025] mt-8 rounded-xl border p-5">
+          <div className="mt-8 rounded-xl border border-border-default bg-background/75 p-5">
             <p className="font-semibold">
               Keine technischen Unterlagen notwendig
             </p>
@@ -387,7 +387,7 @@ export function ContactLeadForm() {
             event.preventDefault();
             void handleSubmit();
           }}
-          className="border-foreground/10 bg-background min-w-0 rounded-2xl border p-5 md:p-8"
+          className="premium-card min-w-0 p-5 md:p-8 lg:p-10"
         >
           <fieldset disabled={isSubmitting}>
             <legend className="text-xl font-semibold">
@@ -993,7 +993,7 @@ export function ContactLeadForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-foreground text-background mt-7 inline-flex min-h-12 items-center justify-center rounded-md px-6 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
+              className="button-primary mt-7"
             >
               {isSubmitting
                 ? "Anfrage wird gesendet …"
