@@ -1,3 +1,4 @@
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
 
 export const waermepumpenContent = {
@@ -17,7 +18,7 @@ export const waermepumpenContent = {
       "Wir entwickeln eine Wärmepumpenlösung passend zu Gebäude, Wärmebedarf und bestehender Energieversorgung – auf Wunsch abgestimmt mit Photovoltaik und Stromspeicher.",
     primaryCta: {
       label: "Wärmepumpen-Beratung anfragen",
-      href: "/kontakt",
+      href: CONTACT_FORM_HREF,
     },
     secondaryCta: {
       label: "Planung kennenlernen",
@@ -46,8 +47,7 @@ export const waermepumpenContent = {
     {
       id: "waermepumpen-rechner",
       eyebrow: "Unverbindliche Modellrechnung",
-      title:
-        "Wärmepumpenleistung, Stromverbrauch und Kosten vorab einordnen",
+      title: "Wärmepumpenleistung, Stromverbrauch und Kosten vorab einordnen",
       text: [
         "Mit unserem Wärmepumpen-Rechner erhalten Sie anhand von beheizter Fläche, Wärmebedarf, Vorlauftemperatur und Jahresarbeitszahl eine erste Orientierung für die erforderliche Leistung und den möglichen Stromverbrauch.",
         "Zusätzlich vergleicht das Modell die jährlichen Energiekosten mit dem bestehenden Heizsystem und berechnet einen veränderbaren Investitionskostenkorridor. Eine Heizlastberechnung und technische Vor-Ort-Prüfung bleiben dennoch erforderlich.",
@@ -110,7 +110,7 @@ export const waermepumpenContent = {
       ],
       cta: {
         label: "Wärmepumpenprojekt besprechen",
-        href: "/kontakt",
+        href: CONTACT_FORM_HREF,
       },
     },
   ],

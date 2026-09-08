@@ -7,15 +7,17 @@ import { buildMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = buildMetadata(
-  kontaktContent.seo,
-);
+export const metadata: Metadata = buildMetadata(kontaktContent.seo);
 
 export default function KontaktPage() {
   return (
     <PublicContentPage
       content={kontaktContent}
-      beforeFaq={<ContactLeadForm />}
+      beforeFaq={
+        <div id="kontaktformular" className="contact-form-anchor">
+          <ContactLeadForm />
+        </div>
+      }
     />
   );
 }

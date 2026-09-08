@@ -94,7 +94,17 @@ export function MarketingFeaturePage({
             title={section.title}
             paragraphs={section.paragraphs}
             items={section.items}
-            surface={index === 0 ? "soft" : index === 2 ? "navy" : "white"}
+            surface={index === 0 ? "soft" : "white"}
+            layout={index % 3 === 0 ? "statement" : index % 3 === 1 ? "image-right" : "editorial"}
+            image={{
+              desktopSrc,
+              mobileSrc,
+              desktopWidth,
+              desktopHeight,
+              mobileWidth,
+              mobileHeight,
+              alt: imageAlt,
+            }}
           />
         ))}
 

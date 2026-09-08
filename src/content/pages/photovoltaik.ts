@@ -1,3 +1,4 @@
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
 
 export const photovoltaikContent = {
@@ -17,7 +18,7 @@ export const photovoltaikContent = {
       "Wir planen Ihre Photovoltaikanlage passend zu Dach, Stromverbrauch und zukünftiger Energienutzung – von der ersten Analyse bis zur fachgerechten Umsetzung.",
     primaryCta: {
       label: "PV-Beratung anfragen",
-      href: "/kontakt",
+      href: CONTACT_FORM_HREF,
     },
     secondaryCta: {
       label: "Unsere Leistungen",
@@ -117,7 +118,7 @@ export const photovoltaikContent = {
       ],
       cta: {
         label: "Photovoltaikprojekt besprechen",
-        href: "/kontakt",
+        href: CONTACT_FORM_HREF,
       },
     },
   ],

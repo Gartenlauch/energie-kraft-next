@@ -20,6 +20,7 @@ interface NavigationLink {
   label: string;
   href: string;
   description?: string;
+  previewImage?: string;
 }
 
 const energyLinks: readonly NavigationLink[] = [
@@ -27,31 +28,37 @@ const energyLinks: readonly NavigationLink[] = [
     label: "Photovoltaik",
     href: "/photovoltaik",
     description: "Solarstrom passend zu Dach und Verbrauch planen.",
+    previewImage: "/images/photovoltaic/photovoltaic-feature-desktop.webp",
   },
   {
     label: "Stromspeicher",
     href: "/stromspeicher",
     description: "Eigene Energie flexibel und intelligent nutzen.",
+    previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
   },
   {
     label: "Wärmepumpe",
     href: "/waermepumpen",
     description: "Wärmeversorgung als Teil des Energiesystems.",
+    previewImage: "/images/heat-pump/heat-pump-feature-desktop.webp",
   },
   {
     label: "Klimaanlage",
     href: "/klimaanlagen",
     description: "Räume effizient kühlen und temperieren.",
+    previewImage: "/images/climate/climate-feature-desktop.webp",
   },
   {
     label: "Wallbox",
     href: "/wallbox",
     description: "Elektromobilität mit PV-Strom verbinden.",
+    previewImage: "/images/wallbox/wallbox-feature-desktop.webp",
   },
   {
     label: "Energie-Konfigurator",
     href: "/konfigurator",
     description: "Ihr Vorhaben in wenigen Schritten vorbereiten.",
+    previewImage: "/images/home-premium/consultation-reference-desktop.webp",
   },
 ] as const;
 
@@ -60,21 +67,25 @@ const serviceLinks: readonly NavigationLink[] = [
     label: "Service & Wartung",
     href: "/service-und-wartung",
     description: "Zuverlässiger Betrieb über die Inbetriebnahme hinaus.",
+    previewImage: "/images/navigation/service-maintenance-mega.webp",
   },
   {
     label: "Anlagencheck",
     href: "/service-und-wartung#anlagencheck",
     description: "Funktion und Leistung strukturiert prüfen lassen.",
+    previewImage: "/images/service/service-solar-legacy-desktop.webp",
   },
   {
     label: "Wartung",
     href: "/service-und-wartung#wartung",
     description: "Pflege und Prüfung passend zur installierten Technik.",
+    previewImage: "/images/home-premium/service-maintenance-desktop.webp",
   },
   {
     label: "Persönliche Unterstützung",
     href: "/service-und-wartung#kontakt",
     description: "Ihr Anliegen direkt mit unserem Team klären.",
+    previewImage: "/images/home-premium/consultation-reference-desktop.webp",
   },
 ] as const;
 
@@ -112,6 +123,16 @@ function MegaMenu({
   const isOpen = openMenu === menuKey;
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const [activePreview, setActivePreview] = useState<string | null>(null);
+  const scenes = [
+    { key: "default", image: imageSrc, title, description: intro },
+    ...links.map((link) => ({
+      key: link.href,
+      image: link.previewImage ?? imageSrc,
+      title: link.label,
+      description: link.description ?? intro,
+    })),
+  ];
 
   function closeAndFocus() {
     setOpenMenu(null);
@@ -121,7 +142,7 @@ function MegaMenu({
   return (
     <div
       ref={containerRef}
-      className="relative flex h-full items-center"
+      className="flex h-full items-center"
       onMouseEnter={() => setOpenMenu(menuKey)}
       onMouseLeave={() => setOpenMenu(null)}
       onBlur={(event) => {
@@ -143,12 +164,10 @@ function MegaMenu({
         aria-controls={`${menuKey}-mega-menu`}
         aria-haspopup="true"
         onClick={() => setOpenMenu(isOpen ? null : menuKey)}
-        className="group flex min-h-12 items-center gap-1.5 px-2 text-[0.82rem] font-semibold text-brand-navy underline-offset-8 transition hover:text-brand-primary hover:underline focus-visible:underline"
+        className="group text-brand-navy hover:text-brand-primary flex min-h-12 items-center gap-1.5 px-2 text-[0.82rem] font-semibold underline-offset-8 transition hover:underline focus-visible:underline"
       >
         {label}
-        <ChevronDownIcon
-          className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
-        />
+        <ChevronDownIcon className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen ? (
@@ -156,39 +175,56 @@ function MegaMenu({
           id={`${menuKey}-mega-menu`}
           className="absolute top-full left-1/2 z-50 w-[min(74rem,calc(100vw-3rem))] -translate-x-1/2 pt-3"
         >
-          <div className="overflow-hidden rounded-[1.5rem] border border-border-default bg-background shadow-[var(--shadow-float)]">
+          <div className="border-border-default bg-background overflow-hidden rounded-[1.5rem] border shadow-[var(--shadow-float)]">
             <div className="grid grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-[25rem] overflow-hidden bg-brand-navy">
-                <Image
-                  src={imageSrc}
-                  alt={imageAlt}
-                  fill
-                  sizes="(max-width: 1280px) 38vw, 470px"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,20,51,0.92)_0%,rgba(9,20,51,0.76)_62%,rgba(9,20,51,0.18)_100%)]" />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,20,51,0.08)_28%,rgba(9,20,51,0.92)_100%)]" />
-                <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                  <p className="text-xs font-bold tracking-[0.16em] text-white uppercase">
-                    Energie-Kraft Süd
-                  </p>
-                  <h2 className="mt-3 max-w-sm text-3xl font-bold tracking-tight text-white">
-                    {title}
-                  </h2>
-                  <p className="mt-3 max-w-md text-sm leading-6 text-white/80">{intro}</p>
-                </div>
+              <div className="bg-brand-navy relative min-h-[25rem] overflow-hidden" aria-hidden="true">
+                {scenes.map((scene) => (
+                  <div
+                    key={scene.key}
+                    className="mega-preview-scene"
+                    data-active={(activePreview ?? "default") === scene.key}
+                  >
+                    <Image
+                      src={scene.image}
+                      alt={scene.key === "default" ? imageAlt : ""}
+                      fill
+                      sizes="(max-width: 1280px) 38vw, 470px"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(9,20,51,0.12)_30%,rgba(9,20,51,0.72)_48%,rgba(9,20,51,0.78)_100%)]" />
+                    <div className="absolute inset-x-0 bottom-0 p-8 text-white">
+                      <p className="text-xs font-bold tracking-[0.16em] text-white uppercase">
+                        Energie-Kraft Süd
+                      </p>
+                      <h2 className="mt-3 max-w-sm text-3xl font-bold tracking-tight text-white">
+                        {scene.title}
+                      </h2>
+                      <p className="mt-3 max-w-md text-sm leading-6 text-white">{scene.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className="grid content-start grid-cols-2 gap-3 p-7">
+              <div
+                className="grid grid-cols-2 content-start gap-x-3 p-7"
+                onFocusCapture={(event) => {
+                  const previewKey = event.target.closest<HTMLElement>("[data-preview-key]")?.dataset
+                    .previewKey;
+                  if (previewKey) setActivePreview(previewKey);
+                }}
+              >
                 {links.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
+                    data-preview-key={link.href}
                     aria-current={pathname === link.href ? "page" : undefined}
+                    onMouseEnter={() => setActivePreview(link.href)}
+                    onFocus={() => setActivePreview(link.href)}
                     onClick={() => setOpenMenu(null)}
-                    className="group rounded-md border border-transparent p-4 transition hover:border-border-default hover:bg-surface focus-visible:border-brand-primary focus-visible:bg-surface"
+                    className="mega-menu-link group"
                   >
-                    <span className="flex items-center justify-between gap-3 font-semibold text-brand-navy transition group-hover:text-brand-primary">
+                    <span className="text-brand-navy group-hover:text-brand-primary flex items-center justify-between gap-3 font-semibold transition">
                       {link.label}
                       <ArrowRightIcon className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
                     </span>
@@ -328,8 +364,8 @@ export function SiteHeader() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border-default/80 bg-background/96 shadow-[var(--shadow-sm)] backdrop-blur-xl">
-      <div className="hidden border-b border-border-default/70 bg-brand-navy text-white lg:block">
+    <header className="border-border-default/80 bg-background/96 sticky top-0 z-50 border-b shadow-[var(--shadow-sm)] backdrop-blur-xl">
+      <div className="border-border-default/70 bg-brand-navy hidden border-b text-white lg:block">
         <div className="section-shell flex min-h-9 items-center justify-between gap-6 text-xs">
           <p className="font-medium tracking-wide text-white/72">
             Energielösungen aus Ainring · persönlich geplant
@@ -344,7 +380,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="section-shell flex h-[4.75rem] items-center justify-between gap-5">
+      <div className="section-shell relative flex h-[4.75rem] items-center justify-between gap-5">
         <Link href="/" aria-label={`${siteConfig.name} – Startseite`} className="shrink-0">
           <Image
             src="/brand/energie-kraft/energie-kraft-logo.svg"
@@ -385,7 +421,7 @@ export function SiteHeader() {
               key={link.href}
               href={link.href}
               aria-current={pathname === link.href ? "page" : undefined}
-              className="flex min-h-12 items-center px-2 text-[0.82rem] font-semibold text-brand-navy underline-offset-8 transition hover:text-brand-primary hover:underline focus-visible:underline aria-[current=page]:text-brand-primary aria-[current=page]:underline"
+              className="text-brand-navy hover:text-brand-primary aria-[current=page]:text-brand-primary flex min-h-12 items-center px-2 text-[0.82rem] font-semibold underline-offset-8 transition hover:underline focus-visible:underline aria-[current=page]:underline"
             >
               {link.label}
             </Link>
@@ -405,7 +441,7 @@ export function SiteHeader() {
           aria-controls="mobile-navigation"
           aria-label={mobileOpen ? "Menü schließen" : "Menü öffnen"}
           onClick={() => setMobileOpen((current) => !current)}
-          className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-border-default text-brand-navy transition hover:border-brand-primary hover:text-brand-primary xl:hidden"
+          className="border-border-default text-brand-navy hover:border-brand-primary hover:text-brand-primary flex size-12 shrink-0 items-center justify-center rounded-xl border transition xl:hidden"
         >
           {mobileOpen ? <CloseIcon className="size-6" /> : <MenuIcon className="size-6" />}
         </button>
@@ -418,7 +454,7 @@ export function SiteHeader() {
           role="dialog"
           aria-modal="true"
           aria-label="Mobile Hauptnavigation"
-          className="fixed inset-x-0 top-[4.75rem] h-[calc(100dvh-4.75rem)] overflow-y-auto bg-brand-navy lg:top-[7rem] lg:h-[calc(100dvh-7rem)] xl:hidden"
+          className="bg-brand-navy fixed inset-x-0 top-[4.75rem] h-[calc(100dvh-4.75rem)] overflow-y-auto lg:top-[7rem] lg:h-[calc(100dvh-7rem)] xl:hidden"
         >
           <nav aria-label="Mobile Hauptnavigation" className="section-shell py-5">
             <ul>

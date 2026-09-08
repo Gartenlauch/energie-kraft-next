@@ -80,7 +80,6 @@ export default async function HomePage() {
     <>
       <HomePageJsonLd seo={homeContent.seo} />
       <FaqJsonLd faqs={faqs} />
-      <BrandIntro />
 
       <main id="main-content">
         <PremiumHeroSection
@@ -100,14 +99,24 @@ export default async function HomePage() {
           secondaryCta={{ label: "Lösungen entdecken", href: "#photovoltaik" }}
         />
 
+        <BrandIntro />
         <BrandStatementSection
           eyebrow="Energie-Kraft Süd"
           title="Energietechnik mit regionaler Nähe und einem klaren Plan"
           description="Wir betrachten nicht nur einzelne Geräte, sondern Ihr Gebäude, Ihren Verbrauch und die nächsten sinnvollen Schritte. So entsteht eine Lösung, die technisch zusammenpasst und verständlich bleibt."
           highlights={[
-            { title: "Persönlich geplant", description: "Ihr Gebäude und Ihre Ziele geben die Richtung vor." },
-            { title: "Systemisch gedacht", description: "Erzeugung, Speicherung, Wärme und Mobilität greifen ineinander." },
-            { title: "Regional erreichbar", description: "Direkter Kontakt zu Energie-Kraft Süd in Ainring." },
+            {
+              title: "Persönlich geplant",
+              description: "Ihr Gebäude und Ihre Ziele geben die Richtung vor.",
+            },
+            {
+              title: "Systemisch gedacht",
+              description: "Erzeugung, Speicherung, Wärme und Mobilität greifen ineinander.",
+            },
+            {
+              title: "Regional erreichbar",
+              description: "Direkter Kontakt zu Energie-Kraft Süd in Ainring.",
+            },
           ]}
         />
 
@@ -115,11 +124,12 @@ export default async function HomePage() {
           <SplitFeatureSection
             id="photovoltaik"
             eyebrow="Solarstrom produzieren"
-            title="Eigener Solarstrom – sorgfältig auf Ihr Zuhause abgestimmt"
-            description="Eine gute Photovoltaikanlage beginnt nicht bei der Modulzahl, sondern bei Ihrem Dach, Ihrem Verbrauch und Ihren Plänen. Wir verbinden diese Faktoren zu einer stimmigen Gesamtlösung."
-            benefits={["Individuelle Dach- und Verbrauchsanalyse", "Abgestimmte Komponenten", "Fachgerechte Montage", "Erweiterbar um Speicher und Wallbox"]}
+            title="Ihr Dach. Ihr eigener Solarstrom."
+            description="Wir stimmen Dach, Verbrauch und Technik aufeinander ab. Für eine Photovoltaikanlage, die heute passt und morgen mitwachsen kann."
+            benefits={["Individuell geplant", "Fachgerecht montiert"]}
             image={productImages.photovoltaic}
             imagePosition="right"
+            proportion="image-wide"
             surface="white"
             primaryCta={{ label: "PV-Projekt konfigurieren", href: "/konfigurator/photovoltaik" }}
             secondaryCta={{ label: "Photovoltaik kennenlernen", href: "/photovoltaik" }}
@@ -130,22 +140,38 @@ export default async function HomePage() {
             title="Energie dort erzeugen und nutzen, wo sie gebraucht wird"
             description="Photovoltaik, Speicher, Wärme und Mobilität werden gemeinsam gedacht – ohne unnötige technische Komplexität für Sie."
             benefits={[
-              { title: "Passend geplant", description: "Gebäude, Verbrauch und Zukunftspläne bestimmen die Auslegung.", icon: SunIcon },
-              { title: "Flexibel nutzbar", description: "Solarstrom kann gespeichert und zeitversetzt eingesetzt werden.", icon: BatteryIcon },
-              { title: "Ganzheitlich gedacht", description: "Strom, Wärme und Mobilität greifen technisch sauber ineinander.", icon: LeafIcon },
-              { title: "Zukunftsfähig", description: "Erweiterungen werden bereits bei der Planung berücksichtigt.", icon: BoltIcon },
+              {
+                title: "Passend geplant",
+                description: "Gebäude, Verbrauch und Zukunftspläne bestimmen die Auslegung.",
+                icon: SunIcon,
+              },
+              {
+                title: "Flexibel nutzbar",
+                description: "Solarstrom kann gespeichert und zeitversetzt eingesetzt werden.",
+                icon: BatteryIcon,
+              },
+              {
+                title: "Ganzheitlich gedacht",
+                description: "Strom, Wärme und Mobilität greifen technisch sauber ineinander.",
+                icon: LeafIcon,
+              },
+              {
+                title: "Zukunftsfähig",
+                description: "Erweiterungen werden bereits bei der Planung berücksichtigt.",
+                icon: BoltIcon,
+              },
             ]}
           />
 
           <SplitFeatureSection
             id="stromspeicher"
             eyebrow="Solarstrom speichern"
-            title="Solarenergie verfügbar machen, wenn Sie sie wirklich brauchen"
-            description="Ein passend dimensionierter Speicher verschiebt Ihren Solarstrom in die Stunden, in denen Ihr Zuhause Energie benötigt. Entscheidend ist das Zusammenspiel von Kapazität, Leistung und Verbrauch."
-            benefits={["Passend zum Lastprofil ausgelegt", "Transparente Anlagenüberwachung", "Optionen für Ersatzstrom mitdenken", "Intelligentes Energiemanagement"]}
+            title="Sonne speichern. Abends nutzen."
+            description="Ihr Speicher bringt Solarstrom in die Stunden, in denen Sie ihn brauchen. Kapazität und Steuerung planen wir passend zu Ihrem Alltag."
+            benefits={["Passend zu Ihrem Verbrauch", "Intelligentes Energiemanagement"]}
             image={productImages.battery}
             imagePosition="left"
-            surface="gradient"
+            surface="white"
             primaryCta={{ label: "Speicher konfigurieren", href: "/konfigurator/stromspeicher" }}
             secondaryCta={{ label: "Stromspeicher kennenlernen", href: "/stromspeicher" }}
           />
@@ -153,10 +179,10 @@ export default async function HomePage() {
           <SplitFeatureSection
             id="waermepumpe"
             eyebrow="Mit Solarstrom heizen"
-            title="Wärme neu denken – mit Blick auf das gesamte Gebäude"
-            description="Gebäudehülle, Heizflächen, Wärmebedarf und elektrische Versorgung entscheiden über die richtige Lösung. Wir betrachten die Wärmepumpe als Teil Ihres gesamten Energiesystems."
-            benefits={["Gebäudesituation strukturiert erfassen", "Heizsystem und Bedarf abstimmen", "Photovoltaik sinnvoll integrieren", "Betrieb langfristig mitdenken"]}
+            title="Wärme, die zu Ihrem Haus passt."
+            description="Wir betrachten Ihr Gebäude und Ihr Heizsystem gemeinsam. So wird die Wärmepumpe zu einem sinnvoll abgestimmten Teil Ihrer Energieversorgung."
             image={productImages.heatPump}
+            proportion="image-dominant"
             imagePosition="right"
             surface="soft"
             primaryCta={{ label: "Wärmepumpe konfigurieren", href: "/konfigurator/waermepumpe" }}
@@ -166,12 +192,12 @@ export default async function HomePage() {
           <SplitFeatureSection
             id="klimaanlage"
             eyebrow="Räume angenehm temperieren"
-            title="Angenehmes Raumklima, passend zu Räumen und Alltag"
-            description="Eine effiziente Klimatisierung berücksichtigt mehr als Quadratmeter: Sonneneinstrahlung, Fenster, Nutzung und Leitungswege prägen die passende Single- oder Multisplit-Lösung."
-            benefits={["Individuelle Kühllastbetrachtung", "Single- und Multisplit-Lösungen", "Ruhige Gerätepositionierung", "Auf Wunsch mit PV-Strom kombinieren"]}
+            title="Ankommen. Durchatmen. Wohlfühlen."
+            description="Angenehme Temperaturen, leiser Betrieb und eine dezente Installation: Wir planen Ihre Klimaanlage passend zu Räumen und Nutzung."
             image={productImages.climate}
             imagePosition="left"
-            surface="navy"
+            proportion="image-wide"
+            surface="blue"
             primaryCta={{ label: "Klimaanlage konfigurieren", href: "/konfigurator/klimaanlage" }}
             secondaryCta={{ label: "Klimaanlagen kennenlernen", href: "/klimaanlagen" }}
           />
@@ -179,9 +205,8 @@ export default async function HomePage() {
           <SplitFeatureSection
             id="wallbox"
             eyebrow="Mit Solarstrom tanken"
-            title="Zuhause sicher laden und mehr eigenen PV-Strom nutzen"
-            description="Fahrzeug, Hausanschluss, Leitungsweg und Photovoltaikanlage bilden eine Einheit. Wir planen Ladeleistung, Schutztechnik und intelligentes Lastmanagement gemeinsam."
-            benefits={["Elektroinstallation vorab prüfen", "PV-Überschussladen vorbereiten", "Lastmanagement berücksichtigen", "Erweiterbare Ladelösung planen"]}
+            title="Zuhause laden. Mit eigener Energie."
+            description="Wir verbinden Ihre Wallbox mit Hausanschluss und Photovoltaik. Sicher installiert und vorbereitet für intelligentes Laden mit Solarstrom."
             image={productImages.wallbox}
             imagePosition="right"
             surface="white"
@@ -193,9 +218,8 @@ export default async function HomePage() {
         <SplitFeatureSection
           id="service"
           eyebrow="Service & Wartung"
-          title="Verlässlichkeit endet nicht mit der Inbetriebnahme"
+          title="Auch danach für Sie da."
           description="Monitoring, Anlagencheck und Wartung helfen dabei, Auffälligkeiten früh zu erkennen und Ihre Technik dauerhaft zuverlässig zu betreiben."
-          benefits={["Anlagensituation strukturiert aufnehmen", "Betriebsdaten nachvollziehbar einordnen", "Wartung passend zur Technik planen", "Persönlicher Kontakt bei Rückfragen"]}
           image={{
             desktopSrc: "/images/home-premium/service-maintenance-desktop.webp",
             mobileSrc: "/images/home-premium/service-maintenance-mobile.webp",
@@ -206,16 +230,29 @@ export default async function HomePage() {
             alt: "Servicetechniker prüft fachgerecht eine Energieanlage",
           }}
           imagePosition="left"
-          surface="blue"
+          proportion="image-wide"
+          surface="soft"
           primaryCta={{ label: "Service kennenlernen", href: "/service-und-wartung" }}
           secondaryCta={{ label: "Serviceanfrage stellen", href: "/kontakt" }}
         />
 
         <ProcessSection
           steps={[
-            { title: "Ausgangslage verstehen", description: "Wir klären Gebäude, Energiebedarf, technische Voraussetzungen und Ihre Ziele." },
-            { title: "System sauber planen", description: "Komponenten, Dimensionierung und mögliche Erweiterungen werden aufeinander abgestimmt." },
-            { title: "Verlässlich umsetzen", description: "Von der Montage bis zur Inbetriebnahme behalten Sie einen klaren Ansprechpartner." },
+            {
+              title: "Ausgangslage verstehen",
+              description:
+                "Wir klären Gebäude, Energiebedarf, technische Voraussetzungen und Ihre Ziele.",
+            },
+            {
+              title: "System sauber planen",
+              description:
+                "Komponenten, Dimensionierung und mögliche Erweiterungen werden aufeinander abgestimmt.",
+            },
+            {
+              title: "Verlässlich umsetzen",
+              description:
+                "Von der Montage bis zur Inbetriebnahme behalten Sie einen klaren Ansprechpartner.",
+            },
           ]}
         />
 

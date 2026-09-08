@@ -1,3 +1,4 @@
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
 
 export const wallboxContent = {
@@ -17,7 +18,7 @@ export const wallboxContent = {
       "Wir planen Ihre Wallbox passend zu Fahrzeug, Gebäudeanschluss und Photovoltaikanlage – für komfortables Laden zu Hause oder im Unternehmen.",
     primaryCta: {
       label: "Wallbox-Beratung anfragen",
-      href: "/kontakt",
+      href: CONTACT_FORM_HREF,
     },
     secondaryCta: {
       label: "Ladelösung entdecken",
@@ -46,8 +47,7 @@ export const wallboxContent = {
     {
       id: "wallbox-rechner",
       eyebrow: "Unverbindliche Modellrechnung",
-      title:
-        "Ladezeit, Fahrstrombedarf und Wallbox-Kosten vorab berechnen",
+      title: "Ladezeit, Fahrstrombedarf und Wallbox-Kosten vorab berechnen",
       text: [
         "Mit unserem Wallbox-Rechner erhalten Sie anhand von Fahrleistung, Fahrzeugverbrauch, Batteriekapazität und Ladeleistung eine erste Orientierung für den jährlichen Fahrstrombedarf und die typische Ladedauer.",
         "Zusätzlich berücksichtigt das Modell einen möglichen Photovoltaik-Anteil, veränderbare Strompreise sowie einen Kostenkorridor für Wallbox und Installation.",
@@ -106,7 +106,7 @@ export const wallboxContent = {
       ],
       cta: {
         label: "Wallbox-Projekt besprechen",
-        href: "/kontakt",
+        href: CONTACT_FORM_HREF,
       },
     },
   ],

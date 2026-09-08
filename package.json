@@ -31,6 +31,8 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "firebase": "^12.16.0",
     "firebase-admin": "^14.1.0",
     "next": "16.2.10",

@@ -1,3 +1,4 @@
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
 
 export const stromspeicherContent = {
@@ -17,7 +18,7 @@ export const stromspeicherContent = {
       "Ein passend dimensionierter Stromspeicher erhöht den Eigenverbrauch Ihrer Photovoltaikanlage und macht selbst erzeugte Energie auch abends oder nachts verfügbar.",
     primaryCta: {
       label: "Speicherberatung anfragen",
-      href: "/kontakt",
+      href: CONTACT_FORM_HREF,
     },
     secondaryCta: {
       label: "Funktionsweise entdecken",
@@ -92,7 +93,7 @@ export const stromspeicherContent = {
       ],
       cta: {
         label: "Stromspeicher anfragen",
-        href: "/kontakt",
+        href: CONTACT_FORM_HREF,
       },
     },
   ],

@@ -1,3 +1,5 @@
+export const CONTACT_FORM_HREF = "/kontakt#kontaktformular";
+
 export const FAQ_ROUTE_KEYS = [
   "home",
   "konfigurator",

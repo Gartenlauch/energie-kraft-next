@@ -48,7 +48,7 @@ export function PremiumHeroSection({
   secondaryCta,
 }: PremiumHeroSectionProps) {
   return (
-    <section className="premium-hero relative isolate min-h-[43rem] overflow-hidden bg-brand-navy text-white lg:min-h-[calc(100svh-7rem)]">
+    <section className="premium-hero bg-brand-navy relative isolate min-h-[43rem] overflow-hidden text-white lg:min-h-[calc(100svh-7rem)]">
       <div className="absolute inset-0">
         <ArtDirectedImage
           desktopSrc={image.desktopSrc}
@@ -66,10 +66,10 @@ export function PremiumHeroSection({
       <div className="premium-hero__scrim absolute inset-0" />
 
       <div className="section-shell relative flex min-h-[43rem] items-end py-12 md:items-center md:py-16 lg:min-h-[calc(100svh-7rem)]">
-        <Reveal className="w-full min-w-0 max-w-[43rem]" variant="text">
+        <Reveal className="hero-copy w-full min-w-0" variant="text">
           {eyebrow ? <p className="eyebrow eyebrow-on-dark">{eyebrow}</p> : null}
           <h1 className="premium-hero-title mt-5 text-white">{title}</h1>
-          <p className="mt-6 w-full max-w-[39rem] break-words text-[clamp(1.05rem,1.45vw,1.22rem)] leading-8 text-white">
+          <p className="mt-6 w-full max-w-[39rem] text-[clamp(1.05rem,1.45vw,1.22rem)] leading-8 break-words text-white">
             {description}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -96,34 +96,37 @@ interface BrandStatementSectionProps {
   highlights: readonly { title: string; description: string }[];
 }
 
-export function BrandStatementSection({ eyebrow, title, description, highlights }: BrandStatementSectionProps) {
+export function BrandStatementSection({
+  eyebrow,
+  title,
+  description,
+  highlights,
+}: BrandStatementSectionProps) {
   return (
-    <section className="relative overflow-visible bg-background py-20 md:py-28" aria-labelledby="brand-statement-heading">
-      <Image
-        src="/brand/energie-kraft/energie-kraft-supersign.svg"
-        alt=""
-        width={212}
-        height={207}
-        className="pointer-events-none absolute -bottom-14 left-[7%] z-10 hidden w-28 md:block lg:w-36"
-      />
+    <section
+      className="brand-statement bg-brand-primary relative text-white"
+      aria-labelledby="brand-statement-heading"
+    >
       <div className="section-shell">
         <Reveal className="grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:gap-20">
           <div>
-            <p className="eyebrow">{eyebrow}</p>
-            <h2 id="brand-statement-heading" className="section-title mt-4">{title}</h2>
+            <p className="eyebrow eyebrow-on-dark">{eyebrow}</p>
+            <h2 id="brand-statement-heading" className="section-title mt-4 text-white">
+              {title}
+            </h2>
           </div>
-          <p className="lead-copy lg:pt-8">{description}</p>
+          <p className="brand-statement-copy max-w-xl text-lg leading-8 lg:pt-8">{description}</p>
         </Reveal>
 
-        <div className="mt-14 grid border-y border-border-strong md:grid-cols-3">
+        <div className="mt-16 grid border-y border-white/35 md:grid-cols-3">
           {highlights.map((highlight, index) => (
             <Reveal
               key={highlight.title}
               delay={index * 70}
-              className="border-border-strong py-7 md:border-l md:px-8 md:first:border-l-0"
+              className="border-white/35 py-8 md:border-l md:px-8 md:first:border-l-0 md:first:pl-0"
             >
-              <h3 className="text-lg">{highlight.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{highlight.description}</p>
+              <h3 className="text-xl text-white">{highlight.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-white">{highlight.description}</p>
             </Reveal>
           ))}
         </div>
@@ -142,6 +145,7 @@ interface SplitFeatureSectionProps {
   benefits?: readonly string[];
   image: MarketingImage;
   imagePosition?: "left" | "right";
+  proportion?: "balanced" | "image-wide" | "image-dominant";
   surface?: SplitSurface;
   imageReveal?: RevealVariant | "none";
   primaryCta: MarketingCta;
@@ -164,6 +168,7 @@ export function SplitFeatureSection({
   benefits,
   image,
   imagePosition = "right",
+  proportion = "balanced",
   surface = "white",
   imageReveal = imagePosition,
   primaryCta,
@@ -173,7 +178,7 @@ export function SplitFeatureSection({
   const copyPosition = imagePosition === "right" ? "left" : "right";
 
   const imageContent = (
-    <div className="relative h-full min-h-[24rem] md:min-h-[34rem] lg:min-h-[43rem]">
+    <div className="split-feature-image">
       <ArtDirectedImage
         desktopSrc={image.desktopSrc}
         mobileSrc={image.mobileSrc}
@@ -182,7 +187,7 @@ export function SplitFeatureSection({
         mobileWidth={image.mobileWidth}
         mobileHeight={image.mobileHeight}
         alt={image.alt}
-        sizes="(max-width: 1023px) 100vw, 50vw"
+        sizes={`(max-width: 1023px) 100vw, ${proportion === "image-dominant" ? "65vw" : proportion === "image-wide" ? "60vw" : "50vw"}`}
         className="block"
       />
     </div>
@@ -190,24 +195,38 @@ export function SplitFeatureSection({
 
   return (
     <section id={id} className="overflow-hidden" aria-labelledby={id ? `${id}-heading` : undefined}>
-      <div className="grid lg:grid-cols-2">
+      <div
+        className={`split-feature-grid split-feature-grid--${proportion} split-feature-grid--${imagePosition}`}
+      >
         <div
           className={`split-feature-copy split-feature-copy--${copyPosition} flex items-center ${surfaceClasses[surface]} ${imagePosition === "left" ? "lg:order-2" : ""}`}
         >
           <Reveal variant="text" className="max-w-[39rem]">
             <p className={dark ? "eyebrow eyebrow-on-dark" : "eyebrow"}>{eyebrow}</p>
-            <h2 id={id ? `${id}-heading` : undefined} className={`section-title mt-4 ${dark ? "text-white" : ""}`}>
+            <h2
+              id={id ? `${id}-heading` : undefined}
+              className={`section-title mt-4 ${dark ? "text-white" : ""}`}
+            >
               {title}
             </h2>
-            <p className={`mt-6 text-lg leading-8 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}>
+            <p
+              className={`mt-6 text-lg leading-8 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}
+            >
               {description}
             </p>
 
             {benefits?.length ? (
-              <ul className={`mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2 ${dark ? "text-white" : "text-brand-dark"}`}>
+              <ul
+                className={`mt-8 grid gap-x-8 gap-y-3 sm:grid-cols-2 ${dark ? "text-white" : "text-brand-dark"}`}
+              >
                 {benefits.map((benefit) => (
-                  <li key={benefit} className={`flex items-start gap-3 border-t pt-3 text-sm leading-6 ${dark ? "border-white/25" : "border-border-default"}`}>
-                    <CheckIcon className={`mt-1 size-4 shrink-0 ${dark ? "text-white" : "text-brand-primary"}`} />
+                  <li
+                    key={benefit}
+                    className={`flex items-start gap-3 border-t pt-3 text-sm leading-6 ${dark ? "border-white/25" : "border-border-default"}`}
+                  >
+                    <CheckIcon
+                      className={`mt-1 size-4 shrink-0 ${dark ? "text-white" : "text-brand-primary"}`}
+                    />
                     <span>{benefit}</span>
                   </li>
                 ))}
@@ -219,7 +238,10 @@ export function SplitFeatureSection({
                 {primaryCta.label}
               </Link>
               {secondaryCta ? (
-                <Link href={secondaryCta.href} className={dark ? "button-outline-light" : "button-secondary"}>
+                <Link
+                  href={secondaryCta.href}
+                  className={dark ? "button-outline-light" : "button-secondary"}
+                >
                   {secondaryCta.label}
                 </Link>
               ) : null}
@@ -227,8 +249,14 @@ export function SplitFeatureSection({
           </Reveal>
         </div>
 
-        <div className={imagePosition === "left" ? "lg:order-1" : ""}>
-          {imageReveal === "none" ? imageContent : <Reveal variant={imageReveal}>{imageContent}</Reveal>}
+        <div className={`split-feature-media ${imagePosition === "left" ? "lg:order-1" : ""}`}>
+          {imageReveal === "none" ? (
+            imageContent
+          ) : (
+            <Reveal className="h-full" variant={imageReveal}>
+              {imageContent}
+            </Reveal>
+          )}
         </div>
       </div>
     </section>
@@ -243,7 +271,10 @@ interface EditorialFeatureSectionProps {
   items?: readonly string[];
   links?: readonly EditorialLink[];
   cta?: MarketingCta;
-  surface?: "white" | "soft" | "navy";
+  surface?: "white" | "soft" | "blue";
+  layout?: "editorial" | "statement" | "image-left" | "image-right";
+  linkLayout?: "editorial" | "topics";
+  image?: MarketingImage;
 }
 
 export function EditorialFeatureSection({
@@ -255,60 +286,128 @@ export function EditorialFeatureSection({
   links,
   cta,
   surface = "white",
+  layout = "editorial",
+  linkLayout = "editorial",
+  image,
 }: EditorialFeatureSectionProps) {
-  const dark = surface === "navy";
-  const surfaceClass = surface === "navy" ? "bg-brand-navy text-white" : surface === "soft" ? "bg-surface-soft" : "bg-background";
+  const dark = surface === "blue";
+  const surfaceClass = dark
+    ? "bg-brand-primary text-white"
+    : surface === "soft"
+      ? "bg-surface-soft"
+      : "bg-background";
+  const hasImage = image && (layout === "image-left" || layout === "image-right");
+  const action = cta && !links?.some((link) => link.href === cta.href) ? cta : undefined;
 
   return (
-    <section id={id} className={`section-space ${surfaceClass}`}>
-      <div className="section-shell grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 xl:gap-28">
-        <Reveal>
-          {eyebrow ? <p className={dark ? "eyebrow eyebrow-on-dark" : "eyebrow"}>{eyebrow}</p> : null}
-          <h2 className={`section-title mt-4 ${dark ? "text-white" : ""}`}>{title}</h2>
-          {cta ? (
-            <Link href={cta.href} className={dark ? "button-light mt-8 hidden lg:inline-flex" : "button-secondary mt-8 hidden lg:inline-flex"}>
-              {cta.label}
-            </Link>
-          ) : null}
-        </Reveal>
+    <section id={id} className={`editorial-section editorial-section--${layout} ${surfaceClass}`}>
+      <div className={hasImage ? "editorial-image-grid" : "section-shell editorial-grid"}>
+        {hasImage ? (
+          <Reveal variant={layout === "image-left" ? "left" : "right"} className="editorial-media">
+            <div className="editorial-photo">
+              <ArtDirectedImage {...image} sizes="(max-width: 1023px) 100vw, 50vw" />
+            </div>
+          </Reveal>
+        ) : null}
+        <div className="editorial-heading">
+          <Reveal>
+            {eyebrow ? (
+              <p className={dark ? "eyebrow eyebrow-on-dark" : "eyebrow"}>{eyebrow}</p>
+            ) : null}
+            <h2 className={`section-title mt-4 ${dark ? "text-white" : ""}`}>{title}</h2>
+          </Reveal>
+        </div>
 
-        <Reveal delay={80}>
-          <div className={`max-w-3xl text-[1.0625rem] leading-8 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}>
+        <Reveal delay={80} className="editorial-body">
+          <div
+            className={`max-w-3xl text-[1.0625rem] leading-8 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}
+          >
             {paragraphs.map((paragraph, index) => (
-              <p key={`${id ?? title}-paragraph-${index}`} className={index > 0 ? "mt-5" : undefined}>
+              <p
+                key={`${id ?? title}-paragraph-${index}`}
+                className={index > 0 ? "mt-5" : undefined}
+              >
                 {paragraph}
               </p>
             ))}
           </div>
 
           {items?.length ? (
-            <ul className={`mt-9 grid gap-x-8 gap-y-3 sm:grid-cols-2 ${dark ? "text-white" : "text-brand-dark"}`}>
+            <ul
+              className={`mt-9 grid gap-x-8 gap-y-3 sm:grid-cols-2 ${dark ? "text-white" : "text-brand-dark"}`}
+            >
               {items.map((item, index) => (
-                <li key={`${id ?? title}-item-${index}`} className={`flex items-start gap-3 border-t pt-4 text-sm leading-6 ${dark ? "border-white/25" : "border-border-default"}`}>
-                  <CheckIcon className={`mt-1 size-4 shrink-0 ${dark ? "text-white" : "text-brand-primary"}`} />
+                <li
+                  key={`${id ?? title}-item-${index}`}
+                  className={`flex items-start gap-3 border-t pt-4 text-sm leading-6 ${dark ? "border-white/25" : "border-border-default"}`}
+                >
+                  <CheckIcon
+                    className={`mt-1 size-4 shrink-0 ${dark ? "text-white" : "text-brand-primary"}`}
+                  />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
           ) : null}
 
-          {links?.length ? (
-            <div className={`mt-10 grid border-y sm:grid-cols-2 ${dark ? "border-white/30" : "border-border-strong"}`}>
+          {links?.length && linkLayout === "topics" ? (
+            <div className="contact-topic-matrix mt-8">
+              {links.map((link) => (
+                <Link key={link.href} href={link.href} className="contact-topic group">
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="text-brand-primary text-lg font-semibold">{link.label}</span>
+                    <ArrowRightIcon className="size-4 shrink-0 transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1" />
+                  </span>
+                  <span className="mt-2 block text-sm leading-6 text-[var(--text-muted)]">
+                    {link.description}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          ) : links?.length ? (
+            <div
+              className={`mt-10 grid border-y sm:grid-cols-2 ${dark ? "border-white/30" : "border-border-strong"}`}
+            >
               {links.map((link, index) => {
                 const content = (
                   <>
-                    {link.eyebrow ? <span className={`text-xs font-bold tracking-[0.12em] uppercase ${dark ? "text-white" : "text-brand-primary"}`}>{link.eyebrow}</span> : null}
-                    <span className={`mt-3 block text-lg font-semibold ${dark ? "text-white" : "text-brand-navy"}`}>{link.label}</span>
-                    {link.description ? <span className={`mt-2 block text-sm leading-6 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}>{link.description}</span> : null}
-                    <span className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 group-hover:underline ${dark ? "text-white" : "text-brand-primary"}`}>
-                      Öffnen <ArrowRightIcon className="size-4" />
+                    {link.eyebrow ? (
+                      <span
+                        className={`text-xs font-bold tracking-[0.12em] uppercase ${dark ? "text-white" : "text-brand-primary"}`}
+                      >
+                        {link.eyebrow}
+                      </span>
+                    ) : null}
+                    <span
+                      className={`mt-3 block text-[clamp(1.2rem,1.6vw,1.5rem)] leading-snug font-semibold ${dark ? "text-white" : "text-brand-navy"}`}
+                    >
+                      {link.label}
+                    </span>
+                    {link.description ? (
+                      <span
+                        className={`mt-2 block text-sm leading-6 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}
+                      >
+                        {link.description}
+                      </span>
+                    ) : null}
+                    <span
+                      className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 group-hover:underline ${dark ? "text-white" : "text-brand-primary"}`}
+                    >
+                      Öffnen{" "}
+                      <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1" />
                     </span>
                   </>
                 );
-                const className = `group min-h-52 border-b p-6 transition-colors last:border-b-0 sm:border-b-0 sm:border-l sm:first:border-l-0 ${dark ? "border-white/30 hover:bg-white/8" : "border-border-strong hover:bg-surface"}`;
+                const className = `editorial-option group min-w-0 min-h-52 border-b p-6 transition-colors last:border-b-0 sm:border-b-0 sm:border-l sm:first:border-l-0 ${dark ? "border-white/30 hover:bg-white/8 focus-visible:bg-white/8" : "border-border-strong hover:bg-surface focus-visible:bg-surface"}`;
 
                 return link.external ? (
-                  <a key={`${link.href}-${index}`} href={link.href} target="_blank" rel="noreferrer" className={className}>
+                  <a
+                    key={`${link.href}-${index}`}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={className}
+                  >
                     {content}
                   </a>
                 ) : (
@@ -320,9 +419,12 @@ export function EditorialFeatureSection({
             </div>
           ) : null}
 
-          {cta ? (
-            <Link href={cta.href} className={dark ? "button-light mt-8 lg:hidden" : "button-secondary mt-8 lg:hidden"}>
-              {cta.label}
+          {action ? (
+            <Link
+              href={action.href}
+              className={dark ? "button-light mt-8" : "button-secondary mt-8"}
+            >
+              {action.label}
             </Link>
           ) : null}
         </Reveal>
@@ -344,35 +446,42 @@ interface GradientBenefitSectionProps {
   benefits: readonly Benefit[];
 }
 
-export function GradientBenefitSection({ eyebrow, title, description, benefits }: GradientBenefitSectionProps) {
+export function GradientBenefitSection({
+  eyebrow,
+  title,
+  description,
+  benefits,
+}: GradientBenefitSectionProps) {
   return (
-    <section className="brand-gradient relative overflow-hidden py-20 text-white md:py-28" aria-labelledby="benefits-heading">
-      <Image
-        src="/brand/energie-kraft/energie-kraft-supersign.svg"
-        alt=""
-        width={530}
-        height={516}
-        className="pointer-events-none absolute -right-28 -bottom-36 w-[32rem] opacity-10"
-      />
-      <div className="section-shell relative">
+    <section
+      className="brand-gradient relative overflow-hidden py-20 text-white md:py-28"
+      aria-labelledby="benefits-heading"
+    >
+      <div className="section-shell benefit-composition relative">
         <Reveal>
           <p className="eyebrow eyebrow-on-dark">{eyebrow}</p>
-          <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_0.72fr] lg:items-end">
-            <h2 id="benefits-heading" className="section-title text-white">{title}</h2>
-            <p className="max-w-xl text-base leading-7 text-white lg:justify-self-end">{description}</p>
+          <div className="mt-4 grid gap-6">
+            <h2 id="benefits-heading" className="section-title text-white">
+              {title}
+            </h2>
+            <p className="max-w-xl text-base leading-7 text-white lg:justify-self-end">
+              {description}
+            </p>
           </div>
         </Reveal>
 
-        <ul className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map(({ title: benefitTitle, description: benefitDescription, icon: Icon }, index) => (
-            <li key={benefitTitle} className="border-t border-white/35 pt-6">
-              <Reveal delay={index * 70}>
-                <Icon className="size-8 text-white" />
-                <h3 className="mt-5 text-xl text-white">{benefitTitle}</h3>
-                <p className="mt-3 text-sm leading-6 text-white">{benefitDescription}</p>
-              </Reveal>
-            </li>
-          ))}
+        <ul className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
+          {benefits.map(
+            ({ title: benefitTitle, description: benefitDescription, icon: Icon }, index) => (
+              <li key={benefitTitle} className="border-t border-white/35 pt-6">
+                <Reveal delay={index * 70}>
+                  <Icon className="size-8 text-white" />
+                  <h3 className="mt-5 text-xl text-white">{benefitTitle}</h3>
+                  <p className="mt-3 text-sm leading-6 text-white">{benefitDescription}</p>
+                </Reveal>
+              </li>
+            ),
+          )}
         </ul>
       </div>
     </section>
@@ -386,12 +495,14 @@ interface ProcessStep {
 
 export function ProcessSection({ steps }: { steps: readonly ProcessStep[] }) {
   return (
-    <section className="section-space bg-surface-soft" aria-labelledby="process-heading">
+    <section className="section-space bg-background" aria-labelledby="process-heading">
       <div className="section-shell">
         <Reveal className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="eyebrow">So arbeiten wir</p>
-            <h2 id="process-heading" className="section-title mt-4">Vom ersten Gespräch zum stimmigen System</h2>
+            <h2 id="process-heading" className="section-title mt-4">
+              Vom ersten Gespräch zum stimmigen System
+            </h2>
           </div>
           <p className="lead-copy lg:justify-self-end">
             Klare Schritte, verständliche Entscheidungen und ein persönlicher Ansprechpartner geben
@@ -399,13 +510,18 @@ export function ProcessSection({ steps }: { steps: readonly ProcessStep[] }) {
           </p>
         </Reveal>
 
-        <ol className="mt-14 grid gap-0 border-y border-border-strong md:grid-cols-3">
+        <ol className="border-border-strong mt-14 grid gap-0 border-y md:grid-cols-3">
           {steps.map((step, index) => (
-            <li key={step.title} className="border-border-strong py-8 md:border-l md:px-8 md:first:border-l-0">
+            <li
+              key={step.title}
+              className="border-border-strong py-8 md:border-l md:px-8 md:first:border-l-0"
+            >
               <Reveal delay={index * 80}>
-                <span className="text-sm font-bold text-brand-primary">0{index + 1}</span>
+                <span className="text-brand-primary text-sm font-bold">0{index + 1}</span>
                 <h3 className="mt-6 text-2xl">{step.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-[var(--text-muted)]">{step.description}</p>
+                <p className="mt-4 text-sm leading-7 text-[var(--text-muted)]">
+                  {step.description}
+                </p>
               </Reveal>
             </li>
           ))}
@@ -425,21 +541,30 @@ interface ReferenceProjectsSectionProps {
 export function ReferenceProjectsSection({
   projects,
   title = "Energieprojekte aus unserer Region",
-  description = "Echte Anlagen zeigen, wie unterschiedlich Dächer, Gebäude und Anforderungen sein können. Veröffentlicht werden ausschließlich vorhandene Projektbilder – ohne erfundene Kennzahlen.",
+  description = "Vom Wohnhaus bis zum Gewerbedach: Entdecken Sie Photovoltaikanlagen aus unserer Region und die unterschiedlichen Möglichkeiten für Ihr Gebäude.",
   showCta = true,
 }: ReferenceProjectsSectionProps) {
   return (
-    <section id="referenzen" className="section-space bg-background" aria-labelledby="references-heading">
+    <section
+      id="referenzen"
+      className="section-space bg-background"
+      aria-labelledby="references-heading"
+    >
       <div className="section-shell">
         <Reveal className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="eyebrow">Referenzen</p>
-            <h2 id="references-heading" className="section-title mt-4">{title}</h2>
+            <h2 id="references-heading" className="section-title mt-4">
+              {title}
+            </h2>
           </div>
           <div className="lg:justify-self-end">
             <p className="lead-copy">{description}</p>
             {showCta ? (
-              <Link href="/pv-referenzen" className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-brand-primary underline-offset-4 hover:underline">
+              <Link
+                href="/pv-referenzen"
+                className="text-brand-primary mt-6 inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
+              >
                 Referenzen ansehen
                 <ArrowRightIcon className="size-4" />
               </Link>
@@ -449,21 +574,38 @@ export function ReferenceProjectsSection({
 
         <div className="reference-mosaic mt-12">
           {projects.slice(0, 4).map((project, index) => (
-            <Reveal key={project.slug} variant={index % 2 === 0 ? "left" : "right"} className={index === 0 ? "reference-mosaic__lead" : ""}>
-              <figure className="group relative h-full min-h-[16rem] overflow-hidden bg-surface-soft">
+            <Reveal
+              key={project.slug}
+              variant={index % 2 === 0 ? "left" : "right"}
+              className={index === 0 ? "reference-mosaic__lead" : ""}
+            >
+              <Link
+                href={`/pv-referenzen#${project.slug}`}
+                className="reference-tile group"
+                aria-label={`${project.location}: ${project.category} – Projekt ansehen`}
+              >
                 <Image
                   src={project.imageSrc}
                   alt={project.imageAlt}
                   fill
-                  sizes={index === 0 ? "(max-width: 1023px) 100vw, 58vw" : "(max-width: 1023px) 50vw, 42vw"}
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                  sizes={
+                    index === 0 || index === 3
+                      ? "(max-width: 1023px) 100vw, 70vw"
+                      : "(max-width: 1023px) 100vw, 40vw"
+                  }
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.02] group-focus-visible:scale-[1.02]"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_38%,rgba(9,20,51,0.88)_78%,rgba(9,20,51,0.95)_100%)]" />
-                <figcaption className="absolute inset-x-0 bottom-0 p-5 text-white md:p-6">
-                  <span className="text-xs font-bold tracking-[0.12em] text-white uppercase">{project.location}</span>
+                <div className="reference-tile__scrim" />
+                <div className="reference-tile__caption">
+                  <span className="text-xs font-bold tracking-[0.12em] text-white uppercase">
+                    {project.location}
+                  </span>
                   <span className="mt-1 block text-sm text-white">{project.category}</span>
-                </figcaption>
-              </figure>
+                  <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold">
+                    Projekt ansehen <ArrowRightIcon className="size-4" />
+                  </span>
+                </div>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -481,9 +623,19 @@ interface CTAImageBandSectionProps {
   secondaryCta?: MarketingCta;
 }
 
-export function CTAImageBandSection({ eyebrow, title, description, image, primaryCta, secondaryCta }: CTAImageBandSectionProps) {
+export function CTAImageBandSection({
+  eyebrow,
+  title,
+  description,
+  image,
+  primaryCta,
+  secondaryCta,
+}: CTAImageBandSectionProps) {
   return (
-    <section className="relative isolate min-h-[35rem] overflow-hidden bg-brand-navy text-white" aria-labelledby="closing-cta-heading">
+    <section
+      className="bg-brand-navy relative isolate min-h-[35rem] overflow-hidden text-white"
+      aria-labelledby="closing-cta-heading"
+    >
       <div className="absolute inset-0">
         <ArtDirectedImage
           desktopSrc={image.desktopSrc}
@@ -501,11 +653,19 @@ export function CTAImageBandSection({ eyebrow, title, description, image, primar
       <div className="section-shell relative flex min-h-[35rem] items-center py-16">
         <Reveal className="max-w-[42rem]">
           <p className="eyebrow eyebrow-on-dark">{eyebrow}</p>
-          <h2 id="closing-cta-heading" className="section-title mt-4 text-white">{title}</h2>
+          <h2 id="closing-cta-heading" className="section-title mt-4 text-white">
+            {title}
+          </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-white">{description}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={primaryCta.href} className="button-light">{primaryCta.label}</Link>
-            {secondaryCta ? <Link href={secondaryCta.href} className="button-outline-light">{secondaryCta.label}</Link> : null}
+            <Link href={primaryCta.href} className="button-light">
+              {primaryCta.label}
+            </Link>
+            {secondaryCta ? (
+              <Link href={secondaryCta.href} className="button-outline-light">
+                {secondaryCta.label}
+              </Link>
+            ) : null}
           </div>
         </Reveal>
       </div>

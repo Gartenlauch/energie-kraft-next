@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MarketingInvitation } from "@/components/layout/marketing-invitation";
 
 import { ArrowRightIcon, PhoneIcon } from "@/components/ui/icons";
 import { LEGAL_ROUTE_LIST } from "@/config/legal-routes";
@@ -24,54 +25,43 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-brand-navy text-white">
-      <Image
-        src="/brand/energie-kraft/energie-kraft-supersign.svg"
-        alt=""
-        width={530}
-        height={516}
-        className="pointer-events-none absolute -right-30 bottom-4 w-[34rem] rotate-6 opacity-[0.055]"
-      />
-
-      <div className="border-b border-white/12">
-        <div className="section-shell grid gap-8 py-12 md:grid-cols-[1fr_auto] md:items-center lg:py-16">
-          <div>
-            <p className="text-xs font-bold tracking-[0.16em] text-cyan-200 uppercase">
-              Ihr Energieprojekt
-            </p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-white md:text-4xl">
-              Lassen Sie uns die passende Lösung für Ihr Gebäude entwickeln.
-            </h2>
+    <footer className="bg-background text-brand-dark border-border-default relative overflow-hidden border-t">
+      <MarketingInvitation>
+        <div className="border-border-default border-b">
+          <div className="section-shell grid gap-8 py-12 md:grid-cols-[1fr_auto] md:items-center lg:py-16">
+            <div>
+              <p className="text-brand-primary text-xs font-bold tracking-[0.16em] uppercase">
+                Ihr Energieprojekt
+              </p>
+              <h2 className="text-brand-primary mt-3 max-w-2xl text-3xl font-bold tracking-tight md:text-4xl">
+                Lassen Sie uns die passende Lösung für Ihr Gebäude entwickeln.
+              </h2>
+            </div>
+            <Link href="/konfigurator" className="button-primary group md:min-w-52">
+              Projekt konfigurieren
+              <ArrowRightIcon className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
           </div>
-          <Link href="/konfigurator" className="button-light group md:min-w-52">
-            Projekt konfigurieren
-            <ArrowRightIcon className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
         </div>
-      </div>
-
+      </MarketingInvitation>
       <div className="section-shell relative grid gap-12 py-14 md:grid-cols-2 lg:grid-cols-[1.35fr_0.8fr_0.8fr_1fr] lg:py-18">
         <div>
-          <Link
-            href="/"
-            className="inline-flex border-l-4 border-brand-accent bg-white px-4 py-3"
-            aria-label={`${siteConfig.name} – Startseite`}
-          >
+          <Link href="/" className="inline-flex" aria-label={`${siteConfig.name} – Startseite`}>
             <Image
-              src="/brand/energie-kraft/energie-kraft-logo.svg"
+              src="/brand/energie-kraft/eksued-logo-kompakt-website.svg"
               alt="Energie-Kraft Süd"
-              width={292}
-              height={58}
+              width={206}
+              height={90}
               className="h-auto w-52"
             />
           </Link>
-          <p className="mt-6 max-w-sm text-sm leading-7 text-white/66">
-            Individuelle Lösungen für Photovoltaik, Stromspeicher, E-Mobilität,
-            Wärmepumpen und Klimatisierung – persönlich geplant in Ainring.
+          <p className="mt-6 max-w-sm text-sm leading-7">
+            Individuelle Lösungen für Photovoltaik, Stromspeicher, E-Mobilität, Wärmepumpen und
+            Klimatisierung – persönlich geplant in Ainring.
           </p>
           <a
             href={siteConfig.contact.phoneHref}
-            className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-white transition hover:text-cyan-200"
+            className="text-brand-primary mt-6 inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
           >
             <PhoneIcon className="size-4" />
             {siteConfig.contact.phoneDisplay}
@@ -79,13 +69,13 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-xs font-bold tracking-[0.16em] text-cyan-200 uppercase">
+          <h2 className="text-brand-primary text-xs font-bold tracking-[0.16em] uppercase">
             Energielösungen
           </h2>
           <ul className="mt-5 space-y-3.5 text-sm">
             {energyLinks.map(([label, href]) => (
               <li key={href}>
-                <Link href={href} className="text-white/72 transition hover:text-white">
+                <Link href={href} className="text-brand-primary underline-offset-4 hover:underline">
                   {label}
                 </Link>
               </li>
@@ -94,13 +84,13 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-xs font-bold tracking-[0.16em] text-cyan-200 uppercase">
+          <h2 className="text-brand-primary text-xs font-bold tracking-[0.16em] uppercase">
             Unternehmen
           </h2>
           <ul className="mt-5 space-y-3.5 text-sm">
             {companyLinks.map(([label, href]) => (
               <li key={href}>
-                <Link href={href} className="text-white/72 transition hover:text-white">
+                <Link href={href} className="text-brand-primary underline-offset-4 hover:underline">
                   {label}
                 </Link>
               </li>
@@ -109,10 +99,10 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="text-xs font-bold tracking-[0.16em] text-cyan-200 uppercase">
+          <h2 className="text-brand-primary text-xs font-bold tracking-[0.16em] uppercase">
             Kontakt
           </h2>
-          <address className="mt-5 space-y-4 text-sm leading-6 text-white/72 not-italic">
+          <address className="mt-5 space-y-4 text-sm leading-6 not-italic">
             <p>{siteConfig.legalName}</p>
             <p>
               {siteConfig.contact.address.street}
@@ -120,16 +110,27 @@ export function SiteFooter() {
               {siteConfig.contact.address.postalCode} {siteConfig.contact.address.city}
             </p>
             <p>
-              <a href={siteConfig.contact.emailHref} className="break-all hover:text-white">
+              <a
+                href={siteConfig.contact.emailHref}
+                className="text-brand-primary break-all underline-offset-4 hover:underline"
+              >
                 {siteConfig.contact.email}
               </a>
             </p>
           </address>
+          <Image
+            src="/brand/certifications/dgs-mitglied.jpg"
+            alt="Mitglied der Deutschen Gesellschaft für Sonnenenergie (DGS)"
+            width={1431}
+            height={904}
+            sizes="176px"
+            className="mt-8 h-auto w-44"
+          />
         </div>
       </div>
 
-      <div className="border-t border-white/12">
-        <div className="section-shell flex flex-col gap-4 py-6 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-border-default border-t">
+        <div className="section-shell flex flex-col gap-4 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {currentYear} {siteConfig.legalName}
           </p>
@@ -137,7 +138,10 @@ export function SiteFooter() {
             <ul className="flex flex-wrap gap-x-5 gap-y-2">
               {LEGAL_ROUTE_LIST.map((route) => (
                 <li key={route.href}>
-                  <Link href={route.href} className="transition hover:text-white">
+                  <Link
+                    href={route.href}
+                    className="text-brand-primary underline-offset-4 hover:underline"
+                  >
                     {route.label}
                   </Link>
                 </li>

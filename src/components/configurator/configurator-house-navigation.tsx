@@ -1,189 +1,84 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 
-import type {
-  ConfiguratorLandingProduct,
-  ConfiguratorType,
-} from "@/types/configurator";
+import { ArtDirectedImage } from "@/components/media/art-directed-image";
+import { ArrowRightIcon } from "@/components/ui/icons";
+import type { ConfiguratorLandingProduct, ConfiguratorType } from "@/types/configurator";
 
 interface ConfiguratorHouseNavigationProps {
   products: readonly ConfiguratorLandingProduct[];
 }
 
-const hotspotClasses = {
-  photovoltaic:
-    "top-0 left-1/2 -translate-x-1/2",
-  battery_storage:
-    "top-52 left-0",
-  climate:
-    "top-52 right-0",
-  heat_pump:
-    "bottom-0 left-[12%]",
-  wallbox:
-    "right-[12%] bottom-0",
-} satisfies Record<ConfiguratorType, string>;
+const hotspots = {
+  photovoltaic: { x: 76, y: 39, description: "Auf dem Dach eigenen Solarstrom erzeugen." },
+  battery_storage: { x: 59, y: 73, description: "Im Technikraum Solarstrom für später speichern." },
+  climate: { x: 66, y: 59, description: "Im Wohnbereich für angenehme Temperaturen sorgen." },
+  heat_pump: { x: 45, y: 78, description: "Die Außeneinheit versorgt dein Zuhause mit Wärme." },
+  wallbox: { x: 81, y: 74, description: "Am Carport mit eigener Energie laden." },
+} satisfies Record<ConfiguratorType, { x: number; y: number; description: string }>;
 
-export function ConfiguratorHouseNavigation({
-  products,
-}: ConfiguratorHouseNavigationProps) {
+export function ConfiguratorHouseNavigation({ products }: ConfiguratorHouseNavigationProps) {
   return (
-    <div className="relative mx-auto hidden min-h-[560px] w-full max-w-5xl lg:block">
-      <div
-        className="absolute inset-x-[17%] top-24 bottom-16"
-        aria-hidden="true"
-      >
-        <svg
-          viewBox="0 0 720 440"
-          className="h-full w-full text-brand-primary"
-          focusable="false"
-        >
-          <path
-            d="M145 205 360 58l215 147v190H145Z"
-            fill="var(--surface)"
-            stroke="currentColor"
-            strokeWidth="8"
-            strokeLinejoin="round"
-          />
-
-          <path
-            d="M116 216 360 45l244 171"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="14"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          <g
-            fill="var(--brand-accent)"
-            stroke="currentColor"
-            strokeWidth="3"
-          >
-            <path d="m252 126 86-55 45 30-88 57Z" />
-            <path d="m302 162 88-57 47 32-90 58Z" />
-            <path d="m359 198 90-58 45 31-91 60Z" />
-          </g>
-
-          <rect
-            x="199"
-            y="272"
-            width="70"
-            height="111"
-            rx="8"
-            fill="var(--surface-strong)"
-            stroke="currentColor"
-            strokeWidth="5"
-          />
-
-          <circle
-            cx="234"
-            cy="294"
-            r="6"
-            fill="var(--brand-accent)"
-          />
-
-          <rect
-            x="442"
-            y="234"
-            width="91"
-            height="55"
-            rx="8"
-            fill="var(--surface-strong)"
-            stroke="currentColor"
-            strokeWidth="5"
-          />
-
-          <path
-            d="M458 251h59M458 264h59M458 277h36"
-            stroke="currentColor"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-
-          <rect
-            x="311"
-            y="265"
-            width="104"
-            height="130"
-            rx="4"
-            fill="var(--background)"
-            stroke="currentColor"
-            strokeWidth="5"
-          />
-
-          <path
-            d="M363 265v130"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-
-          <rect
-            x="91"
-            y="330"
-            width="92"
-            height="65"
-            rx="10"
-            fill="var(--surface-strong)"
-            stroke="currentColor"
-            strokeWidth="5"
-          />
-
-          <circle
-            cx="137"
-            cy="362"
-            r="19"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-
-          <rect
-            x="548"
-            y="292"
-            width="48"
-            height="78"
-            rx="8"
-            fill="var(--surface-strong)"
-            stroke="currentColor"
-            strokeWidth="5"
-          />
-
-          <path
-            d="M562 319h20M572 309v20"
-            stroke="var(--brand-accent)"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-
-          <path
-            d="M596 349h28v44"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-        </svg>
+    <div className="house-navigation mt-10">
+      <div className="house-navigation__visual">
+        <ArtDirectedImage
+          desktopSrc="/images/home-premium/hero-energy-home-desktop.webp"
+          mobileSrc="/images/home-premium/hero-energy-home-mobile.webp"
+          desktopWidth={2000}
+          desktopHeight={1200}
+          mobileWidth={1200}
+          mobileHeight={1600}
+          alt="Haus mit Photovoltaik auf dem Dach, Wärmepumpe im Garten und Wallbox am Carport"
+          sizes="(max-width: 1023px) 100vw, 1280px"
+        />
+        <div className="house-navigation__caption" aria-hidden="true">
+          <span className="eyebrow eyebrow-on-dark">Alles spielt zusammen</span>
+          <p className="mt-4 max-w-[12ch] text-[clamp(1.8rem,3.2vw,3.1rem)] leading-tight font-bold text-white">
+            Dein Haus als Energiesystem.
+          </p>
+        </div>
+        <nav aria-label="Energiekomponenten am Haus" className="house-hotspots">
+          {products.map((product, index) => {
+            const spot = hotspots[product.type];
+            return (
+              <Link
+                key={product.type}
+                href={product.href}
+                className={`house-hotspot ${spot.x > 70 ? "house-hotspot--right" : ""}`}
+                style={
+                  { "--hotspot-x": `${spot.x}%`, "--hotspot-y": `${spot.y}%` } as CSSProperties
+                }
+                aria-label={`${product.title}: ${spot.description} Jetzt konfigurieren`}
+              >
+                <span className="house-hotspot__marker" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <span className="house-hotspot__label">
+                  <strong>{product.title}</strong>
+                  <span className="mt-2 block text-sm leading-6">{spot.description}</span>
+                  <span className="text-brand-primary mt-3 inline-flex items-center gap-2 text-sm font-semibold">
+                    Jetzt konfigurieren <ArrowRightIcon className="size-4" />
+                  </span>
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
-
-      {products.map((product) => (
-        <Link
-          key={product.type}
-          href={product.href}
-          className={[
-            "absolute z-10 w-44 rounded-2xl border border-border-default",
-            "bg-background p-4 text-center shadow-sm",
-            "transition hover:-translate-y-0.5 hover:border-brand-accent-strong hover:shadow-md",
-            hotspotClasses[product.type],
-          ].join(" ")}
-        >
-          <span className="block text-xs font-semibold tracking-wide text-brand-secondary uppercase">
-            {product.statusLabel}
-          </span>
-
-          <span className="mt-1 block font-semibold text-brand-primary">
-            {product.shortLabel}
-          </span>
-        </Link>
-      ))}
+      <nav aria-label="Energielösung auswählen" className="house-product-list">
+        {products.map((product, index) => (
+          <Link key={product.type} href={product.href} className="house-product-link group">
+            <span className="text-brand-primary text-xs font-bold">0{index + 1}</span>
+            <span className="min-w-0">
+              <strong className="text-brand-primary block text-lg">{product.title}</strong>
+              <span className="mt-1 block text-sm leading-6 text-[var(--text-muted)]">
+                {hotspots[product.type].description}
+              </span>
+            </span>
+            <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-1 group-focus-visible:translate-x-1" />
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

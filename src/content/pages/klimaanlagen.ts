@@ -1,3 +1,4 @@
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
 
 export const klimaanlagenContent = {
@@ -17,7 +18,7 @@ export const klimaanlagenContent = {
       "Wir planen und installieren fest eingebaute Klimaanlagen passend zu Raumgröße, Gebäudesituation und gewünschtem Komfort – vom einzelnen Raum bis zur individuellen Mehrraumlösung.",
     primaryCta: {
       label: "Klimaanlagen-Beratung anfragen",
-      href: "/kontakt",
+      href: CONTACT_FORM_HREF,
     },
     secondaryCta: {
       label: "Lösungen kennenlernen",
@@ -150,7 +151,7 @@ export const klimaanlagenContent = {
       ],
       cta: {
         label: "Klimaanlage anfragen",
-        href: "/kontakt",
+        href: CONTACT_FORM_HREF,
       },
     },
     {
@@ -180,7 +181,7 @@ export const klimaanlagenContent = {
       ],
       cta: {
         label: "Beratungstermin anfragen",
-        href: "/kontakt",
+        href: CONTACT_FORM_HREF,
       },
     },
   ],

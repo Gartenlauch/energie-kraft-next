@@ -11,6 +11,7 @@ import {
 import { Reveal } from "@/components/marketing/reveal";
 import { PublicPageJsonLd } from "@/components/seo/public-page-json-ld";
 import { ArrowRightIcon } from "@/components/ui/icons";
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import type { PublicPageContent } from "@/types/content";
 
@@ -131,30 +132,61 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
             paragraphs={section.text}
             items={section.items}
             links={section.links}
+            linkLayout={
+              content.faqRouteKey === "kontakt" && section.id === "leistungen"
+                ? "topics"
+                : "editorial"
+            }
             cta={section.cta}
-            surface={index === 0 ? "soft" : index === 2 ? "navy" : "white"}
+            surface={index === 0 ? "soft" : index === 2 ? "blue" : index === 4 ? "soft" : "white"}
+            layout={
+              index === 1
+                ? "image-left"
+                : index === 3
+                  ? "image-right"
+                  : index % 2 === 0
+                    ? "statement"
+                    : "editorial"
+            }
+            image={
+              content.faqRouteKey === "photovoltaik" && index === 1
+                ? pageVisuals.stromspeicher
+                : content.faqRouteKey === "photovoltaik" && index === 3
+                  ? {
+                      desktopSrc: "/images/service/service-solar-legacy-desktop.webp",
+                      mobileSrc: "/images/service/service-solar-legacy-mobile.webp",
+                      desktopWidth: 1800,
+                      desktopHeight: 1000,
+                      mobileWidth: 1080,
+                      mobileHeight: 1350,
+                      alt: "Photovoltaikmodule im warmen Abendlicht",
+                    }
+                  : visual
+            }
           />
         ))}
 
         {beforeFaq}
         <PublicFaqSection faqs={faqs} />
 
-        <section className="brand-gradient relative overflow-hidden py-16 text-white md:py-20">
-          <div className="section-shell">
-            <Reveal className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="eyebrow eyebrow-on-dark">Persönliche Beratung</p>
-                <h2 className="mt-4 max-w-3xl text-3xl text-white md:text-4xl">
-                  Ihr Projekt verdient eine Lösung, die wirklich passt.
-                </h2>
-              </div>
-              <Link href="/kontakt" className="button-light group shrink-0">
-                Beratung anfragen
-                <ArrowRightIcon className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-            </Reveal>
-          </div>
-        </section>
+        {content.faqRouteKey !== "konfigurator" && (
+          <section className="brand-gradient relative overflow-hidden py-16 text-white md:py-20">
+            <div className="section-shell">
+              <Reveal className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="eyebrow eyebrow-on-dark">Persönliche Beratung</p>
+                  <h2 className="mt-4 max-w-3xl text-3xl text-white md:text-4xl">
+                    Ihr Projekt verdient eine Lösung, die wirklich passt.
+                  </h2>
+                </div>
+                <Link href={CONTACT_FORM_HREF} className="button-light group shrink-0">
+                  Beratung anfragen
+                  <ArrowRightIcon className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              </Reveal>
+            </div>
+          </section>
+        )}
       </main>
     </>
   );

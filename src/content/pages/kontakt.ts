@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
 
 export const kontaktContent = {
@@ -109,19 +110,24 @@ export const kontaktContent = {
           href: "/stromspeicher",
         },
         {
-          label: "Wallbox",
-          description: "Elektrofahrzeuge sicher und mit PV-Strom laden.",
-          href: "/wallbox",
+          label: "Wärmepumpe",
+          description: "Wärmeversorgung und Photovoltaik verbinden.",
+          href: "/waermepumpen",
         },
         {
-          label: "Klimaanlagen",
+          label: "Klimaanlage",
           description: "Räume individuell und effizient klimatisieren.",
           href: "/klimaanlagen",
         },
         {
-          label: "Wärmepumpen",
-          description: "Wärmeversorgung und Photovoltaik sinnvoll verbinden.",
-          href: "/waermepumpen",
+          label: "Wallbox",
+          description: "Elektrofahrzeuge sicher mit PV-Strom laden.",
+          href: "/wallbox",
+        },
+        {
+          label: "Persönliche Beratung",
+          description: "Gemeinsam die passende Lösung finden.",
+          href: CONTACT_FORM_HREF,
         },
       ],
     },
