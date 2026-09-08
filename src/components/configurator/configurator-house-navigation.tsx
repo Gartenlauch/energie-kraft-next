@@ -171,7 +171,7 @@ export function ConfiguratorHouseNavigation({
           className={[
             "absolute z-10 w-44 rounded-2xl border border-border-default",
             "bg-background p-4 text-center shadow-sm",
-            "transition hover:-translate-y-0.5 hover:border-brand-accent hover:shadow-md",
+            "transition hover:-translate-y-0.5 hover:border-brand-accent-strong hover:shadow-md",
             hotspotClasses[product.type],
           ].join(" ")}
         >

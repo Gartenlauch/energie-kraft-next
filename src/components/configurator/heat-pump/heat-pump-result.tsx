@@ -58,7 +58,7 @@ export function HeatPumpResult({
                 Deine Wärmepumpen-Orientierung
             </h1>
 
-            <div className="mt-8 rounded-2xl border border-brand-accent bg-surface p-6">
+            <div className="mt-8 rounded-xl border border-brand-accent-strong bg-surface p-6">
                 <p className="text-sm font-medium text-brand-secondary">
                     Empfohlene Wärmepumpenleistung
                 </p>

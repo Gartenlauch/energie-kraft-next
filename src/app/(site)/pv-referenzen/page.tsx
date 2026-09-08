@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { MarketingFeaturePage } from "@/app/(site)/_components/marketing-feature-page";
+import { ReferenceProjectsSection } from "@/components/marketing/marketing-sections";
+import { regionalReferenceProjects } from "@/content/reference-projects";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 const seo = {
@@ -48,6 +50,14 @@ export default function ReferencesPage() {
       desktopSrc="/images/home-premium/consultation-reference-desktop.webp"
       mobileSrc="/images/home-premium/consultation-reference-mobile.webp"
       imageAlt="Persönliche Besprechung einer Energieplanung mit Hauseigentümern"
+      afterHero={
+        <ReferenceProjectsSection
+          projects={regionalReferenceProjects}
+          title="Ausgewählte Anlagen aus der Region"
+          description="Die Bilder stammen aus dem vorhandenen Energie-Kraft-Referenzbestand. Weitere Orte und Projektdetails werden erst ergänzt, wenn dafür ausreichend freigegebener, eindeutiger Inhalt vorliegt."
+          showCta={false}
+        />
+      }
       sections={sections}
       ctaTitle="Welche Lösung passt zu Ihrer Ausgangssituation?"
       ctaLabel="Projekt besprechen"

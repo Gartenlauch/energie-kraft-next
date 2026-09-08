@@ -38,7 +38,7 @@ export function ConfiguratorProgress({
         aria-valuenow={progress}
       >
         <div
-          className="h-full rounded-full bg-brand-accent transition-[width] duration-300"
+          className="h-full rounded-full bg-brand-accent-strong transition-[width] duration-300"
           style={{
             width: `${progress}%`,
           }}

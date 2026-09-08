@@ -141,8 +141,9 @@ function MegaMenu({
         type="button"
         aria-expanded={isOpen}
         aria-controls={`${menuKey}-mega-menu`}
+        aria-haspopup="true"
         onClick={() => setOpenMenu(isOpen ? null : menuKey)}
-        className="group flex min-h-12 items-center gap-1.5 px-2 text-[0.82rem] font-semibold text-brand-navy transition hover:text-brand-primary"
+        className="group flex min-h-12 items-center gap-1.5 px-2 text-[0.82rem] font-semibold text-brand-navy underline-offset-8 transition hover:text-brand-primary hover:underline focus-visible:underline"
       >
         {label}
         <ChevronDownIcon
@@ -165,9 +166,10 @@ function MegaMenu({
                   sizes="(max-width: 1280px) 38vw, 470px"
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,20,51,0.06)_20%,rgba(9,20,51,0.88)_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,20,51,0.92)_0%,rgba(9,20,51,0.76)_62%,rgba(9,20,51,0.18)_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,20,51,0.08)_28%,rgba(9,20,51,0.92)_100%)]" />
                 <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                  <p className="text-xs font-bold tracking-[0.16em] text-cyan-200 uppercase">
+                  <p className="text-xs font-bold tracking-[0.16em] text-white uppercase">
                     Energie-Kraft Süd
                   </p>
                   <h2 className="mt-3 max-w-sm text-3xl font-bold tracking-tight text-white">
@@ -184,7 +186,7 @@ function MegaMenu({
                     href={link.href}
                     aria-current={pathname === link.href ? "page" : undefined}
                     onClick={() => setOpenMenu(null)}
-                    className="group rounded-xl border border-transparent p-4 transition hover:border-border-default hover:bg-surface focus-visible:border-brand-accent"
+                    className="group rounded-md border border-transparent p-4 transition hover:border-border-default hover:bg-surface focus-visible:border-brand-primary focus-visible:bg-surface"
                   >
                     <span className="flex items-center justify-between gap-3 font-semibold text-brand-navy transition group-hover:text-brand-primary">
                       {link.label}
@@ -213,6 +215,7 @@ interface MobileGroupProps {
   openGroup: MegaMenuKey | null;
   setOpenGroup: (group: MegaMenuKey | null) => void;
   closeMenu: () => void;
+  pathname: string;
 }
 
 function MobileGroup({
@@ -222,6 +225,7 @@ function MobileGroup({
   openGroup,
   setOpenGroup,
   closeMenu,
+  pathname,
 }: MobileGroupProps) {
   const isOpen = openGroup === groupKey;
 
@@ -245,7 +249,8 @@ function MobileGroup({
               <Link
                 href={link.href}
                 onClick={closeMenu}
-                className="block min-h-12 rounded-lg px-3 py-3 text-sm font-semibold text-white/75 transition hover:bg-white/10 hover:text-white"
+                aria-current={pathname === link.href ? "page" : undefined}
+                className="block min-h-12 rounded-md px-3 py-3 text-sm font-semibold text-white/85 underline-offset-4 transition hover:bg-white/10 hover:text-white hover:underline focus-visible:bg-white/10 aria-[current=page]:bg-white/10 aria-[current=page]:text-white"
               >
                 {link.label}
               </Link>
@@ -263,6 +268,7 @@ export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileGroup, setMobileGroup] = useState<MegaMenuKey | null>("energy");
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!mobileOpen) {
@@ -273,16 +279,51 @@ export function SiteHeader() {
       if (event.key === "Escape") {
         setMobileOpen(false);
         mobileButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const panel = mobilePanelRef.current;
+      const toggle = mobileButtonRef.current;
+
+      if (!panel || !toggle) {
+        return;
+      }
+
+      const focusable = [
+        toggle,
+        ...Array.from(
+          panel.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        ),
+      ];
+      const first = focusable[0];
+      const last = focusable.at(-1);
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
       }
     }
 
     document.addEventListener("keydown", handleKeyDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const focusFrame = window.requestAnimationFrame(() => {
+      mobilePanelRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
+    });
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
+      window.cancelAnimationFrame(focusFrame);
     };
   }, [mobileOpen]);
 
@@ -344,7 +385,7 @@ export function SiteHeader() {
               key={link.href}
               href={link.href}
               aria-current={pathname === link.href ? "page" : undefined}
-              className="flex min-h-12 items-center px-2 text-[0.82rem] font-semibold text-brand-navy transition hover:text-brand-primary aria-[current=page]:text-brand-primary"
+              className="flex min-h-12 items-center px-2 text-[0.82rem] font-semibold text-brand-navy underline-offset-8 transition hover:text-brand-primary hover:underline focus-visible:underline aria-[current=page]:text-brand-primary aria-[current=page]:underline"
             >
               {link.label}
             </Link>
@@ -372,7 +413,11 @@ export function SiteHeader() {
 
       {mobileOpen ? (
         <div
+          ref={mobilePanelRef}
           id="mobile-navigation"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile Hauptnavigation"
           className="fixed inset-x-0 top-[4.75rem] h-[calc(100dvh-4.75rem)] overflow-y-auto bg-brand-navy lg:top-[7rem] lg:h-[calc(100dvh-7rem)] xl:hidden"
         >
           <nav aria-label="Mobile Hauptnavigation" className="section-shell py-5">
@@ -384,6 +429,7 @@ export function SiteHeader() {
                 openGroup={mobileGroup}
                 setOpenGroup={setMobileGroup}
                 closeMenu={() => setMobileOpen(false)}
+                pathname={pathname}
               />
               <MobileGroup
                 groupKey="service"
@@ -392,13 +438,15 @@ export function SiteHeader() {
                 openGroup={mobileGroup}
                 setOpenGroup={setMobileGroup}
                 closeMenu={() => setMobileOpen(false)}
+                pathname={pathname}
               />
               {directLinks.map((link) => (
                 <li key={link.href} className="border-b border-white/10">
                   <Link
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="flex min-h-15 items-center py-4 font-semibold text-white"
+                    aria-current={pathname === link.href ? "page" : undefined}
+                    className="flex min-h-15 items-center py-4 font-semibold text-white underline-offset-4 hover:underline focus-visible:underline aria-[current=page]:underline"
                   >
                     {link.label}
                   </Link>

@@ -54,7 +54,7 @@ export function SiteFooter() {
         <div>
           <Link
             href="/"
-            className="inline-flex rounded-xl bg-white px-4 py-3"
+            className="inline-flex border-l-4 border-brand-accent bg-white px-4 py-3"
             aria-label={`${siteConfig.name} – Startseite`}
           >
             <Image

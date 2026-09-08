@@ -332,7 +332,7 @@ export function ConfiguratorSubmitReview({
                         </p>
                     </article>
 
-                    <article className="rounded-2xl border border-brand-accent bg-surface p-6 md:col-span-2">
+                    <article className="rounded-xl border border-brand-accent-strong bg-surface p-6 md:col-span-2">
                         <h2 className="font-semibold text-brand-primary">
                             Dein Energieprojekt
                         </h2>

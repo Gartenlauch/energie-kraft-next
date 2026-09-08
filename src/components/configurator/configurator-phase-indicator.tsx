@@ -54,7 +54,7 @@ export function ConfiguratorPhaseIndicator({
               className={[
                 "rounded-xl border px-4 py-3 transition",
                 active
-                  ? "border-brand-accent bg-cyan-50/60 shadow-[var(--shadow-sm)]"
+                  ? "border-brand-accent-strong bg-cyan-50/60 shadow-[var(--shadow-sm)]"
                   : completed
                     ? "border-brand-primary/25 bg-surface"
                     : "border-border-default bg-background",

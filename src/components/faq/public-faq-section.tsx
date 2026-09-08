@@ -37,7 +37,7 @@ export function PublicFaqSection({
           {faqs.map((faq) => (
             <details
               key={faq.id}
-              className="group rounded-[var(--radius-md)] border border-border-default bg-background px-5 shadow-[var(--shadow-sm)] transition open:border-brand-accent/50 md:px-7"
+              className="group rounded-[var(--radius-md)] border border-border-default bg-background px-5 shadow-[var(--shadow-sm)] transition open:border-brand-primary md:px-7"
             >
               <summary className="flex min-h-18 cursor-pointer list-none items-center justify-between gap-6 py-5 text-left [&::-webkit-details-marker]:hidden">
                 <span className="font-semibold text-brand-navy md:text-lg">{faq.question}</span>

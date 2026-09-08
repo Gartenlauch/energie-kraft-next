@@ -61,9 +61,11 @@ export default function ServicePage() {
       eyebrow="Service & Wartung"
       title="Damit Ihre Energietechnik zuverlässig weiterarbeitet"
       description="Wir unterstützen Sie bei Anlagenchecks, Wartung und der Einordnung technischer Auffälligkeiten – strukturiert, persönlich und passend zur vorhandenen Technik."
-      desktopSrc="/images/home-premium/service-maintenance-desktop.webp"
-      mobileSrc="/images/home-premium/service-maintenance-mobile.webp"
-      imageAlt="Servicetechniker prüft die Steuerung einer Energieanlage"
+      desktopSrc="/images/service/service-solar-legacy-desktop.webp"
+      mobileSrc="/images/service/service-solar-legacy-mobile.webp"
+      desktopWidth={1800}
+      desktopHeight={1000}
+      imageAlt="Photovoltaikanlage im Abendlicht als Teil eines betreuten Energiesystems"
       sections={sections}
       ctaTitle="Sie haben eine Servicefrage zu Ihrer Anlage?"
       ctaLabel="Serviceanfrage stellen"

@@ -10,7 +10,7 @@ export function ConfiguratorProductCard({
   product,
 }: ConfiguratorProductCardProps) {
   return (
-    <article className="premium-card group flex min-w-0 flex-col p-6 transition hover:-translate-y-1 hover:border-brand-accent/60">
+    <article className="premium-card group flex min-w-0 flex-col p-6 transition hover:-translate-y-1 hover:border-brand-accent-strong">
       <div>
         <span className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold text-brand-primary">
           {product.statusLabel}

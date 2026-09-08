@@ -30,7 +30,7 @@ export function SelectionCard({
         "transition duration-150 hover:-translate-y-0.5",
         "disabled:cursor-not-allowed disabled:opacity-50",
         selected
-          ? "border-brand-accent bg-cyan-50/60 shadow-[var(--shadow-card)] ring-1 ring-brand-accent"
+          ? "border-brand-accent-strong bg-cyan-50/60 shadow-[var(--shadow-card)] ring-1 ring-brand-accent-strong"
           : "border-border-default bg-white shadow-[var(--shadow-sm)] hover:border-brand-primary hover:shadow-[var(--shadow-card)]",
       ].join(" ")}
     >
