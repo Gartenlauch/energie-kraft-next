@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { MarketingFeaturePage } from "@/app/(site)/_components/marketing-feature-page";
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 const seo = {
@@ -50,6 +51,23 @@ const sections = [
     paragraphs: [
       "Für eine erste Einordnung helfen Angaben zum Anlagentyp, zum Standort, zum Zeitpunkt der Inbetriebnahme und zu möglichen Fehlermeldungen. So kann der nächste sinnvolle Schritt gezielt vorbereitet werden.",
     ],
+    links: [
+      {
+        label: "Service & Team",
+        description: "Ansprechpartner und technische Betreuung kennenlernen.",
+        href: "/service-und-wartung/service-und-team",
+      },
+      {
+        label: "Wartung & Reinigung",
+        description: "Prüfung, Pflege und Fehlererkennung im Detail.",
+        href: "/service-und-wartung/wartung-und-reinigung",
+      },
+      {
+        label: "Finanzierung & Förderung",
+        description: "Veränderliche Rahmenbedingungen individuell klären.",
+        href: "/service-und-wartung/finanzierung-und-foerderung",
+      },
+    ],
   },
 ] as const;
 
@@ -69,7 +87,7 @@ export default function ServicePage() {
       sections={sections}
       ctaTitle="Sie haben eine Servicefrage zu Ihrer Anlage?"
       ctaLabel="Serviceanfrage stellen"
-      ctaHref="/kontakt"
+      ctaHref={CONTACT_FORM_HREF}
     />
   );
 }

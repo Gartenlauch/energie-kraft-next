@@ -574,18 +574,14 @@ export function ReferenceProjectsSection({
 
         <div className="reference-mosaic mt-12">
           {projects.slice(0, 4).map((project, index) => (
-            <Reveal
-              key={project.slug}
-              variant={index % 2 === 0 ? "left" : "right"}
-              className={index === 0 ? "reference-mosaic__lead" : ""}
-            >
+            <Reveal key={project.id} className={index === 0 ? "reference-mosaic__lead" : ""}>
               <Link
-                href={`/pv-referenzen#${project.slug}`}
+                href={`/pv-referenzen/${project.locationSlug}#${project.id}`}
                 className="reference-tile group"
                 aria-label={`${project.location}: ${project.category} – Projekt ansehen`}
               >
                 <Image
-                  src={project.imageSrc}
+                  src={project.image}
                   alt={project.imageAlt}
                   fill
                   sizes={

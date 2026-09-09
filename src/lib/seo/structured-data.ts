@@ -68,6 +68,13 @@ export function buildWebPageJsonLd(seo: SeoContent) {
   };
 }
 
+export function buildAboutPageJsonLd(seo: SeoContent) {
+  return {
+    ...buildWebPageJsonLd(seo),
+    "@type": "AboutPage",
+  };
+}
+
 export function buildServiceJsonLd(seo: SeoContent, routeKey: FaqRouteKey) {
   const serviceType = SERVICE_TYPES[routeKey];
 
@@ -97,9 +104,11 @@ export function buildServiceJsonLd(seo: SeoContent, routeKey: FaqRouteKey) {
 export function buildBreadcrumbJsonLd({
   currentLabel,
   currentPath,
+  items = [],
 }: {
   currentLabel: string;
   currentPath: string;
+  items?: readonly { label: string; path: string }[];
 }) {
   const canonicalUrl = buildCanonicalUrl(currentPath);
 
@@ -114,9 +123,15 @@ export function buildBreadcrumbJsonLd({
         name: "Startseite",
         item: buildCanonicalUrl("/"),
       },
+      ...items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 2,
+        name: item.label,
+        item: buildCanonicalUrl(item.path),
+      })),
       {
         "@type": "ListItem",
-        position: 2,
+        position: items.length + 2,
         name: currentLabel,
         item: canonicalUrl,
       },

@@ -109,6 +109,26 @@ export const photovoltaikContent = {
       ],
     },
     {
+      id: "regionale-referenzen",
+      eyebrow: "Reale Anlagen aus der Region",
+      title: "Photovoltaik-Referenzen nach Ort entdecken",
+      text: [
+        "Unser Referenzbestand zeigt private und gewerbliche Anlagen aus Ainring, Freilassing, Bad Reichenhall, Berchtesgaden und weiteren Orten der Region.",
+      ],
+      links: [
+        {
+          label: "Alle PV-Referenzen",
+          description: "Projektübersicht mit privaten und gewerblichen Anlagen.",
+          href: "/pv-referenzen",
+        },
+        {
+          label: "Referenzen in Ainring",
+          description: "Lokale Projekte rund um unseren Unternehmensstandort.",
+          href: "/pv-referenzen/ainring",
+        },
+      ],
+    },
+    {
       id: "planung-und-montage",
       eyebrow: "Von der Beratung bis zur Inbetriebnahme",
       title: "Photovoltaikplanung und Montage aus einer Hand",

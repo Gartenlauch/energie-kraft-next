@@ -12,13 +12,18 @@ const energyLinks = [
   ["Wärmepumpen", "/waermepumpen"],
   ["Klimaanlagen", "/klimaanlagen"],
   ["Wallbox", "/wallbox"],
+  ["Für Unternehmen", "/energieloesungen/photovoltaik-fuer-unternehmen"],
+  ["Stromtarife", "/energieloesungen/stromtarife-pv"],
 ] as const;
 
 const companyLinks = [
+  ["Über uns", "/ueber-uns"],
   ["Service & Wartung", "/service-und-wartung"],
+  ["Service & Team", "/service-und-wartung/service-und-team"],
   ["Referenzen", "/pv-referenzen"],
-  ["Kontakt", "/kontakt"],
   ["Jobs", "/jobs"],
+  ["Kunden werben Kunden", "/kunden-werben-kunden"],
+  ["Kontakt", "/kontakt"],
 ] as const;
 
 export function SiteFooter() {

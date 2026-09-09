@@ -17,7 +17,12 @@ den expliziten Zustand `not-configured`; sie führen keine API-Anfragen aus.
 Provider-Daten. Ein fehlender Provider liefert keine erfundenen Ersatzwerte. Die Komponente
 verwendet lesbare Provider-Namen; offizielle Logo-Assets können nach Freigabe ergänzt werden.
 
-## Aktivierung in Sprint 8
+## Sprint-8-Status und spätere Aktivierung
+
+In der dokumentierten Beispiel-/Konfigurationsoberfläche sind keine eindeutig zugeordneten
+Google-Business-Profile- oder Trustpilot-Credentials definiert. Deshalb bleibt der vorhandene
+`not-configured`-Zustand aktiv: Es gibt keine API-Requests, keine öffentliche Review-Section,
+keine Ersatzbewertungen und kein Review-/`AggregateRating`-JSON-LD.
 
 1. Google Business Profile: Zugriff auf das tatsächliche Unternehmensprofil und die betreffende
    Location klären; den offiziellen, autorisierten serverseitigen Abruf implementieren.
@@ -27,8 +32,10 @@ verwendet lesbare Provider-Namen; offizielle Logo-Assets können nach Freigabe e
    ausschließlich serverseitig verwalten; keine Keys, Tokens oder Rohantworten im Client.
 4. Provider-Daten validieren und auf die neutralen Types normalisieren. Rating und Gesamtzahl
    aus der offiziellen Summary übernehmen, niemals aus einer Teilmenge von Reviews ableiten.
-5. Serverseitiges Caching mit einer zu den Provider-Vorgaben passenden Revalidierung sowie
-   Timeout-/Fehlerbehandlung und Monitoring ergänzen. In Phase A gibt es noch keinen Live-Cache.
+5. Serverseitiges Caching mit ungefähr 12–24 Stunden Revalidierung, passend zu den
+   Provider-Vorgaben, sowie Timeout-/Fehlerbehandlung und Monitoring ergänzen. Ein Provider darf
+   einzeln ausfallen; `Promise.allSettled` hält den zweiten Provider verfügbar. Solange keine
+   Live-Anbindung existiert, ist kein Cache aktiv und es entstehen keine Requests pro Pageview.
 6. In `src/app/(site)/page.tsx` `getCustomerReviews()` aufrufen und die resultierende Collection
    an `CustomerReviewsSection` übergeben, vorzugsweise zwischen Referenzen und Partnern.
    Die Homepage lädt derzeit keine Reviews und zeigt keine Bewertungssection an.

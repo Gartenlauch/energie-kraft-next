@@ -21,6 +21,7 @@ interface NavigationLink {
   href: string;
   description?: string;
   previewImage?: string;
+  priority?: "primary" | "secondary" | "supporting";
 }
 
 const energyLinks: readonly NavigationLink[] = [
@@ -29,36 +30,56 @@ const energyLinks: readonly NavigationLink[] = [
     href: "/photovoltaik",
     description: "Solarstrom passend zu Dach und Verbrauch planen.",
     previewImage: "/images/photovoltaic/photovoltaic-feature-desktop.webp",
+    priority: "primary",
   },
   {
     label: "Stromspeicher",
     href: "/stromspeicher",
     description: "Eigene Energie flexibel und intelligent nutzen.",
     previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
+    priority: "primary",
   },
   {
     label: "Wärmepumpe",
     href: "/waermepumpen",
     description: "Wärmeversorgung als Teil des Energiesystems.",
     previewImage: "/images/heat-pump/heat-pump-feature-desktop.webp",
+    priority: "secondary",
   },
   {
     label: "Klimaanlage",
     href: "/klimaanlagen",
     description: "Räume effizient kühlen und temperieren.",
     previewImage: "/images/climate/climate-feature-desktop.webp",
+    priority: "secondary",
   },
   {
     label: "Wallbox",
     href: "/wallbox",
     description: "Elektromobilität mit PV-Strom verbinden.",
     previewImage: "/images/wallbox/wallbox-feature-desktop.webp",
+    priority: "supporting",
   },
   {
-    label: "Energie-Konfigurator",
-    href: "/konfigurator",
-    description: "Ihr Vorhaben in wenigen Schritten vorbereiten.",
-    previewImage: "/images/home-premium/consultation-reference-desktop.webp",
+    label: "Photovoltaik für Unternehmen",
+    href: "/energieloesungen/photovoltaik-fuer-unternehmen",
+    description: "Eigenstrom für Gewerbe, Hallen und betriebliche Dachflächen.",
+    previewImage: "/images/references/freilassing-commercial.webp",
+    priority: "secondary",
+  },
+  {
+    label: "Gewerbespeicher",
+    href: "/energieloesungen/gewerbespeicher",
+    description: "Erzeugung und Verbrauch im Betrieb besser aufeinander abstimmen.",
+    previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
+    priority: "supporting",
+  },
+  {
+    label: "Stromtarife",
+    href: "/energieloesungen/stromtarife-pv",
+    description: "PV, Eigenverbrauch und ergänzenden Strombezug zusammendenken.",
+    previewImage: "/images/home-premium/hero-energy-home-desktop.webp",
+    priority: "supporting",
   },
 ] as const;
 
@@ -70,29 +91,30 @@ const serviceLinks: readonly NavigationLink[] = [
     previewImage: "/images/navigation/service-maintenance-mega.webp",
   },
   {
-    label: "Anlagencheck",
-    href: "/service-und-wartung#anlagencheck",
-    description: "Funktion und Leistung strukturiert prüfen lassen.",
-    previewImage: "/images/service/service-solar-legacy-desktop.webp",
+    label: "Service & Team",
+    href: "/service-und-wartung/service-und-team",
+    description: "Ansprechpartner, technische Betreuung und Serviceorganisation.",
+    previewImage: "/images/team/company-service-hero-desktop.webp",
   },
   {
-    label: "Wartung",
-    href: "/service-und-wartung#wartung",
-    description: "Pflege und Prüfung passend zur installierten Technik.",
+    label: "Wartung & Reinigung",
+    href: "/service-und-wartung/wartung-und-reinigung",
+    description: "Prüfung, Pflege und Fehlererkennung passend zur Anlage.",
     previewImage: "/images/home-premium/service-maintenance-desktop.webp",
   },
   {
-    label: "Persönliche Unterstützung",
-    href: "/service-und-wartung#kontakt",
-    description: "Ihr Anliegen direkt mit unserem Team klären.",
+    label: "Finanzierung & Förderung",
+    href: "/service-und-wartung/finanzierung-und-foerderung",
+    description: "Rahmenbedingungen und mögliche Programme individuell klären.",
     previewImage: "/images/home-premium/consultation-reference-desktop.webp",
   },
 ] as const;
 
 const directLinks: readonly NavigationLink[] = [
+  { label: "Unternehmen", href: "/ueber-uns" },
   { label: "Referenzen", href: "/pv-referenzen" },
-  { label: "Kontakt", href: "/kontakt" },
   { label: "Jobs", href: "/jobs" },
+  { label: "Kontakt", href: "/kontakt" },
 ] as const;
 
 interface MegaMenuProps {
@@ -177,7 +199,10 @@ function MegaMenu({
         >
           <div className="border-border-default bg-background overflow-hidden rounded-[1.5rem] border shadow-[var(--shadow-float)]">
             <div className="grid grid-cols-[0.8fr_1.2fr]">
-              <div className="bg-brand-navy relative min-h-[25rem] overflow-hidden" aria-hidden="true">
+              <div
+                className="bg-brand-navy relative min-h-[25rem] overflow-hidden"
+                aria-hidden="true"
+              >
                 {scenes.map((scene) => (
                   <div
                     key={scene.key}
@@ -199,7 +224,9 @@ function MegaMenu({
                       <h2 className="mt-3 max-w-sm text-3xl font-bold tracking-tight text-white">
                         {scene.title}
                       </h2>
-                      <p className="mt-3 max-w-md text-sm leading-6 text-white">{scene.description}</p>
+                      <p className="mt-3 max-w-md text-sm leading-6 text-white">
+                        {scene.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -208,8 +235,8 @@ function MegaMenu({
               <div
                 className="grid grid-cols-2 content-start gap-x-3 p-7"
                 onFocusCapture={(event) => {
-                  const previewKey = event.target.closest<HTMLElement>("[data-preview-key]")?.dataset
-                    .previewKey;
+                  const previewKey =
+                    event.target.closest<HTMLElement>("[data-preview-key]")?.dataset.previewKey;
                   if (previewKey) setActivePreview(previewKey);
                 }}
               >
@@ -222,10 +249,19 @@ function MegaMenu({
                     onMouseEnter={() => setActivePreview(link.href)}
                     onFocus={() => setActivePreview(link.href)}
                     onClick={() => setOpenMenu(null)}
-                    className="mega-menu-link group"
+                    className={`mega-menu-link group ${
+                      link.priority === "primary" ? "bg-brand-primary/[0.045]" : ""
+                    }`}
                   >
                     <span className="text-brand-navy group-hover:text-brand-primary flex items-center justify-between gap-3 font-semibold transition">
-                      {link.label}
+                      <span>
+                        {link.label}
+                        {link.priority === "primary" ? (
+                          <span className="text-brand-primary ml-2 text-[0.62rem] font-bold tracking-[0.12em] uppercase">
+                            Fokus
+                          </span>
+                        ) : null}
+                      </span>
                       <ArrowRightIcon className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
                     </span>
                     {link.description ? (

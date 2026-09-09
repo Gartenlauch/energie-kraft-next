@@ -27,6 +27,13 @@ const sections = [
     ],
   },
   {
+    eyebrow: "Arbeitsbereiche",
+    title: "Viele Disziplinen, ein gemeinsames Projektziel",
+    paragraphs: [
+      "Je nach tatsächlichem Bedarf arbeiten bei uns Menschen in Planung, Elektrotechnik, Dachmontage, Service, Vertrieb und Verwaltung zusammen. Aktuelle Möglichkeiten klären wir persönlich; nicht bestätigte Stellen schreiben wir nicht als offen aus.",
+    ],
+  },
+  {
     eyebrow: "Interesse?",
     title: "Aktuelle Möglichkeiten persönlich klären",
     paragraphs: [
@@ -44,13 +51,15 @@ export default function JobsPage() {
       eyebrow="Arbeiten bei Energie-Kraft Süd"
       title="Gemeinsam Energieprojekte mit Substanz realisieren"
       description="Sie möchten technische Qualität, persönliche Beratung und moderne Energiesysteme zusammenbringen? Dann lernen wir uns gern kennen."
-      desktopSrc="/images/home-premium/service-maintenance-desktop.webp"
-      mobileSrc="/images/home-premium/service-maintenance-mobile.webp"
-      imageAlt="Fachkraft bei der sorgfältigen Prüfung einer Energieanlage"
+      desktopSrc="/images/team/company-service-hero-desktop.webp"
+      mobileSrc="/images/team/company-service-hero-mobile.webp"
+      imageAlt="Mitarbeiter von Energie-Kraft Süd bei der Arbeit auf einem Dach"
+      desktopWidth={1800}
+      desktopHeight={1039}
       sections={sections}
       ctaTitle="Sie möchten Teil unseres Teams werden?"
-      ctaLabel="Kontakt aufnehmen"
-      ctaHref="/kontakt"
+      ctaLabel="Zum Bewerbungsweg"
+      ctaHref="/bewerbung"
     />
   );
 }

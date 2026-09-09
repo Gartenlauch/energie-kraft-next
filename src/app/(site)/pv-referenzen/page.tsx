@@ -7,14 +7,19 @@ import { EditorialFeatureSection } from "@/components/marketing/marketing-sectio
 import { Reveal } from "@/components/marketing/reveal";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { ArrowRightIcon } from "@/components/ui/icons";
-import { regionalReferenceProjects } from "@/content/reference-projects";
+import { CONTACT_FORM_HREF } from "@/config/routes";
+import {
+  getReferenceProjectsByLocation,
+  referenceLocations,
+  regionalReferenceProjects,
+} from "@/content/reference-projects";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
 
 const seo = {
   title: "Photovoltaik-Referenzen aus der Region | Energie-Kraft Süd",
   description:
-    "Photovoltaik-Referenzen aus Berchtesgaden, Ainring, Freilassing und Schönram-Petting: Einblicke in Anlagen auf Wohnhäusern und Gewerbedächern.",
+    "Echte Photovoltaik-Referenzen aus Ainring, Freilassing, Bad Reichenhall, Berchtesgaden, Kirchanschöring, Laufen und Saaldorf-Surheim.",
   canonicalPath: "/pv-referenzen",
 };
 
@@ -26,97 +31,139 @@ export default function ReferencesPage() {
       <JsonLdScript data={buildWebPageJsonLd(seo)} />
       <JsonLdScript
         data={buildBreadcrumbJsonLd({
-          currentLabel: "Referenzen",
+          currentLabel: "PV-Referenzen",
           currentPath: seo.canonicalPath,
         })}
       />
       <main id="main-content">
-        <Breadcrumbs currentLabel="Referenzen" />
+        <Breadcrumbs currentLabel="PV-Referenzen" />
 
-        <section className="bg-surface-soft py-16 md:py-24" aria-labelledby="reference-title">
+        <section
+          className="bg-brand-navy py-16 text-white md:py-24"
+          aria-labelledby="reference-title"
+        >
           <div className="section-shell">
             <Reveal className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:gap-16">
               <div className="min-w-0">
-                <p className="eyebrow">Dächer aus unserer Region</p>
-                <h1 id="reference-title" className="section-title mt-5 max-w-3xl">
+                <p className="eyebrow eyebrow-on-dark">Dächer aus unserer Region</p>
+                <h1 id="reference-title" className="section-title mt-5 max-w-4xl text-white">
                   Photovoltaik. Vor Ort. Im Alltag.
                 </h1>
               </div>
-              <p className="lead-copy">
-                Wohnhäuser und Gewerbedächer, unterschiedliche Orte und Perspektiven. Entdecken Sie
-                ausgewählte Anlagen aus unserem regionalen Referenzbestand.
+              <p className="max-w-xl text-lg leading-8 text-white">
+                Private Wohngebäude und gewerbliche Dachflächen: Unser Referenzarchiv zeigt reale
+                Projekte aus der Region und macht unterschiedliche Ausgangslagen sichtbar.
               </p>
             </Reveal>
-
-            <nav
-              aria-label="Referenzen nach Ort"
-              className="border-border-strong mt-12 flex flex-wrap gap-x-7 gap-y-2 border-t pt-5"
-            >
-              {regionalReferenceProjects.map((project) => (
-                <Link
-                  key={project.slug}
-                  href={`#${project.slug}`}
-                  className="text-brand-primary inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
-                >
-                  {project.location} <ArrowRightIcon className="size-4 rotate-90" />
-                </Link>
-              ))}
-            </nav>
           </div>
         </section>
 
-        <section className="section-shell py-12 md:py-16" aria-label="Regionale Photovoltaik-Projekte">
-          <div className="reference-collection">
-            {regionalReferenceProjects.map((project, index) => (
-              <article
-                key={project.slug}
-                id={project.slug}
-                className="reference-project"
-                aria-labelledby={`${project.slug}-title`}
-              >
-                <Reveal variant={index % 2 === 0 ? "left" : "right"}>
-                  <figure>
-                    <div className="reference-project__image bg-surface-soft">
+        <section className="section-space bg-background" aria-labelledby="selected-projects-title">
+          <div className="section-shell">
+            <Reveal className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+              <div>
+                <p className="eyebrow">Ausgewählte Projekte</p>
+                <h2 id="selected-projects-title" className="section-title mt-4">
+                  Sieben Orte. Viele reale Dachflächen.
+                </h2>
+              </div>
+              <p className="lead-copy lg:justify-self-end">
+                Jede Aufnahme stammt aus dem lokalen Energie-Kraft-Referenzbestand. Technische
+                Detailwerte zeigen wir nur, wenn sie eindeutig bestätigt sind.
+              </p>
+            </Reveal>
+
+            <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {regionalReferenceProjects.map((project, index) => (
+                <Reveal key={project.id} delay={(index % 3) * 60}>
+                  <Link
+                    href={`/pv-referenzen/${project.locationSlug}#${project.id}`}
+                    className="group border-border-default bg-surface block overflow-hidden border"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
                       <Image
-                        src={project.imageSrc}
+                        src={project.image}
                         alt={project.imageAlt}
                         fill
-                        sizes="(max-width: 1023px) 100vw, 60vw"
-                        className="object-cover"
+                        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.025] group-focus-visible:scale-[1.025]"
                       />
                     </div>
-                    <figcaption className="flex items-start justify-between gap-5">
+                    <div className="flex items-start justify-between gap-4 p-5">
                       <div>
-                        <p className="eyebrow">{project.category}</p>
-                        <h2 id={`${project.slug}-title`} className="mt-2 text-2xl md:text-3xl">
-                          {project.location}
-                        </h2>
+                        <p className="text-brand-primary text-xs font-bold tracking-[0.12em] uppercase">
+                          {project.customerType}
+                        </p>
+                        <h3 className="mt-2 text-xl">{project.location}</h3>
                       </div>
-                      <span aria-hidden="true" className="text-brand-primary pt-1 text-sm font-semibold">
-                        0{index + 1}
-                      </span>
-                    </figcaption>
-                  </figure>
+                      <ArrowRightIcon className="text-brand-primary mt-1 size-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                    </div>
+                  </Link>
                 </Reveal>
-              </article>
-            ))}
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section-space bg-surface-soft" aria-labelledby="locations-title">
+          <div className="section-shell">
+            <Reveal>
+              <p className="eyebrow">Regionale Projektübersicht</p>
+              <h2 id="locations-title" className="section-title mt-4 max-w-3xl">
+                Referenzen nach Ort entdecken
+              </h2>
+            </Reveal>
+            <ul className="border-border-strong mt-12 grid border-y md:grid-cols-2 lg:grid-cols-3">
+              {referenceLocations.map((location, index) => {
+                const projects = getReferenceProjectsByLocation(location.slug);
+                const customerTypes = [...new Set(projects.map((project) => project.customerType))];
+
+                return (
+                  <li
+                    key={location.slug}
+                    className="border-border-strong border-b p-6 lg:border-l lg:first:border-l-0"
+                  >
+                    <Reveal delay={(index % 3) * 50}>
+                      <p className="text-xs font-bold tracking-[0.12em] text-[var(--text-subtle)] uppercase">
+                        Landkreis {location.district}
+                      </p>
+                      <h3 className="mt-3 text-2xl">{location.name}</h3>
+                      <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
+                        {projects.length} Projekte · {customerTypes.join(" & ")}
+                      </p>
+                      <Link
+                        href={`/pv-referenzen/${location.slug}`}
+                        className="text-brand-primary mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
+                      >
+                        Ortsreferenzen ansehen <ArrowRightIcon className="size-4" />
+                      </Link>
+                    </Reveal>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </section>
 
         <EditorialFeatureSection
-          eyebrow="Ihr Gebäude. Ihr Energieprojekt."
-          title="Was lässt sich auf Ihrem Dach bewegen?"
+          eyebrow="Private & gewerbliche Anlagen"
+          title="Jedes Dach beginnt mit anderen Voraussetzungen"
           paragraphs={[
-            "Jede Anlage beginnt mit anderen Voraussetzungen. Gemeinsam betrachten wir Dachfläche, Verbrauch und Gebäudetechnik – und planen Photovoltaik, Speicher und weitere Komponenten passend zu Ihrem Vorhaben.",
+            "Referenzbilder zeigen das Ergebnis, aber nicht alle Entscheidungen dahinter. Für ein neues Vorhaben betrachten wir Dach, Verbrauch, Gebäude und mögliche Speicher- oder Verbraucherkomponenten erneut.",
           ]}
-          surface="blue"
+          surface="white"
           layout="editorial"
-          cta={{ label: "Projekt besprechen", href: "/kontakt" }}
+          cta={{ label: "PV-Projekt starten", href: CONTACT_FORM_HREF }}
           links={[
             {
-              label: "Photovoltaik kennenlernen",
+              label: "Photovoltaik für Zuhause",
               href: "/photovoltaik",
-              description: "Von der ersten Planung zum abgestimmten Energiesystem.",
+              description: "Planung für Dach, Eigenverbrauch und Speicher.",
+            },
+            {
+              label: "Photovoltaik für Unternehmen",
+              href: "/energieloesungen/photovoltaik-fuer-unternehmen",
+              description: "Gewerbedach, Lastprofil und betriebliche Nutzung.",
             },
           ]}
         />

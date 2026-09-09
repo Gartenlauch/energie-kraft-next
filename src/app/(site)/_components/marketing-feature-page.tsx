@@ -16,6 +16,12 @@ export interface MarketingFeatureSection {
   title: string;
   paragraphs: readonly string[];
   items?: readonly string[];
+  links?: readonly {
+    eyebrow?: string;
+    label: string;
+    description?: string;
+    href: string;
+  }[];
 }
 
 interface MarketingFeaturePageProps {
@@ -36,6 +42,7 @@ interface MarketingFeaturePageProps {
   ctaTitle: string;
   ctaLabel: string;
   ctaHref: string;
+  breadcrumbItems?: readonly { label: string; href: string }[];
 }
 
 export function MarketingFeaturePage({
@@ -56,6 +63,7 @@ export function MarketingFeaturePage({
   ctaTitle,
   ctaLabel,
   ctaHref,
+  breadcrumbItems = [],
 }: MarketingFeaturePageProps) {
   return (
     <>
@@ -64,10 +72,11 @@ export function MarketingFeaturePage({
         data={buildBreadcrumbJsonLd({
           currentLabel: breadcrumbLabel,
           currentPath: seo.canonicalPath,
+          items: breadcrumbItems.map((item) => ({ label: item.label, path: item.href })),
         })}
       />
       <main id="main-content">
-        <Breadcrumbs currentLabel={breadcrumbLabel} />
+        <Breadcrumbs currentLabel={breadcrumbLabel} items={breadcrumbItems} />
         <PremiumHeroSection
           eyebrow={eyebrow}
           title={title}
@@ -94,6 +103,7 @@ export function MarketingFeaturePage({
             title={section.title}
             paragraphs={section.paragraphs}
             items={section.items}
+            links={section.links}
             surface={index === 0 ? "soft" : "white"}
             layout={index % 3 === 0 ? "statement" : index % 3 === 1 ? "image-right" : "editorial"}
             image={{

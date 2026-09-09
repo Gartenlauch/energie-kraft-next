@@ -26,4 +26,8 @@ export const siteConfig = {
     mapHref:
       "https://www.google.com/maps/search/?api=1&query=Gewerbestra%C3%9Fe%2012%2C%2083404%20Ainring",
   },
+  careers: {
+    email: "bewerbung@energie-kraft.de",
+    emailHref: "mailto:bewerbung@energie-kraft.de",
+  },
 } as const;
