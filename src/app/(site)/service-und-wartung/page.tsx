@@ -20,7 +20,7 @@ const sections = [
     title: "Auffälligkeiten erkennen, bevor sie den Betrieb beeinträchtigen",
     paragraphs: [
       "Eine strukturierte Prüfung hilft dabei, Betriebsdaten, sichtbare Komponenten und das Zusammenspiel der Anlage einzuordnen. Welche Prüfschritte sinnvoll sind, richtet sich nach der installierten Technik und dem konkreten Anliegen.",
-      "Bestehen bereits Fehlermeldungen oder auffällige Ertragsabweichungen, teilen Sie uns diese am besten direkt bei der Kontaktaufnahme mit.",
+      "Bei Fehlermeldungen oder auffälligen Ertragsabweichungen helfen uns der genaue Meldungstext, der Zeitpunkt, vorhandene Monitoring-Verläufe und die Anlagendokumentation. So können wir die Störung gezielter einordnen und den nächsten Prüfschritt abstimmen.",
     ],
     items: [
       "Anlagensituation und Anliegen aufnehmen",

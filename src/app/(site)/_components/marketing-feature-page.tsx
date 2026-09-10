@@ -39,6 +39,7 @@ interface MarketingFeaturePageProps {
   mobileHeight?: number;
   sections: readonly MarketingFeatureSection[];
   afterHero?: ReactNode;
+  afterSections?: ReactNode;
   ctaTitle: string;
   ctaLabel: string;
   ctaHref: string;
@@ -60,6 +61,7 @@ export function MarketingFeaturePage({
   mobileHeight = 1350,
   sections,
   afterHero,
+  afterSections,
   ctaTitle,
   ctaLabel,
   ctaHref,
@@ -118,6 +120,7 @@ export function MarketingFeaturePage({
           />
         ))}
 
+        {afterSections}
         <section className="brand-gradient py-16 text-white md:py-20">
           <div className="section-shell flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
             <h2 className="max-w-3xl text-3xl text-white md:text-4xl">{ctaTitle}</h2>

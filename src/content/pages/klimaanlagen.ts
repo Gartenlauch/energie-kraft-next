@@ -33,7 +33,7 @@ export const klimaanlagenContent = {
       title: "Die passende Klimaanlage beginnt mit einer sorgfältigen Planung",
       text: [
         "Eine Klimaanlage sollte nicht ausschließlich nach der Raumfläche ausgewählt werden. Fensterflächen, Sonneneinstrahlung, Dämmung, Raumhöhe, Nutzung und vorhandene Wärmequellen beeinflussen die erforderliche Leistung.",
-        "Wir betrachten deshalb die tatsächliche Gebäudesituation und entwickeln eine Lösung, die zum gewünschten Komfort und zum späteren Betrieb passt.",
+        "Ein sonniges Dachgeschoss benötigt eine andere Auslegung als ein gut verschattetes Schlafzimmer. Neben der Kühlleistung planen wir Luftverteilung, Schall und Kondensatableitung so, dass die Anlage zur tatsächlichen Nutzung passt.",
       ],
       items: [
         "Erfassung der Räume und ihrer Nutzung",

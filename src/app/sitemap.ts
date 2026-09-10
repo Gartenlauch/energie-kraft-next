@@ -4,8 +4,11 @@ import { PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { publicEnv } from "@/config/env/public";
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
 import { referenceLocations } from "@/content/reference-projects";
+import { getPublicFaqCatalog } from "@/lib/faq/public-repository";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = "force-dynamic";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!publicEnv.isProduction) {
     return [];
   }
@@ -22,5 +25,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...publicRoutes, ...referenceLocationRoutes];
+  const { entries, categories } = await getPublicFaqCatalog();
+  const faqPaths = [
+    "/faq",
+    ...categories
+      .filter((category) => entries.some((faq) => faq.categoryId === category.id))
+      .map((category) => `/faq/${category.slug}`),
+    ...entries.map((faq) => faq.href),
+  ];
+  return [
+    ...publicRoutes,
+    ...referenceLocationRoutes,
+    ...faqPaths.map((path) => ({
+      url: buildCanonicalUrl(path),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
+  ];
 }

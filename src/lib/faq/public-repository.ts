@@ -1,4 +1,6 @@
 import "server-only";
+import { cache } from "react";
+import { selectFaqCatalog } from "@/lib/faq/catalog";
 
 import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
 
@@ -60,7 +62,13 @@ export async function getPublicFaqEntriesByRoute(routeKey: FaqRouteKey): Promise
       ];
     });
 
-    return selectPublicFaqEntriesForRoute(entries, categories, routeKey);
+    const catalog = selectFaqCatalog(entries, categories);
+    return selectPublicFaqEntriesForRoute(entries, categories, routeKey)
+      .slice(0, 6)
+      .map((faq) => ({
+        ...faq,
+        href: catalog.find((entry) => entry.id === faq.id)?.href,
+      }));
   } catch (error) {
     logServerError(error, {
       scope: "public-faq-repository",
@@ -80,3 +88,22 @@ export async function getPublicFaqEntriesByRoute(routeKey: FaqRouteKey): Promise
     });
   }
 }
+
+export const getPublicFaqCatalog = cache(async () => {
+  try {
+    const [entries, categorySnapshot] = await Promise.all([
+      faqsCollection.where("isPublished", "==", true).get(),
+      faqCategoriesCollection.where("isActive", "==", true).get(),
+    ]);
+    const categories = categorySnapshot.docs
+      .map((doc) => ({ ...(doc.data() as FaqCategoryDocument), id: doc.id }))
+      .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, "de"));
+    return {
+      categories: categories.map(({ id, name, slug }) => ({ id, name, slug })),
+      entries: selectFaqCatalog(entries.docs.map(mapFaqEntry), categories),
+    };
+  } catch (error) {
+    logServerError(error, { scope: "public-faq-repository", operation: "getPublicFaqCatalog" });
+    throw new PublicDataError({ resource: "faq", operation: "getPublicFaqCatalog", cause: error });
+  }
+});

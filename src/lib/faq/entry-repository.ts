@@ -1,4 +1,5 @@
 import "server-only";
+import { createFaqSlug } from "@/lib/faq/catalog";
 
 import { FieldValue, type QueryDocumentSnapshot } from "firebase-admin/firestore";
 
@@ -70,6 +71,7 @@ export async function createFaqEntry(
 
     transaction.set(entryReference, {
       ...input,
+      slug: createFaqSlug(input.question, entryReference.id),
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
       createdBy: actorUid,

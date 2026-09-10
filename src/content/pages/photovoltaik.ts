@@ -88,7 +88,7 @@ export const photovoltaikContent = {
       title: "Module, Wechselrichter und Montagesystem als Gesamtsystem",
       text: [
         "Die langfristige Leistung einer Photovoltaikanlage hängt vom Zusammenspiel aller Komponenten ab. Deshalb betrachten wir Module, Wechselrichter, Unterkonstruktion, Verkabelung und Anlagensteuerung nicht isoliert.",
-        "Bei der Auswahl achten wir auf Leistungsfähigkeit, Zuverlässigkeit, technische Kompatibilität und eine Konstruktion, die zur jeweiligen Dach- und Gebäudesituation passt.",
+        "Die Module erzeugen Gleichstrom; der Wechselrichter wandelt ihn in nutzbaren Wechselstrom um. Die Anlagenleistung wird in Kilowattpeak (kWp) angegeben, der erzeugte Strom in Kilowattstunden (kWh). Wie viel Energie das Dach liefert, hängt auch von Ausrichtung, Verschattung und Jahreszeit ab.",
       ],
       items: [
         "Leistungsfähige Photovoltaikmodule",

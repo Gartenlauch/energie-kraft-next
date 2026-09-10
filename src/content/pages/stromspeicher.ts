@@ -33,7 +33,7 @@ export const stromspeicherContent = {
       title: "Der richtige Stromspeicher für Ihre Photovoltaikanlage",
       text: [
         "Ein Stromspeicher sollte weder pauschal möglichst groß noch ausschließlich nach der Leistung der PV-Anlage ausgewählt werden. Entscheidend sind Stromverbrauch, Verbrauchszeiten, PV-Erzeugung und geplante zusätzliche Verbraucher.",
-        "Wir betrachten das gesamte Energiesystem und legen den Speicher so aus, dass Kapazität, Ladeleistung und Steuerung zu Ihrem tatsächlichen Bedarf passen.",
+        "Die nutzbare Kapazität in Kilowattstunden (kWh) beschreibt die verfügbare Energiemenge. Die Lade- und Entladeleistung in Kilowatt (kW) bestimmt, wie viel Leistung der Speicher gleichzeitig aufnehmen oder abgeben kann. Beide Größen müssen zu Ihrem Bedarf passen.",
       ],
       items: [
         "Analyse von Stromverbrauch und Lastprofil",
@@ -49,7 +49,7 @@ export const stromspeicherContent = {
       eyebrow: "Energie zeitlich verschieben",
       title: "So nutzt ein Batteriespeicher überschüssigen PV-Strom",
       text: [
-        "Produziert die Photovoltaikanlage mehr Strom, als im Gebäude gerade benötigt wird, lädt der überschüssige Solarstrom zunächst den Batteriespeicher. Erst wenn dessen verfügbare Kapazität ausgeschöpft ist, wird weitere Energie in das öffentliche Netz eingespeist.",
+        "Produziert die Photovoltaikanlage mehr Strom, als im Gebäude gerade benötigt wird, kann der Batteriespeicher den Überschuss aufnehmen. Welche Mengen gespeichert oder eingespeist werden, hängt von Ladezustand, Ladeleistung und Steuerung ab.",
         "Sinkt die Solarstromproduktion später unter den aktuellen Verbrauch, stellt der Speicher die zuvor gespeicherte Energie bereit. So kann Solarstrom auch in den Abendstunden und während Zeiten geringer Erzeugung genutzt werden.",
       ],
     },

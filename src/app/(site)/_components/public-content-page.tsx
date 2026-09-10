@@ -95,6 +95,15 @@ const pageVisuals: Partial<Record<PublicPageContent["faqRouteKey"], PageVisual>>
 
 export async function PublicContentPage({ content, beforeFaq }: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
+  const faqCategory = (
+    {
+      photovoltaik: { slug: "photovoltaik", label: "Photovoltaik" },
+      stromspeicher: { slug: "stromspeicher", label: "Stromspeicher" },
+      waermepumpen: { slug: "waermepumpe", label: "Wärmepumpe" },
+      klimaanlagen: { slug: "klimaanlage", label: "Klimaanlage" },
+      wallbox: { slug: "wallbox", label: "Wallbox" },
+    } as Partial<Record<PublicPageContent["faqRouteKey"], { slug: string; label: string }>>
+  )[content.faqRouteKey];
   const breadcrumbLabel = content.hero.eyebrow ?? content.hero.title;
   const visual = pageVisuals[content.faqRouteKey];
 
@@ -167,7 +176,11 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
         ))}
 
         {beforeFaq}
-        <PublicFaqSection faqs={faqs} />
+        <PublicFaqSection
+          faqs={faqs}
+          categorySlug={faqCategory?.slug}
+          categoryLabel={faqCategory?.label}
+        />
 
         {content.faqRouteKey !== "konfigurator" && (
           <section className="brand-gradient relative overflow-hidden py-16 text-white md:py-20">

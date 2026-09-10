@@ -1,5 +1,7 @@
 # Öffentliche FAQ-Ausgabe
 
+Erweiterung Sprint 8.3A: [Katalog, Detailseiten, Adminfelder und lokaler Import](../sprint-8-3a-content-faq.md).
+
 ## Datenquelle
 
 Öffentliche FAQs werden ausschließlich aus
@@ -29,8 +31,8 @@ vollständig geschlossen.
 Eine FAQ wird öffentlich angezeigt, wenn:
 
 1. `isPublished === true`
-2. eine Placement-Zuordnung für die aktuelle Route
-   vorhanden ist
+2. auf Landingpages eine Placement-Zuordnung für die aktuelle Route
+   vorhanden ist; Katalog und Detailseiten benötigen kein passendes Placement
 3. die zugeordnete Kategorie existiert
 4. die Kategorie `isActive === true` ist
 
@@ -55,11 +57,7 @@ Die unterstützten Route-Keys werden zentral unter:
 
 verwaltet.
 
-Aktuell wird öffentlich integriert:
-
-`home`
-
-Die gleiche Abfrage wird später für:
+Die Placement-Abfrage wird für Startseite und Produktseiten verwendet:
 
 - photovoltaik
 - stromspeicher
@@ -68,7 +66,8 @@ Die gleiche Abfrage wird später für:
 - waermepumpen
 - kontakt
 
-wiederverwendet.
+Sie liefert maximal sechs Einträge. `/faq`, Kategorie- und Detailseiten verwenden
+den vollständigen veröffentlichten Katalog aktiver Kategorien. Siehe Sprint-8.3A-Dokumentation.
 
 ## Strukturierte Daten
 

@@ -58,6 +58,58 @@ export function FaqEntryFormFields({
       </div>
 
       <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-2 md:col-span-2">
+          <label htmlFor={`${idPrefix}-short-answer`} className="block text-sm font-medium">
+            Kurzantwort (optional, maximal 600 Zeichen)
+          </label>
+          <textarea
+            id={`${idPrefix}-short-answer`}
+            name="shortAnswer"
+            maxLength={600}
+            rows={3}
+            defaultValue={initialValue?.shortAnswer ?? ""}
+            className="w-full rounded-lg border border-slate-300 p-3"
+          />
+          <p className="text-sm text-slate-600">
+            Das Feld „Antwort“ enthält weiterhin die ausführliche Antwort. Der URL-Slug wird beim
+            Anlegen automatisch vergeben und bleibt stabil.
+          </p>
+          {initialValue?.slug && <p className="text-sm break-all">Slug: {initialValue.slug}</p>}
+        </div>
+        <div className="space-y-2">
+          <label htmlFor={`${idPrefix}-related`} className="block text-sm font-medium">
+            Verwandte FAQ-IDs (bis zu 5, mit Komma trennen)
+          </label>
+          <input
+            id={`${idPrefix}-related`}
+            name="relatedFaqIds"
+            defaultValue={initialValue?.relatedFaqIds?.join(", ") ?? ""}
+            className="w-full rounded-lg border border-slate-300 p-3"
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor={`${idPrefix}-catalog-order`} className="block text-sm font-medium">
+            Sortierung im FAQ-Katalog
+          </label>
+          <input
+            id={`${idPrefix}-catalog-order`}
+            name="sortOrder"
+            type="number"
+            min={0}
+            max={100000}
+            required
+            defaultValue={initialValue?.sortOrder ?? 100}
+            className="w-full rounded-lg border border-slate-300 p-3"
+          />
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="featured"
+              defaultChecked={initialValue?.featured ?? false}
+            />{" "}
+            Auf der FAQ-Übersicht hervorheben
+          </label>
+        </div>
         <div className="space-y-2">
           <label
             htmlFor={`${idPrefix}-category`}

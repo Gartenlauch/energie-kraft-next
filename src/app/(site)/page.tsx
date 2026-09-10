@@ -8,7 +8,6 @@ import { getCustomerReviews } from "@/lib/reviews";
 import {
   BrandStatementSection,
   CTAImageBandSection,
-  GradientBenefitSection,
   PremiumHeroSection,
   ProcessSection,
   ReferenceProjectsSection,
@@ -16,7 +15,7 @@ import {
 } from "@/components/marketing/marketing-sections";
 import { PartnerLogoCarousel } from "@/components/marketing/partner-logo-carousel";
 import { HomePageJsonLd } from "@/components/seo/home-page-json-ld";
-import { BatteryIcon, BoltIcon, LeafIcon, SunIcon } from "@/components/ui/icons";
+import { EnergyFlow } from "@/components/marketing/energy-flow";
 import { homeContent } from "@/content";
 import { regionalReferenceProjects } from "@/content/reference-projects";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
@@ -130,7 +129,7 @@ export default async function HomePage() {
             id="photovoltaik"
             eyebrow="Solarstrom produzieren"
             title="Ihr Dach. Ihr eigener Solarstrom."
-            description="Wir stimmen Dach, Verbrauch und Technik aufeinander ab. Für eine Photovoltaikanlage, die heute passt und morgen mitwachsen kann."
+            description="Von Ainring aus planen wir Photovoltaik passend zu Dach und Verbrauch. Reale Projekte aus dem Berchtesgadener Land und dem Landkreis Traunstein zeigen unterschiedliche Anlagenlösungen."
             benefits={["Individuell geplant", "Fachgerecht montiert"]}
             image={productImages.photovoltaic}
             imagePosition="right"
@@ -140,33 +139,7 @@ export default async function HomePage() {
             secondaryCta={{ label: "Photovoltaik kennenlernen", href: "/photovoltaik" }}
           />
 
-          <GradientBenefitSection
-            eyebrow="Ein System statt Einzellösungen"
-            title="Energie dort erzeugen und nutzen, wo sie gebraucht wird"
-            description="Photovoltaik, Speicher, Wärme und Mobilität werden gemeinsam gedacht – ohne unnötige technische Komplexität für Sie."
-            benefits={[
-              {
-                title: "Passend geplant",
-                description: "Gebäude, Verbrauch und Zukunftspläne bestimmen die Auslegung.",
-                icon: SunIcon,
-              },
-              {
-                title: "Flexibel nutzbar",
-                description: "Solarstrom kann gespeichert und zeitversetzt eingesetzt werden.",
-                icon: BatteryIcon,
-              },
-              {
-                title: "Ganzheitlich gedacht",
-                description: "Strom, Wärme und Mobilität greifen technisch sauber ineinander.",
-                icon: LeafIcon,
-              },
-              {
-                title: "Zukunftsfähig",
-                description: "Erweiterungen werden bereits bei der Planung berücksichtigt.",
-                icon: BoltIcon,
-              },
-            ]}
-          />
+          <EnergyFlow />
 
           <SplitFeatureSection
             id="stromspeicher"

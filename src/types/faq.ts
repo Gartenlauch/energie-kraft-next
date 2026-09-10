@@ -37,6 +37,11 @@ export interface FaqCategory extends FaqCategoryDocument {
  * Die Dokument-ID wird nicht zusätzlich im Dokument gespeichert.
  */
 export interface FaqEntryDocument extends FirestoreAuditFields {
+  slug?: string;
+  shortAnswer?: string;
+  relatedFaqIds?: string[];
+  featured?: boolean;
+  sortOrder?: number;
   question: string;
   answer: string;
   categoryId: string;
@@ -75,7 +80,16 @@ export type FaqCategoryUpdateInput = Partial<FaqCategoryCreateInput>;
  */
 export type FaqEntryCreateInput = Pick<
   FaqEntryDocument,
-  "question" | "answer" | "categoryId" | "placements" | "isPublished"
+  | "question"
+  | "answer"
+  | "categoryId"
+  | "placements"
+  | "isPublished"
+  | "slug"
+  | "shortAnswer"
+  | "relatedFaqIds"
+  | "featured"
+  | "sortOrder"
 >;
 
 /**
@@ -110,6 +124,7 @@ export type FaqEntryAdminUpdateInput = FaqEntryCreateInput;
  * bewusst nicht an öffentliche Komponenten übergeben.
  */
 export interface PublicFaqEntry {
+  href?: string;
   id: string;
   question: string;
   answer: string;
@@ -118,4 +133,19 @@ export interface PublicFaqEntry {
   routeKey: FaqRouteKey;
   sortOrder: number;
   showInSchema: boolean;
+}
+
+export interface FaqCatalogEntry {
+  id: string;
+  slug: string;
+  question: string;
+  answer: string;
+  shortAnswer: string;
+  categoryId: string;
+  categorySlug: string;
+  categoryName: string;
+  relatedFaqIds: string[];
+  featured: boolean;
+  sortOrder: number;
+  href: string;
 }

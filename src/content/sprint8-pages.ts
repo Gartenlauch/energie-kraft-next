@@ -53,7 +53,7 @@ export const sprint8Pages = {
         eyebrow: "Schwerpunkt",
         title: "Photovoltaik und Speicher zuerst gemeinsam betrachten",
         paragraphs: [
-          "Dachfläche, Stromverbrauch und gewünschte Eigenstromnutzung bilden die Grundlage. Auf dieser Basis werden Erzeugung und Speicherung aufeinander abgestimmt, bevor weitere Verbraucher einbezogen werden.",
+          "Dachfläche und Verbrauchszeiten bilden die Grundlage: Solarstrom lässt sich direkt nutzen, in einer Batterie für später speichern oder ins Netz einspeisen. Wir stimmen Photovoltaik und Speicher darauf ab und berücksichtigen anschließend zusätzliche Verbraucher.",
         ],
         items: ["Photovoltaik", "Stromspeicher", "Eigenverbrauch", "Technische Erweiterbarkeit"],
         links: [
@@ -121,7 +121,7 @@ export const sprint8Pages = {
         eyebrow: "Ausgangslage",
         title: "Verbrauch und Gebäude bilden den Planungsrahmen",
         paragraphs: [
-          "Wir betrachten betriebliche Verbrauchszeiten, nutzbare Dachflächen und technische Anschlussbedingungen. Daraus entsteht ein belastbares Anlagenkonzept – ohne pauschale Rendite- oder Einsparversprechen.",
+          "Ein Betrieb mit hohem Tagesverbrauch kann Solarstrom unmittelbar nutzen. Schichtbetrieb, Wochenenden und saisonale Schwankungen verändern das Lastprofil. Deshalb betrachten wir Verbrauchsverlauf, nutzbare Dachfläche, Dachzustand und Anschlussbedingungen gemeinsam.",
         ],
         items: [
           "Verbrauchs- und Lastprofil",

@@ -8,6 +8,7 @@ import type { FirestoreTimestamp } from "@/types/firestore";
 
 import { createFaqEntryAction, deleteFaqEntryAction, updateFaqEntryAction } from "./actions";
 import { FaqEntryFormFields } from "./faq-entry-form-fields";
+import { FaqJsonTransfer } from "./faq-json-transfer";
 
 export const metadata: Metadata = {
   title: "FAQ-Verwaltung",
@@ -91,6 +92,8 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
           {message}
         </div>
       ) : null}
+
+      <FaqJsonTransfer />
 
       {categories.length === 0 ? (
         <section className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950">

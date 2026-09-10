@@ -63,6 +63,17 @@ function parsePlacements(formData: FormData): FaqPlacement[] {
 function getFaqEntryInputFromFormData(formData: FormData): FaqEntryCreateInput {
   return faqEntryCreateSchema.parse({
     question: formData.get("question"),
+    ...(formData.has("shortAnswer")
+      ? {
+          shortAnswer: formData.get("shortAnswer"),
+          relatedFaqIds: String(formData.get("relatedFaqIds") ?? "")
+            .split(",")
+            .map((id) => id.trim())
+            .filter(Boolean),
+          featured: parseCheckbox(formData.get("featured")),
+          sortOrder: parseRequiredNumber(formData.get("sortOrder")),
+        }
+      : {}),
     answer: formData.get("answer"),
     categoryId: formData.get("categoryId"),
     placements: parsePlacements(formData),

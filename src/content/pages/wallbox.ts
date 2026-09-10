@@ -63,7 +63,7 @@ export const wallboxContent = {
       title: "Mit PV-Überschussladen mehr Solarstrom selbst nutzen",
       text: [
         "Beim PV-Überschussladen wird die aktuell nicht im Gebäude benötigte Solarenergie gezielt zum Laden des Elektrofahrzeugs verwendet. Dadurch kann der Eigenverbrauch der Photovoltaikanlage steigen.",
-        "Wie gut das funktioniert, hängt unter anderem von PV-Leistung, verfügbarer Ladeleistung, Fahrzeug, Wallbox und Energiemanagement ab. Alle Komponenten müssen technisch miteinander kommunizieren können.",
+        "Das Fahrzeug muss dann angeschlossen sein, wenn Solarstrom verfügbar ist. Außerdem müssen Fahrzeug, Wallbox, Messtechnik und Energiemanagement zusammenpassen. Ein Hausspeicher ist dafür keine Voraussetzung; seine Nutzung wird mit dem übrigen Strombedarf abgestimmt.",
       ],
       cta: {
         label: "Photovoltaik kennenlernen",

@@ -17,6 +17,7 @@ const energyLinks = [
 ] as const;
 
 const companyLinks = [
+  ["Fragen & Antworten", "/faq"],
   ["Über uns", "/ueber-uns"],
   ["Service & Wartung", "/service-und-wartung"],
   ["Service & Team", "/service-und-wartung/service-und-team"],

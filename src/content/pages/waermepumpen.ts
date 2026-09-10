@@ -63,7 +63,7 @@ export const waermepumpenContent = {
       title: "Wärmepumpe mit Photovoltaik kombinieren",
       text: [
         "Eine Wärmepumpe benötigt elektrische Energie, während eine Photovoltaikanlage tagsüber eigenen Strom erzeugt. Werden beide Systeme intelligent miteinander verbunden, kann ein Teil des benötigten Stroms direkt vom eigenen Dach stammen.",
-        "Da Wärmebedarf und Solarstromproduktion zeitlich nicht immer übereinstimmen, sind eine passende Anlagenplanung und eine intelligente Steuerung entscheidend.",
+        "Im Winter ist der Heizbedarf häufig hoch, während die PV-Anlage weniger Strom erzeugt. Photovoltaik kann den Netzbezug der Wärmepumpe reduzieren, deckt ihn aber nicht zu jeder Zeit. Steuerung und Wärmeverteilung sind deshalb ebenso wichtig wie die Anlagenleistung.",
       ],
       cta: {
         label: "Photovoltaik entdecken",

@@ -1,102 +1,50 @@
-# Energie-Kraft Next – Codex Repository Instructions
+# Energie-Kraft Next – Agent Guide
 
 ## Mission
 
-This repository is the Next.js relaunch of Energie-Kraft Süd.
+This repository is the production-quality Next.js relaunch of Energie-Kraft Süd.
 
-Work as a senior software engineer, UX engineer, technical SEO engineer and premium digital product designer.
+Extend existing working systems instead of rebuilding them.
 
-Primary objective:
-deliver production-quality changes efficiently while preserving the existing architecture, business logic, SEO value, security model and Energie-Kraft visual identity.
+For visible frontend work, deliver premium design quality as well as technical correctness.
 
-Do not rebuild working systems when an existing pattern can be extended.
+Priority order:
 
-Direct task instructions take precedence over this file.
+1. correctness and security
+2. preserve working behavior and data contracts
+3. satisfy the explicit task
+4. maintainability
+5. premium UX/UI quality
+6. performance and efficiency
 
-
-## Working mode
-
-Before changing code:
-
-1. Understand the requested outcome.
-2. Run `git status --short` once.
-3. Inspect only the files, components, types, tests and docs relevant to the task.
-4. Search for existing patterns before creating new ones.
-5. Implement the complete logical change in a coherent batch.
-6. Verify only what the change can realistically affect.
-
-Do not repeatedly scan the whole repository.
-
-Do not repeatedly run git status, lint, typecheck or build after every small edit.
-
-Do not ask the user for information that can be determined safely from the repository.
-
-Ask only when a missing fact requires a real business, legal, privacy or irreversible architecture decision.
+Explicit task instructions take precedence over this file.
 
 
-## Repository knowledge map
+## Working Mode
 
-Treat the repository and these docs as the source of truth.
+Work efficiently and autonomously.
 
-Read only the documents relevant to the task:
+Before editing:
 
-- `docs/design-system.md` – visual system / frontend design rules
-- `docs/legacy-url-migration.md` – legacy WordPress URL mapping
-- `docs/sprint-8-content-inventory.md` – migrated and remaining content
-- `docs/sprint-8-seo-baseline.md` – SEO baseline and incident context
-- `docs/sprint-8-team-assets.md` – team image/publication rules
-- `docs/sprint-8-image-assets.md` – Sprint 8 image inventory
-- `docs/sprint-8-placeholder-assets.md` – missing media requirements
-- `docs/sprint-8-reference-data-todo.md` – unverified reference data
-- `docs/sprint-8-1-go-live-guards.md` – facts that must be verified before production
-- `docs/reviews-integration.md` – Google/Trustpilot review architecture
+1. understand the requested outcome
+2. run `git status --short` once
+3. inspect only files relevant to the task
+4. search for existing patterns before creating new ones
+5. implement the coherent change as one batch
+6. minimally verify the affected area
 
-Do not load all of these automatically.
+Prefer targeted searches such as `rg`, targeted paths and relevant line ranges.
 
-Read a document only when its subject is relevant to the current task.
+Do not:
 
+- repeatedly scan the repository
+- repeatedly reread unchanged files
+- dump entire large files when a targeted search is sufficient
+- inspect full diffs repeatedly
+- rerun checks after every small edit
+- ask the user for information that can safely be discovered from the repository
 
-## Raw input directories
-
-`design-input/` and `migration-input/` contain local source material.
-
-They are not application source directories.
-
-Do not modify, rename, move or commit their contents.
-
-Do not recursively inspect them unless the task requires legacy content, SEO migration, team images, references or other media.
-
-`migration-input/` may contain large WXR, SQL, Search Console and GA4 exports. Avoid scanning these unnecessarily.
-
-
-## Security incident context
-
-The legacy WordPress site was compromised in July 2026.
-
-Search Console, WordPress, GA4 and sitemap data from the incident period may contain spam URLs, query-parameter pages, foreign content and manipulated signals.
-
-Treat suspicious data from approximately 10/11 July 2026 onward with caution.
-
-Never interpret spam traffic or hacked URLs as legitimate SEO opportunities.
-
-Do not migrate incident-generated content.
-
-Do not generate mass redirects for hacked URLs unless explicitly asked during the final SEO/security migration work.
-
-Never inspect or reuse historical form submissions, applications, referrals, customer messages or other personal data from WordPress exports.
-
-
-## Business priorities
-
-Product/business priority is:
-
-1. Photovoltaics + battery storage
-2. Air conditioning + heat pumps
-3. Wallboxes
-
-SEO traffic does not redefine this business priority.
-
-A Wallbox page may require strong SEO preservation without giving Wallbox greater visual or navigational prominence than PV or storage.
+Ask only when a missing fact requires a genuine business, legal, privacy, security or irreversible architecture decision.
 
 
 ## Technology
@@ -107,46 +55,55 @@ Primary stack:
 - React
 - TypeScript
 - Tailwind CSS
-- Firebase
+- Firebase Auth
 - Firestore
 - Firebase Functions
-- Firebase Auth
+- Firebase Storage
 - Firebase App Hosting
-- Mailgun EU
 - Zod
-- Vitest where already used
+- Mailgun EU
+- existing Vitest infrastructure
 
-Prefer existing repository libraries and patterns.
+Reuse existing dependencies and repository patterns.
 
-Do not add a dependency if the current stack can solve the problem cleanly.
+Do not add a dependency when the existing stack can solve the task cleanly.
 
 Never run `npm audit fix --force` unless explicitly instructed.
 
 
-## Architecture principles
+## Architecture
 
 Reuse before creating.
 
 Prefer:
 
-existing component -> extend it
-existing schema -> extend it safely
-existing helper -> reuse it
-existing validation pattern -> reuse it
-existing backend pipeline -> reuse it
+- existing component -> extend it
+- existing schema -> extend it safely
+- existing helper -> reuse it
+- existing validation -> reuse it
+- existing backend pipeline -> reuse it
+- existing design primitive -> reuse it
 
 Avoid parallel implementations of the same concept.
 
-Do not duplicate formulas, validation logic, routing logic, SEO metadata logic, mail infrastructure or Firebase access patterns.
+Never duplicate:
 
-Keep server-authoritative operations server-side.
+- calculator formulas
+- business logic
+- validation rules
+- routing logic
+- SEO metadata logic
+- Firebase access patterns
+- mail infrastructure
+
+Prefer simple, typed and cohesive implementations over speculative abstractions.
 
 
-## Firebase and data security
+## Firebase and Data Security
+
+Protected business data must remain server-authoritative.
 
 Public browsers must never directly write protected business data to Firestore.
-
-Existing server-side patterns are authoritative.
 
 Protected areas include at least:
 
@@ -155,59 +112,79 @@ Protected areas include at least:
 - applications
 - referrals
 
-Use server/Admin SDK paths and existing validation/security architecture.
+Use existing server/Admin SDK patterns.
 
-Do not weaken Firestore or Storage Rules to make tests pass.
+Do not weaken Firestore Rules, Storage Rules, authentication or validation to make something work or make a test pass.
 
-Admin SDK bypasses Firestore Rules; therefore every privileged server action/function must perform its own authorization where required.
+The Firebase Admin SDK bypasses Firestore Rules. Privileged server actions and Functions must therefore perform their own authorization where required.
 
-Do not provision Firebase resources, change production configuration or deploy unless explicitly requested.
+Never expose, log or commit:
 
-Never expose or print secrets.
+- credentials
+- tokens
+- private keys
+- secrets
+- sensitive environment variables
+- private customer/user data
 
-Use existing secret names and configuration; do not hardcode credentials.
+Do not provision or deploy Firebase resources unless explicitly requested.
+
+
+### Current Development Environment
+
+During the current development phase, application data and protected business collections are expected to exist only in the local Firebase Emulator environment.
+
+Do not search the production Firebase project merely to verify development collections.
+
+Do not conclude that Firestore, Storage or a collection is missing because production discovery returns no data.
+
+Do not provision databases, collections, Storage resources or other Firebase infrastructure because production discovery is empty.
+
+Use the configured local Firebase Emulator Suite only when affected development or targeted verification actually requires it.
+
+Production Firebase work must be explicitly requested.
 
 
 ## Mail
 
 Reuse the existing Mailgun EU infrastructure.
 
-Important destinations currently include:
+Known destinations include:
 
-- general/contact: existing configured Energie-Kraft recipient
+- contact/general inquiries: existing configured Energie-Kraft recipient
 - applications: `jobs@energie-kraft.de`
 - referrals: `anfragen@energie-kraft.de`
 
-Persist important business submissions before attempting mail delivery.
+Important business submissions must be persisted before attempting mail delivery.
 
-Mail failure must not destroy an already accepted Firestore submission.
+Mail failure must not destroy an already stored submission.
 
-Do not claim that an email was delivered when the provider only accepted it.
+Do not report an email as "delivered" merely because the mail provider accepted it.
 
 Never send real external test emails unless explicitly requested.
 
-### Current development environment
 
-During the current development phase, application collections are expected to exist only in the local Firebase Emulator environment.
+## Contact, Lead and Admin Architecture
 
-Do not search the production Firebase project for development collections merely to verify their existence.
+Reuse the existing Sprint-5 lead/admin/realtime/mail architecture.
 
-Do not provision databases, collections, Storage resources or other Firebase infrastructure because production discovery returns no data.
+Do not create a second lead backend when the existing architecture can be extended safely.
 
-Use the configured local Firebase Emulator Suite for development and targeted integration/rules verification unless the task explicitly requests production Firebase work.
+Reuse existing:
 
-## Contact and lead architecture
+- Admin authentication
+- server-side Firestore access
+- status concepts
+- validation patterns
+- realtime signaling
+- Mailgun integration
 
-Reuse the Sprint-5 lead/admin/realtime/mail patterns.
-
-Use the existing central contact route constant such as `CONTACT_FORM_HREF` instead of hardcoding `/kontakt#kontaktformular` repeatedly.
-
-Do not create a second lead backend when the existing architecture can support the feature safely.
+Use existing central route/config constants instead of repeatedly hardcoding URLs.
 
 
 ## Calculators
 
-Existing calculator URLs are permanent and must not be deleted or casually redirected:
+These existing calculator routes are permanent and must not be casually deleted or redirected:
 
 - `/rechner/photovoltaik`
 - `/rechner/photovoltaik-kosten`
@@ -215,20 +192,29 @@ Existing calculator URLs are permanent and must not be deleted or casually redir
 - `/rechner/waermepumpen-kosten`
 - `/rechner/wallbox-kosten`
 
-Reuse their existing business logic and formulas.
+Reuse existing calculation/business logic.
 
-Do not duplicate calculations.
+Do not duplicate formulas.
 
-Do not alter formulas or economic assumptions unless the task explicitly requests a calculation change.
+Do not silently alter economic assumptions or calculation results during UX/design work.
 
-For calculator UX work, improve presentation, explanation, charts, responsiveness, CTA flow and accessibility without silently changing calculation results.
+For future calculator refinement, improve:
+
+- result presentation
+- explanation
+- visualization
+- responsiveness
+- conversion flow
+- accessibility
+
+without changing formulas unless explicitly requested.
 
 
 ## Configurators
 
 Existing configurator architecture must be preserved.
 
-Primary routes include:
+Main routes include:
 
 - `/konfigurator/photovoltaik`
 - `/konfigurator/stromspeicher`
@@ -236,16 +222,31 @@ Primary routes include:
 - `/konfigurator/waermepumpe`
 - `/konfigurator/wallbox`
 
-The configurator represents one total-energy project journey and reuses the existing lead architecture.
+The configurator represents one total-energy project journey.
 
-Do not redesign its data contract, journey or persistence model unless explicitly requested.
+Reuse the existing shared state, lead integration and project data model.
+
+Do not redesign its journey, persistence model or data contract unless explicitly requested.
 
 
-## Premium frontend quality
+## Business Priorities
 
-For visible frontend work, do not stop at functional correctness.
+Product/business priority is:
 
-The result must look intentionally designed.
+1. Photovoltaik + Stromspeicher
+2. Klimaanlage + Wärmepumpe
+3. Wallbox
+
+SEO traffic does not redefine business priority.
+
+A page may deserve strong SEO protection without receiving stronger visual or navigational prominence than the primary business areas.
+
+
+## Premium Frontend Quality
+
+For visible frontend work, act as a senior digital art director as well as an engineer.
+
+Do not settle for generic framework, template or SaaS appearance.
 
 Energie-Kraft visual language:
 
@@ -255,75 +256,81 @@ Energie-Kraft visual language:
 - `#182E4C` dark text blue
 - `#091433` deep navy
 - `#E9EDF8` soft surface
-- `#FFFFFE` / white backgrounds
+- white / `#FFFFFE`
 
-Preserve the recognizable Energie-Kraft design DNA:
+Preferred design characteristics:
 
-- image-led sections
-- strong editorial compositions
-- alternating image/text layouts
-- white and soft surfaces
-- blue/cyan brand sections
-- generous whitespace
-- deliberate typography
-- varied but coherent section proportions
-- subtle motion
 - strong real-world photography
-
-Avoid generic SaaS appearance.
+- editorial compositions
+- image/text alternation
+- deliberate typography
+- generous but controlled whitespace
+- varied section proportions
+- blue/cyan brand areas
+- clean visual hierarchy
+- subtle motion
+- premium interaction details
 
 Avoid excessive:
 
-- cards
+- card grids
 - pills
+- boxes
 - shadows
 - glassmorphism
-- boxed content
 - repetitive three-column layouts
+- generic SaaS patterns
 
-Premium means hierarchy, typography, composition, photography, rhythm and detail — not more decoration.
+Premium quality comes from composition, typography, imagery, hierarchy and detail — not additional decoration.
 
 
-## Responsive design
+## Responsive Design
 
-Desktop and mobile are intentional layouts, not merely scaled versions of each other.
+Desktop and mobile are intentional layouts, not simply scaled versions of each other.
 
-Always check for:
+Consider:
 
-- sensible mobile crop
+- mobile crop
+- content order
 - readable line lengths
+- spacing
 - no horizontal overflow
-- usable spacing
 - touch targets around 44 px or larger
-- meaningful content order
+- sensible image proportions
 
-Use separate responsive assets/crops where the design benefits materially.
+Use responsive image variants/crops when materially useful.
 
 
 ## Accessibility
 
-Accessibility is part of completion.
+Accessibility is part of implementation quality.
 
 Use:
 
 - semantic HTML
-- correct heading hierarchy
+- meaningful heading hierarchy
 - keyboard navigation
-- visible focus states
+- visible focus
 - appropriate ARIA
-- `aria-current="page"` for active navigation where appropriate
 - sufficient contrast
-- proper labels and error association
-- reduced-motion handling
+- proper form labels
+- associated validation messages
+- reduced-motion behavior where relevant
 
-Do not rely solely on hover, color or animation to communicate essential information.
+Do not rely only on:
+
+- hover
+- color
+- animation
+
+for essential information.
 
 
 ## Navigation
 
-Preserve the existing premium header/mega-menu architecture.
+Preserve the existing premium header and mega-menu architecture.
 
-Business/navigation structure currently includes:
+Main navigation currently includes:
 
 - Energielösungen
 - Service & Wartung
@@ -332,325 +339,433 @@ Business/navigation structure currently includes:
 - Jobs
 - Kontakt
 
-The currently active page and parent group should have a premium visible active state.
+The current page and appropriate parent group should have a visible premium active state.
+
+Use `aria-current="page"` where appropriate.
 
 Mega-menu preview behavior:
 
-- hover/focus may temporarily preview an item's image and description
-- preview state is temporary
-- when pointer/focus leaves the menu, remove the temporary preview
-- restore the active route's preview when applicable
-- otherwise restore the group's configured default preview
+- hover/focus may temporarily preview an item
+- temporary preview must not become active state
+- when pointer/focus leaves the menu, clear temporary preview
+- restore active-route preview when applicable
+- otherwise restore the configured default preview
 
-Do not leave the last arbitrary hovered item as stale state.
+Do not leave stale previews.
 
-Do not create a redundant top-level "Referenzen nach Ort" item.
-
-
-## Legacy SEO
-
-The existing WordPress site has valuable ranking history.
-
-Do not change existing legitimate URLs merely to make routing look cleaner.
-
-Preserve search intent and useful topical coverage from ranking legacy content.
-
-The migration matrix in `docs/legacy-url-migration.md` is the source of truth for old-to-new routing decisions.
-
-Do not implement large redirect sets unless the task explicitly belongs to the final SEO/go-live migration.
-
-Do not keyword-stuff content.
+Do not create a redundant top-level "Referenzen nach Ort" navigation item.
 
 
-## References / Local SEO
+## FAQ Architecture
 
-The existing SEO hub is:
+Firestore is the single runtime source of truth for FAQs.
+
+Do not create a parallel static FAQ datastore.
+
+FAQ architecture includes:
+
+- `/faq`
+- `/faq/photovoltaik`
+- `/faq/stromspeicher`
+- `/faq/waermepumpe`
+- `/faq/klimaanlage`
+- `/faq/wallbox`
+- data-driven detail pages under `/faq/[category]/[slug]`
+
+Product/landing pages may show a curated subset of relevant FAQs while category pages contain the complete category set.
+
+A FAQ detail page should support:
+
+- breadcrumb
+- category
+- question/H1
+- short answer
+- long answer
+- related FAQs
+- useful internal link/CTA
+
+Use the same FAQ record wherever possible instead of rewriting duplicate variants.
+
+Do not use `QAPage` markup for editorial FAQ content.
+
+FAQ import/export should use the existing authenticated admin architecture rather than direct client Firestore access.
+
+
+## References and Local SEO
+
+The established reference hub is:
 
 `/pv-referenzen`
 
-Keep it.
-
-Local reference pages use the architecture:
+Location pages use:
 
 `/pv-referenzen/[location]`
 
-Do not replace this with a parallel `/referenzen/...` hierarchy.
+Do not replace this with a parallel `/referenzen/...` architecture.
+
+Do not mass-generate thin doorway/location pages.
 
 Reference pages must be backed by real projects and useful local substance.
 
-Do not mass-generate doorway/location pages.
+Central reference data should drive pages.
 
-Central reference data lives in the existing reference content model.
+Adding another project should normally require:
 
-Adding a new project should normally require:
-
-1. final image
+1. final media
 2. central data entry
 
-not a new manually duplicated `page.tsx`.
+rather than duplicated page implementations.
 
-Current project fields include:
+Reference data currently supports:
 
 - location
 - capacity in kWp
 - battery-storage status
 - verification/data status
 
-Placeholder reference values may exist for layout development.
+Placeholder reference values may be used for layout development only when explicitly marked.
 
-Never use placeholder project facts in metadata, JSON-LD, OpenGraph or other SEO facts.
+Never use unverified placeholder project facts in:
 
-Read `docs/sprint-8-reference-data-todo.md` before treating reference facts as verified.
+- Metadata
+- JSON-LD
+- OpenGraph
+- SEO copy presented as factual
 
 
-## Team and privacy
+## Team and Privacy
 
 Use the central team content model.
 
-Some people are intentionally published by role only.
+Some employees are intentionally published by role only.
 
-Never infer or expose the identity of an anonymous employee from:
+Never infer or expose an anonymous person's identity from:
 
-- images
+- faces
 - filenames
 - EXIF
 - WordPress metadata
 - SQL
-- hidden CMS information
+- hidden CMS content
 
-Do not identify people from their faces.
+Do not identify people by facial appearance.
 
-Use a person's name only when the public project data explicitly permits it.
+Use names only where public project content explicitly permits publication.
 
-Use real Energie-Kraft people only.
-
-Never generate fictional/AI employees.
+Never invent employees or use generated people as real Energie-Kraft staff.
 
 
-## Images and assets
+## Images and Assets
 
 Asset priority:
 
-1. real Energie-Kraft / project / team photography
-2. approved legacy media
+1. real Energie-Kraft/project/team photography
+2. suitable approved legacy media
 3. existing final site assets
-4. AI only for generic non-factual atmosphere when genuinely necessary
+4. generated imagery only for generic non-factual visual concepts when appropriate
 
-Never use AI imagery as if it showed a real Energie-Kraft employee, customer or completed reference project.
+Never use generated imagery as if it showed:
 
-Raw assets remain under `design-input/`.
+- actual Energie-Kraft employees
+- actual customers
+- actual completed reference projects
 
-Final optimized assets belong under appropriate `public/images/...` directories.
+Avoid repeatedly reusing the same prominent image across several pages when suitable alternatives exist.
 
-Prefer WebP where suitable and `next/image`.
+Raw/local source media belongs under:
+
+`design-input/`
+
+Final optimized media belongs under:
+
+`public/images/...`
+
+Prefer WebP where appropriate and use `next/image`.
 
 Do not unnecessarily upscale small originals.
 
 
-## Missing images
+## Missing Images
 
-Never silently use an unrelated image because the intended media is missing.
+Never silently replace missing media with an unrelated image.
 
-Use the existing `MediaPlaceholder` pattern where appropriate.
+Use the established `MediaPlaceholder` pattern where appropriate.
 
-A placeholder should state:
+A placeholder should communicate:
 
-- required motif
-- dimensions
+- intended motif
+- target dimensions
 - aspect ratio
 - preferred format
 
-Keep missing-asset documentation updated when the task materially changes media requirements.
+
+## Raw Input and Migration Sources
+
+`design-input/` and `migration-input/` contain local source/reference material.
+
+They are not application source directories.
+
+Do not:
+
+- modify them
+- move them
+- rename them
+- commit them
+
+Do not recursively inspect these directories unless the current task genuinely requires source media or legacy analysis.
+
+Prefer targeted access.
+
+Do not dump or load complete large files when targeted search is sufficient.
 
 
-## Jobs
+## Legacy WordPress / SEO Context
 
-Use the central jobs content model rather than duplicating job data.
+The legacy WordPress site has valuable historical Google rankings and useful public content.
 
-Only publish jobs that are genuinely active/approved.
+Preserve legitimate existing search intent and useful topical coverage.
 
-Do not invent open positions, benefits, salaries or employment conditions.
+Do not change ranking legacy URLs merely to make routing cleaner.
 
-Applications use the established application workflow and server-side persistence.
+Consult:
+
+`docs/legacy-url-migration.md`
+
+before making legacy URL decisions.
+
+The legacy WordPress site was compromised in July 2026.
+
+Content, URLs, query parameters and analytics signals from the incident period may contain:
+
+- spam
+- foreign-language pages
+- gambling/forex/APK content
+- manipulated URLs
+- query-parameter garbage
+- hacked posts
+
+Never treat suspicious incident data as legitimate SEO opportunity.
+
+Do not migrate incident-generated content.
+
+Do not inspect or reuse historical private:
+
+- applications
+- referrals
+- contact submissions
+- customer messages
+- emails
+- phone numbers
+- addresses
+
+Do not inspect raw WXR, SQL, GA4 or Search Console exports unless the current task explicitly requires raw-source analysis.
+
+Prefer existing curated migration/SEO documentation and already migrated content whenever sufficient.
 
 
-## Kunden werben Kunden
+## SEO and GEO Content
 
-The referral workflow uses the established multi-step implementation.
+Do not blindly copy legacy text.
 
-Do not remove:
+Do not blindly retain AI-generated new text.
 
-- referrer data
-- referred-customer data
-- final data summary
-- required consent
-- server validation
-- persistence before mail
+Use the strongest result based on:
 
-The legacy 250 € reward and campaign conditions remain subject to the go-live verification guard.
+- legitimate historical search intent
+- technical accuracy
+- user usefulness
+- regional relevance
+- entity clarity
+- topical coverage
+- readability
+- conversion quality
 
-Do not present an unverified campaign condition as permanently guaranteed.
+Possible outcomes per section:
+
+- retain current copy
+- improve current copy
+- merge current + useful legacy content
+- replace with superior verified legacy-derived content
+
+Avoid:
+
+- keyword stuffing
+- generic AI marketing language
+- artificial text length
+- repetitive paragraphs
+- invented facts
+
+Write for humans first while structuring information clearly enough for search engines and AI systems to understand.
+
+
+## Data Visualization
+
+When numerical or relational information is clearer visually than as another text/card block, prefer an appropriate visualization.
+
+For simple charts:
+
+prefer lightweight SVG/CSS implementations.
+
+Add a chart dependency only when complexity or interactivity genuinely justifies it.
+
+Charts should:
+
+- match Energie-Kraft CI
+- be responsive
+- contain visible labels
+- be accessible
+- not rely only on color
+- not invent business/project statistics
+
+Design chart components for potential reuse in future calculator/configurator result views where practical.
+
+
+## Facts
+
+Never invent factual claims including:
+
+- company history
+- founding dates
+- employee counts
+- certifications
+- customer counts
+- project counts
+- installed capacity
+- project performance
+- testimonials
+- jobs
+- salaries
+- subsidies
+- current tariffs
+- awards
+
+If a fact is unverified:
+
+- omit it
+- phrase it neutrally
+- or mark it explicitly as internal placeholder when the task allows placeholders
 
 
 ## Reviews
 
 Reuse the existing review adapter architecture.
 
-Do not create another reviews system.
+Do not create a second review system.
 
-Only use official provider integrations for Google Business Profile / Trustpilot.
+Use official provider integrations for Google/Trustpilot where applicable.
 
 Never fabricate:
 
-- review text
+- reviews
 - reviewer names
 - rating
 - review count
 
-No self-serving review/AggregateRating structured-data hacks.
+Do not create misleading review structured data.
+
+The homepage review experience should link visitors to the complete external review/profile source where configured.
 
 
-## Content facts
+## Verification
 
-Never invent:
+Keep verification minimal and task-specific.
 
-- company history
-- founding dates
-- employee counts
-- certifications
-- project counts
-- installed capacity
-- customer counts
-- project performance
-- customer quotations
-- job vacancies
-- subsidies
-- current tariffs
-- awards
+The current task prompt defines required checks.
 
-If a fact is not verified, omit it, phrase it neutrally or use an explicit internal placeholder where the task permits one.
+Do not independently expand verification into:
 
-
-## Testing strategy
-
-Testing must be proportional to the changed area.
-
-Do not test after every small edit.
-
-Implement the coherent batch first, then verify once.
-
-
-### Low-risk frontend / content / CSS / navigation work
-
-Normally run near the end:
-
-`git diff --check`
-`npm run lint`
-`npm run typecheck`
-
-Run one root:
-
-`npm run build`
-
-when the change is substantial enough to justify it.
-
-Do not run Functions, Rules, Firebase or full Vitest tests for unrelated frontend work.
-
-
-### Calculator logic changes
-
-Run the targeted calculator/unit tests for the modified calculation plus normal root checks.
-
-Do not run unrelated backend test suites.
-
-
-### Functions / Firestore / auth / mail / persistence changes
-
-Run only the relevant focused tests plus:
-
-Functions lint/build
-
-and affected Rules tests when Rules changed.
-
-Then perform normal root checks.
-
-Do not automatically run every repository test.
-
-
-### Security Rules changes
-
-Use the existing emulator/rules test setup.
-
-Never relax rules just to make a test green.
-
-
-### Browser verification
-
-Check only affected routes and critical interactions.
-
-Use desktop plus approximately 390 px mobile for visible UI changes.
-
-Do not perform a full-site browser tour for a small isolated change.
-
-
-## Expensive / unnecessary verification
-
-Unless explicitly requested or technically necessary, do not run:
-
-- `npm run check:all`
-- full Vitest suite
+- full test suites
+- broad browser testing
+- unrelated Firebase tests
 - unrelated Functions tests
-- unrelated Firebase emulator suites
-- full E2E suite
-- PDF/mail tests unrelated to the change
-- repeated production builds
+- unrelated calculator/configurator tests
+- full E2E testing
+- repeated builds
 
-Once relevant acceptance criteria pass, stop testing.
+The user normally performs final visual QA manually.
+
+Run only checks necessary for the changed logic or explicitly requested by the task.
+
+Once relevant acceptance criteria pass, stop.
 
 
-## Git safety
+## Git and Production Safety
 
 Preserve all user work.
 
-Never use destructive commands such as reset/clean/restore to remove user changes unless explicitly instructed.
+Never use destructive commands such as:
+
+- `git reset`
+- `git clean`
+- broad `git restore`
+- force operations
+
+to remove user changes unless explicitly requested.
 
 A dirty working tree is not automatically an error.
 
-Determine whether existing changes belong to the current work before acting.
+Do not commit, push, tag or deploy unless explicitly requested.
 
-Do not commit, push, tag or deploy unless the current user request explicitly asks for it.
+Do not provision production infrastructure unless explicitly requested.
 
-Never amend unrelated existing commits.
+Do not send real external test emails unless explicitly requested.
+
+`design-input/` and `migration-input/` must never be committed.
 
 
-## Scope control
+## Documentation Map
 
-Do not pull future-sprint work into the current task unless required for correctness.
+Read ONLY documentation relevant to the current task.
 
-Current roadmap:
+Useful sources include:
 
-- Sprint 9: calculators, conversion UX and calculator/configurator/contact journeys
-- Sprint 10: final SEO/GEO/local SEO, legacy redirects and hack/index cleanup
+- `docs/design-system.md` – visual/frontend rules
+- `docs/legacy-url-migration.md` – legacy URL decisions
+- `docs/sprint-8-content-inventory.md` – migrated content inventory
+- `docs/sprint-8-seo-baseline.md` – SEO and incident baseline
+- `docs/sprint-8-team-assets.md` – team/media mapping
+- `docs/sprint-8-placeholder-assets.md` – missing media requirements
+- `docs/sprint-8-reference-data-todo.md` – unverified reference facts
+- `docs/sprint-8-1-go-live-guards.md` – production verification guards
+- `docs/reviews-integration.md` – reviews integration
+
+Do not preload these documents.
+
+Open only documents relevant to the current task.
+
+
+## Scope and Roadmap
+
+Do only the requested task and dependencies required for correctness.
+
+Do not pull unrelated future-sprint work into the current task.
+
+Current direction:
+
+- Sprint 8.3: content, SEO/GEO and FAQ architecture/content
+- Sprint 8.4: premium visual and media refinement
+- Sprint 9: calculators, conversion UX and lead journeys
+- Sprint 10: final SEO/GEO/local SEO, redirects and hack/index cleanup
 - Sprint 11: accessibility, performance, tracking and cross-browser QA
 - Sprint 12: production/go-live migration
 
-If a requested change belongs clearly to a later sprint and is not required now, document it rather than expanding scope.
+If something clearly belongs to a later sprint and is not required for correctness now, leave it for that sprint rather than expanding scope.
 
 
 ## Completion
 
-Do not stop at a plan when the task asks for implementation.
+When the task requests implementation, implement it rather than returning only a plan.
 
-Finish the requested outcome.
+Keep completion reports concise.
 
-At completion report concisely:
+Report:
 
 - what changed
-- important architecture/design decisions
-- checks actually run and whether they passed
-- remaining real data/assets/manual verification required
+- important decisions
+- checks actually run and results
+- remaining manual/user inputs
 - git status when relevant
 
-Do not produce a huge audit report unless the task explicitly requests one.
+Do not produce a large audit report unless explicitly requested.
 
-When the requested result is complete and relevant verification passes, stop.
+When the requested outcome is complete and relevant checks pass, stop.
