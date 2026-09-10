@@ -12,23 +12,25 @@ ohne Namen veröffentlicht waren, bleiben auch im neuen Frontend anonym.
 
 | Person / Funktion                     | Öffentlich benannt | Verwendetes Bild | Status                                       |
 | ------------------------------------- | ------------------ | ---------------- | -------------------------------------------- |
-| Kai Stengle · Geschäftsführer         | ja                 | keines verfügbar | Name und Rolle aus öffentlicher Legacy-Seite |
-| Markus Österlein · Geschäftsführer    | ja                 | keines verfügbar | Name und Rolle aus öffentlicher Legacy-Seite |
-| Stefan Pfnür · Betriebsleitung        | ja                 | keines verfügbar | Name und Rolle aus öffentlicher Legacy-Seite |
-| Michael Donnert · Vertriebsleitung    | ja                 | keines verfügbar | Name und Rolle aus öffentlicher Legacy-Seite |
-| Vertrieb · Berchtesgadener Land       | nein               | keines verwendet | Datenschutzentscheidung erhalten             |
-| Vertrieb · BGL, Traunstein und Waging | nein               | keines verwendet | Datenschutzentscheidung erhalten             |
-| Leitung Dachmontage                   | nein               | keines verwendet | Datenschutzentscheidung erhalten             |
-| Leitung Service-Abteilung             | nein               | keines verwendet | Datenschutzentscheidung erhalten             |
-| Leitung Verwaltung                    | nein               | keines verwendet | Datenschutzentscheidung erhalten             |
-| Verwaltung · zwei Funktionen          | nein               | keines verwendet | Datenschutzentscheidung erhalten             |
+| Kai Stengle · Geschäftsführer         | ja                 | `kai-stengle.webp` | eindeutig über Dateiname zugeordnet |
+| Markus Österlein · Geschäftsführer    | ja                 | `markus-oesterlein.webp` | eindeutig über Dateiname zugeordnet |
+| Stefan Pfnür · Betriebsleitung        | ja                 | `stefan-pfnuer.webp` | eindeutig über Dateiname zugeordnet |
+| Michael Donnert · Vertriebsleitung    | ja                 | `michael-donnert.webp` | eindeutig über Dateiname zugeordnet |
+| Vertrieb · Berchtesgadener Land       | nein               | keines verwendet | kein eindeutig zuordenbares Bild              |
+| Vertrieb · BGL, Traunstein und Waging | nein               | `vertrieb-region.webp` | Rolle und Bild über Dateiname zugeordnet |
+| Leitung Dachmontage                   | nein               | `dachmontage.webp` | Rolle und Bild über Dateiname zugeordnet     |
+| Leitung Service-Abteilung             | nein               | `service.webp` | Rolle und Bild über Dateiname zugeordnet        |
+| Leitung Verwaltung                    | nein               | keines verwendet | kein eindeutig zuordenbares Bild              |
+| Verwaltung · zwei Funktionen          | nein               | `verwaltung-1.webp`, `verwaltung-2.webp` | Funktionen anonym belassen |
 
 ## Bildbestand und Lücken
 
-`design-input/team-originals/` ist nicht vorhanden. Es gibt deshalb keine freigegebenen
-Einzelporträts. Die reale Aufnahme `design-input/reference-originals/Ainring/Service-Team_Header2025.jpg`
-wird nur als Unternehmens-/Service-Hero genutzt. Die abgebildete Person wird nicht namentlich
-identifiziert; der Alt-Text enthält keinen Namen.
+`design-input/team-originals/` ist nicht vorhanden. Beim vorgesehenen rekursiven Fallback wurde
+der abweichend geschriebene Ordner `design-input/team-orginals/` gefunden. Neun über Dateinamen
+eindeutig zuordenbare Aufnahmen werden als native, nicht hochskalierte 4:5-WebP-Derivate genutzt.
+Die Rollen `Vertrieb · Berchtesgadener Land` und `Leitung Verwaltung` bleiben ohne Bild, weil
+keine eindeutige Datei vorliegt. `team-verwaltung-4.jpg` bleibt wegen uneindeutiger Zuordnung
+bewusst ungenutzt.
 
 Empfohlene Ergänzung: aktuelle, intern freigegebene 4:5-Porträts der vier öffentlich benannten
 Verantwortlichen sowie – nur bei ausdrücklicher Freigabe – der anonym geführten Funktionen.

@@ -9,10 +9,12 @@ import {
 } from "@firebase/rules-unit-testing";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import {
   deleteObject,
@@ -365,5 +367,55 @@ describe("Storage Security Rules – deny by default", () => {
     await assertFails(
       deleteObject(fileReference),
     );
+  });
+});
+
+describe.each([
+  ["applications", "application-test"],
+  ["referrals", "referral-test"],
+] as const)("Firestore Security Rules – private %s", (collectionName, documentId) => {
+  async function seedDocument() {
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), collectionName, documentId), {
+        status: "new",
+        createdAt: new Date(),
+      });
+    });
+  }
+
+  it("verweigert nicht authentifizierte Lesezugriffe", async () => {
+    await seedDocument();
+    const firestore = testEnvironment.unauthenticatedContext().firestore();
+    await assertFails(getDoc(doc(firestore, collectionName, documentId)));
+  });
+
+  it("verweigert nicht authentifizierte direkte Creates", async () => {
+    const firestore = testEnvironment.unauthenticatedContext().firestore();
+    await assertFails(setDoc(doc(firestore, collectionName, "public-create"), { status: "new" }));
+  });
+
+  it("verweigert nicht autorisierte Updates", async () => {
+    await seedDocument();
+    const firestore = testEnvironment.authenticatedContext("ordinary-user").firestore();
+    await assertFails(updateDoc(doc(firestore, collectionName, documentId), { status: "completed" }));
+  });
+
+  it("verweigert nicht autorisierte Deletes", async () => {
+    await seedDocument();
+    const firestore = testEnvironment.authenticatedContext("ordinary-user").firestore();
+    await assertFails(deleteDoc(doc(firestore, collectionName, documentId)));
+  });
+
+  it("erlaubt Admins das Lesen", async () => {
+    await seedDocument();
+    const firestore = testEnvironment.authenticatedContext("admin-user", { admin: true }).firestore();
+    await assertSucceeds(getDoc(doc(firestore, collectionName, documentId)));
+  });
+
+  it("verweigert auch Admin-Clients direkte Mutationen", async () => {
+    await seedDocument();
+    const firestore = testEnvironment.authenticatedContext("admin-user", { admin: true }).firestore();
+    await assertFails(updateDoc(doc(firestore, collectionName, documentId), { status: "completed" }));
+    await assertFails(deleteDoc(doc(firestore, collectionName, documentId)));
   });
 });

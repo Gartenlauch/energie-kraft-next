@@ -57,7 +57,7 @@ export function SiteFooter() {
               alt="Energie-Kraft Süd"
               width={206}
               height={90}
-              className="h-auto w-52"
+              className="max-w-full"
             />
           </Link>
           <p className="mt-6 max-w-sm text-sm leading-7">

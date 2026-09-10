@@ -51,15 +51,23 @@ export default function AdminPage() {
           </p>
         </Link>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <Link href="/admin/bewerbungen" className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
           <p className="text-sm font-medium text-emerald-800">Personal</p>
 
           <h2 className="mt-2 text-xl font-semibold text-slate-950">Bewerbungen</h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Bewerbungen und zugehörige Dokumente sicher verwalten.
+            Bewerbungen, Kontaktdaten und Bearbeitungsstatus sicher verwalten.
           </p>
-        </section>
+          <p className="mt-5 text-sm font-semibold text-emerald-800 group-hover:underline">Bewerbungen öffnen →</p>
+        </Link>
+
+        <Link href="/admin/empfehlungen" className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
+          <p className="text-sm font-medium text-emerald-800">Empfehlungen</p>
+          <h2 className="mt-2 text-xl font-semibold text-slate-950">Kunden werben Kunden</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Empfehlungsgeber, Empfehlungskunden und Bearbeitungsstatus prüfen.</p>
+          <p className="mt-5 text-sm font-semibold text-emerald-800 group-hover:underline">Empfehlungen öffnen →</p>
+        </Link>
       </div>
     </main>
   );

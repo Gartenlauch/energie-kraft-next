@@ -14,6 +14,22 @@ bleiben unverändert und sind keine produktive Abhängigkeit. Die Reproduktion e
 Die Aufnahme wird nicht als Einzelporträt oder Beleg für eine namentlich identifizierte Person
 verwendet. Es wurden keine KI-Personen erzeugt und keine Person synthetisch verändert.
 
+## Team-Porträts
+
+Finales Verzeichnis: `/images/team/portraits/`. Quelle ist der beim Fallback gefundene Ordner
+`design-input/team-orginals/`. Neun über öffentliche Namen oder Funktions-Dateinamen eindeutig
+zuordenbare Aufnahmen wurden ohne Hochskalierung als 4:5-WebP-Derivate aufbereitet.
+
+| Finale Dateinamen | Anzahl | Breite / Ratio | Verwendung | Status |
+| --- | ---: | --- | --- | --- |
+| `kai-stengle.webp`, `markus-oesterlein.webp`, `stefan-pfnuer.webp`, `michael-donnert.webp` | 4 | 400–1000 px · 4:5 | öffentlich benannte Verantwortliche | final, reale Aufnahme |
+| `vertrieb-region.webp`, `dachmontage.webp`, `service.webp` | 3 | 720 px · 4:5 | weiterhin anonym benannte Funktionen | final, reale Aufnahme |
+| `verwaltung-1.webp`, `verwaltung-2.webp` | 2 | 400–720 px · 4:5 | weiterhin anonym benannte Verwaltung | final, reale Aufnahme |
+
+`team-verwaltung-4.jpg` wurde wegen uneindeutiger Zuordnung nicht verwendet. Für die Funktionen
+`Vertrieb · Berchtesgadener Land` und `Leitung Verwaltung` bleibt bewusst ein sichtbarer
+Bild-Platzhalter bestehen.
+
 ## Referenzprojekte
 
 Finales Verzeichnis: `/images/references/projects/`. Quelle sind ausschließlich die zugehörigen
@@ -33,6 +49,7 @@ JPEGs in `design-input/reference-originals/`. Alle 32 Dateien sind final und wer
 Dateigrößen liegen nach Optimierung zwischen rund 97 und 313 KiB. Die finalen Dateinamen sind
 ebenfalls neutral: Kundennamen aus historischen Dateinamen werden weder dort noch im Datenmodell,
 in sichtbarer Beschriftung oder im Alt-Text publiziert.
-In Dateinamen erkennbare Leistungswerte wurden nicht als Inhaltsdaten übernommen, weil die
-fachliche Zuordnung nicht zusätzlich bestätigt ist. Die Website hotlinkt keine Medien von
-`www.energie-kraft.de` oder `dev.energie-kraft.de`.
+In Dateinamen erkennbare Leistungswerte wurden als vorläufige Kartendaten übernommen, aber
+durchgängig als `placeholder` markiert und nicht in Metadaten, OpenGraph oder JSON-LD verwendet.
+Die fachliche Freigabe je Projekt bleibt im Reference-Data-Todo dokumentiert. Die Website hotlinkt
+keine Medien von `www.energie-kraft.de` oder `dev.energie-kraft.de`.

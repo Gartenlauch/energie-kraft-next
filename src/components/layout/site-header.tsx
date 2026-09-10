@@ -24,6 +24,15 @@ interface NavigationLink {
   priority?: "primary" | "secondary" | "supporting";
 }
 
+function isPathWithin(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function isDirectSectionActive(pathname: string, href: string) {
+  if (isPathWithin(pathname, href)) return true;
+  return href === "/jobs" && pathname === "/bewerbung";
+}
+
 const energyLinks: readonly NavigationLink[] = [
   {
     label: "Photovoltaik",
@@ -145,7 +154,13 @@ function MegaMenu({
   const isOpen = openMenu === menuKey;
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [activePreview, setActivePreview] = useState<string | null>(null);
+  const [temporaryPreviewItem, setTemporaryPreviewItem] = useState<string | null>(null);
+  const activeItem = links.find((link) => isPathWithin(pathname, link.href));
+  const activeGroup =
+    activeItem !== undefined ||
+    (menuKey === "energy" && pathname === "/energieloesungen") ||
+    (menuKey === "service" && pathname === "/service-und-wartung");
+  const previewItem = temporaryPreviewItem ?? activeItem?.href ?? "default";
   const scenes = [
     { key: "default", image: imageSrc, title, description: intro },
     ...links.map((link) => ({
@@ -157,6 +172,7 @@ function MegaMenu({
   ];
 
   function closeAndFocus() {
+    setTemporaryPreviewItem(null);
     setOpenMenu(null);
     buttonRef.current?.focus();
   }
@@ -166,9 +182,13 @@ function MegaMenu({
       ref={containerRef}
       className="flex h-full items-center"
       onMouseEnter={() => setOpenMenu(menuKey)}
-      onMouseLeave={() => setOpenMenu(null)}
+      onMouseLeave={() => {
+        setTemporaryPreviewItem(null);
+        setOpenMenu(null);
+      }}
       onBlur={(event) => {
         if (!containerRef.current?.contains(event.relatedTarget)) {
+          setTemporaryPreviewItem(null);
           setOpenMenu(null);
         }
       }}
@@ -185,8 +205,12 @@ function MegaMenu({
         aria-expanded={isOpen}
         aria-controls={`${menuKey}-mega-menu`}
         aria-haspopup="true"
-        onClick={() => setOpenMenu(isOpen ? null : menuKey)}
-        className="group text-brand-navy hover:text-brand-primary flex min-h-12 items-center gap-1.5 px-2 text-[0.82rem] font-semibold underline-offset-8 transition hover:underline focus-visible:underline"
+        onClick={() => {
+          setTemporaryPreviewItem(null);
+          setOpenMenu(isOpen ? null : menuKey);
+        }}
+        data-active-group={activeGroup}
+        className="nav-group-trigger group text-brand-navy hover:text-brand-primary flex min-h-12 items-center gap-1.5 px-3 text-[0.82rem] font-semibold transition"
       >
         {label}
         <ChevronDownIcon className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -207,7 +231,7 @@ function MegaMenu({
                   <div
                     key={scene.key}
                     className="mega-preview-scene"
-                    data-active={(activePreview ?? "default") === scene.key}
+                    data-active={previewItem === scene.key}
                   >
                     <Image
                       src={scene.image}
@@ -237,7 +261,7 @@ function MegaMenu({
                 onFocusCapture={(event) => {
                   const previewKey =
                     event.target.closest<HTMLElement>("[data-preview-key]")?.dataset.previewKey;
-                  if (previewKey) setActivePreview(previewKey);
+                  if (previewKey) setTemporaryPreviewItem(previewKey);
                 }}
               >
                 {links.map((link) => (
@@ -246,9 +270,12 @@ function MegaMenu({
                     href={link.href}
                     data-preview-key={link.href}
                     aria-current={pathname === link.href ? "page" : undefined}
-                    onMouseEnter={() => setActivePreview(link.href)}
-                    onFocus={() => setActivePreview(link.href)}
-                    onClick={() => setOpenMenu(null)}
+                    onMouseEnter={() => setTemporaryPreviewItem(link.href)}
+                    onFocus={() => setTemporaryPreviewItem(link.href)}
+                    onClick={() => {
+                      setTemporaryPreviewItem(null);
+                      setOpenMenu(null);
+                    }}
                     className={`mega-menu-link group ${
                       link.priority === "primary" ? "bg-brand-primary/[0.045]" : ""
                     }`}
@@ -300,6 +327,9 @@ function MobileGroup({
   pathname,
 }: MobileGroupProps) {
   const isOpen = openGroup === groupKey;
+  const activeGroup = links.some((link) => isPathWithin(pathname, link.href)) ||
+    (groupKey === "energy" && pathname === "/energieloesungen") ||
+    (groupKey === "service" && pathname === "/service-und-wartung");
 
   return (
     <li className="border-b border-white/10">
@@ -307,8 +337,10 @@ function MobileGroup({
         type="button"
         aria-expanded={isOpen}
         aria-controls={`mobile-${groupKey}-links`}
+        aria-label={`${label}${activeGroup ? ", aktueller Bereich" : ""}`}
+        data-active-group={activeGroup}
         onClick={() => setOpenGroup(isOpen ? null : groupKey)}
-        className="flex min-h-15 w-full items-center justify-between gap-4 py-4 text-left font-semibold text-white"
+        className="mobile-group-trigger flex min-h-15 w-full items-center justify-between gap-4 px-3 py-4 text-left font-semibold text-white"
       >
         {label}
         <ChevronDownIcon className={`size-5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -322,7 +354,7 @@ function MobileGroup({
                 href={link.href}
                 onClick={closeMenu}
                 aria-current={pathname === link.href ? "page" : undefined}
-                className="block min-h-12 rounded-md px-3 py-3 text-sm font-semibold text-white/85 underline-offset-4 transition hover:bg-white/10 hover:text-white hover:underline focus-visible:bg-white/10 aria-[current=page]:bg-white/10 aria-[current=page]:text-white"
+                className="mobile-nav-link block min-h-12 rounded-md px-3 py-3 text-sm font-semibold text-white/85 transition hover:bg-white/10 hover:text-white focus-visible:bg-white/10"
               >
                 {link.label}
               </Link>
@@ -457,7 +489,8 @@ export function SiteHeader() {
               key={link.href}
               href={link.href}
               aria-current={pathname === link.href ? "page" : undefined}
-              className="text-brand-navy hover:text-brand-primary aria-[current=page]:text-brand-primary flex min-h-12 items-center px-2 text-[0.82rem] font-semibold underline-offset-8 transition hover:underline focus-visible:underline aria-[current=page]:underline"
+              data-active-section={isDirectSectionActive(pathname, link.href)}
+              className="nav-direct-link text-brand-navy hover:text-brand-primary flex min-h-12 items-center px-3 text-[0.82rem] font-semibold transition"
             >
               {link.label}
             </Link>
@@ -518,7 +551,8 @@ export function SiteHeader() {
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
                     aria-current={pathname === link.href ? "page" : undefined}
-                    className="flex min-h-15 items-center py-4 font-semibold text-white underline-offset-4 hover:underline focus-visible:underline aria-[current=page]:underline"
+                    data-active-section={isDirectSectionActive(pathname, link.href)}
+                    className="mobile-nav-link flex min-h-15 items-center px-3 py-4 font-semibold text-white"
                   >
                     {link.label}
                   </Link>

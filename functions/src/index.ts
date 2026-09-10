@@ -21,3 +21,5 @@ export const health = onRequest((_request, response) => {
 
 export { submitContactLead } from "./contact-lead";
 export { submitConfiguratorLead } from "./configurator-lead";
+export { submitApplication } from "./application";
+export { submitReferral } from "./referral";

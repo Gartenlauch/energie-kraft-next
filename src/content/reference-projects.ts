@@ -1,4 +1,5 @@
 export type ReferenceCustomerType = "Privat" | "Gewerbe";
+export type ReferenceDataStatus = "placeholder" | "verified";
 
 export interface ReferenceProject {
   id: string;
@@ -9,7 +10,9 @@ export interface ReferenceProject {
   customerType: ReferenceCustomerType;
   image: string;
   imageAlt: string;
-  capacityKwp?: number;
+  capacityKwp: number;
+  hasBatteryStorage: boolean;
+  dataStatus: ReferenceDataStatus;
   projectName?: string;
   publicCustomerName?: string;
   source: "Legacy-Referenzarchiv";
@@ -94,48 +97,71 @@ export const referenceLocations: readonly ReferenceLocation[] = [
 interface ReferenceFile {
   customerType: ReferenceCustomerType;
   file: string;
+  capacityKwp: number;
+  hasBatteryStorage: boolean;
+  dataStatus: ReferenceDataStatus;
   featured?: boolean;
 }
 
 function numberedFiles(
   locationSlug: string,
   customerType: ReferenceCustomerType,
-  count: number,
+  capacitiesKwp: readonly number[],
+  batteryStorage: readonly boolean[],
   featured = false,
 ): ReferenceFile[] {
-  return Array.from({ length: count }, (_, index) => ({
+  return capacitiesKwp.map((capacityKwp, index) => ({
     customerType,
     file: `${locationSlug}-${customerType.toLowerCase()}-${String(index + 1).padStart(2, "0")}.webp`,
+    capacityKwp,
+    hasBatteryStorage: batteryStorage[index] ?? false,
+    // MUST_VERIFY_BEFORE_GO_LIVE: Leistung und Speicherstatus fachlich bestätigen.
+    dataStatus: "placeholder",
     featured: featured && index === 0,
   }));
 }
 
 const referenceFiles: Record<string, readonly ReferenceFile[]> = {
   ainring: [
-    ...numberedFiles("ainring", "Gewerbe", 1, true),
-    ...numberedFiles("ainring", "Privat", 3),
+    ...numberedFiles("ainring", "Gewerbe", [424.5], [false], true),
+    ...numberedFiles("ainring", "Privat", [19.24, 7, 9.72], [true, false, true]),
   ],
-  "bad-reichenhall": numberedFiles("bad-reichenhall", "Privat", 4, true),
-  berchtesgaden: numberedFiles("berchtesgaden", "Privat", 4, true),
+  "bad-reichenhall": numberedFiles(
+    "bad-reichenhall",
+    "Privat",
+    [24.36, 8.28, 12.75, 13.485],
+    [true, false, true, true],
+    true,
+  ),
+  berchtesgaden: numberedFiles(
+    "berchtesgaden",
+    "Privat",
+    [18.75, 19.74, 43, 7],
+    [true, true, false, true],
+    true,
+  ),
   freilassing: [
-    ...numberedFiles("freilassing", "Gewerbe", 3, true),
-    ...numberedFiles("freilassing", "Privat", 6),
+    ...numberedFiles("freilassing", "Gewerbe", [24.3, 99.75, 29.64], [false, true, false], true),
+    ...numberedFiles("freilassing", "Privat", [10, 11, 15.3, 18, 6, 7.56], [true, true, true, false, false, true]),
   ],
   kirchanschoering: [
-    ...numberedFiles("kirchanschoering", "Gewerbe", 2, true),
-    ...numberedFiles("kirchanschoering", "Privat", 1),
+    ...numberedFiles("kirchanschoering", "Gewerbe", [54.375, 60.03], [false, true], true),
+    ...numberedFiles("kirchanschoering", "Privat", [10], [true]),
   ],
-  laufen: [...numberedFiles("laufen", "Gewerbe", 1, true), ...numberedFiles("laufen", "Privat", 2)],
+  laufen: [
+    ...numberedFiles("laufen", "Gewerbe", [21.44], [false], true),
+    ...numberedFiles("laufen", "Privat", [10, 21], [true, true]),
+  ],
   "saaldorf-surheim": [
-    ...numberedFiles("saaldorf-surheim", "Gewerbe", 2, true),
-    ...numberedFiles("saaldorf-surheim", "Privat", 3),
+    ...numberedFiles("saaldorf-surheim", "Gewerbe", [300.15, 99.66], [true, false], true),
+    ...numberedFiles("saaldorf-surheim", "Privat", [10.2, 10, 9.24], [true, true, false]),
   ],
 };
 
 export const referenceProjects: readonly ReferenceProject[] = referenceLocations.flatMap(
   (location, locationIndex) =>
     (referenceFiles[location.slug] ?? []).map((entry, projectIndex) => ({
-      id: `${location.slug}-${entry.customerType.toLowerCase()}-${projectIndex + 1}`,
+      id: entry.file.replace(/\.webp$/, ""),
       location: location.name,
       locationSlug: location.slug,
       district: location.district,
@@ -148,6 +174,9 @@ export const referenceProjects: readonly ReferenceProject[] = referenceLocations
       imageAlt: `Photovoltaikanlage auf einem ${
         entry.customerType === "Gewerbe" ? "Gewerbegebäude" : "Wohngebäude"
       } in ${location.name}, Ansicht ${projectIndex + 1}`,
+      capacityKwp: entry.capacityKwp,
+      hasBatteryStorage: entry.hasBatteryStorage,
+      dataStatus: entry.dataStatus,
       source: "Legacy-Referenzarchiv" as const,
       featured: entry.featured ?? false,
       sortOrder: locationIndex * 100 + projectIndex,
@@ -155,6 +184,17 @@ export const referenceProjects: readonly ReferenceProject[] = referenceLocations
 );
 
 export const regionalReferenceProjects = referenceProjects.filter((project) => project.featured);
+
+const capacityFormatter = new Intl.NumberFormat("de-DE", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 3,
+});
+
+export function getReferenceTechnicalLabel(project: ReferenceProject) {
+  return `${capacityFormatter.format(project.capacityKwp)} kWp · ${
+    project.hasBatteryStorage ? "mit Stromspeicher" : "ohne Stromspeicher"
+  }`;
+}
 
 export function getReferenceProjectsByLocation(locationSlug: string) {
   return referenceProjects.filter((project) => project.locationSlug === locationSlug);

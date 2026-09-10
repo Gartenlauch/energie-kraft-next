@@ -5,7 +5,10 @@ import Link from "next/link";
 import { ArtDirectedImage } from "@/components/media/art-directed-image";
 import { Reveal, type RevealVariant } from "@/components/marketing/reveal";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
-import type { ReferenceProject } from "@/content/reference-projects";
+import {
+  getReferenceTechnicalLabel,
+  type ReferenceProject,
+} from "@/content/reference-projects";
 
 interface MarketingImage {
   desktopSrc: string;
@@ -597,6 +600,9 @@ export function ReferenceProjectsSection({
                     {project.location}
                   </span>
                   <span className="mt-1 block text-sm text-white">{project.category}</span>
+                  <span className="mt-1 block text-sm font-semibold text-white">
+                    {getReferenceTechnicalLabel(project)}
+                  </span>
                   <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold">
                     Projekt ansehen <ArrowRightIcon className="size-4" />
                   </span>

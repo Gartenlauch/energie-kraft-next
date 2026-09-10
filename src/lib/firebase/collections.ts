@@ -4,7 +4,8 @@ export const FIRESTORE_COLLECTIONS = {
   faqCategories: "faqCategories",
   faqs: "faqs",
   leads: "leads",
-  jobApplications: "jobApplications",
+  applications: "applications",
+  referrals: "referrals",
   adminRealtime: "adminRealtime",
 } as const;
 

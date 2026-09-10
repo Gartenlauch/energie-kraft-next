@@ -6,6 +6,7 @@ import sharp from "sharp";
 const sourceRoot = path.resolve("design-input/reference-originals");
 const referenceOutput = path.resolve("public/images/references/projects");
 const teamOutput = path.resolve("public/images/team");
+const teamPortraitSourceRoot = path.resolve("design-input/team-orginals");
 
 const locationRules = [
   { slug: "ainring", directory: "Ainring", accepts: (name) => name.includes("Ainring") },
@@ -87,6 +88,33 @@ conversions.push(
     .webp({ quality: 84 })
     .toFile(path.join(teamOutput, "company-service-hero-mobile.webp")),
 );
+
+const teamPortraits = [
+  ["team-kai-stengle-geschaeftsleitung.jpg", "kai-stengle.webp"],
+  ["team-markus-oesterlein-geschaeftsleitung.jpg", "markus-oesterlein.webp"],
+  ["team-stefan-pfnür-betriebsleitung.jpg", "stefan-pfnuer.webp"],
+  ["team-michael-donnert-vertriebsleitung.jpg", "michael-donnert.webp"],
+  ["team-vertrieb-gebiet-berchtesgaden-traunstein-waging-2.jpg", "vertrieb-region.webp"],
+  ["team-leitung-dachmontage.jpg", "dachmontage.webp"],
+  ["team-leitung-service-abteilung.jpg", "service.webp"],
+  ["team-verwaltung.jpg", "verwaltung-1.webp"],
+  ["team-verwaltung-2.jpg", "verwaltung-2.webp"],
+];
+
+for (const [sourceName, outputName] of teamPortraits) {
+  const sourcePath = path.join(teamPortraitSourceRoot, sourceName);
+  const metadata = await sharp(sourcePath).metadata();
+  const width = Math.min(metadata.width ?? 1200, 1200);
+  const height = Math.round(width * 1.25);
+
+  conversions.push(
+    sharp(sourcePath)
+      .rotate()
+      .resize(width, height, { fit: "cover", position: "centre", withoutEnlargement: true })
+      .webp({ quality: 84 })
+      .toFile(path.join(teamOutput, outputName)),
+  );
+}
 
 await Promise.all(conversions);
 console.log(`Created ${conversions.length} optimized Sprint 8 assets.`);

@@ -11,6 +11,7 @@ import { CONTACT_FORM_HREF } from "@/config/routes";
 import {
   getReferenceLocation,
   getReferenceProjectsByLocation,
+  getReferenceTechnicalLabel,
   referenceLocations,
 } from "@/content/reference-projects";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -120,6 +121,7 @@ export default async function ReferenceLocationPage({ params }: LocationPageProp
                           src={project.image}
                           alt={project.imageAlt}
                           fill
+                          loading={index < 2 ? "eager" : "lazy"}
                           sizes="(max-width: 767px) 100vw, 50vw"
                           className="object-cover"
                         />
@@ -130,6 +132,9 @@ export default async function ReferenceLocationPage({ params }: LocationPageProp
                             {project.customerType}
                           </p>
                           <h3 className="mt-2 text-xl">{project.category}</h3>
+                          <p className="mt-2 text-sm font-semibold text-[var(--text-muted)]">
+                            {getReferenceTechnicalLabel(project)}
+                          </p>
                         </div>
                         <span className="text-sm text-[var(--text-subtle)]">
                           {String(index + 1).padStart(2, "0")}

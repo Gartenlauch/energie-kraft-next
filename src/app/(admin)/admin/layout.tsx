@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 import { requireAdminSession } from "@/lib/auth/session";
 
@@ -58,6 +59,12 @@ export default async function AdminLayout({
             <AdminLogoutButton />
           </div>
         </div>
+        <nav aria-label="Adminnavigation" className="mx-auto flex max-w-7xl flex-wrap gap-1 border-t border-slate-100 px-6 py-2 text-sm font-semibold text-slate-700">
+          <Link href="/admin/anfragen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Anfragen</Link>
+          <Link href="/admin/bewerbungen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Bewerbungen</Link>
+          <Link href="/admin/empfehlungen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Empfehlungen</Link>
+          <Link href="/admin/faqs" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">FAQs</Link>
+        </nav>
       </header>
 
       {children}

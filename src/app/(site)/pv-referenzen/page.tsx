@@ -10,6 +10,7 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import { CONTACT_FORM_HREF } from "@/config/routes";
 import {
   getReferenceProjectsByLocation,
+  getReferenceTechnicalLabel,
   referenceLocations,
   regionalReferenceProjects,
 } from "@/content/reference-projects";
@@ -68,8 +69,8 @@ export default function ReferencesPage() {
                 </h2>
               </div>
               <p className="lead-copy lg:justify-self-end">
-                Jede Aufnahme stammt aus dem lokalen Energie-Kraft-Referenzbestand. Technische
-                Detailwerte zeigen wir nur, wenn sie eindeutig bestätigt sind.
+                Jede Aufnahme stammt aus dem lokalen Energie-Kraft-Referenzbestand. Die angezeigten
+                technischen Eckwerte ergänzen die Bildauswahl um eine kompakte Einordnung.
               </p>
             </Reveal>
 
@@ -85,6 +86,7 @@ export default function ReferencesPage() {
                         src={project.image}
                         alt={project.imageAlt}
                         fill
+                        loading={index < 3 ? "eager" : "lazy"}
                         sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.025] group-focus-visible:scale-[1.025]"
                       />
@@ -95,6 +97,9 @@ export default function ReferencesPage() {
                           {project.customerType}
                         </p>
                         <h3 className="mt-2 text-xl">{project.location}</h3>
+                        <p className="mt-2 text-sm font-semibold text-[var(--text-muted)]">
+                          {getReferenceTechnicalLabel(project)}
+                        </p>
                       </div>
                       <ArrowRightIcon className="text-brand-primary mt-1 size-4 shrink-0 transition-transform group-hover:translate-x-1" />
                     </div>
