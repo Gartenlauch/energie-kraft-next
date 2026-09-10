@@ -7,11 +7,9 @@ import {
   BrandStatementSection,
   EditorialFeatureSection,
   PremiumHeroSection,
-  ReferenceProjectsSection,
 } from "@/components/marketing/marketing-sections";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { CONTACT_FORM_HREF } from "@/config/routes";
-import { regionalReferenceProjects } from "@/content/reference-projects";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildAboutPageJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo/structured-data";
 
@@ -111,8 +109,6 @@ export default function AboutPage() {
           layout="statement"
         />
 
-        <TeamOverview mode="company" />
-
         <EditorialFeatureSection
           eyebrow="Kompetenz & Qualität"
           title="Verantwortung vom Konzept bis zum Betrieb"
@@ -142,11 +138,7 @@ export default function AboutPage() {
           layout="editorial"
         />
 
-        <ReferenceProjectsSection
-          projects={regionalReferenceProjects}
-          title="Arbeit, die in der Region sichtbar ist"
-          description="Die Referenzen zeigen reale private und gewerbliche Photovoltaikprojekte aus Orten rund um unseren Standort."
-        />
+        <TeamOverview mode="company" />
 
         <section className="brand-gradient py-16 text-white md:py-20">
           <div className="section-shell grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">

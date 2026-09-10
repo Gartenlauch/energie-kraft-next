@@ -1,5 +1,6 @@
 import type { FirestoreTimestamp } from "@/types/firestore";
 import type { LeadMailDeliveryInfo, LeadStatus } from "@/types/lead";
+import type { ApplicationFileMetadata } from "../../functions/src/shared/application-file-policy";
 
 export const SALUTATION_VALUES = ["frau", "herr", "divers"] as const;
 export type Salutation = (typeof SALUTATION_VALUES)[number];
@@ -28,6 +29,10 @@ export interface SubmitApplicationResult {
 }
 
 export interface ApplicationDocument {
+  documents?: ApplicationFileMetadata[];
+  uploadState?: "uploading" | "ready" | "upload_failed" | "deleting";
+  uploadLeaseUntil?: number;
+  cleanupPending?: boolean;
   status: LeadStatus;
   jobId: string;
   jobTitle: string;

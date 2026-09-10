@@ -7,6 +7,7 @@ import { ZodError } from "zod";
 import { requireAdminSession } from "@/lib/auth/session";
 import {
   ApplicationNotFoundError,
+  ApplicationDocumentCleanupError,
   deleteApplication,
   updateApplicationStatus,
 } from "@/lib/submissions/application-repository";
@@ -23,7 +24,8 @@ function finish(result: "success" | "error", message: string): never {
 
 function message(error: unknown, fallback: string) {
   if (error instanceof ZodError) return error.issues[0]?.message ?? fallback;
-  if (error instanceof ApplicationNotFoundError) return error.message;
+  if (error instanceof ApplicationNotFoundError || error instanceof ApplicationDocumentCleanupError)
+    return error.message;
   return fallback;
 }
 

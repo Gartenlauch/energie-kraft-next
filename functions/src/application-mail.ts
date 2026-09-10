@@ -1,5 +1,6 @@
 import { sendMailgunMail } from "./mailgun";
 import type { ApplicationPayload } from "./application-validation";
+import type { ApplicationFileMetadata } from "./shared/application-file-policy";
 
 const APPLICATION_RECIPIENT = "jobs@energie-kraft.de";
 
@@ -20,7 +21,8 @@ interface ApplicationMailInput {
   applicationId: string;
   jobTitle: string;
   receivedAt: string;
-  application: ApplicationPayload;
+  application: Omit<ApplicationPayload, "documents">;
+  documents?: readonly ApplicationFileMetadata[];
 }
 
 export function buildApplicationInternalMail(input: ApplicationMailInput) {
@@ -42,6 +44,12 @@ export function buildApplicationInternalMail(input: ApplicationMailInput) {
       "",
       `Application-ID: ${applicationId}`,
       `Eingangszeit: ${receivedAt}`,
+      "",
+      `Unterlagen: ${input.documents?.length ?? 0}`,
+      ...(input.documents ?? []).map(
+        (document) => `- ${document.name} (${(document.size / 1_000_000).toFixed(2)} MB)`,
+      ),
+      "Geschützter Zugriff nach Admin-Anmeldung: https://www.energie-kraft.de/admin/bewerbungen",
     ].join("\n"),
     html: `
       <h2>Neue Bewerbung</h2>
@@ -57,6 +65,9 @@ export function buildApplicationInternalMail(input: ApplicationMailInput) {
       <hr />
       <p><strong>Application-ID:</strong> ${escapeHtml(applicationId)}<br />
       <strong>Eingangszeit:</strong> ${escapeHtml(receivedAt)}</p>
+      <h3>Unterlagen (${input.documents?.length ?? 0})</h3>
+      <ul>${(input.documents ?? []).map((document) => `<li>${escapeHtml(document.name)} (${(document.size / 1_000_000).toFixed(2)} MB)</li>`).join("")}</ul>
+      <p><a href="https://www.energie-kraft.de/admin/bewerbungen">Dokumente im geschützten Admin-Bereich abrufen</a> (Anmeldung erforderlich).</p>
     `.trim(),
   };
 }

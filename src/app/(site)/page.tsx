@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
 import { PublicFaqSection } from "@/components/faq/public-faq-section";
 import { BrandIntro } from "@/components/marketing/brand-intro";
+import { CustomerReviewsSection } from "@/components/marketing/customer-reviews-section";
+import { getCustomerReviews } from "@/lib/reviews";
 import {
   BrandStatementSection,
   CTAImageBandSection,
@@ -74,7 +76,10 @@ const productImages = {
 } as const;
 
 export default async function HomePage() {
-  const faqs = await getPublicFaqEntriesByRoute("home");
+  const [faqs, reviews] = await Promise.all([
+    getPublicFaqEntriesByRoute("home"),
+    getCustomerReviews(),
+  ]);
 
   return (
     <>
@@ -257,6 +262,7 @@ export default async function HomePage() {
         />
 
         <ReferenceProjectsSection projects={regionalReferenceProjects} />
+        <CustomerReviewsSection {...reviews} />
         <PartnerLogoCarousel />
 
         <PublicFaqSection

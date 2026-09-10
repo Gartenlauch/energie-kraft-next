@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 
 export function MarketingInvitation({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  if (pathname === "/konfigurator" || pathname.startsWith("/konfigurator/")) return null;
+  if (pathname === "/" || pathname === "/konfigurator" || pathname.startsWith("/konfigurator/"))
+    return null;
   return children;
 }

@@ -66,7 +66,11 @@ function createInitialValues(): ReferralValues {
   };
 }
 
-function toInput(values: ReferralValues, submissionId: string, formStartedAt: number): ReferralInput {
+function toInput(
+  values: ReferralValues,
+  submissionId: string,
+  formStartedAt: number,
+): ReferralInput {
   const referredPhone = values.referredCustomer.phone.trim();
   return {
     submissionId,
@@ -137,7 +141,10 @@ export function ReferralForm() {
     window.requestAnimationFrame(() => stepTitleRef.current?.focus());
   }
 
-  function mapIssues(prefix: "referrer" | "referredCustomer", issues: readonly { path: PropertyKey[]; message: string }[]) {
+  function mapIssues(
+    prefix: "referrer" | "referredCustomer",
+    issues: readonly { path: PropertyKey[]; message: string }[],
+  ) {
     const next: ReferralErrors = {};
     for (const issue of issues) {
       const key = issue.path[0];
@@ -246,7 +253,10 @@ export function ReferralForm() {
       }}
       className="premium-card min-w-0 overflow-hidden"
     >
-      <ol className="grid grid-cols-3 border-b border-[var(--border-default)] bg-[var(--surface-soft)]" aria-label="Formularfortschritt">
+      <ol
+        className="grid grid-cols-3 border-b border-[var(--border-default)] bg-[var(--surface-soft)]"
+        aria-label="Formularfortschritt"
+      >
         {["Ihre Angaben", "Empfohlene Person", "Prüfen"].map((label, index) => {
           const itemStep = (index + 1) as 1 | 2 | 3;
           const active = step === itemStep;
@@ -282,31 +292,48 @@ export function ReferralForm() {
             <legend className="sr-only">Empfehlungsgeberin oder Empfehlungsgeber</legend>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label htmlFor="referrer-salutation" className="block text-sm font-semibold">Anrede *</label>
+                <label htmlFor="referrer-salutation" className="block text-sm font-semibold">
+                  Anrede *
+                </label>
                 <select
                   id="referrer-salutation"
                   autoComplete="section-referrer honorific-prefix"
                   value={values.referrer.salutation}
                   aria-invalid={errors["referrer.salutation"] ? true : undefined}
-                  aria-describedby={errors["referrer.salutation"] ? "referrer-salutation-error" : undefined}
-                  onChange={(event) => updateReferrer("salutation", event.currentTarget.value as Salutation | "")}
+                  aria-describedby={
+                    errors["referrer.salutation"] ? "referrer-salutation-error" : undefined
+                  }
+                  onChange={(event) =>
+                    updateReferrer("salutation", event.currentTarget.value as Salutation | "")
+                  }
                   className={`${formInputClassName} ${errors["referrer.salutation"] ? "border-red-700" : ""}`}
                 >
                   <option value="">Bitte auswählen</option>
-                  {Object.entries(salutationLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  {Object.entries(salutationLabels).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
-                <FieldError id="referrer-salutation-error" message={errors["referrer.salutation"]} />
+                <FieldError
+                  id="referrer-salutation-error"
+                  message={errors["referrer.salutation"]}
+                />
               </div>
               {personFields.map(([key, label, autoComplete, type]) => (
                 <div key={key} className={key === "email" ? "md:col-span-2" : ""}>
-                  <label htmlFor={`referrer-${key}`} className="block text-sm font-semibold">{label}</label>
+                  <label htmlFor={`referrer-${key}`} className="block text-sm font-semibold">
+                    {label}
+                  </label>
                   <input
                     id={`referrer-${key}`}
                     type={type}
                     autoComplete={`section-referrer ${autoComplete}`}
                     value={values.referrer[key]}
                     aria-invalid={errors[`referrer.${key}`] ? true : undefined}
-                    aria-describedby={errors[`referrer.${key}`] ? `referrer-${key}-error` : undefined}
+                    aria-describedby={
+                      errors[`referrer.${key}`] ? `referrer-${key}-error` : undefined
+                    }
                     onChange={(event) => updateReferrer(key, event.currentTarget.value)}
                     className={`${formInputClassName} ${errors[`referrer.${key}`] ? "border-red-700" : ""}`}
                   />
@@ -322,56 +349,85 @@ export function ReferralForm() {
             <legend className="sr-only">Empfohlene Kundin oder empfohlener Kunde</legend>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label htmlFor="referred-salutation" className="block text-sm font-semibold">Anrede *</label>
+                <label htmlFor="referred-salutation" className="block text-sm font-semibold">
+                  Anrede *
+                </label>
                 <select
                   id="referred-salutation"
                   autoComplete="section-referred honorific-prefix"
                   value={values.referredCustomer.salutation}
                   aria-invalid={errors["referredCustomer.salutation"] ? true : undefined}
-                  aria-describedby={errors["referredCustomer.salutation"] ? "referred-salutation-error" : undefined}
-                  onChange={(event) => updateReferred("salutation", event.currentTarget.value as Salutation | "")}
+                  aria-describedby={
+                    errors["referredCustomer.salutation"] ? "referred-salutation-error" : undefined
+                  }
+                  onChange={(event) =>
+                    updateReferred("salutation", event.currentTarget.value as Salutation | "")
+                  }
                   className={`${formInputClassName} ${errors["referredCustomer.salutation"] ? "border-red-700" : ""}`}
                 >
                   <option value="">Bitte auswählen</option>
-                  {Object.entries(salutationLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  {Object.entries(salutationLabels).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
                 </select>
-                <FieldError id="referred-salutation-error" message={errors["referredCustomer.salutation"]} />
+                <FieldError
+                  id="referred-salutation-error"
+                  message={errors["referredCustomer.salutation"]}
+                />
               </div>
               {personFields.map(([key, label, autoComplete, type]) => (
                 <div key={key} className={key === "email" ? "md:col-span-2" : ""}>
-                  <label htmlFor={`referred-${key}`} className="block text-sm font-semibold">{label}</label>
+                  <label htmlFor={`referred-${key}`} className="block text-sm font-semibold">
+                    {label}
+                  </label>
                   <input
                     id={`referred-${key}`}
                     type={type}
                     autoComplete={`section-referred ${autoComplete}`}
                     value={values.referredCustomer[key]}
                     aria-invalid={errors[`referredCustomer.${key}`] ? true : undefined}
-                    aria-describedby={errors[`referredCustomer.${key}`] ? `referred-${key}-error` : undefined}
+                    aria-describedby={
+                      errors[`referredCustomer.${key}`] ? `referred-${key}-error` : undefined
+                    }
                     onChange={(event) => updateReferred(key, event.currentTarget.value)}
                     className={`${formInputClassName} ${errors[`referredCustomer.${key}`] ? "border-red-700" : ""}`}
                   />
-                  <FieldError id={`referred-${key}-error`} message={errors[`referredCustomer.${key}`]} />
+                  <FieldError
+                    id={`referred-${key}-error`}
+                    message={errors[`referredCustomer.${key}`]}
+                  />
                 </div>
               ))}
-              {([
-                ["phone", "Telefonnummer", "tel", "tel"],
-                ["street", "Straße und Hausnummer *", "street-address", "text"],
-                ["postalCode", "Postleitzahl *", "postal-code", "text"],
-                ["city", "Ort *", "address-level2", "text"],
-              ] as const).map(([key, label, autoComplete, type]) => (
+              {(
+                [
+                  ["phone", "Telefonnummer", "tel", "tel"],
+                  ["street", "Straße und Hausnummer *", "street-address", "text"],
+                  ["postalCode", "Postleitzahl *", "postal-code", "text"],
+                  ["city", "Ort *", "address-level2", "text"],
+                ] as const
+              ).map(([key, label, autoComplete, type]) => (
                 <div key={key} className={key === "street" ? "md:col-span-2" : ""}>
-                  <label htmlFor={`referred-${key}`} className="block text-sm font-semibold">{label}</label>
+                  <label htmlFor={`referred-${key}`} className="block text-sm font-semibold">
+                    {label}
+                  </label>
                   <input
                     id={`referred-${key}`}
                     type={type}
                     autoComplete={`section-referred ${autoComplete}`}
                     value={values.referredCustomer[key]}
                     aria-invalid={errors[`referredCustomer.${key}`] ? true : undefined}
-                    aria-describedby={errors[`referredCustomer.${key}`] ? `referred-${key}-error` : undefined}
+                    aria-describedby={
+                      errors[`referredCustomer.${key}`] ? `referred-${key}-error` : undefined
+                    }
                     onChange={(event) => updateReferred(key, event.currentTarget.value)}
                     className={`${formInputClassName} ${errors[`referredCustomer.${key}`] ? "border-red-700" : ""}`}
                   />
-                  <FieldError id={`referred-${key}-error`} message={errors[`referredCustomer.${key}`]} />
+                  <FieldError
+                    id={`referred-${key}-error`}
+                    message={errors[`referredCustomer.${key}`]}
+                  />
                 </div>
               ))}
             </div>
@@ -381,23 +437,82 @@ export function ReferralForm() {
         {step === 3 ? (
           <div className="mt-7">
             <div className="grid gap-8 md:grid-cols-2">
-              <section aria-labelledby="referrer-summary-title" className="border-border-default border-t pt-5">
-                <h3 id="referrer-summary-title" className="text-sm font-bold tracking-[0.12em] uppercase">Ihre Angaben</h3>
+              <section
+                aria-labelledby="referrer-summary-title"
+                className="border-border-default border-t pt-5"
+              >
+                <h3
+                  id="referrer-summary-title"
+                  className="text-sm font-bold tracking-[0.12em] uppercase"
+                >
+                  Ihre Angaben
+                </h3>
                 <dl className="mt-5 space-y-3 text-sm">
-                  <div><dt className="text-[var(--text-subtle)]">Anrede</dt><dd className="font-semibold">{values.referrer.salutation ? salutationLabels[values.referrer.salutation] : "Keine Angabe"}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">Name</dt><dd className="font-semibold">{values.referrer.firstName} {values.referrer.lastName}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">E-Mail</dt><dd className="break-all font-semibold">{values.referrer.email}</dd></div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">Anrede</dt>
+                    <dd className="font-semibold">
+                      {values.referrer.salutation
+                        ? salutationLabels[values.referrer.salutation]
+                        : "Keine Angabe"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">Name</dt>
+                    <dd className="font-semibold">
+                      {values.referrer.firstName} {values.referrer.lastName}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">E-Mail</dt>
+                    <dd className="font-semibold break-all">{values.referrer.email}</dd>
+                  </div>
                 </dl>
               </section>
-              <section aria-labelledby="referred-summary-title" className="border-border-default border-t pt-5">
-                <h3 id="referred-summary-title" className="text-sm font-bold tracking-[0.12em] uppercase">Empfohlene Person</h3>
+              <section
+                aria-labelledby="referred-summary-title"
+                className="border-border-default border-t pt-5"
+              >
+                <h3
+                  id="referred-summary-title"
+                  className="text-sm font-bold tracking-[0.12em] uppercase"
+                >
+                  Empfohlene Person
+                </h3>
                 <dl className="mt-5 space-y-3 text-sm">
-                  <div><dt className="text-[var(--text-subtle)]">Anrede</dt><dd className="font-semibold">{values.referredCustomer.salutation ? salutationLabels[values.referredCustomer.salutation] : "Keine Angabe"}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">Name</dt><dd className="font-semibold">{values.referredCustomer.firstName} {values.referredCustomer.lastName}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">E-Mail</dt><dd className="break-all font-semibold">{values.referredCustomer.email}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">Telefon</dt><dd className="font-semibold">{values.referredCustomer.phone || "Keine Angabe"}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">Straße</dt><dd className="font-semibold">{values.referredCustomer.street}</dd></div>
-                  <div><dt className="text-[var(--text-subtle)]">PLZ / Ort</dt><dd className="font-semibold">{values.referredCustomer.postalCode} {values.referredCustomer.city}</dd></div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">Anrede</dt>
+                    <dd className="font-semibold">
+                      {values.referredCustomer.salutation
+                        ? salutationLabels[values.referredCustomer.salutation]
+                        : "Keine Angabe"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">Name</dt>
+                    <dd className="font-semibold">
+                      {values.referredCustomer.firstName} {values.referredCustomer.lastName}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">E-Mail</dt>
+                    <dd className="font-semibold break-all">{values.referredCustomer.email}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">Telefon</dt>
+                    <dd className="font-semibold">
+                      {values.referredCustomer.phone || "Keine Angabe"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">Straße</dt>
+                    <dd className="font-semibold">{values.referredCustomer.street}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-[var(--text-subtle)]">PLZ / Ort</dt>
+                    <dd className="font-semibold">
+                      {values.referredCustomer.postalCode} {values.referredCustomer.city}
+                    </dd>
+                  </div>
                 </dl>
               </section>
             </div>
@@ -407,20 +522,38 @@ export function ReferralForm() {
                 <input
                   type="checkbox"
                   checked={values.consentAccepted}
-                  aria-invalid={errors.privacyAccepted || errors.referredPersonPermissionConfirmed ? true : undefined}
-                  aria-describedby={errors.privacyAccepted || errors.referredPersonPermissionConfirmed ? "referral-consent-error" : undefined}
+                  aria-invalid={
+                    errors.privacyAccepted || errors.referredPersonPermissionConfirmed
+                      ? true
+                      : undefined
+                  }
+                  aria-describedby={
+                    errors.privacyAccepted || errors.referredPersonPermissionConfirmed
+                      ? "referral-consent-error"
+                      : undefined
+                  }
                   onChange={(event) => {
-                    setValues((current) => ({ ...current, consentAccepted: event.currentTarget.checked }));
+                    const checked = event.currentTarget.checked;
+                    setValues((current) => ({ ...current, consentAccepted: checked }));
                     clearError("privacyAccepted");
                     clearError("referredPersonPermissionConfirmed");
                   }}
                   className="mt-1 size-5 shrink-0"
                 />
                 <span>
-                  Ich habe die <Link href="/datenschutz" className="text-brand-primary underline">Datenschutzerklärung</Link> zur Kenntnis genommen und stimme der elektronischen Verarbeitung der Angaben zu. Ich bestätige, dass ich das Einverständnis der empfohlenen Person eingeholt habe und ihre Daten für diese Anfrage verarbeitet werden dürfen. *
+                  Ich habe die{" "}
+                  <Link href="/datenschutz" className="text-brand-primary underline">
+                    Datenschutzerklärung
+                  </Link>{" "}
+                  zur Kenntnis genommen und stimme der elektronischen Verarbeitung der Angaben zu.
+                  Ich bestätige, dass ich das Einverständnis der empfohlenen Person eingeholt habe
+                  und ihre Daten für diese Anfrage verarbeitet werden dürfen. *
                 </span>
               </label>
-              <FieldError id="referral-consent-error" message={errors.privacyAccepted ?? errors.referredPersonPermissionConfirmed} />
+              <FieldError
+                id="referral-consent-error"
+                message={errors.privacyAccepted ?? errors.referredPersonPermissionConfirmed}
+              />
             </div>
           </div>
         ) : null}
@@ -432,18 +565,32 @@ export function ReferralForm() {
             tabIndex={-1}
             autoComplete="off"
             value={values.website}
-            onChange={(event) => setValues((current) => ({ ...current, website: event.currentTarget.value }))}
+            onChange={(event) => {
+              const website = event.currentTarget.value;
+              setValues((current) => ({ ...current, website }));
+            }}
           />
         </div>
 
         <div className="mt-9 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
           {step > 1 ? (
-            <button type="button" disabled={isSubmitting} className="button-secondary" onClick={() => moveToStep(step === 3 ? 2 : 1)}>
+            <button
+              type="button"
+              disabled={isSubmitting}
+              className="button-secondary"
+              onClick={() => moveToStep(step === 3 ? 2 : 1)}
+            >
               Angaben ändern / vorherige Seite
             </button>
-          ) : <span />}
+          ) : (
+            <span />
+          )}
           <button type="submit" disabled={isSubmitting} className="button-primary">
-            {step < 3 ? "Nächste Seite" : isSubmitting ? "Empfehlung wird übermittelt …" : "Empfehlung absenden"}
+            {step < 3
+              ? "Nächste Seite"
+              : isSubmitting
+                ? "Empfehlung wird übermittelt …"
+                : "Empfehlung absenden"}
           </button>
         </div>
       </div>

@@ -21,7 +21,8 @@ export const jobOpenings: readonly JobOpening[] = [
     id: "elektriker",
     slug: "elektriker",
     title: "Elektriker (w/m/d)",
-    intro: "Für unseren Standort in Ainring suchen wir zum nächstmöglichen Zeitpunkt Verstärkung in der Elektrotechnik.",
+    intro:
+      "Für unseren Standort in Ainring suchen wir zum nächstmöglichen Zeitpunkt Verstärkung in der Elektrotechnik.",
     tasks: [
       "Wechselrichter, Batteriespeichersysteme und Wallboxen installieren",
       "Batteriespeichersysteme und Photovoltaikanlagen inspizieren und warten",
@@ -48,7 +49,8 @@ export const jobOpenings: readonly JobOpening[] = [
     id: "dachmonteur",
     slug: "dachmonteur",
     title: "Dachmonteur:in (w/m/d)",
-    intro: "Für unseren Standort in Ainring suchen wir zum nächstmöglichen Zeitpunkt Unterstützung für die Montage auf regionalen Projekten.",
+    intro:
+      "Für unseren Standort in Ainring suchen wir zum nächstmöglichen Zeitpunkt Unterstützung für die Montage auf regionalen Projekten.",
     tasks: ["Photovoltaikanlagen in der Region installieren"],
     requirements: [
       "Technisches Verständnis",
@@ -70,14 +72,10 @@ export const jobOpenings: readonly JobOpening[] = [
     id: "ausbildung-elektroniker-gebaeudetechnik",
     slug: "ausbildung-elektroniker-gebaeudetechnik",
     title: "Ausbildung Elektroniker:in Gebäudetechnik (w/m/d)",
-    intro: "Energie-Kraft Süd begleitet dich bei den ersten Schritten in deine berufliche Zukunft und möchte Talente für erneuerbare Energie nachhaltig fördern.",
-    tasks: [
-      "Im Team an nachhaltigen, intelligenten und erneuerbaren Energielösungen mitarbeiten",
-    ],
-    requirements: [
-      "Schulabschluss",
-      "Interesse an Zukunftsthemen und erneuerbarer Energie",
-    ],
+    intro:
+      "Energie-Kraft Süd begleitet dich bei den ersten Schritten in deine berufliche Zukunft und möchte Talente für erneuerbare Energie nachhaltig fördern.",
+    tasks: ["Im Team an nachhaltigen, intelligenten und erneuerbaren Energielösungen mitarbeiten"],
+    requirements: ["Schulabschluss", "Interesse an Zukunftsthemen und erneuerbarer Energie"],
     benefits: [
       "Persönliche und berufliche Weiterentwicklung in einem vielseitigen, erfahrenen Team",
     ],
@@ -95,3 +93,10 @@ export const activeJobOpenings = jobOpenings
 export function getActiveJobOpening(slug: string) {
   return activeJobOpenings.find((job) => job.slug === slug);
 }
+export const sharedJobBenefits = [
+  "Attraktives Gehalt und langfristige Perspektive",
+  "Jobrad für Mitarbeitende; Firmenfahrzeug je nach leitender oder vertrieblicher Rolle",
+  "Hochwertige Arbeitskleidung, Arbeitsgeräte und Getränke",
+  "Arbeitgeberzuschüsse und vermögenswirksame Leistungen",
+  "Zwei gemeinsame Firmenfeiern im Jahr",
+] as const;

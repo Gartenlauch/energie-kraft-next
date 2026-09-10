@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DeleteSubmissionButton } from "@/components/admin/delete-submission-button";
 import { SubmissionRealtimeRefresh } from "@/components/admin/submission-realtime-refresh";
 import { listApplications } from "@/lib/submissions/application-repository";
+import { requireAdminSession } from "@/lib/auth/session";
 import { LEAD_STATUS_VALUES, type LeadStatus } from "@/types/lead";
 
 import { deleteApplicationAction, updateApplicationStatusAction } from "./actions";
@@ -19,8 +20,13 @@ const statusLabels: Record<LeadStatus, string> = {
 };
 
 function formatDate(value: { toDate(): Date }) {
-  try { return new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(value.toDate()); }
-  catch { return "Zeitpunkt nicht verfügbar"; }
+  try {
+    return new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(
+      value.toDate(),
+    );
+  } catch {
+    return "Zeitpunkt nicht verfügbar";
+  }
 }
 
 export default async function ApplicationsAdminPage({
@@ -28,6 +34,7 @@ export default async function ApplicationsAdminPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requireAdminSession();
   const [applications, parameters] = await Promise.all([listApplications(), searchParams]);
   const result = Array.isArray(parameters.result) ? parameters.result[0] : parameters.result;
   const message = Array.isArray(parameters.message) ? parameters.message[0] : parameters.message;
@@ -35,64 +42,205 @@ export default async function ApplicationsAdminPage({
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
       <SubmissionRealtimeRefresh documentId="applications" />
-      <Link href="/admin" className="text-sm font-medium text-emerald-800 hover:underline">← Dashboard</Link>
+      <Link href="/admin" className="text-sm font-medium text-emerald-800 hover:underline">
+        ← Dashboard
+      </Link>
       <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold text-slate-950">Bewerbungen</h1>
-          <p className="mt-2 text-slate-600">Eingänge prüfen, bearbeiten und datenschutzgerecht löschen.</p>
+          <p className="mt-2 text-slate-600">
+            Eingänge prüfen, bearbeiten und datenschutzgerecht löschen.
+          </p>
         </div>
-        <p className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600">{applications.length} Eingänge</p>
+        <p className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600">
+          {applications.length} Eingänge
+        </p>
       </div>
 
       {message ? (
-        <div role="status" className={`mt-7 border px-5 py-4 text-sm ${result === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-red-200 bg-red-50 text-red-900"}`}>{message}</div>
+        <div
+          role="status"
+          className={`mt-7 border px-5 py-4 text-sm ${result === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-red-200 bg-red-50 text-red-900"}`}
+        >
+          {message}
+        </div>
       ) : null}
 
       <div className="mt-8 space-y-5">
         {applications.length === 0 ? (
-          <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-600">Noch keine Bewerbungen vorhanden.</p>
-        ) : applications.map((application) => (
-          <details key={application.id} className="group rounded-xl border border-slate-200 bg-white shadow-sm">
-            <summary className="grid min-h-16 cursor-pointer list-none gap-3 px-5 py-4 sm:grid-cols-[1fr_1fr_auto] sm:items-center">
-              <span><span className="block font-semibold text-slate-950">{application.firstName} {application.lastName}</span><span className="text-sm text-slate-500">{formatDate(application.createdAt)}</span></span>
-              <span className="text-sm font-medium text-slate-700">{application.jobTitle}</span>
-              <span className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700">{statusLabels[application.status]}</span>
-            </summary>
-            <div className="border-t border-slate-200 p-5 lg:p-7">
-              <div className="grid gap-8 lg:grid-cols-2">
-                <section>
-                  <h2 className="font-semibold text-slate-950">Kontaktdaten</h2>
-                  <dl className="mt-4 space-y-3 text-sm">
-                    <div><dt className="text-slate-500">Adresse</dt><dd>{application.street}, {application.postalCode} {application.city}</dd></div>
-                    <div><dt className="text-slate-500">E-Mail</dt><dd><a className="text-emerald-800 underline" href={`mailto:${application.email}`}>{application.email}</a></dd></div>
-                    <div><dt className="text-slate-500">Telefon</dt><dd><a className="text-emerald-800 underline" href={`tel:${application.phone}`}>{application.phone}</a></dd></div>
-                    <div><dt className="text-slate-500">ID</dt><dd className="break-all font-mono text-xs">{application.id}</dd></div>
-                  </dl>
+          <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-600">
+            Noch keine Bewerbungen vorhanden.
+          </p>
+        ) : (
+          applications.map((application) => (
+            <details
+              key={application.id}
+              className="group rounded-xl border border-slate-200 bg-white shadow-sm"
+            >
+              <summary className="grid min-h-16 cursor-pointer list-none gap-3 px-5 py-4 sm:grid-cols-[1fr_1fr_auto] sm:items-center">
+                <span>
+                  <span className="block font-semibold text-slate-950">
+                    {application.firstName} {application.lastName}
+                  </span>
+                  <span className="text-sm text-slate-500">
+                    {formatDate(application.createdAt)}
+                  </span>
+                </span>
+                <span className="text-sm font-medium text-slate-700">{application.jobTitle}</span>
+                <span className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700">
+                  {statusLabels[application.status]}
+                </span>
+              </summary>
+              <div className="border-t border-slate-200 p-5 lg:p-7">
+                <div className="grid gap-8 lg:grid-cols-2">
+                  <section>
+                    <h2 className="font-semibold text-slate-950">Kontaktdaten</h2>
+                    <dl className="mt-4 space-y-3 text-sm">
+                      <div>
+                        <dt className="text-slate-500">Adresse</dt>
+                        <dd>
+                          {application.street}, {application.postalCode} {application.city}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-500">E-Mail</dt>
+                        <dd>
+                          <a
+                            className="text-emerald-800 underline"
+                            href={`mailto:${application.email}`}
+                          >
+                            {application.email}
+                          </a>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-500">Telefon</dt>
+                        <dd>
+                          <a
+                            className="text-emerald-800 underline"
+                            href={`tel:${application.phone}`}
+                          >
+                            {application.phone}
+                          </a>
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-slate-500">ID</dt>
+                        <dd className="font-mono text-xs break-all">{application.id}</dd>
+                      </div>
+                    </dl>
+                  </section>
+                  <section>
+                    <h2 className="font-semibold text-slate-950">Qualifikation / Erfahrung</h2>
+                    <p className="mt-4 text-sm leading-7 whitespace-pre-wrap text-slate-700">
+                      {application.qualificationExperience}
+                    </p>
+                  </section>
+                </div>
+                <section
+                  className="mt-8 border-t border-slate-200 pt-6"
+                  aria-label="Bewerbungsunterlagen"
+                >
+                  <h2 className="font-semibold text-slate-950">Bewerbungsunterlagen</h2>
+                  {application.uploadState && application.uploadState !== "ready" ? (
+                    <p role="status" className="mt-3 text-sm text-amber-900">
+                      {application.uploadState === "uploading"
+                        ? "Übertragung läuft oder wurde unterbrochen. Nach Ablauf der Upload-Sperre ist eine Bereinigung durch Löschen möglich."
+                        : application.uploadState === "deleting"
+                          ? "Löschung noch nicht abgeschlossen. Bitte erneut löschen, um verbleibende Dateien zu bereinigen."
+                          : "Dokumentübertragung fehlgeschlagen. Angaben und Dateizuordnungen bleiben für einen erneuten Versuch oder eine vollständige Löschung erhalten."}
+                    </p>
+                  ) : null}
+                  <ul className="mt-3 divide-y divide-slate-200">
+                    {(application.documents ?? []).map((document) => (
+                      <li
+                        key={document.id}
+                        className="flex flex-wrap items-center justify-between gap-3 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium break-all">{document.name}</p>
+                          <p className="mt-1 text-xs break-all text-slate-500">
+                            {document.contentType} ·{" "}
+                            {(document.size / 1_000_000).toLocaleString("de-DE", {
+                              maximumFractionDigits: 2,
+                            })}{" "}
+                            MB
+                          </p>
+                        </div>
+                        {application.uploadState === "ready" && document.uploadedAt ? (
+                          <a
+                            href={`/api/admin/applications/${application.id}/documents/${document.id}`}
+                            className="inline-flex min-h-11 items-center text-sm text-emerald-800 underline"
+                            aria-label={`${document.name} sicher herunterladen`}
+                          >
+                            Herunterladen
+                          </a>
+                        ) : (
+                          <span className="text-xs text-slate-500">Noch nicht verfügbar</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  {!application.documents?.length ? (
+                    <p className="mt-3 text-sm text-slate-500">Keine Unterlagen beigefügt.</p>
+                  ) : null}
                 </section>
-                <section>
-                  <h2 className="font-semibold text-slate-950">Qualifikation / Erfahrung</h2>
-                  <p className="mt-4 whitespace-pre-wrap text-sm leading-7 text-slate-700">{application.qualificationExperience}</p>
-                </section>
-              </div>
-              <div className="mt-8 grid gap-6 border-t border-slate-200 pt-6 lg:grid-cols-2">
-                <form action={updateApplicationStatusAction} className="flex flex-wrap items-end gap-3">
-                  <input type="hidden" name="id" value={application.id} />
-                  <div className="min-w-52 flex-1">
-                    <label htmlFor={`application-status-${application.id}`} className="block text-sm font-semibold">Status</label>
-                    <select id={`application-status-${application.id}`} name="status" defaultValue={application.status} className="mt-2 min-h-11 w-full rounded-lg border border-slate-300 px-3">
-                      {LEAD_STATUS_VALUES.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}
-                    </select>
+                <div className="mt-8 grid gap-6 border-t border-slate-200 pt-6 lg:grid-cols-2">
+                  <form
+                    action={updateApplicationStatusAction}
+                    className="flex flex-wrap items-end gap-3"
+                  >
+                    <input type="hidden" name="id" value={application.id} />
+                    <div className="min-w-52 flex-1">
+                      <label
+                        htmlFor={`application-status-${application.id}`}
+                        className="block text-sm font-semibold"
+                      >
+                        Status
+                      </label>
+                      <select
+                        id={`application-status-${application.id}`}
+                        name="status"
+                        defaultValue={application.status}
+                        className="mt-2 min-h-11 w-full rounded-lg border border-slate-300 px-3"
+                      >
+                        {LEAD_STATUS_VALUES.map((status) => (
+                          <option key={status} value={status}>
+                            {statusLabels[status]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      type="submit"
+                      className="min-h-11 rounded-lg bg-emerald-800 px-5 text-sm font-semibold text-white"
+                    >
+                      Speichern
+                    </button>
+                  </form>
+                  <div className="lg:text-right">
+                    <p className="mb-3 text-xs text-slate-500">
+                      Interne Mail:{" "}
+                      {application.mail?.internal?.status === "accepted"
+                        ? "angenommen"
+                        : "fehlgeschlagen / offen"}{" "}
+                      · Autoreply:{" "}
+                      {application.mail?.applicant?.status === "accepted"
+                        ? "angenommen"
+                        : "fehlgeschlagen / offen"}
+                    </p>
+                    <DeleteSubmissionButton
+                      action={deleteApplicationAction}
+                      id={application.id}
+                      label="Bewerbung löschen"
+                      subject={`Bewerbung von ${application.firstName} ${application.lastName}`}
+                    />
                   </div>
-                  <button type="submit" className="min-h-11 rounded-lg bg-emerald-800 px-5 text-sm font-semibold text-white">Speichern</button>
-                </form>
-                <div className="lg:text-right">
-                  <p className="mb-3 text-xs text-slate-500">Interne Mail: {application.mail?.internal?.status === "accepted" ? "angenommen" : "fehlgeschlagen / offen"} · Autoreply: {application.mail?.applicant?.status === "accepted" ? "angenommen" : "fehlgeschlagen / offen"}</p>
-                  <DeleteSubmissionButton action={deleteApplicationAction} id={application.id} label="Bewerbung löschen" subject={`Bewerbung von ${application.firstName} ${application.lastName}`} />
                 </div>
               </div>
-            </div>
-          </details>
-        ))}
+            </details>
+          ))
+        )}
       </div>
     </main>
   );

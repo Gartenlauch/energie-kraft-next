@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-import {
-  ErrorSummary,
-  FieldError,
-  formInputClassName,
-} from "@/components/forms/form-control";
+import { ErrorSummary, FieldError, formInputClassName } from "@/components/forms/form-control";
 import { activeJobOpenings } from "@/content/jobs";
-import { submitApplication } from "@/lib/submissions/submit-application";
+import { selectedApplicationFiles, submitApplication } from "@/lib/submissions/submit-application";
+import {
+  APPLICATION_FILE_ACCEPT,
+  sanitizeApplicationFilename,
+  validateApplicationFiles,
+} from "../../../functions/src/shared/application-file-policy";
 import { applicationInputSchema } from "@/lib/validation/application";
 import type { ApplicationInput, Salutation } from "@/types/application";
 
@@ -84,6 +85,9 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function updateValue<Key extends keyof ApplicationFormValues>(
     key: Key,
@@ -107,6 +111,12 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
 
   async function handleSubmit() {
     if (isSubmitting) return;
+    const uploadError = validateApplicationFiles(selectedApplicationFiles(files));
+    if (uploadError || fileError) {
+      setFileError(uploadError ?? fileError);
+      fileInputRef.current?.focus();
+      return;
+    }
     const parsed = applicationInputSchema.safeParse(
       createInput(values, submissionId, formStartedAt),
     );
@@ -129,11 +139,21 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
     setGeneralError(null);
     setIsSubmitting(true);
     try {
-      const result = await submitApplication(parsed.data);
+      const result = await submitApplication(parsed.data, files);
       setApplicationId(result.applicationId);
-    } catch {
+      setFiles([]);
+    } catch (error) {
       setGeneralError(
-        "Deine Bewerbung konnte momentan nicht übermittelt werden. Bitte versuche es erneut oder kontaktiere uns telefonisch.",
+        error instanceof Error &&
+          "code" in error &&
+          [
+            "functions/invalid-argument",
+            "functions/already-exists",
+            "functions/aborted",
+            "functions/unavailable",
+          ].includes(String(error.code))
+          ? error.message
+          : "Deine Bewerbung konnte momentan nicht vollständig übermittelt werden. Bitte versuche es mit unveränderten Angaben und Dateien erneut oder kontaktiere uns telefonisch.",
       );
     } finally {
       setIsSubmitting(false);
@@ -184,7 +204,9 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
         <legend className="text-2xl font-bold">Stelle & persönliche Angaben</legend>
         <div className="mt-7 grid min-w-0 gap-6 md:grid-cols-2">
           <div className="md:col-span-2">
-            <label htmlFor="application-job" className="block text-sm font-semibold">Stelle *</label>
+            <label htmlFor="application-job" className="block text-sm font-semibold">
+              Stelle *
+            </label>
             <select
               id="application-job"
               value={values.jobId}
@@ -195,19 +217,25 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
             >
               <option value="">Bitte auswählen</option>
               {activeJobOpenings.map((job) => (
-                <option key={job.id} value={job.id}>{job.title}</option>
+                <option key={job.id} value={job.id}>
+                  {job.title}
+                </option>
               ))}
             </select>
             <FieldError id="application-job-error" message={errors.jobId} />
           </div>
 
           <div>
-            <label htmlFor="application-salutation" className="block text-sm font-semibold">Anrede</label>
+            <label htmlFor="application-salutation" className="block text-sm font-semibold">
+              Anrede
+            </label>
             <select
               id="application-salutation"
               autoComplete="honorific-prefix"
               value={values.salutation}
-              onChange={(event) => updateValue("salutation", event.currentTarget.value as Salutation | "")}
+              onChange={(event) =>
+                updateValue("salutation", event.currentTarget.value as Salutation | "")
+              }
               className={formInputClassName}
             >
               <option value="">Keine Angabe</option>
@@ -218,17 +246,21 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
           </div>
           <div />
 
-          {([
-            ["firstName", "Vorname *", "given-name", "text"],
-            ["lastName", "Nachname *", "family-name", "text"],
-            ["street", "Straße und Hausnummer *", "street-address", "text"],
-            ["postalCode", "Postleitzahl *", "postal-code", "text"],
-            ["city", "Ort *", "address-level2", "text"],
-            ["email", "E-Mail *", "email", "email"],
-            ["phone", "Telefonnummer *", "tel", "tel"],
-          ] as const).map(([key, label, autoComplete, type]) => (
+          {(
+            [
+              ["firstName", "Vorname *", "given-name", "text"],
+              ["lastName", "Nachname *", "family-name", "text"],
+              ["street", "Straße und Hausnummer *", "street-address", "text"],
+              ["postalCode", "Postleitzahl *", "postal-code", "text"],
+              ["city", "Ort *", "address-level2", "text"],
+              ["email", "E-Mail *", "email", "email"],
+              ["phone", "Telefonnummer *", "tel", "tel"],
+            ] as const
+          ).map(([key, label, autoComplete, type]) => (
             <div key={key} className={key === "street" ? "md:col-span-2" : ""}>
-              <label htmlFor={`application-${key}`} className="block text-sm font-semibold">{label}</label>
+              <label htmlFor={`application-${key}`} className="block text-sm font-semibold">
+                {label}
+              </label>
               <input
                 id={`application-${key}`}
                 type={type}
@@ -247,8 +279,12 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
 
       <fieldset disabled={isSubmitting} className="border-border-default mt-10 border-t pt-8">
         <legend className="text-2xl font-bold">Qualifikation & Erfahrung</legend>
-        <p id="application-experience-hint" className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
-          Beschreibe kurz deine Ausbildung, relevante Berufserfahrung und was dich an der Stelle interessiert. Ein Datei-Upload ist nicht erforderlich.
+        <p
+          id="application-experience-hint"
+          className="mt-3 text-sm leading-6 text-[var(--text-muted)]"
+        >
+          Beschreibe kurz deine Ausbildung, relevante Berufserfahrung und was dich an der Stelle
+          interessiert. Unterlagen kannst du unten ergänzen.
         </p>
         <textarea
           id="application-experience"
@@ -260,6 +296,106 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
           className={`${formInputClassName} resize-y ${errors.qualificationExperience ? "border-red-700" : ""}`}
         />
         <FieldError id="application-experience-error" message={errors.qualificationExperience} />
+      </fieldset>
+
+      <fieldset
+        disabled={isSubmitting}
+        className="border-border-default mt-10 min-w-0 border-t pt-8"
+      >
+        <legend className="text-2xl font-bold">
+          Deine Unterlagen{" "}
+          <span className="block pt-2 text-sm font-normal text-[var(--text-muted)]">
+            Optional · privat übermitteln
+          </span>
+        </legend>
+        <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
+          Lebenslauf, Anschreiben oder Zeugnisse: Gib uns einen Einblick in deinen bisherigen Weg.
+        </p>
+        <div className="bg-surface-soft border-brand-primary/30 mt-5 border border-dashed p-5 sm:p-6">
+          <label htmlFor="application-documents" className="block text-base font-semibold">
+            Bewerbungsunterlagen auswählen
+          </label>
+          <p
+            id="application-documents-hint"
+            className="mt-2 text-sm leading-6 text-[var(--text-muted)]"
+          >
+            PDF, DOC, DOCX, JPG/JPEG oder PNG. Höchstens 5 Dateien, maximal 10 MB pro Datei und 20
+            MB insgesamt.
+          </p>
+          <input
+            ref={fileInputRef}
+            id="application-documents"
+            type="file"
+            multiple
+            accept={APPLICATION_FILE_ACCEPT}
+            aria-invalid={fileError ? true : undefined}
+            aria-describedby={`application-documents-hint application-documents-status${fileError ? " application-documents-error" : ""}`}
+            className="mt-5 min-h-12 w-full min-w-0 text-sm text-transparent file:mr-4 file:min-h-12 file:cursor-pointer file:border-0 file:bg-[var(--brand-primary)] file:px-4 file:font-semibold file:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-primary)]"
+            onChange={(event) => {
+              const selected = Array.from(event.currentTarget.files ?? []);
+              event.currentTarget.value = "";
+              if (!selected.length) return;
+              const next = [...files, ...selected];
+              const error = validateApplicationFiles(selectedApplicationFiles(next));
+              setFileError(error);
+              if (!error) setFiles(next);
+            }}
+          />
+        </div>
+        <FieldError id="application-documents-error" message={fileError ?? undefined} />
+        {fileError ? (
+          <button
+            type="button"
+            className="mt-1 min-h-11 text-sm underline"
+            onClick={() => setFileError(null)}
+          >
+            Auswahl verwerfen und mit vorhandenen Dateien fortfahren
+          </button>
+        ) : null}
+        <p
+          id="application-documents-status"
+          role="status"
+          className="mt-4 text-sm text-[var(--text-muted)]"
+        >
+          {files.length} von 5 Dateien ·{" "}
+          {(files.reduce((sum, file) => sum + file.size, 0) / 1_000_000).toLocaleString("de-DE", {
+            maximumFractionDigits: 2,
+          })}{" "}
+          von 20 MB
+        </p>
+        <ul className="mt-3 divide-y divide-[var(--border-default)]">
+          {files.map((file, index) => (
+            <li
+              key={`${file.name}-${index}`}
+              className="flex min-w-0 items-center justify-between gap-3 py-3"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-semibold break-all">
+                  {sanitizeApplicationFilename(file.name)}
+                </p>
+                <p className="mt-1 text-xs text-[var(--text-muted)]">
+                  {file.name.split(".").pop()?.toUpperCase()} ·{" "}
+                  {(file.size / 1_000_000).toLocaleString("de-DE", { maximumFractionDigits: 2 })} MB
+                </p>
+              </div>
+              <button
+                type="button"
+                className="min-h-11 shrink-0 px-2 text-sm text-[var(--brand-primary)] underline"
+                aria-label={`${sanitizeApplicationFilename(file.name)} entfernen`}
+                onClick={() => {
+                  setFiles((current) => current.filter((_, fileIndex) => index !== fileIndex));
+                  setFileError(null);
+                }}
+              >
+                Entfernen
+              </button>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-xs leading-6 text-[var(--text-muted)]">
+          Die Dateien werden erst mit deiner Bewerbung übertragen und stehen ausschließlich unserem
+          berechtigten Bewerbungsteam zur Verfügung.
+        </p>
       </fieldset>
 
       <div className="absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
@@ -285,13 +421,22 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
             className="mt-1 size-5 shrink-0"
           />
           <span>
-            Ich habe die <Link href="/datenschutz" className="text-brand-primary underline">Datenschutzerklärung</Link> zur Kenntnis genommen und stimme der elektronischen Verarbeitung meiner Daten zum Zweck der Bewerbung zu. *
+            Ich habe die{" "}
+            <Link href="/datenschutz" className="text-brand-primary underline">
+              Datenschutzerklärung
+            </Link>{" "}
+            zur Kenntnis genommen und stimme der elektronischen Verarbeitung meiner Daten zum Zweck
+            der Bewerbung zu. *
           </span>
         </label>
         <FieldError id="application-privacy-error" message={errors.privacyAccepted} />
       </fieldset>
 
-      <button type="submit" disabled={isSubmitting} className="button-primary mt-8 w-full sm:w-auto">
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="button-primary mt-8 w-full sm:w-auto"
+      >
         {isSubmitting ? "Bewerbung wird übermittelt …" : "Bewerbung absenden"}
       </button>
     </form>

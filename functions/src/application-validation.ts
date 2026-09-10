@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { applicationFilesSchema } from "./application-documents";
 
 const SALUTATION_VALUES = ["frau", "herr", "divers"] as const;
 
@@ -7,19 +8,25 @@ const SALUTATION_VALUES = ["frau", "herr", "divers"] as const;
 export const APPLICATION_JOB_TITLES = {
   elektriker: "Elektriker (w/m/d)",
   dachmonteur: "Dachmonteur:in (w/m/d)",
-  "ausbildung-elektroniker-gebaeudetechnik":
-    "Ausbildung Elektroniker:in Gebäudetechnik (w/m/d)",
+  "ausbildung-elektroniker-gebaeudetechnik": "Ausbildung Elektroniker:in Gebäudetechnik (w/m/d)",
 } as const;
 
 export const applicationPayloadSchema = z
   .object({
     submissionId: z.string().uuid(),
-    jobId: z.string().trim().max(100).refine((value) => value in APPLICATION_JOB_TITLES),
+    jobId: z
+      .string()
+      .trim()
+      .max(100)
+      .refine((value) => value in APPLICATION_JOB_TITLES),
     salutation: z.enum(SALUTATION_VALUES).optional(),
     firstName: z.string().trim().min(1).max(80),
     lastName: z.string().trim().min(1).max(80),
     street: z.string().trim().min(3).max(160),
-    postalCode: z.string().trim().regex(/^[0-9A-Za-z -]{3,10}$/),
+    postalCode: z
+      .string()
+      .trim()
+      .regex(/^[0-9A-Za-z -]{3,10}$/),
     city: z.string().trim().min(2).max(100),
     email: z.string().trim().max(254).email(),
     phone: z.string().trim().min(5).max(40),
@@ -27,6 +34,7 @@ export const applicationPayloadSchema = z
     privacyAccepted: z.boolean().refine((value) => value),
     website: z.string().trim().max(200).optional(),
     formStartedAt: z.number().int().positive().optional(),
+    documents: applicationFilesSchema,
   })
   .strict();
 

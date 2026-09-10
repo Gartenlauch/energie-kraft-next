@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 
 import { ApplicationForm } from "@/components/forms/application-form";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { EditorialFeatureSection, PremiumHeroSection } from "@/components/marketing/marketing-sections";
+import {
+  EditorialFeatureSection,
+  PremiumHeroSection,
+} from "@/components/marketing/marketing-sections";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { getActiveJobOpening } from "@/content/jobs";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -37,45 +40,54 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
         })}
       />
       <main id="main-content">
-      <Breadcrumbs currentLabel="Bewerbung" items={[{ label: "Jobs", href: "/jobs" }]} />
-      <PremiumHeroSection
-        eyebrow="Deine Bewerbung"
-        title="Bring deine Erfahrung in die Energiewende ein."
-        description="Bewirb dich auf eine aktuelle Stelle oder wähle den passenden Ausbildungsweg. Ein Datei-Upload ist für diesen Bewerbungsweg nicht vorgesehen."
-        image={{
-          desktopSrc: "/images/team/company-service-hero-desktop.webp",
-          mobileSrc: "/images/team/company-service-hero-mobile.webp",
-          desktopWidth: 1800,
-          desktopHeight: 1039,
-          mobileWidth: 1080,
-          mobileHeight: 1350,
-          alt: "Mitarbeiter von Energie-Kraft Süd bei der Arbeit auf einem Dach",
-        }}
-        primaryCta={{ label: "Bewerbung ausfüllen", href: "#bewerbungsformular" }}
-        secondaryCta={{ label: "Stellen ansehen", href: "/jobs#stellen" }}
-      />
+        <Breadcrumbs currentLabel="Bewerbung" items={[{ label: "Jobs", href: "/jobs" }]} />
+        <PremiumHeroSection
+          eyebrow="Deine Bewerbung"
+          title="Bring deine Erfahrung in die Energiewende ein."
+          description="Bewirb dich auf eine aktuelle Stelle oder wähle den passenden Ausbildungsweg. Deine Unterlagen kannst du direkt und privat mitsenden."
+          image={{
+            desktopSrc: "/images/team/company-service-hero-desktop.webp",
+            mobileSrc: "/images/team/company-service-hero-mobile.webp",
+            desktopWidth: 1800,
+            desktopHeight: 1039,
+            mobileWidth: 1080,
+            mobileHeight: 1350,
+            alt: "Mitarbeiter von Energie-Kraft Süd bei der Arbeit auf einem Dach",
+          }}
+          primaryCta={{ label: "Bewerbung ausfüllen", href: "#bewerbungsformular" }}
+          secondaryCta={{ label: "Stellen ansehen", href: "/jobs#stellen" }}
+        />
 
-      <EditorialFeatureSection
-        eyebrow="Sonnige Aussichten"
-        title="Persönlich zusammenarbeiten und gemeinsam etwas voranbringen"
-        paragraphs={[
-          "Gemeinsame Pausen, Gespräche mit Kolleg:innen und eine persönliche Arbeitsatmosphäre gehören für Energie-Kraft Süd genauso dazu wie technische Sorgfalt und Verantwortung.",
-          "Für die erste Kontaktaufnahme genügen die Angaben im Formular. Lebenslauf und Zeugnisse können wir bei Bedarf im weiteren Verlauf persönlich abstimmen.",
-        ]}
-        surface="soft"
-        layout="statement"
-      />
+        <EditorialFeatureSection
+          eyebrow="Sonnige Aussichten"
+          title="Persönlich zusammenarbeiten und gemeinsam etwas voranbringen"
+          paragraphs={[
+            "Gemeinsame Pausen, Gespräche mit Kolleg:innen und eine persönliche Arbeitsatmosphäre gehören für Energie-Kraft Süd genauso dazu wie technische Sorgfalt und Verantwortung.",
+            "Für die erste Kontaktaufnahme genügen die Angaben im Formular. Wenn du möchtest, ergänze deinen Lebenslauf, dein Anschreiben oder relevante Zeugnisse direkt bei der Bewerbung.",
+          ]}
+          surface="soft"
+          layout="statement"
+        />
 
-      <section id="bewerbungsformular" className="section-space bg-background" aria-labelledby="application-form-title">
-        <div className="section-shell grid gap-12 lg:grid-cols-[0.65fr_1.35fr] lg:gap-18">
-          <div>
-            <p className="eyebrow">Jetzt bewerben</p>
-            <h2 id="application-form-title" className="section-title mt-4">Erzähl uns, was du mitbringst.</h2>
-            <p className="lead-copy mt-5">Alle mit * gekennzeichneten Felder sind erforderlich. Deine Angaben werden serverseitig geprüft und sicher gespeichert.</p>
+        <section
+          id="bewerbungsformular"
+          className="section-space bg-background"
+          aria-labelledby="application-form-title"
+        >
+          <div className="section-shell grid gap-12 lg:grid-cols-[0.65fr_1.35fr] lg:gap-18">
+            <div>
+              <p className="eyebrow">Jetzt bewerben</p>
+              <h2 id="application-form-title" className="section-title mt-4">
+                Erzähl uns, was du mitbringst.
+              </h2>
+              <p className="lead-copy mt-5">
+                Alle mit * gekennzeichneten Felder sind erforderlich. Deine Angaben werden
+                serverseitig geprüft und sicher gespeichert.
+              </p>
+            </div>
+            <ApplicationForm initialJobId={initialJobId} />
           </div>
-          <ApplicationForm initialJobId={initialJobId} />
-        </div>
-      </section>
+        </section>
       </main>
     </>
   );
