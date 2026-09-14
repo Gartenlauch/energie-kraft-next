@@ -36,13 +36,16 @@ export default async function FaqDetailPage({ params }: Props) {
           { label: faq.categoryName, href: categoryHref },
         ]}
       />
-      <article className="section-shell max-w-5xl py-12 md:py-16">
+      <article className="section-shell max-w-4xl py-10 md:py-16">
         <Link href={categoryHref} className="text-brand-primary underline underline-offset-4">
           ← Alle Fragen zu {faq.categoryName}
         </Link>
         <p className="eyebrow mt-10">{faq.categoryName}</p>
         {faq.shortAnswer && (
-          <section className="mt-6" aria-labelledby="short-answer">
+          <section
+            className="border-brand-primary bg-surface-soft mt-6 border-l-2 p-6 md:p-9"
+            aria-labelledby="short-answer"
+          >
             <h2 id="short-answer" className="text-xl">
               Kurz erklärt
             </h2>
@@ -66,12 +69,12 @@ export default async function FaqDetailPage({ params }: Props) {
             <h2 id="related-faqs" className="text-2xl">
               Passende weitere Fragen
             </h2>
-            <ul className="mt-4">
+            <ul className="divide-border-default mt-4 divide-y">
               {related.map((entry) => (
                 <li key={entry.id}>
                   <Link
                     href={entry.href}
-                    className="text-brand-primary inline-block py-3 underline underline-offset-4"
+                    className="text-brand-primary flex min-h-16 items-center py-5 leading-7 font-semibold underline-offset-4 hover:underline"
                   >
                     {entry.question}
                   </Link>

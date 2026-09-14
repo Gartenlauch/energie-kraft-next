@@ -41,6 +41,7 @@ const sections = [
 export default function ServiceTeamPage() {
   return (
     <MarketingFeaturePage
+      compactHeading
       seo={seo}
       breadcrumbLabel="Service & Team"
       breadcrumbItems={[{ label: "Service & Wartung", href: "/service-und-wartung" }]}

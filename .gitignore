@@ -47,3 +47,5 @@ firestore-debug.log*
 ui-debug.log*
 database-debug.log*
 storage-debug.log*
+# Firebase Emulator persistent local data
+/.emulator-data/

@@ -142,7 +142,12 @@ const referenceFiles: Record<string, readonly ReferenceFile[]> = {
   ),
   freilassing: [
     ...numberedFiles("freilassing", "Gewerbe", [24.3, 99.75, 29.64], [false, true, false], true),
-    ...numberedFiles("freilassing", "Privat", [10, 11, 15.3, 18, 6, 7.56], [true, true, true, false, false, true]),
+    ...numberedFiles(
+      "freilassing",
+      "Privat",
+      [10, 11, 15.3, 18, 6, 7.56],
+      [true, true, true, false, false, true],
+    ),
   ],
   kirchanschoering: [
     ...numberedFiles("kirchanschoering", "Gewerbe", [54.375, 60.03], [false, true], true),
@@ -191,6 +196,7 @@ const capacityFormatter = new Intl.NumberFormat("de-DE", {
 });
 
 export function getReferenceTechnicalLabel(project: ReferenceProject) {
+  if (project.dataStatus !== "verified") return "Technische Angaben noch nicht bestätigt";
   return `${capacityFormatter.format(project.capacityKwp)} kWp · ${
     project.hasBatteryStorage ? "mit Stromspeicher" : "ohne Stromspeicher"
   }`;

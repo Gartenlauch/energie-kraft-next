@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
 import { PublicFaqSection } from "@/components/faq/public-faq-section";
+import { SecondaryPageHeading } from "@/components/marketing/secondary-page-heading";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import {
   EditorialFeatureSection,
@@ -115,7 +116,15 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
       <main id="main-content">
         <Breadcrumbs currentLabel={breadcrumbLabel} />
 
-        {visual ? (
+        {content.faqRouteKey === "kontakt" ? (
+          <SecondaryPageHeading
+            eyebrow={content.hero.eyebrow ?? "Kontakt"}
+            title={content.hero.title}
+            description={content.hero.description}
+            primaryCta={content.hero.primaryCta}
+            secondaryCta={content.hero.secondaryCta}
+          />
+        ) : visual ? (
           <PremiumHeroSection
             eyebrow={content.hero.eyebrow}
             title={content.hero.title}
@@ -131,6 +140,8 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
             }
           />
         ) : null}
+
+        {content.faqRouteKey === "kontakt" && beforeFaq}
 
         {content.sections.map((section, index) => (
           <EditorialFeatureSection
@@ -149,13 +160,15 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
             cta={section.cta}
             surface={index === 0 ? "soft" : index === 2 ? "blue" : index === 4 ? "soft" : "white"}
             layout={
-              index === 1
-                ? "image-left"
-                : index === 3
-                  ? "image-right"
-                  : index % 2 === 0
-                    ? "statement"
-                    : "editorial"
+              content.faqRouteKey === "kontakt"
+                ? "editorial"
+                : index === 1
+                  ? "image-left"
+                  : index === 3
+                    ? "image-right"
+                    : index % 2 === 0
+                      ? "statement"
+                      : "editorial"
             }
             image={
               content.faqRouteKey === "photovoltaik" && index === 1
@@ -175,14 +188,14 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
           />
         ))}
 
-        {beforeFaq}
+        {content.faqRouteKey !== "kontakt" && beforeFaq}
         <PublicFaqSection
           faqs={faqs}
           categorySlug={faqCategory?.slug}
           categoryLabel={faqCategory?.label}
         />
 
-        {content.faqRouteKey !== "konfigurator" && (
+        {content.faqRouteKey !== "konfigurator" && content.faqRouteKey !== "kontakt" && (
           <section className="brand-gradient relative overflow-hidden py-16 text-white md:py-20">
             <div className="section-shell">
               <Reveal className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">

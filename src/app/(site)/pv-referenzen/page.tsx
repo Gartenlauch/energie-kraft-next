@@ -74,24 +74,24 @@ export default function ReferencesPage() {
               </p>
             </Reveal>
 
-            <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="reference-editorial-grid mt-12">
               {regionalReferenceProjects.map((project, index) => (
                 <Reveal key={project.id} delay={(index % 3) * 60}>
                   <Link
                     href={`/pv-referenzen/${project.locationSlug}#${project.id}`}
-                    className="group border-border-default bg-surface block overflow-hidden border"
+                    className="group block"
                   >
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                    <div className="reference-editorial-photo relative overflow-hidden">
                       <Image
                         src={project.image}
                         alt={project.imageAlt}
                         fill
                         loading={index < 3 ? "eager" : "lazy"}
-                        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                        sizes="(max-width: 767px) 100vw, 66vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-[1.025] group-focus-visible:scale-[1.025]"
                       />
                     </div>
-                    <div className="flex items-start justify-between gap-4 p-5">
+                    <div className="border-border-default flex items-start justify-between gap-4 border-b py-5">
                       <div>
                         <p className="text-brand-primary text-xs font-bold tracking-[0.12em] uppercase">
                           {project.customerType}

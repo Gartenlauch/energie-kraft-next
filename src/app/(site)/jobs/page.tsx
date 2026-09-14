@@ -56,16 +56,7 @@ export default function JobsPage() {
             "Die Arbeit verbindet einen hohen Qualitätsanspruch mit einer persönlichen Atmosphäre, eigenverantwortlichem Handeln und dem gemeinsamen Ziel, erneuerbare Energie im Alltag voranzubringen. Wochenendarbeit ist für die veröffentlichten Stellen nicht vorgesehen.",
           ]}
           surface="soft"
-          layout="image-right"
-          image={{
-            desktopSrc: "/images/team/company-service-hero-desktop.webp",
-            mobileSrc: "/images/team/company-service-hero-mobile.webp",
-            desktopWidth: 1800,
-            desktopHeight: 1039,
-            mobileWidth: 1080,
-            mobileHeight: 1350,
-            alt: "Arbeit auf einem Photovoltaikdach in der Region",
-          }}
+          layout="editorial"
         />
 
         <section
@@ -172,6 +163,9 @@ export default function JobsPage() {
                       <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--text-muted)] md:text-lg">
                         {job.intro}
                       </p>
+                      <Link href={`/bewerbung?stelle=${job.slug}`} className="button-primary mt-6">
+                        Auf diese Stelle bewerben
+                      </Link>
                       <div className="mt-10 grid gap-10 md:mt-14 md:grid-cols-2 md:gap-12">
                         <section aria-labelledby={`${job.id}-tasks`}>
                           <h4

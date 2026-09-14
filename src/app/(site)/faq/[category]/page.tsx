@@ -1,3 +1,4 @@
+import { FaqExplorer } from "@/components/faq/faq-explorer";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FaqPageHeading } from "@/components/faq/faq-page-heading";
@@ -35,35 +36,21 @@ export default async function FaqCategoryPage({ params }: Props) {
         description={`Hier finden Sie alle veröffentlichten Antworten zu ${category.name} – von den Voraussetzungen bis zur Nutzung im Alltag.`}
       />
       <div className="section-shell max-w-5xl py-12 md:py-16">
-        <Link href="/faq" className="text-brand-primary underline underline-offset-4">
+        <Link
+          href="/faq"
+          className="text-brand-primary inline-flex min-h-11 items-center underline underline-offset-4"
+        >
           ← Alle Themen & globale Suche
         </Link>
         {entries.length === 0 && (
           <p className="mt-8">Zu diesem Thema werden Antworten vorbereitet.</p>
         )}
-        <ul className="divide-border-default mt-8 divide-y">
-          {entries.map((faq) => (
-            <li key={faq.id} className="py-7">
-              <h2 className="text-xl">
-                <Link
-                  href={faq.href}
-                  className="text-brand-primary underline-offset-4 hover:underline"
-                >
-                  {faq.question}
-                </Link>
-              </h2>
-              {faq.shortAnswer && <p className="mt-3 leading-7">{faq.shortAnswer}</p>}
-              <details className="mt-4">
-                <summary className="cursor-pointer py-2 font-semibold">
-                  Ausführliche Antwort
-                </summary>
-                <p className="mt-3 leading-8 whitespace-pre-line text-[var(--text-muted)]">
-                  {faq.answer}
-                </p>
-              </details>
-            </li>
-          ))}
-        </ul>
+        <section className="mt-8" aria-labelledby="category-questions">
+          <h2 id="category-questions" className="sr-only">
+            Fragen und Antworten
+          </h2>
+          <FaqExplorer entries={entries} categories={[category]} categoryPage />
+        </section>
         {product && (
           <Link href={product.href} className="button-primary mt-10">
             {product.label}

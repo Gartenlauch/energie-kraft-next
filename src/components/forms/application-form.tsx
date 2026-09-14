@@ -196,12 +196,14 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
         event.preventDefault();
         void handleSubmit();
       }}
-      className="premium-card min-w-0 p-5 md:p-8 lg:p-10"
+      className="secondary-form min-w-0 bg-white p-5 md:p-8 lg:p-10"
     >
       {generalError ? <ErrorSummary>{generalError}</ErrorSummary> : null}
 
       <fieldset disabled={isSubmitting}>
-        <legend className="text-2xl font-bold">Stelle & persönliche Angaben</legend>
+        <legend className="text-2xl font-bold">
+          <span className="form-section-number">01</span> Stelle & persönliche Angaben
+        </legend>
         <div className="mt-7 grid min-w-0 gap-6 md:grid-cols-2">
           <div className="md:col-span-2">
             <label htmlFor="application-job" className="block text-sm font-semibold">
@@ -278,7 +280,9 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
       </fieldset>
 
       <fieldset disabled={isSubmitting} className="border-border-default mt-10 border-t pt-8">
-        <legend className="text-2xl font-bold">Qualifikation & Erfahrung</legend>
+        <legend className="text-2xl font-bold">
+          <span className="form-section-number">02</span> Qualifikation & Erfahrung
+        </legend>
         <p
           id="application-experience-hint"
           className="mt-3 text-sm leading-6 text-[var(--text-muted)]"

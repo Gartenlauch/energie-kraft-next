@@ -251,7 +251,7 @@ export function ReferralForm() {
         else if (step === 2) continueFromStepTwo();
         else void handleSubmit();
       }}
-      className="premium-card min-w-0 overflow-hidden"
+      className="secondary-form min-w-0 overflow-hidden bg-white"
     >
       <ol
         className="grid grid-cols-3 border-b border-[var(--border-default)] bg-[var(--surface-soft)]"
@@ -267,8 +267,11 @@ export function ReferralForm() {
               aria-current={active ? "step" : undefined}
               className={`min-w-0 border-l border-[var(--border-default)] px-2 py-4 text-center text-xs font-bold first:border-l-0 sm:px-4 sm:text-sm ${active ? "bg-brand-primary text-white" : complete ? "text-brand-primary" : "text-[var(--text-muted)]"}`}
             >
-              <span className="block">0{itemStep}</span>
-              <span className="mt-1 hidden sm:block">{label}</span>
+              <span className="block">
+                {complete ? "✓" : `0${itemStep}`}
+                <span className="sr-only">{complete ? " Abgeschlossen" : ""}</span>
+              </span>
+              <span className="mt-1 block text-[10px] leading-4 sm:text-sm">{label}</span>
             </li>
           );
         })}

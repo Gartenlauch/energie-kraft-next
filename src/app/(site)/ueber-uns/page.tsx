@@ -75,6 +75,8 @@ export default function AboutPage() {
           layout="editorial"
         />
 
+        <TeamOverview mode="company" />
+
         <BrandStatementSection
           eyebrow="Unsere Haltung"
           title="Gute Technik beginnt mit den richtigen Fragen."
@@ -103,7 +105,6 @@ export default function AboutPage() {
           title="Aus praktischer Energiearbeit gewachsen"
           paragraphs={[
             "Das Unternehmen hat sein Leistungsspektrum über viele Jahre entlang realer Kundenprojekte entwickelt. Aus der Photovoltaikplanung ist so die vernetzte Betrachtung von Speicher, Wärme, Klima, Ladeinfrastruktur und Service entstanden.",
-            "Konkrete historische Jahreszahlen oder Größenangaben veröffentlichen wir erst nach erneuter interner Bestätigung. Entscheidend bleibt der belegbare Projektbestand aus der Region.",
           ]}
           surface="white"
           layout="statement"
@@ -114,7 +115,6 @@ export default function AboutPage() {
           title="Verantwortung vom Konzept bis zum Betrieb"
           paragraphs={[
             "Planung, Montage, Inbetriebnahme und Service sind keine losen Einzelschritte. Die beteiligten Bereiche stimmen sich entlang des Projekts ab und setzen auf ausgewählte System- und Herstellerpartner.",
-            "Der bereits dokumentierte DGS-Nachweis bleibt als Vertrauenselement im Website-Footer erhalten. Weitere Zertifizierungs- oder Partnerclaims werden erst nach aktueller fachlicher Bestätigung konkret benannt.",
           ]}
           items={[
             "Technische Planung für Gebäude und Verbrauch",
@@ -137,8 +137,6 @@ export default function AboutPage() {
           surface="soft"
           layout="editorial"
         />
-
-        <TeamOverview mode="company" />
 
         <section className="brand-gradient py-16 text-white md:py-20">
           <div className="section-shell grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">

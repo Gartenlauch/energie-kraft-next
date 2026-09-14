@@ -111,18 +111,18 @@ export default async function ReferenceLocationPage({ params }: LocationPageProp
               </p>
             </Reveal>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2">
+            <div className="reference-editorial-grid mt-12">
               {projects.map((project, index) => (
                 <Reveal key={project.id} delay={(index % 2) * 60}>
                   <article id={project.id} className="scroll-mt-32">
                     <figure>
-                      <div className="bg-surface-soft relative aspect-[3/2] overflow-hidden">
+                      <div className="reference-editorial-photo bg-surface-soft relative overflow-hidden">
                         <Image
                           src={project.image}
                           alt={project.imageAlt}
                           fill
                           loading={index < 2 ? "eager" : "lazy"}
-                          sizes="(max-width: 767px) 100vw, 50vw"
+                          sizes="(max-width: 767px) 100vw, 66vw"
                           className="object-cover"
                         />
                       </div>

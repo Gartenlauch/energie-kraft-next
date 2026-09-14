@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
+import { SecondaryPageHeading } from "@/components/marketing/secondary-page-heading";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import {
   EditorialFeatureSection,
@@ -11,6 +12,7 @@ import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-
 import type { SeoContent } from "@/types/content";
 
 export interface MarketingFeatureSection {
+  image?: Parameters<typeof EditorialFeatureSection>[0]["image"];
   id?: string;
   eyebrow: string;
   title: string;
@@ -25,6 +27,7 @@ export interface MarketingFeatureSection {
 }
 
 interface MarketingFeaturePageProps {
+  compactHeading?: boolean;
   seo: SeoContent;
   breadcrumbLabel: string;
   eyebrow: string;
@@ -47,6 +50,7 @@ interface MarketingFeaturePageProps {
 }
 
 export function MarketingFeaturePage({
+  compactHeading = false,
   seo,
   breadcrumbLabel,
   eyebrow,
@@ -79,21 +83,30 @@ export function MarketingFeaturePage({
       />
       <main id="main-content">
         <Breadcrumbs currentLabel={breadcrumbLabel} items={breadcrumbItems} />
-        <PremiumHeroSection
-          eyebrow={eyebrow}
-          title={title}
-          description={description}
-          image={{
-            desktopSrc,
-            mobileSrc,
-            desktopWidth,
-            desktopHeight,
-            mobileWidth,
-            mobileHeight,
-            alt: imageAlt,
-          }}
-          primaryCta={{ label: ctaLabel, href: ctaHref }}
-        />
+        {compactHeading ? (
+          <SecondaryPageHeading
+            eyebrow={eyebrow}
+            title={title}
+            description={description}
+            primaryCta={{ label: ctaLabel, href: ctaHref }}
+          />
+        ) : (
+          <PremiumHeroSection
+            eyebrow={eyebrow}
+            title={title}
+            description={description}
+            image={{
+              desktopSrc,
+              mobileSrc,
+              desktopWidth,
+              desktopHeight,
+              mobileWidth,
+              mobileHeight,
+              alt: imageAlt,
+            }}
+            primaryCta={{ label: ctaLabel, href: ctaHref }}
+          />
+        )}
 
         {afterHero}
 
@@ -106,17 +119,9 @@ export function MarketingFeaturePage({
             paragraphs={section.paragraphs}
             items={section.items}
             links={section.links}
-            surface={index === 0 ? "soft" : "white"}
-            layout={index % 3 === 0 ? "statement" : index % 3 === 1 ? "image-right" : "editorial"}
-            image={{
-              desktopSrc,
-              mobileSrc,
-              desktopWidth,
-              desktopHeight,
-              mobileWidth,
-              mobileHeight,
-              alt: imageAlt,
-            }}
+            surface={index % 2 === 0 ? "soft" : "white"}
+            layout={section.image ? (index % 2 ? "image-right" : "image-left") : "editorial"}
+            image={section.image}
           />
         ))}
 

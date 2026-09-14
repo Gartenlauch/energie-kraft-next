@@ -229,6 +229,79 @@ select:focus-visible {
   letter-spacing: -0.045em;
 }
 
+.secondary-heading {
+  padding-block: clamp(3rem, 6vw, 6rem);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.secondary-page-title {
+  max-width: 24ch;
+  font-size: clamp(2rem, 3.6vw, 4rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+.secondary-form {
+  border-top: 3px solid var(--brand-primary);
+  box-shadow: 0 14px 44px -32px rgb(9 20 51 / 25%);
+}
+
+.form-section-number {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--brand-primary);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+.faq-search-panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--surface-soft);
+  border-top: 3px solid var(--brand-primary);
+}
+
+.faq-category-nav {
+  column-gap: 1.5rem;
+}
+
+.reference-editorial-grid {
+  display: grid;
+  gap: 3rem 2rem;
+}
+
+.reference-editorial-grid > * {
+  min-width: 0;
+}
+
+.reference-editorial-photo {
+  aspect-ratio: 3 / 2;
+}
+
+@media (min-width: 768px) {
+  .reference-editorial-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    row-gap: 4.5rem;
+  }
+
+  .reference-editorial-grid > :nth-child(4n + 1),
+  .reference-editorial-grid > :nth-child(4n + 4) {
+    grid-column: span 2;
+  }
+
+  .reference-editorial-grid > :nth-child(4n + 2),
+  .reference-editorial-grid > :nth-child(4n + 3) {
+    margin-top: 4rem;
+  }
+
+  .reference-editorial-grid > :nth-child(4n + 2) .reference-editorial-photo,
+  .reference-editorial-grid > :nth-child(4n + 3) .reference-editorial-photo {
+    aspect-ratio: 1 / 1;
+  }
+}
+
 .premium-hero-title {
   max-width: 18ch;
   overflow-wrap: break-word;

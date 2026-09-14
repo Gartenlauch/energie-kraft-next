@@ -22,45 +22,49 @@ export default async function FaqPage() {
         path="/faq"
         description="Wie arbeiten Photovoltaik und Speicher zusammen? Was braucht eine Wärmepumpe, und wie lässt sich ein Elektroauto mit Solarstrom laden? Hier finden Sie Antworten für die nächsten Schritte."
       />
-      <div className="section-shell max-w-5xl py-12 md:py-16">
-        <nav aria-label="FAQ-Themen">
-          <ul className="flex flex-wrap gap-x-7 gap-y-3">
-            {categories.map((category) => (
-              <li key={category.id}>
-                <Link
-                  className="text-brand-primary inline-flex min-h-11 items-center font-semibold underline underline-offset-4"
-                  href={`/faq/${category.slug}`}
-                >
-                  {category.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        {featured.length > 0 && (
-          <section className="my-12" aria-labelledby="featured-faqs">
-            <h2 id="featured-faqs" className="text-2xl">
-              Ausgewählte Fragen zum Einstieg
-            </h2>
-            <ul className="mt-5 grid gap-4 md:grid-cols-2">
-              {featured.map((faq) => (
-                <li key={faq.id}>
-                  <Link
-                    className="text-brand-primary inline-block py-2 underline underline-offset-4"
-                    href={faq.href}
-                  >
-                    {faq.question}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-        <section className="mt-10" aria-labelledby="all-faqs">
+      <div className="section-shell py-10 md:py-16">
+        <section className="mb-14" aria-labelledby="all-faqs">
           <h2 id="all-faqs" className="mb-6 text-2xl">
-            Alle Fragen & Antworten
+            Welche Frage beschäftigt Sie?
           </h2>
-          <FaqExplorer entries={entries} categories={categories} />
+          <FaqExplorer entries={entries} categories={categories}>
+            <nav aria-label="FAQ-Themen">
+              <ul className="faq-category-nav grid sm:grid-cols-2 lg:grid-cols-5">
+                {categories.map((category) => (
+                  <li key={category.id}>
+                    <Link
+                      className="text-brand-primary border-border-strong flex min-h-16 items-center border-t py-4 pr-4 font-semibold underline-offset-4 hover:underline"
+                      href={`/faq/${category.slug}`}
+                    >
+                      {category.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            {featured.length > 0 && (
+              <section
+                className="border-border-strong mt-14 border-t pt-10"
+                aria-labelledby="featured-faqs"
+              >
+                <h2 id="featured-faqs" className="text-2xl">
+                  Ausgewählte Fragen zum Einstieg
+                </h2>
+                <ul className="mt-5 grid gap-4 md:grid-cols-2">
+                  {featured.map((faq) => (
+                    <li key={faq.id}>
+                      <Link
+                        className="text-brand-primary border-border-default inline-flex min-h-16 items-center border-b py-4 pr-5 leading-7 font-semibold underline-offset-4 hover:underline"
+                        href={faq.href}
+                      >
+                        {faq.question}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </FaqExplorer>
         </section>
       </div>
     </main>

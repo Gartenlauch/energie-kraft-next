@@ -89,12 +89,12 @@ export function TeamOverview({ mode }: TeamOverviewProps) {
         </Reveal>
 
         <ul
-          className={`mt-14 grid ${companyMode ? "grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-5" : "gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3"}`}
+          className={`mt-14 grid ${companyMode ? "grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-5" : "grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-5"}`}
         >
           {primaryMembers.map((member, index) => (
             <li key={member.id}>
               <Reveal delay={(index % 4) * 50}>
-                <TeamPortrait member={member} priority={index < 2} compact={companyMode} />
+                <TeamPortrait member={member} compact />
               </Reveal>
             </li>
           ))}

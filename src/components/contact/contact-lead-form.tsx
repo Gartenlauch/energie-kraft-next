@@ -367,7 +367,7 @@ export function ContactLeadForm() {
             {contactFormContent.description}
           </p>
 
-          <div className="mt-8 rounded-xl border border-border-default bg-background/75 p-5">
+          <div className="mt-8 border-l-2 border-brand-primary pl-5">
             <p className="font-semibold">
               Keine technischen Unterlagen notwendig
             </p>
@@ -387,7 +387,7 @@ export function ContactLeadForm() {
             event.preventDefault();
             void handleSubmit();
           }}
-          className="premium-card min-w-0 p-5 md:p-8 lg:p-10"
+          className="secondary-form min-w-0 bg-white p-5 md:p-8 lg:p-10"
         >
           <fieldset disabled={isSubmitting}>
             <legend className="text-xl font-semibold">
