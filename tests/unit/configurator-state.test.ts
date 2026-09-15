@@ -10,16 +10,17 @@ describe("configurator state", () => {
   it("creates the expected initial state", () => {
     const state = createInitialConfiguratorState();
 
-    expect(state.version).toBe(7);
+    expect(state.version).toBe(8);
 
     expect(state.wallbox).toEqual({});
     expect(state.activeConfigurator).toBeNull();
     expect(state.activeConfigurator).toBeNull();
     expect(state.batteryStorage).toEqual({});
-    expect(state.household).toEqual({ futureIncreasePercent: 10, });
+    expect(state.household).toEqual({ futureIncreasePercent: 10 });
     expect(state.climate).toEqual({});
 
     expect(state.interests).toEqual({
+      photovoltaic: false,
       batteryStorage: false,
       climate: false,
       heatPump: false,
@@ -28,7 +29,6 @@ describe("configurator state", () => {
 
     expect(state.heatPump).toEqual({});
   });
-
 
   it("calculates projected consumption", () => {
     expect(calculateProjectedConsumptionKwh(3000, 10)).toBe(3300);
@@ -52,15 +52,12 @@ describe("configurator state", () => {
   });
 
   it("recalculates projected consumption when future increase changes", () => {
-    const initialState = configuratorReducer(
-      createInitialConfiguratorState(),
-      {
+    const initialState = configuratorReducer(createInitialConfiguratorState(), {
         type: "UPDATE_HOUSEHOLD",
         payload: {
           annualConsumptionKwh: 3000,
         },
-      },
-    );
+    });
 
     const state = configuratorReducer(initialState, {
       type: "UPDATE_HOUSEHOLD",
@@ -73,16 +70,13 @@ describe("configurator state", () => {
   });
 
   it("keeps household data when another configurator becomes active", () => {
-    let state = configuratorReducer(
-      createInitialConfiguratorState(),
-      {
+    let state = configuratorReducer(createInitialConfiguratorState(), {
         type: "UPDATE_HOUSEHOLD",
         payload: {
           persons: 3,
           annualConsumptionKwh: 3000,
         },
-      },
-    );
+    });
 
     state = configuratorReducer(state, {
       type: "SET_ACTIVE_CONFIGURATOR",
@@ -96,16 +90,13 @@ describe("configurator state", () => {
   });
 
   it("resets the complete configurator state", () => {
-    let state = configuratorReducer(
-      createInitialConfiguratorState(),
-      {
+    let state = configuratorReducer(createInitialConfiguratorState(), {
         type: "UPDATE_INTERESTS",
         payload: {
           batteryStorage: true,
           wallbox: true,
         },
-      },
-    );
+    });
 
     state = configuratorReducer(state, {
       type: "RESET",
@@ -113,65 +104,60 @@ describe("configurator state", () => {
 
     expect(state).toEqual(createInitialConfiguratorState());
   });
-  it(
-    "starts a fresh photovoltaic journey instead of keeping an old standalone entry point",
-    () => {
-      let state =
-        createInitialConfiguratorState();
+  it("starts a fresh photovoltaic journey instead of keeping an old standalone entry point", () => {
+    let state = createInitialConfiguratorState();
 
       /*
        * Vorherige Standalone-Wärmepumpen-
        * Journey simulieren.
        */
-      state =
-        configuratorReducer(
-          state,
-          {
-            type:
-              "SET_ACTIVE_CONFIGURATOR",
+    state = configuratorReducer(state, {
+      type: "SET_ACTIVE_CONFIGURATOR",
 
-            payload:
-              "heat_pump",
-          },
-        );
+      payload: "heat_pump",
+    });
 
-      expect(
-        state.journey.entryPoint,
-      ).toBe("heat_pump");
+    expect(state.journey.entryPoint).toBe("heat_pump");
 
       /*
        * Danach beginnt der Benutzer eine
        * neue PV-Konfiguration.
        */
-      state =
-        configuratorReducer(
-          state,
-          {
-            type:
-              "SET_ACTIVE_CONFIGURATOR",
+    state = configuratorReducer(state, {
+      type: "SET_ACTIVE_CONFIGURATOR",
 
-            payload:
-              "photovoltaic",
-          },
-        );
+      payload: "photovoltaic",
+    });
 
-      expect(
-        state.journey.entryPoint,
-      ).toBe("photovoltaic");
+    expect(state.journey.entryPoint).toBe("photovoltaic");
 
-      expect(
-        state.journey
-          .selectedProducts,
-      ).toEqual([
-        "photovoltaic",
-      ]);
+    expect(state.journey.selectedProducts).toEqual(["photovoltaic"]);
 
-      expect(
-        state.journey
-          .selectedProducts,
-      ).not.toContain(
-        "heat_pump",
-      );
+    expect(state.journey.selectedProducts).not.toContain("heat_pump");
+  });
+
+  it("prefills equivalent heat-pump and climate values without overwriting input", () => {
+    const initial = {
+      ...createInitialConfiguratorState(),
+      heatPump: { heatedAreaM2: 145, occupancyPersons: 3 },
+      climate: { conditionedAreaM2: 90, occupancyPersons: 2 },
+    };
+
+    const climate = configuratorReducer(initial, {
+      type: "SET_ACTIVE_CONFIGURATOR",
+      payload: "climate",
+    });
+    expect(climate.climate.conditionedAreaM2).toBe(90);
+    expect(climate.climate.occupancyPersons).toBe(2);
+
+    const heatPump = configuratorReducer(
+      {
+        ...createInitialConfiguratorState(),
+        climate: { conditionedAreaM2: 90, occupancyPersons: 2 },
     },
+      { type: "SET_ACTIVE_CONFIGURATOR", payload: "heat_pump" },
   );
+    expect(heatPump.heatPump.heatedAreaM2).toBe(90);
+    expect(heatPump.heatPump.occupancyPersons).toBe(2);
+  });
 });

@@ -1,13 +1,6 @@
-import {
-    calculateHeatPumpCost,
-} from "@/lib/calculators/heat-pump-cost";
-import {
-    DEFAULT_HEAT_PUMP_CALCULATOR_INPUT,
-} from "@/lib/calculators/heat-pump-model";
-import type {
-    ConfiguratorState,
-    HeatPumpConfiguratorResult,
-} from "@/types/configurator";
+import { calculateHeatPumpCost } from "@/lib/calculators/heat-pump-cost";
+import { DEFAULT_HEAT_PUMP_CALCULATOR_INPUT } from "@/lib/calculators/heat-pump-model";
+import type { ConfiguratorState, HeatPumpConfiguratorResult } from "@/types/configurator";
 
 export function buildHeatPumpConfiguratorResult(
     state: ConfiguratorState,
@@ -22,8 +15,7 @@ export function buildHeatPumpConfiguratorResult(
 
     if (
         heatedAreaM2 === undefined ||
-        specificSpaceHeatingDemandKwhPerM2Year ===
-        undefined ||
+    specificSpaceHeatingDemandKwhPerM2Year === undefined ||
         occupancyPersons === undefined ||
         requiredFlowTemperatureC === undefined ||
         annualPerformanceFactor === undefined
@@ -45,56 +37,38 @@ export function buildHeatPumpConfiguratorResult(
         annualPerformanceFactor,
     };
 
-    const calculatorResult =
-        calculateHeatPumpCost(
-            calculationInput,
-        );
+  const calculatorResult = calculateHeatPumpCost(calculationInput);
 
     return {
         calculationInput,
 
-        recommendedHeatPumpCapacityKw:
-            calculatorResult
-                .recommendedHeatPumpCapacityKw,
+    recommendedHeatPumpCapacityKw: calculatorResult.recommendedHeatPumpCapacityKw,
 
-        totalAnnualHeatDemandKwh:
-            calculatorResult
-                .totalAnnualHeatDemandKwh,
+    totalAnnualHeatDemandKwh: calculatorResult.totalAnnualHeatDemandKwh,
 
-        spaceHeatingDemandKwh:
-            calculatorResult.spaceHeatingDemandKwh,
+    spaceHeatingDemandKwh: calculatorResult.spaceHeatingDemandKwh,
 
-        hotWaterDemandKwh:
-            calculatorResult.hotWaterDemandKwh,
+    hotWaterDemandKwh: calculatorResult.hotWaterDemandKwh,
 
         annualHeatPumpElectricityConsumptionKwh:
-            calculatorResult
-                .annualHeatPumpElectricityConsumptionKwh,
+      calculatorResult.annualHeatPumpElectricityConsumptionKwh,
 
-        annualHeatPumpOperatingCostEuro:
-            calculatorResult
-                .annualHeatPumpOperatingCostEuro,
+    annualHeatPumpOperatingCostEuro: calculatorResult.annualHeatPumpOperatingCostEuro,
 
-        estimatedTotalCostEuro:
-            calculatorResult
-                .estimatedTotalCostEuro,
+    currentHeatingOperatingCostEuro: calculatorResult.currentHeatingOperatingCostEuro,
 
-        estimatedMinimumCostEuro:
-            calculatorResult
-                .estimatedMinimumCostEuro,
+    annualOperatingCostDifferenceEuro: calculatorResult.annualOperatingCostDifferenceEuro,
 
-        estimatedMaximumCostEuro:
-            calculatorResult
-                .estimatedMaximumCostEuro,
+    estimatedTotalCostEuro: calculatorResult.estimatedTotalCostEuro,
 
-        flowTemperatureAssessment:
-            calculatorResult
-                .flowTemperatureAssessment,
+    estimatedMinimumCostEuro: calculatorResult.estimatedMinimumCostEuro,
 
-        ntReady:
-            calculatorResult.ntReady,
+    estimatedMaximumCostEuro: calculatorResult.estimatedMaximumCostEuro,
 
-        technicalReviewRecommended:
-            !calculatorResult.ntReady,
+    flowTemperatureAssessment: calculatorResult.flowTemperatureAssessment,
+
+    ntReady: calculatorResult.ntReady,
+
+    technicalReviewRecommended: !calculatorResult.ntReady,
     };
 }

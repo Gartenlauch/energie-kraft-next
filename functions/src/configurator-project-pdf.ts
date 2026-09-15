@@ -1,10 +1,7 @@
 import PDFDocument from "pdfkit";
 import path from "node:path";
 
-import type {
-    ConfiguratorLeadPayload,
-    ConfiguratorPayload,
-} from "./configurator-lead-validation";
+import type { ConfiguratorLeadPayload, ConfiguratorPayload } from "./configurator-lead-validation";
 
 interface GenerateConfiguratorProjectPdfInput {
     leadId: string;
@@ -28,52 +25,37 @@ interface ProductTheme {
     border: string;
 }
 
-const FUNCTIONS_ROOT =
-    path.resolve(
-        __dirname,
-        "..",
-    );
+const FUNCTIONS_ROOT = path.resolve(__dirname, "..");
 
-const BRAND_LOGO_PATH =
-    path.join(
+const BRAND_LOGO_PATH = path.join(
         FUNCTIONS_ROOT,
         "assets",
         "branding",
         "energie-kraft-logo-transparent.png",
     );
 
-const BRAND_SUPERSIGN_PATH =
-    path.join(
+const BRAND_SUPERSIGN_PATH = path.join(
         FUNCTIONS_ROOT,
         "assets",
         "branding",
         "energie-kraft-supersign-transparent.png",
     );
 
-const MONTSERRAT_REGULAR_PATH =
-    path.join(
+const MONTSERRAT_REGULAR_PATH = path.join(
         FUNCTIONS_ROOT,
         "assets",
         "fonts",
         "Montserrat-Regular.ttf",
     );
 
-const MONTSERRAT_SEMIBOLD_PATH =
-    path.join(
+const MONTSERRAT_SEMIBOLD_PATH = path.join(
         FUNCTIONS_ROOT,
         "assets",
         "fonts",
         "Montserrat-SemiBold.ttf",
     );
 
-const MONTSERRAT_BOLD_PATH =
-    path.join(
-        FUNCTIONS_ROOT,
-        "assets",
-        "fonts",
-        "Montserrat-Bold.ttf",
-    );
-
+const MONTSERRAT_BOLD_PATH = path.join(FUNCTIONS_ROOT, "assets", "fonts", "Montserrat-Bold.ttf");
 
 const FONT_REGULAR = "Montserrat-Regular";
 const FONT_SEMIBOLD = "Montserrat-SemiBold";
@@ -96,88 +78,62 @@ const COLORS = {
 
     white: "#FFFFFF",
 
-    warningBackground:
-        "#F6F8FC",
+  warningBackground: "#F6F8FC",
 
-    warningBorder:
-        "#CFD8E7",
+  warningBorder: "#CFD8E7",
 
-    warningText:
-        "#526178",
+  warningText: "#526178",
 } as const;
 
-const PRODUCT_THEMES: Record<
-    ConfiguratorPayload["type"],
-    ProductTheme
-> = {
+const PRODUCT_THEMES: Record<ConfiguratorPayload["type"], ProductTheme> = {
     photovoltaic: {
-        label:
-            "Photovoltaik",
+    label: "Photovoltaik",
 
-        accent:
-            COLORS.primary,
+    accent: COLORS.primary,
 
-        background:
-            COLORS.surfaceBlue,
+    background: COLORS.surfaceBlue,
 
-        border:
-            COLORS.border,
+    border: COLORS.border,
     },
 
     battery_storage: {
-        label:
-            "Stromspeicher",
+    label: "Stromspeicher",
 
-        accent:
-            COLORS.accent,
+    accent: COLORS.accent,
 
-        background:
-            COLORS.surfaceCyan,
+    background: COLORS.surfaceCyan,
 
-        border:
-            COLORS.border,
+    border: COLORS.border,
     },
 
     wallbox: {
-        label:
-            "Wallbox",
+    label: "Wallbox",
 
-        accent:
-            COLORS.secondary,
+    accent: COLORS.secondary,
 
-        background:
-            COLORS.surfaceBlue,
+    background: COLORS.surfaceBlue,
 
-        border:
-            COLORS.border,
+    border: COLORS.border,
     },
 
     heat_pump: {
-        label:
-            "Wärmepumpe",
+    label: "Wärmepumpe",
 
-        accent:
-            COLORS.primary,
+    accent: COLORS.primary,
 
-        background:
-            COLORS.surfaceBlue,
+    background: COLORS.surfaceBlue,
 
-        border:
-            COLORS.border,
+    border: COLORS.border,
     },
 
     climate: {
-        label:
-            "Klimaanlage",
+    label: "Klimaanlage",
 
-        accent:
-            COLORS.accent,
+    accent: COLORS.accent,
 
-        background:
-            COLORS.surfaceCyan,
+    background: COLORS.surfaceCyan,
 
-        border:
-            COLORS.border,
+    border: COLORS.border,
     },
 };
 
@@ -189,515 +145,287 @@ const PERSON_LABELS: Record<string, string> = {
 };
 
 const BUILDING_LABELS: Record<string, string> = {
-    detached_house:
-        "Freistehendes Einfamilienhaus",
+  detached_house: "Freistehendes Einfamilienhaus",
 
-    semi_detached_house:
-        "Doppelhaushälfte",
+  semi_detached_house: "Doppelhaushälfte",
 
-    mid_terrace_house:
-        "Reihenmittelhaus",
+  mid_terrace_house: "Reihenmittelhaus",
 
-    end_terrace_house:
-        "Reihenendhaus",
+  end_terrace_house: "Reihenendhaus",
 
-    multi_family_house:
-        "Mehrfamilienhaus",
+  multi_family_house: "Mehrfamilienhaus",
 };
 
-const ROOF_MATERIAL_LABELS:
-    Record<string, string> = {
-    roof_tile:
-        "Dachziegel",
+const ROOF_MATERIAL_LABELS: Record<string, string> = {
+  roof_tile: "Dachziegel",
 
-    beaver_tail:
-        "Biberschwanz",
+  beaver_tail: "Biberschwanz",
 
-    slate:
-        "Schiefer",
+  slate: "Schiefer",
 
-    metal:
-        "Blech",
+  metal: "Blech",
 
-    roofing_felt:
-        "Dachpappe",
+  roofing_felt: "Dachpappe",
 
-    gravel:
-        "Kiesdach",
+  gravel: "Kiesdach",
 
-    plastic:
-        "Kunststoff",
+  plastic: "Kunststoff",
 
-    other:
-        "Sonstiges",
+  other: "Sonstiges",
 
-    unknown:
-        "Weiß ich nicht",
+  unknown: "Weiß ich nicht",
 };
 
-const ORIENTATION_LABELS:
-    Record<string, string> = {
-    south:
-        "Süd",
+const ORIENTATION_LABELS: Record<string, string> = {
+  south: "Süd",
 
-    south_east_south_west:
-        "Südost / Südwest",
+  south_east_south_west: "Südost / Südwest",
 
-    east_west:
-        "Ost-West",
+  east_west: "Ost-West",
 
-    north:
-        "Nordorientiert",
+  north: "Nordorientiert",
 };
 
-const RENOVATION_LABELS:
-    Record<string, string> = {
-    new_build:
-        "Neubau",
+const RENOVATION_LABELS: Record<string, string> = {
+  new_build: "Neubau",
 
-    after_1990:
-        "Nach 1990",
+  after_1990: "Nach 1990",
 
-    before_1990:
-        "Vor 1990",
+  before_1990: "Vor 1990",
 
-    before_1960:
-        "Vor 1960",
+  before_1960: "Vor 1960",
 
-    unknown:
-        "Weiß ich nicht",
+  unknown: "Weiß ich nicht",
 };
 
-const BATTERY_PATTERN_LABELS:
-    Record<string, string> = {
-    mostly_daytime:
-        "Überwiegend tagsüber",
+const BATTERY_PATTERN_LABELS: Record<string, string> = {
+  mostly_daytime: "Überwiegend tagsüber",
 
-    mixed:
-        "Gemischt",
+  mixed: "Gemischt",
 
-    mostly_evening:
-        "Überwiegend abends",
+  mostly_evening: "Überwiegend abends",
 };
 
-const BATTERY_BACKUP_LABELS:
-    Record<string, string> = {
-    none:
-        "Keine Ersatzstromfunktion",
+const BATTERY_BACKUP_LABELS: Record<string, string> = {
+  none: "Keine Ersatzstromfunktion",
 
-    selected_loads:
-        "Ausgewählte Verbraucher",
+  selected_loads: "Ausgewählte Verbraucher",
 
-    whole_home:
-        "Gesamtes Gebäude",
+  whole_home: "Gesamtes Gebäude",
 };
 
-const BATTERY_GOAL_LABELS:
-    Record<string, string> = {
-    economic:
-        "Wirtschaftlichkeit",
+const BATTERY_GOAL_LABELS: Record<string, string> = {
+  economic: "Wirtschaftlichkeit",
 
-    balanced:
-        "Ausgewogen",
+  balanced: "Ausgewogen",
 
-    high_autonomy:
-        "Hohe Autarkie",
+  high_autonomy: "Hohe Autarkie",
 };
 
-const HEAT_PUMP_ASSESSMENT_LABELS:
-    Record<string, string> = {
-    ntReady:
-        "Niedertemperatur-ready",
+const HEAT_PUMP_ASSESSMENT_LABELS: Record<string, string> = {
+  ntReady: "Niedertemperatur-ready",
 
-    individualReview:
-        "Individuelle Prüfung erforderlich",
+  individualReview: "Individuelle Prüfung erforderlich",
 };
 
-const CLIMATE_INSULATION_LABELS:
-    Record<string, string> = {
-    good:
-        "Gut",
+const CLIMATE_INSULATION_LABELS: Record<string, string> = {
+  good: "Gut",
 
-    average:
-        "Durchschnittlich",
+  average: "Durchschnittlich",
 
-    weak:
-        "Eher schwach",
+  weak: "Eher schwach",
 };
 
-const CLIMATE_SOLAR_LABELS:
-    Record<string, string> = {
-    low:
-        "Gering",
+const CLIMATE_SOLAR_LABELS: Record<string, string> = {
+  low: "Gering",
 
-    medium:
-        "Mittel",
+  medium: "Mittel",
 
-    high:
-        "Hoch",
+  high: "Hoch",
 };
 
-const CLIMATE_SYSTEM_LABELS:
-    Record<string, string> = {
-    singleSplit:
-        "Single-Split-System",
+const CLIMATE_SYSTEM_LABELS: Record<string, string> = {
+  singleSplit: "Single-Split-System",
 
-    multiSplit:
-        "Multi-Split-System",
+  multiSplit: "Multi-Split-System",
 
-    projectPlanning:
-        "Individuelle Mehrzonenplanung",
+  projectPlanning: "Individuelle Mehrzonenplanung",
 };
 
-const numberFormatter =
-    new Intl.NumberFormat(
-        "de-DE",
-        {
+const numberFormatter = new Intl.NumberFormat("de-DE", {
             maximumFractionDigits: 1,
-        },
-    );
+});
 
-const currencyFormatter =
-    new Intl.NumberFormat(
-        "de-DE",
-        {
+const currencyFormatter = new Intl.NumberFormat("de-DE", {
             style: "currency",
             currency: "EUR",
             maximumFractionDigits: 0,
-        },
-    );
+});
 
-function registerPdfFonts(
-    document: PDFKit.PDFDocument,
-): void {
-    document.registerFont(
-        FONT_REGULAR,
-        MONTSERRAT_REGULAR_PATH,
-    );
+function registerPdfFonts(document: PDFKit.PDFDocument): void {
+  document.registerFont(FONT_REGULAR, MONTSERRAT_REGULAR_PATH);
 
-    document.registerFont(
-        FONT_SEMIBOLD,
-        MONTSERRAT_SEMIBOLD_PATH,
-    );
+  document.registerFont(FONT_SEMIBOLD, MONTSERRAT_SEMIBOLD_PATH);
 
-    document.registerFont(
-        FONT_BOLD,
-        MONTSERRAT_BOLD_PATH,
-    );
+  document.registerFont(FONT_BOLD, MONTSERRAT_BOLD_PATH);
 }
 
-function getProductHighlights(
-    configurator: ConfiguratorPayload,
-): PdfHighlight[] {
+function getProductHighlights(configurator: ConfiguratorPayload): PdfHighlight[] {
     switch (configurator.type) {
         case "photovoltaic":
             return [
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.result
-                                .recommendedPowerKwpMin,
-                        )}–${formatNumber(
-                            configurator.result
-                                .recommendedPowerKwpMax,
+          value: `${formatNumber(configurator.result.recommendedPowerKwpMin)}–${formatNumber(
+            configurator.result.recommendedPowerKwpMax,
                         )} kWp`,
-                    label:
-                        "Empfohlene Anlagenleistung",
+          label: "Empfohlene Anlagenleistung",
                 },
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.result
-                                .estimatedAnnualYieldKwhMin,
-                        )}–${formatNumber(
-                            configurator.result
-                                .estimatedAnnualYieldKwhMax,
-                        )} kWh`,
-                    label:
-                        "Erwarteter Jahresertrag",
+          value: `${formatCurrency(configurator.result.estimatedMinimumCostEuro)}–${formatCurrency(configurator.result.estimatedMaximumCostEuro)}`,
+          label: "PV-Projektkosten-Korridor",
                 },
             ];
 
         case "battery_storage":
             return [
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.result
-                                .recommendedUsableCapacityKwhMin,
-                        )}–${formatNumber(
-                            configurator.result
-                                .recommendedUsableCapacityKwhMax,
-                        )} kWh`,
-                    label:
-                        "Empfohlene Speicherkapazität",
+          value: `${formatNumber(
+            configurator.result.recommendedUsableCapacityKwhMin,
+          )}–${formatNumber(configurator.result.recommendedUsableCapacityKwhMax)} kWh`,
+          label: "Empfohlene Speicherkapazität",
                 },
                 {
-                    value:
-                        formatBoolean(
-                            configurator.result
-                                .backupPowerRequested,
-                        ),
-                    label:
-                        "Ersatzstrom gewünscht",
+          value: `${formatCurrency(configurator.result.estimatedMinimumCostEuro)}–${formatCurrency(configurator.result.estimatedMaximumCostEuro)}`,
+          label: "Speicher-Projektkosten-Korridor",
                 },
             ];
 
         case "wallbox":
             return [
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.answers
-                                .chargingPowerKw,
-                        )} kW`,
-                    label:
-                        "Gewählte Ladeleistung",
+          value: `${formatNumber(configurator.answers.chargingPowerKw)} kW`,
+          label: "Gewählte Ladeleistung",
                 },
                 {
-                    value:
-                        `${formatCurrency(
-                            configurator.result
-                                .estimatedMinimumCostEuro,
-                        )}–${formatCurrency(
-                            configurator.result
-                                .estimatedMaximumCostEuro,
+          value: `${formatCurrency(configurator.result.estimatedMinimumCostEuro)}–${formatCurrency(
+            configurator.result.estimatedMaximumCostEuro,
                         )}`,
-                    label:
-                        "Projektkosten-Korridor",
+          label: "Projektkosten-Korridor",
                 },
             ];
 
         case "heat_pump":
             return [
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.result
-                                .recommendedHeatPumpCapacityKw,
-                        )} kW`,
-                    label:
-                        "Empfohlene Leistung",
+          value: `${formatNumber(configurator.result.recommendedHeatPumpCapacityKw)} kW`,
+          label: "Empfohlene Leistung",
                 },
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.result
-                                .annualHeatPumpElectricityConsumptionKwh,
-                        )} kWh`,
-                    label:
-                        "Geschätzter Strombedarf/Jahr",
+          value: `${formatCurrency(configurator.result.estimatedMinimumCostEuro)}–${formatCurrency(configurator.result.estimatedMaximumCostEuro)}`,
+          label: "Projektkosten-Korridor",
                 },
             ];
 
         case "climate":
             return [
                 {
-                    value:
-                        `${formatNumber(
-                            configurator.result
-                                .recommendedCoolingCapacityKw,
-                        )} kW`,
-                    label:
-                        "Empfohlene Kühlleistung",
+          value: `${formatNumber(configurator.result.recommendedCoolingCapacityKw)} kW`,
+          label: "Empfohlene Kühlleistung",
                 },
                 {
-                    value:
-                        `${configurator.result
-                            .recommendedIndoorUnitCount}`,
-                    label:
-                        "Empfohlene Innengeräte",
+          value: `${formatCurrency(configurator.result.estimatedMinimumCostEuro)}–${formatCurrency(configurator.result.estimatedMaximumCostEuro)}`,
+          label: "Projektkosten-Korridor",
                 },
             ];
     }
 }
 
-function drawHighlightCards(
-    document: PDFKit.PDFDocument,
-    configurator: ConfiguratorPayload,
-): void {
-    const highlights =
-        getProductHighlights(
-            configurator,
-        );
+function drawHighlightCards(document: PDFKit.PDFDocument, configurator: ConfiguratorPayload): void {
+  const highlights = getProductHighlights(configurator);
 
-    const theme =
-        PRODUCT_THEMES[
-        configurator.type
-        ];
+  const theme = PRODUCT_THEMES[configurator.type];
 
-    const left =
-        document.page.margins.left;
+  const left = document.page.margins.left;
 
-    const totalWidth =
-        getPageContentWidth(
-            document,
-        );
+  const totalWidth = getPageContentWidth(document);
 
     const gap = 12;
 
-    const cardWidth =
-        (totalWidth - gap) / 2;
+  const cardWidth = (totalWidth - gap) / 2;
 
     const cardHeight = 64;
 
-    const startY =
-        document.y;
+  const startY = document.y;
 
-    highlights
-        .slice(0, 2)
-        .forEach(
-            (
-                highlight,
-                index,
-            ) => {
-                const x =
-                    left +
-                    index *
-                    (cardWidth + gap);
+  highlights.slice(0, 2).forEach((highlight, index) => {
+    const x = left + index * (cardWidth + gap);
 
                 document
                     .save()
-                    .roundedRect(
-                        x,
-                        startY,
-                        cardWidth,
-                        cardHeight,
-                        9,
-                    )
-                    .fillAndStroke(
-                        theme.background,
-                        theme.border,
-                    )
+      .roundedRect(x, startY, cardWidth, cardHeight, 9)
+      .fillAndStroke(theme.background, theme.border)
                     .restore();
 
                 document
-                    .font(
-                        "Helvetica-Bold",
-                    )
+      .font("Helvetica-Bold")
                     .fontSize(16)
-                    .fillColor(
-                        theme.accent,
-                    )
-                    .text(
-                        highlight.value,
-                        x + 14,
-                        startY + 12,
-                        {
-                            width:
-                                cardWidth - 28,
-                        },
-                    );
+      .fillColor(theme.accent)
+      .text(highlight.value, x + 14, startY + 12, {
+        width: cardWidth - 28,
+      });
 
                 document
                     .font(FONT_REGULAR)
                     .fontSize(8)
-                    .fillColor(
-                        COLORS.muted,
-                    )
-                    .text(
-                        highlight.label,
-                        x + 14,
-                        startY + 40,
-                        {
-                            width:
-                                cardWidth - 28,
-                        },
-                    );
-            },
-        );
+      .fillColor(COLORS.muted)
+      .text(highlight.label, x + 14, startY + 40, {
+        width: cardWidth - 28,
+      });
+  });
 
-    document.y =
-        startY +
-        cardHeight +
-        14;
+  document.y = startY + cardHeight + 14;
 }
 
-
-function formatNumber(
-    value: number,
-): string {
-    return numberFormatter.format(
-        value,
-    );
+function formatNumber(value: number): string {
+  return numberFormatter.format(value);
 }
 
-function formatCurrency(
-    value: number,
-): string {
-    return currencyFormatter.format(
-        value,
-    );
+function formatCurrency(value: number): string {
+  return currencyFormatter.format(value);
 }
 
-function formatBoolean(
-    value: boolean,
-): string {
-    return value
-        ? "Ja"
-        : "Nein";
+function formatBoolean(value: boolean): string {
+  return value ? "Ja" : "Nein";
 }
 
-function getPageContentWidth(
-    document: PDFKit.PDFDocument,
-): number {
-    return (
-        document.page.width -
-        document.page.margins.left -
-        document.page.margins.right
-    );
+function getPageContentWidth(document: PDFKit.PDFDocument): number {
+  return document.page.width - document.page.margins.left - document.page.margins.right;
 }
 
-function drawPageHeader(
-    document: PDFKit.PDFDocument,
-): void {
-    const left =
-        document.page.margins.left;
+function drawPageHeader(document: PDFKit.PDFDocument): void {
+  const left = document.page.margins.left;
 
-    const width =
-        getPageContentWidth(
-            document,
-        );
+  const width = getPageContentWidth(document);
 
-    document.image(
-        BRAND_LOGO_PATH,
-        left,
-        20,
-        {
+  document.image(BRAND_LOGO_PATH, left, 20, {
             width: 118,
-        },
-    );
+  });
 
     document
         .font(FONT_REGULAR)
         .fontSize(7.5)
-        .fillColor(
-            COLORS.muted,
-        )
-        .text(
-            "Persönliche Projektübersicht",
-            left,
-            38,
-            {
+    .fillColor(COLORS.muted)
+    .text("Persönliche Energieprojekt-Analyse", left, 38, {
                 width,
                 align: "right",
-            },
-        );
+    });
 
     document
         .save()
-        .strokeColor(
-            COLORS.border,
-        )
+    .strokeColor(COLORS.border)
         .lineWidth(0.8)
-        .moveTo(
-            left,
-            54,
-        )
-        .lineTo(
-            left + width,
-            54,
-        )
+    .moveTo(left, 54)
+    .lineTo(left + width, 54)
         .stroke()
         .restore();
 
@@ -710,99 +438,58 @@ function drawPageHeader(
 
 function drawProductBadge(
     document: PDFKit.PDFDocument,
-    product:
-        ConfiguratorPayload["type"],
+  product: ConfiguratorPayload["type"],
     x: number,
     y: number,
 ): number {
-    const theme =
-        PRODUCT_THEMES[product];
+  const theme = PRODUCT_THEMES[product];
 
-    document
-        .font(FONT_SEMIBOLD)
-        .fontSize(9);
+  document.font(FONT_SEMIBOLD).fontSize(9);
 
-    const width =
-        document.widthOfString(
-            theme.label,
-        ) + 22;
+  const width = document.widthOfString(theme.label) + 22;
 
     document
         .save()
-        .roundedRect(
-            x,
-            y,
-            width,
-            23,
-            11.5,
-        )
-        .fillAndStroke(
-            theme.background,
-            theme.border,
-        )
+    .roundedRect(x, y, width, 23, 11.5)
+    .fillAndStroke(theme.background, theme.border)
         .restore();
 
     document
         .font(FONT_SEMIBOLD)
         .fontSize(9)
         .fillColor(theme.accent)
-        .text(
-            theme.label,
-            x + 11,
-            y + 7,
-            {
+    .text(theme.label, x + 11, y + 7, {
                 lineBreak: false,
-            },
-        );
+    });
 
     return width;
 }
 
 function drawProductBadges(
     document: PDFKit.PDFDocument,
-    products:
-        readonly ConfiguratorPayload["type"][],
+  products: readonly ConfiguratorPayload["type"][],
     startY: number,
 ): number {
-    const left =
-        document.page.margins.left;
+  const left = document.page.margins.left;
 
-    const right =
-        document.page.width -
-        document.page.margins.right;
+  const right = document.page.width - document.page.margins.right;
 
     let x = left;
     let y = startY;
 
-    for (
-        const product of products
-    ) {
-        document
-            .font(FONT_SEMIBOLD)
-            .fontSize(9);
+  for (const product of products) {
+    document.font(FONT_SEMIBOLD).fontSize(9);
 
-        const theme =
-            PRODUCT_THEMES[product];
+    const theme = PRODUCT_THEMES[product];
 
-        const badgeWidth =
-            document.widthOfString(
-                theme.label,
-            ) + 22;
+    const badgeWidth = document.widthOfString(theme.label) + 22;
 
-        if (
-            x + badgeWidth > right
-        ) {
+    if (x + badgeWidth > right) {
             x = left;
             y += 31;
         }
 
-        const width =
-            drawProductBadge(
-                document,
-                product,
-                x,
-                y,
-            );
+    const width = drawProductBadge(document, product, x, y);
 
         x += width + 8;
     }
@@ -813,34 +500,19 @@ function drawProductBadges(
 function drawSectionTitle(
     document: PDFKit.PDFDocument,
     title: string,
-    product: ConfiguratorPayload["type"],
+  product?: ConfiguratorPayload["type"],
 ): void {
-    ensureProductPageSpace(
-        document,
-        product,
-        40,
-    );
+  if (product) {
+    ensureProductPageSpace(document, product, 40);
+  }
 
-    document
-        .font(FONT_SEMIBOLD)
-        .fontSize(11.5)
-        .fillColor(
-            COLORS.navy,
-        )
-        .text(title);
+  document.font(FONT_SEMIBOLD).fontSize(11.5).fillColor(COLORS.navy).text(title);
 
-    document.moveDown(
-        0.25,
-    );
+  document.moveDown(0.25);
 }
 
-function getPageContentBottom(
-    document: PDFKit.PDFDocument,
-): number {
-    return (
-        document.page.height -
-        document.page.margins.bottom
-    );
+function getPageContentBottom(document: PDFKit.PDFDocument): number {
+  return document.page.height - document.page.margins.bottom;
 }
 
 function startProductContinuationPage(
@@ -849,41 +521,23 @@ function startProductContinuationPage(
 ): void {
     document.addPage();
 
-    drawPageHeader(
-        document,
-    );
+  drawPageHeader(document);
 
-    const theme =
-        PRODUCT_THEMES[
-        product
-        ];
+  const theme = PRODUCT_THEMES[product];
 
-    const badgeY =
-        document.y;
+  const badgeY = document.y;
 
-    drawProductBadge(
-        document,
-        product,
-        document.page.margins.left,
-        badgeY,
-    );
+  drawProductBadge(document, product, document.page.margins.left, badgeY);
 
-    document.y =
-        badgeY + 36;
+  document.y = badgeY + 36;
 
     document
         .font(FONT_SEMIBOLD)
         .fontSize(15)
-        .fillColor(
-            theme.accent,
-        )
-        .text(
-            `${theme.label} – Fortsetzung`,
-        );
+    .fillColor(theme.accent)
+    .text(`${theme.label} – Fortsetzung`);
 
-    document.moveDown(
-        0.8,
-    );
+  document.moveDown(0.8);
 }
 
 function ensureProductPageSpace(
@@ -891,23 +545,13 @@ function ensureProductPageSpace(
     product: ConfiguratorPayload["type"],
     requiredHeight: number,
 ): void {
-    const pageBottom =
-        getPageContentBottom(
-            document,
-        );
+  const pageBottom = getPageContentBottom(document);
 
-    if (
-        document.y +
-        requiredHeight <=
-        pageBottom
-    ) {
+  if (document.y + requiredHeight <= pageBottom) {
         return;
     }
 
-    startProductContinuationPage(
-        document,
-        product,
-    );
+  startProductContinuationPage(document, product);
 }
 
 function drawRows(
@@ -915,214 +559,109 @@ function drawRows(
     rows: readonly PdfRow[],
     product: ConfiguratorPayload["type"],
 ): void {
-    const left =
-        document.page.margins.left;
+  const left = document.page.margins.left;
 
-    const totalWidth =
-        getPageContentWidth(
-            document,
-        );
+  const totalWidth = getPageContentWidth(document);
 
     const labelWidth = 180;
 
-    const valueWidth =
-        totalWidth -
-        labelWidth -
-        18;
+  const valueWidth = totalWidth - labelWidth - 18;
 
-    for (
-        const row of rows
-    ) {
-        document
-            .font(FONT_REGULAR)
-            .fontSize(8.5);
+  for (const row of rows) {
+    document.font(FONT_REGULAR).fontSize(8.5);
 
-        const labelHeight =
-            document.heightOfString(
-                row.label,
-                {
-                    width:
-                        labelWidth - 8,
-                },
-            );
+    const labelHeight = document.heightOfString(row.label, {
+      width: labelWidth - 8,
+    });
 
-        document
-            .font(FONT_SEMIBOLD)
-            .fontSize(8.5);
+    document.font(FONT_SEMIBOLD).fontSize(8.5);
 
-        const valueHeight =
-            document.heightOfString(
-                row.value,
-                {
-                    width:
-                        valueWidth - 8,
-                },
-            );
+    const valueHeight = document.heightOfString(row.value, {
+      width: valueWidth - 8,
+    });
 
-        const rowHeight =
-            Math.max(
-                22,
-                labelHeight + 8,
-                valueHeight + 8,
-            );
+    const rowHeight = Math.max(22, labelHeight + 8, valueHeight + 8);
 
-        ensureProductPageSpace(
-            document,
-            product,
-            rowHeight + 3,
-        );
+    ensureProductPageSpace(document, product, rowHeight + 3);
 
-        const rowTop =
-            document.y;
+    const rowTop = document.y;
 
         document
             .font(FONT_REGULAR)
             .fontSize(8.5)
-            .fillColor(
-                COLORS.muted,
-            )
-            .text(
-                row.label,
-                left,
-                rowTop + 4,
-                {
-                    width:
-                        labelWidth - 8,
-                },
-            );
+      .fillColor(COLORS.muted)
+      .text(row.label, left, rowTop + 4, {
+        width: labelWidth - 8,
+      });
 
         document
             .font(FONT_SEMIBOLD)
             .fontSize(8.5)
-            .fillColor(
-                COLORS.text,
-            )
-            .text(
-                row.value,
-                left +
-                labelWidth +
-                8,
-                rowTop + 4,
-                {
-                    width:
-                        valueWidth - 8,
-                },
-            );
+      .fillColor(COLORS.text)
+      .text(row.value, left + labelWidth + 8, rowTop + 4, {
+        width: valueWidth - 8,
+      });
 
         document
             .save()
-            .strokeColor(
-                "#E7ECE8",
-            )
+      .strokeColor("#E7ECE8")
             .lineWidth(0.6)
-            .moveTo(
-                left,
-                rowTop +
-                rowHeight,
-            )
-            .lineTo(
-                left +
-                totalWidth,
-                rowTop +
-                rowHeight,
-            )
+      .moveTo(left, rowTop + rowHeight)
+      .lineTo(left + totalWidth, rowTop + rowHeight)
             .stroke()
             .restore();
 
-        document.y =
-            rowTop +
-            rowHeight +
-            1;
+    document.y = rowTop + rowHeight + 1;
     }
 }
 
-function drawDisclaimer(
-    document: PDFKit.PDFDocument,
-): void {
-    const left =
-        document.page.margins.left;
+function drawDisclaimer(document: PDFKit.PDFDocument): void {
+  const left = document.page.margins.left;
 
-    const width =
-        getPageContentWidth(
-            document,
-        );
+  const width = getPageContentWidth(document);
 
-    const y =
-        document.y;
+  const y = document.y;
 
     const text =
-        "Diese Projektübersicht dient ausschließlich als unverbindliche Orientierung. " +
+    "Diese Energieprojekt-Analyse dient ausschließlich als unverbindliche Orientierung. " +
         "Sie ist kein Angebot, keine technische Planung und keine Zusage zur technischen Umsetzbarkeit. " +
         "Verbindliche Angaben zu Auslegung, Kosten, Förderfähigkeit, Montage und technischer Realisierbarkeit " +
         "sind erst nach fachlicher Prüfung und gegebenenfalls einer Vor-Ort-Besichtigung möglich.";
 
-    document
-        .font(FONT_REGULAR)
-        .fontSize(9);
+  document.font(FONT_REGULAR).fontSize(9);
 
-    const textHeight =
-        document.heightOfString(
-            text,
-            {
-                width:
-                    width - 30,
-            },
-        );
+  const textHeight = document.heightOfString(text, {
+    width: width - 30,
+  });
 
-    const boxHeight =
-        textHeight + 48;
+  const boxHeight = textHeight + 48;
 
     document
         .save()
-        .roundedRect(
-            left,
-            y,
-            width,
-            boxHeight,
-            8,
-        )
-        .fillAndStroke(
-            COLORS.warningBackground,
-            COLORS.warningBorder,
-        )
+    .roundedRect(left, y, width, boxHeight, 8)
+    .fillAndStroke(COLORS.warningBackground, COLORS.warningBorder)
         .restore();
 
     document
         .font(FONT_SEMIBOLD)
         .fontSize(10)
-        .fillColor(
-            COLORS.warningText,
-        )
-        .text(
-            "Wichtiger Hinweis",
-            left + 15,
-            y + 13,
-        );
+    .fillColor(COLORS.warningText)
+    .text("Wichtiger Hinweis", left + 15, y + 13);
 
     document
         .font(FONT_REGULAR)
         .fontSize(9)
-        .fillColor(
-            COLORS.warningText,
-        )
-        .text(
-            text,
-            left + 15,
-            y + 31,
-            {
-                width:
-                    width - 30,
+    .fillColor(COLORS.warningText)
+    .text(text, left + 15, y + 31, {
+      width: width - 30,
                 lineGap: 2,
-            },
-        );
+    });
 
-    document.y =
-        y + boxHeight + 12;
+  document.y = y + boxHeight + 12;
 }
 
 function getPhotovoltaicRows(
-    configurator:
-        Extract<
+  configurator: Extract<
             ConfiguratorPayload,
             {
                 type: "photovoltaic";
@@ -1132,337 +671,186 @@ function getPhotovoltaicRows(
     inputRows: PdfRow[];
     resultRows: PdfRow[];
 } {
-    const answers =
-        configurator.answers;
+  const answers = configurator.answers;
 
-    const result =
-        configurator.result;
+  const result = configurator.result;
 
     const interests = [
-        answers.interests
-            .batteryStorage
-            ? "Stromspeicher"
-            : null,
+    answers.interests.batteryStorage ? "Stromspeicher" : null,
 
-        answers.interests
-            .wallbox
-            ? "Wallbox"
-            : null,
+    answers.interests.wallbox ? "Wallbox" : null,
 
-        answers.interests
-            .heatPump
-            ? "Wärmepumpe"
-            : null,
+    answers.interests.heatPump ? "Wärmepumpe" : null,
 
-        answers.interests
-            .climate
-            ? "Klimaanlage"
-            : null,
+    answers.interests.climate ? "Klimaanlage" : null,
     ]
-        .filter(
-            (
-                value,
-            ): value is string =>
-                value !== null,
-        )
+    .filter((value): value is string => value !== null)
         .join(", ");
 
     return {
         inputRows: [
             {
-                label:
-                    "Haushalt",
+        label: "Haushalt",
                 value:
-                    PERSON_LABELS[
-                    String(
-                        answers
-                            .household
-                            .persons,
-                    )
-                    ] ??
-                    String(
-                        answers
-                            .household
-                            .persons,
-                    ),
+          PERSON_LABELS[String(answers.household.persons)] ?? String(answers.household.persons),
             },
 
             {
-                label:
-                    "Gebäude",
-                value:
-                    BUILDING_LABELS[
-                    answers
-                        .building
-                        .type
-                    ] ??
-                    answers
-                        .building
-                        .type,
+        label: "Gebäude",
+        value: BUILDING_LABELS[answers.building.type] ?? answers.building.type,
             },
 
             {
-                label:
-                    "Aktueller Stromverbrauch",
-                value:
-                    `${formatNumber(
-                        answers
-                            .household
-                            .annualConsumptionKwh,
-                    )} kWh/Jahr`,
+        label: "Aktueller Stromverbrauch",
+        value: `${formatNumber(answers.household.annualConsumptionKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Prognostizierter Stromverbrauch",
-                value:
-                    `${formatNumber(
-                        answers
-                            .household
-                            .projectedConsumptionKwh,
-                    )} kWh/Jahr`,
+        label: "Prognostizierter Stromverbrauch",
+        value: `${formatNumber(answers.household.projectedConsumptionKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Dachneigung",
-                value:
-                    `${answers.roof.pitch}°`,
+        label: "Dachneigung",
+        value: `${answers.roof.pitch}°`,
             },
 
             {
-                label:
-                    "Dachmaterial",
-                value:
-                    ROOF_MATERIAL_LABELS[
-                    answers
-                        .roof
-                        .material
-                    ] ??
-                    answers
-                        .roof
-                        .material,
+        label: "Dachmaterial",
+        value: ROOF_MATERIAL_LABELS[answers.roof.material] ?? answers.roof.material,
             },
 
             {
-                label:
-                    "Dachausrichtung",
-                value:
-                    ORIENTATION_LABELS[
-                    answers
-                        .roof
-                        .orientation
-                    ] ??
-                    answers
-                        .roof
-                        .orientation,
+        label: "Dachausrichtung",
+        value: ORIENTATION_LABELS[answers.roof.orientation] ?? answers.roof.orientation,
             },
 
             {
-                label:
-                    "Dachalter / Sanierung",
-                value:
-                    RENOVATION_LABELS[
-                    answers
-                        .roof
-                        .renovationPeriod
-                    ] ??
-                    answers
-                        .roof
-                        .renovationPeriod,
+        label: "Dachalter / Sanierung",
+        value: RENOVATION_LABELS[answers.roof.renovationPeriod] ?? answers.roof.renovationPeriod,
             },
 
             {
-                label:
-                    "Weitere Energielösungen",
-                value:
-                    interests || "Keine",
+        label: "Weitere Energielösungen",
+        value: interests || "Keine",
             },
         ],
 
         resultRows: [
             {
-                label:
-                    "Empfohlene Anlagenklasse",
-                value:
-                    `ca. ${formatNumber(
-                        result
-                            .recommendedPowerKwpMin,
-                    )}–${formatNumber(
-                        result
-                            .recommendedPowerKwpMax,
+        label: "Empfohlene Anlagenklasse",
+        value: `ca. ${formatNumber(result.recommendedPowerKwpMin)}–${formatNumber(
+          result.recommendedPowerKwpMax,
                     )} kWp`,
             },
 
             {
-                label:
-                    "Geschätzter Jahresertrag",
-                value:
-                    `ca. ${formatNumber(
-                        result
-                            .estimatedAnnualYieldKwhMin,
-                    )}–${formatNumber(
-                        result
-                            .estimatedAnnualYieldKwhMax,
+        label: "Geschätzter Jahresertrag",
+        value: `ca. ${formatNumber(result.estimatedAnnualYieldKwhMin)}–${formatNumber(
+          result.estimatedAnnualYieldKwhMax,
                     )} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Stromspeicher berücksichtigt",
-                value:
-                    formatBoolean(
-                        result
-                            .batteryStorageRequested,
-                    ),
+        label: "PV-Projektkosten-Korridor",
+        value: `${formatCurrency(result.estimatedMinimumCostEuro)} – ${formatCurrency(result.estimatedMaximumCostEuro)}`,
             },
 
             {
-                label:
-                    "Vertiefte technische Prüfung",
-                value:
-                    result
-                        .technicalReviewRecommended
-                        ? "Besonders empfohlen"
-                        : "Standardprüfung",
+        label: "Stromspeicher berücksichtigt",
+        value: formatBoolean(result.batteryStorageRequested),
+      },
+
+      {
+        label: "Vertiefte technische Prüfung",
+        value: result.technicalReviewRecommended ? "Besonders empfohlen" : "Standardprüfung",
             },
         ],
     };
 }
 
 function getBatteryStorageRows(
-    configurator:
-        Extract<
+  configurator: Extract<
             ConfiguratorPayload,
             {
-                type:
-                "battery_storage";
+      type: "battery_storage";
             }
         >,
 ): {
     inputRows: PdfRow[];
     resultRows: PdfRow[];
 } {
-    const answers =
-        configurator.answers;
+  const answers = configurator.answers;
 
-    const result =
-        configurator.result;
+  const result = configurator.result;
 
     return {
         inputRows: [
             {
-                label:
-                    "Jahresverbrauch",
+        label: "Jahresverbrauch",
                 value:
-                    answers
-                        .annualConsumptionKwh ===
-                        undefined
+          answers.annualConsumptionKwh === undefined
                         ? "Aus Photovoltaik-Konfiguration übernommen"
-                        : `${formatNumber(
-                            answers
-                                .annualConsumptionKwh,
-                        )} kWh/Jahr`,
+            : `${formatNumber(answers.annualConsumptionKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "PV-Leistung",
+        label: "PV-Leistung",
                 value:
-                    answers.pvPowerKwp ===
-                        undefined
+          answers.pvPowerKwp === undefined
                         ? "Aus Photovoltaik-Konfiguration übernommen"
-                        : `${formatNumber(
-                            answers
-                                .pvPowerKwp,
-                        )} kWp`,
+            : `${formatNumber(answers.pvPowerKwp)} kWp`,
             },
 
             {
-                label:
-                    "Verbrauchsprofil",
-                value:
-                    BATTERY_PATTERN_LABELS[
-                    answers
-                        .consumptionPattern
-                    ] ??
-                    answers
-                        .consumptionPattern,
+        label: "Verbrauchsprofil",
+        value: BATTERY_PATTERN_LABELS[answers.consumptionPattern] ?? answers.consumptionPattern,
             },
 
             {
-                label:
-                    "Ersatzstrom",
-                value:
-                    BATTERY_BACKUP_LABELS[
-                    answers
-                        .backupPreference
-                    ] ??
-                    answers
-                        .backupPreference,
+        label: "Ersatzstrom",
+        value: BATTERY_BACKUP_LABELS[answers.backupPreference] ?? answers.backupPreference,
             },
 
             {
-                label:
-                    "Ziel",
-                value:
-                    BATTERY_GOAL_LABELS[
-                    answers.goal
-                    ] ??
-                    answers.goal,
+        label: "Ziel",
+        value: BATTERY_GOAL_LABELS[answers.goal] ?? answers.goal,
             },
         ],
 
         resultRows: [
             {
-                label:
-                    "Empfohlene nutzbare Kapazität",
-                value:
-                    `ca. ${formatNumber(
-                        result
-                            .recommendedUsableCapacityKwhMin,
-                    )}–${formatNumber(
-                        result
-                            .recommendedUsableCapacityKwhMax,
+        label: "Empfohlene nutzbare Kapazität",
+        value: `ca. ${formatNumber(result.recommendedUsableCapacityKwhMin)}–${formatNumber(
+          result.recommendedUsableCapacityKwhMax,
                     )} kWh`,
             },
 
             {
-                label:
-                    "Technische Obergrenze",
-                value:
-                    `${formatNumber(
-                        result
-                            .technicalUpperBoundUsableCapacityKwh,
-                    )} kWh`,
+        label: "Technische Obergrenze",
+        value: `${formatNumber(result.technicalUpperBoundUsableCapacityKwh)} kWh`,
             },
 
             {
-                label:
-                    "PV-Überschuss wahrscheinlich",
-                value:
-                    formatBoolean(
-                        result
-                            .pvSurplusLikely,
-                    ),
+        label: "Speicher-Projektkosten-Korridor",
+        value: `${formatCurrency(result.estimatedMinimumCostEuro)} – ${formatCurrency(result.estimatedMaximumCostEuro)}`,
             },
 
             {
-                label:
-                    "Technische Prüfung",
-                value:
-                    result
-                        .technicalReviewRecommended
-                        ? "Besonders empfohlen"
-                        : "Standardprüfung",
+        label: "PV-Überschuss wahrscheinlich",
+        value: formatBoolean(result.pvSurplusLikely),
+      },
+
+      {
+        label: "Technische Prüfung",
+        value: result.technicalReviewRecommended ? "Besonders empfohlen" : "Standardprüfung",
             },
         ],
     };
 }
 
 function getWallboxRows(
-    configurator:
-        Extract<
+  configurator: Extract<
             ConfiguratorPayload,
             {
                 type: "wallbox";
@@ -1472,133 +860,76 @@ function getWallboxRows(
     inputRows: PdfRow[];
     resultRows: PdfRow[];
 } {
-    const answers =
-        configurator.answers;
+  const answers = configurator.answers;
 
-    const result =
-        configurator.result;
+  const result = configurator.result;
 
     return {
         inputRows: [
             {
-                label:
-                    "Jährliche Fahrleistung",
-                value:
-                    `${formatNumber(
-                        answers.annualDrivingKm,
-                    )} km/Jahr`,
+        label: "Jährliche Fahrleistung",
+        value: `${formatNumber(answers.annualDrivingKm)} km/Jahr`,
             },
 
             {
-                label:
-                    "Fahrzeugverbrauch",
-                value:
-                    `${formatNumber(
-                        answers
-                            .vehicleConsumptionKwhPer100Km,
-                    )} kWh/100 km`,
+        label: "Fahrzeugverbrauch",
+        value: `${formatNumber(answers.vehicleConsumptionKwhPer100Km)} kWh/100 km`,
             },
 
             {
-                label:
-                    "Fahrzeug-Batteriekapazität",
-                value:
-                    `${formatNumber(
-                        answers
-                            .batteryCapacityKwh,
-                    )} kWh`,
+        label: "Fahrzeug-Batteriekapazität",
+        value: `${formatNumber(answers.batteryCapacityKwh)} kWh`,
             },
 
             {
-                label:
-                    "Laden zu Hause",
-                value:
-                    `${formatNumber(
-                        answers
-                            .homeChargingSharePercent,
-                    )} %`,
+        label: "Laden zu Hause",
+        value: `${formatNumber(answers.homeChargingSharePercent)} %`,
             },
 
             {
-                label:
-                    "Gewünschte Ladeleistung",
-                value:
-                    `${formatNumber(
-                        answers.chargingPowerKw,
-                    )} kW`,
+        label: "Gewünschte Ladeleistung",
+        value: `${formatNumber(answers.chargingPowerKw)} kW`,
             },
 
             {
-                label:
-                    "PV-Ladeanteil",
-                value:
-                    `${formatNumber(
-                        answers
-                            .pvChargingSharePercent,
-                    )} %`,
+        label: "PV-Ladeanteil",
+        value: `${formatNumber(answers.pvChargingSharePercent)} %`,
             },
         ],
 
         resultRows: [
             {
-                label:
-                    "Typische Ladedauer",
-                value:
-                    `${formatNumber(
-                        result
-                            .typicalChargingTimeHours,
-                    )} Stunden`,
+        label: "Typische Ladedauer",
+        value: `${formatNumber(result.typicalChargingTimeHours)} Stunden`,
             },
 
             {
-                label:
-                    "Laden zu Hause",
-                value:
-                    `${formatNumber(
-                        result
-                            .annualHomeChargingInputEnergyKwh,
-                    )} kWh/Jahr`,
+        label: "Laden zu Hause",
+        value: `${formatNumber(result.annualHomeChargingInputEnergyKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "PV-Ladeenergie",
-                value:
-                    `${formatNumber(
-                        result
-                            .annualPvChargingEnergyKwh,
-                    )} kWh/Jahr`,
+        label: "PV-Ladeenergie",
+        value: `${formatNumber(result.annualPvChargingEnergyKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Geschätzter Kostenkorridor",
-                value:
-                    `${formatCurrency(
-                        result
-                            .estimatedMinimumCostEuro,
-                    )} – ${formatCurrency(
-                        result
-                            .estimatedMaximumCostEuro,
+        label: "Geschätzter Kostenkorridor",
+        value: `${formatCurrency(result.estimatedMinimumCostEuro)} – ${formatCurrency(
+          result.estimatedMaximumCostEuro,
                     )}`,
             },
 
             {
-                label:
-                    "Technische Prüfung",
-                value:
-                    result
-                        .technicalReviewRecommended
-                        ? "Besonders empfohlen"
-                        : "Standardprüfung",
+        label: "Technische Prüfung",
+        value: result.technicalReviewRecommended ? "Besonders empfohlen" : "Standardprüfung",
             },
         ],
     };
 }
 
 function getHeatPumpRows(
-    configurator:
-        Extract<
+  configurator: Extract<
             ConfiguratorPayload,
             {
                 type: "heat_pump";
@@ -1608,136 +939,93 @@ function getHeatPumpRows(
     inputRows: PdfRow[];
     resultRows: PdfRow[];
 } {
-    const answers =
-        configurator.answers;
+  const answers = configurator.answers;
 
-    const result =
-        configurator.result;
+  const result = configurator.result;
 
     return {
         inputRows: [
             {
-                label:
-                    "Beheizte Fläche",
-                value:
-                    `${formatNumber(
-                        answers.heatedAreaM2,
-                    )} m²`,
+        label: "Beheizte Fläche",
+        value: `${formatNumber(answers.heatedAreaM2)} m²`,
             },
 
             {
-                label:
-                    "Spezifischer Wärmebedarf",
-                value:
-                    `${formatNumber(
-                        answers
-                            .specificSpaceHeatingDemandKwhPerM2Year,
-                    )} kWh/m²/Jahr`,
+        label: "Spezifischer Wärmebedarf",
+        value: `${formatNumber(answers.specificSpaceHeatingDemandKwhPerM2Year)} kWh/m²/Jahr`,
             },
 
             {
-                label:
-                    "Personen",
-                value:
-                    String(
-                        answers
-                            .occupancyPersons,
-                    ),
+        label: "Personen",
+        value: String(answers.occupancyPersons),
             },
 
             {
-                label:
-                    "Benötigte Vorlauftemperatur",
-                value:
-                    `${formatNumber(
-                        answers
-                            .requiredFlowTemperatureC,
-                    )} °C`,
+        label: "Benötigte Vorlauftemperatur",
+        value: `${formatNumber(answers.requiredFlowTemperatureC)} °C`,
             },
 
             {
-                label:
-                    "Angenommene Jahresarbeitszahl",
-                value:
-                    formatNumber(
-                        answers
-                            .annualPerformanceFactor,
-                    ),
+        label: "Angenommene Jahresarbeitszahl",
+        value: formatNumber(answers.annualPerformanceFactor),
             },
         ],
 
         resultRows: [
             {
-                label:
-                    "Empfohlene Wärmepumpenleistung",
-                value:
-                    `${formatNumber(
-                        result
-                            .recommendedHeatPumpCapacityKw,
-                    )} kW`,
+        label: "Empfohlene Wärmepumpenleistung",
+        value: `${formatNumber(result.recommendedHeatPumpCapacityKw)} kW`,
             },
 
             {
-                label:
-                    "Jährlicher Wärmebedarf",
-                value:
-                    `${formatNumber(
-                        result
-                            .totalAnnualHeatDemandKwh,
-                    )} kWh/Jahr`,
+        label: "Jährlicher Wärmebedarf",
+        value: `${formatNumber(result.totalAnnualHeatDemandKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Geschätzter Strombedarf",
-                value:
-                    `${formatNumber(
-                        result
-                            .annualHeatPumpElectricityConsumptionKwh,
-                    )} kWh/Jahr`,
+        label: "Geschätzter Strombedarf",
+        value: `${formatNumber(result.annualHeatPumpElectricityConsumptionKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Systemeinschätzung",
-                value:
-                    HEAT_PUMP_ASSESSMENT_LABELS[
-                    result
-                        .flowTemperatureAssessment
-                    ] ??
-                    result
-                        .flowTemperatureAssessment,
+        label: "Bisherige modellierte Heizkosten",
+        value: `${formatCurrency(result.currentHeatingOperatingCostEuro)}/Jahr`,
+      },
+
+      {
+        label: "Wärmepumpen-Betriebskosten",
+        value: `${formatCurrency(result.annualHeatPumpOperatingCostEuro)}/Jahr`,
+      },
+
+      {
+        label: "Modellierte Kostendifferenz",
+        value: `${formatCurrency(result.annualOperatingCostDifferenceEuro)}/Jahr · Förderung nicht eingerechnet`,
             },
 
             {
-                label:
-                    "Geschätzter Kostenkorridor",
+        label: "Systemeinschätzung",
                 value:
-                    `${formatCurrency(
-                        result
-                            .estimatedMinimumCostEuro,
-                    )} – ${formatCurrency(
-                        result
-                            .estimatedMaximumCostEuro,
+          HEAT_PUMP_ASSESSMENT_LABELS[result.flowTemperatureAssessment] ??
+          result.flowTemperatureAssessment,
+      },
+
+      {
+        label: "Geschätzter Kostenkorridor",
+        value: `${formatCurrency(result.estimatedMinimumCostEuro)} – ${formatCurrency(
+          result.estimatedMaximumCostEuro,
                     )}`,
             },
 
             {
-                label:
-                    "Technische Prüfung",
-                value:
-                    result
-                        .technicalReviewRecommended
-                        ? "Besonders empfohlen"
-                        : "Standardprüfung",
+        label: "Technische Prüfung",
+        value: result.technicalReviewRecommended ? "Besonders empfohlen" : "Standardprüfung",
             },
         ],
     };
 }
 
 function getClimateRows(
-    configurator:
-        Extract<
+  configurator: Extract<
             ConfiguratorPayload,
             {
                 type: "climate";
@@ -1747,300 +1035,156 @@ function getClimateRows(
     inputRows: PdfRow[];
     resultRows: PdfRow[];
 } {
-    const answers =
-        configurator.answers;
+  const answers = configurator.answers;
 
-    const result =
-        configurator.result;
+  const result = configurator.result;
 
     return {
         inputRows: [
             {
-                label:
-                    "Zu klimatisierende Fläche",
-                value:
-                    `${formatNumber(
-                        answers
-                            .conditionedAreaM2,
-                    )} m²`,
+        label: "Zu klimatisierende Fläche",
+        value: `${formatNumber(answers.conditionedAreaM2)} m²`,
             },
 
             {
-                label:
-                    "Räume / Zonen",
-                value:
-                    String(
-                        answers.roomCount,
-                    ),
+        label: "Räume / Zonen",
+        value: String(answers.roomCount),
             },
 
             {
-                label:
-                    "Gebäudezustand",
-                value:
-                    CLIMATE_INSULATION_LABELS[
-                    answers
-                        .insulationLevel
-                    ] ??
-                    answers
-                        .insulationLevel,
+        label: "Gebäudezustand",
+        value: CLIMATE_INSULATION_LABELS[answers.insulationLevel] ?? answers.insulationLevel,
             },
 
             {
-                label:
-                    "Sonneneinstrahlung",
-                value:
-                    CLIMATE_SOLAR_LABELS[
-                    answers.solarLoad
-                    ] ??
-                    answers.solarLoad,
+        label: "Sonneneinstrahlung",
+        value: CLIMATE_SOLAR_LABELS[answers.solarLoad] ?? answers.solarLoad,
             },
 
             {
-                label:
-                    "Personen",
-                value:
-                    String(
-                        answers
-                            .occupancyPersons,
-                    ),
+        label: "Personen",
+        value: String(answers.occupancyPersons),
             },
         ],
 
         resultRows: [
             {
-                label:
-                    "Empfohlene Kühlleistung",
-                value:
-                    `${formatNumber(
-                        result
-                            .recommendedCoolingCapacityKw,
-                    )} kW`,
+        label: "Empfohlene Kühlleistung",
+        value: `${formatNumber(result.recommendedCoolingCapacityKw)} kW`,
             },
 
             {
-                label:
-                    "Empfohlene Innengeräte",
-                value:
-                    String(
-                        result
-                            .recommendedIndoorUnitCount,
-                    ),
+        label: "Empfohlene Innengeräte",
+        value: String(result.recommendedIndoorUnitCount),
             },
 
             {
-                label:
-                    "Systemempfehlung",
-                value:
-                    CLIMATE_SYSTEM_LABELS[
-                    result
-                        .systemRecommendation
-                    ] ??
-                    result
-                        .systemRecommendation,
+        label: "Systemempfehlung",
+        value: CLIMATE_SYSTEM_LABELS[result.systemRecommendation] ?? result.systemRecommendation,
             },
 
             {
-                label:
-                    "Geschätzter Strombedarf",
-                value:
-                    `${formatNumber(
-                        result
-                            .annualElectricityConsumptionKwh,
-                    )} kWh/Jahr`,
+        label: "Geschätzter Strombedarf",
+        value: `${formatNumber(result.annualElectricityConsumptionKwh)} kWh/Jahr`,
             },
 
             {
-                label:
-                    "Geschätzter Kostenkorridor",
-                value:
-                    `${formatCurrency(
-                        result
-                            .estimatedMinimumCostEuro,
-                    )} – ${formatCurrency(
-                        result
-                            .estimatedMaximumCostEuro,
+        label: "Geschätzter Kostenkorridor",
+        value: `${formatCurrency(result.estimatedMinimumCostEuro)} – ${formatCurrency(
+          result.estimatedMaximumCostEuro,
                     )}`,
             },
 
             {
-                label:
-                    "Individuelle Planung",
-                value:
-                    result
-                        .individualPlanningRecommended
-                        ? "Empfohlen"
-                        : "Standardplanung",
+        label: "Individuelle Planung",
+        value: result.individualPlanningRecommended ? "Empfohlen" : "Standardplanung",
             },
         ],
     };
 }
 
-function getProductRows(
-    configurator:
-        ConfiguratorPayload,
-): {
+function getProductRows(configurator: ConfiguratorPayload): {
     inputRows: PdfRow[];
     resultRows: PdfRow[];
 } {
     switch (configurator.type) {
         case "photovoltaic":
-            return getPhotovoltaicRows(
-                configurator,
-            );
+      return getPhotovoltaicRows(configurator);
 
         case "battery_storage":
-            return getBatteryStorageRows(
-                configurator,
-            );
+      return getBatteryStorageRows(configurator);
 
         case "wallbox":
-            return getWallboxRows(
-                configurator,
-            );
+      return getWallboxRows(configurator);
 
         case "heat_pump":
-            return getHeatPumpRows(
-                configurator,
-            );
+      return getHeatPumpRows(configurator);
 
         case "climate":
-            return getClimateRows(
-                configurator,
-            );
+      return getClimateRows(configurator);
     }
 }
 
-function drawCover(
-    document: PDFKit.PDFDocument,
-    input:
-        GenerateConfiguratorProjectPdfInput,
-): void {
-    const {
-        lead,
-        leadId,
-    } = input;
+function drawCover(document: PDFKit.PDFDocument, input: GenerateConfiguratorProjectPdfInput): void {
+  const { lead, leadId } = input;
 
-    const left =
-        document.page.margins.left;
+  const left = document.page.margins.left;
 
-    const width =
-        getPageContentWidth(
-            document,
-        );
+  const width = getPageContentWidth(document);
 
     /*
      * Original-Logo auf Weiß.
      */
-    document.image(
-        BRAND_LOGO_PATH,
-        left,
-        42,
-        {
+  document.image(BRAND_LOGO_PATH, left, 42, {
             width: 235,
-        },
-    );
+  });
 
     /*
      * Corporate Hero.
      */
-    document
-        .save()
-        .roundedRect(
-            left,
-            125,
-            width,
-            155,
-            14,
-        )
-        .fill(
-            COLORS.primary,
-        )
-        .restore();
+  document.save().roundedRect(left, 125, width, 155, 14).fill(COLORS.primary).restore();
 
     /*
      * Cyan-Akzent.
      */
-    document
-        .save()
-        .roundedRect(
-            left,
-            125,
-            8,
-            155,
-            4,
-        )
-        .fill(
-            COLORS.accent,
-        )
-        .restore();
+  document.save().roundedRect(left, 125, 8, 155, 4).fill(COLORS.accent).restore();
 
     document
         .font(FONT_BOLD)
         .fontSize(29)
-        .fillColor(
-            COLORS.white,
-        )
-        .text(
-            "Dein persönliches",
-            left + 28,
-            161,
-            {
-                width:
-                    width - 56,
-            },
-        );
+    .fillColor(COLORS.white)
+    .text("Deine persönliche", left + 28, 161, {
+      width: width - 56,
+    });
 
     document
         .font(FONT_BOLD)
         .fontSize(29)
-        .fillColor(
-            COLORS.white,
-        )
-        .text(
-            "Energieprojekt",
-            left + 28,
-            197,
-            {
-                width:
-                    width - 56,
-            },
-        );
+    .fillColor(COLORS.white)
+    .text("Energieprojekt-Analyse", left + 28, 197, {
+      width: width - 56,
+    });
 
     document
         .font(FONT_REGULAR)
         .fontSize(10)
-        .fillColor(
-            "#DCEFFA",
-        )
-        .text(
-            "Deine persönliche Projektübersicht von Energie-Kraft",
-            left + 28,
-            244,
-            {
-                width:
-                    width - 56,
-            },
-        );
+    .fillColor("#DCEFFA")
+    .text("Individuelle Modellierung auf Basis deiner Angaben", left + 28, 244, {
+      width: width - 56,
+    });
 
     document.y = 318;
 
     document
         .font(FONT_BOLD)
         .fontSize(17)
-        .fillColor(
-            COLORS.primary,
-        )
-        .text(
-            `${lead.contact.firstName} ${lead.contact.lastName}`,
-        );
+    .fillColor(COLORS.primary)
+    .text(`${lead.contact.firstName} ${lead.contact.lastName}`);
 
     document
         .font(FONT_REGULAR)
         .fontSize(9)
-        .fillColor(
-            COLORS.muted,
-        )
+    .fillColor(COLORS.muted)
         .text(
             `${lead.installation.street}, ${lead.installation.postalCode} ${lead.installation.city}`,
             {
@@ -2048,97 +1192,62 @@ function drawCover(
             },
         );
 
-    document.moveDown(
-        1.25,
-    );
+  document.moveDown(1.25);
 
-    document
-        .font(FONT_SEMIBOLD)
-        .fontSize(10)
-        .fillColor(
-            COLORS.text,
-        )
-        .text(
-            "Dein Energieprojekt",
-        );
+  document.font(FONT_SEMIBOLD).fontSize(10).fillColor(COLORS.text).text("Dein Energieprojekt");
 
-    const badgeBottom =
-        drawProductBadges(
-            document,
-            lead.products,
-            document.y + 9,
-        );
+  const badgeBottom = drawProductBadges(document, lead.products, document.y + 9);
 
-    document.y =
-        badgeBottom + 22;
+  document.y = badgeBottom + 22;
 
-    const infoY =
-        document.y;
+  const infoY = document.y;
 
     document
         .save()
-        .roundedRect(
-            left,
-            infoY,
-            width,
-            72,
-            10,
-        )
-        .fillAndStroke(
-            COLORS.lightMuted,
-            COLORS.border,
-        )
+    .roundedRect(left, infoY, width, 72, 10)
+    .fillAndStroke(COLORS.lightMuted, COLORS.border)
         .restore();
 
     document
         .font(FONT_REGULAR)
         .fontSize(7.5)
-        .fillColor(
-            COLORS.muted,
-        )
-        .text(
-            "REFERENZ",
-            left + 16,
-            infoY + 13,
-        );
+    .fillColor(COLORS.muted)
+    .text("REFERENZ", left + 16, infoY + 13);
 
     document
         .font(FONT_SEMIBOLD)
         .fontSize(8.5)
-        .fillColor(
-            COLORS.text,
-        )
-        .text(
-            leadId,
-            left + 16,
-            infoY + 27,
-        );
+    .fillColor(COLORS.text)
+    .text(leadId, left + 16, infoY + 27, { width: 128 });
 
     document
         .font(FONT_REGULAR)
         .fontSize(7.5)
-        .fillColor(
-            COLORS.muted,
-        )
-        .text(
-            "EINSTIEG",
-            left + 285,
-            infoY + 13,
-        );
+    .fillColor(COLORS.muted)
+    .text("ANALYSEDATUM", left + 158, infoY + 13);
 
     document
         .font(FONT_SEMIBOLD)
         .fontSize(8.5)
-        .fillColor(
-            COLORS.primary,
-        )
+    .fillColor(COLORS.text)
         .text(
-            PRODUCT_THEMES[
-                lead.journey.entryPoint
-            ].label,
-            left + 285,
+      new Intl.DateTimeFormat("de-DE", { dateStyle: "medium" }).format(new Date()),
+      left + 158,
             infoY + 27,
+      { width: 108 },
         );
+
+  document
+    .font(FONT_REGULAR)
+    .fontSize(7.5)
+    .fillColor(COLORS.muted)
+    .text("EINSTIEG", left + 285, infoY + 13);
+
+  document
+    .font(FONT_SEMIBOLD)
+    .fontSize(8.5)
+    .fillColor(COLORS.primary)
+    .text(PRODUCT_THEMES[lead.journey.entryPoint].label, left + 285, infoY + 27);
 
     /*
      * Supersign als Corporate-
@@ -2146,9 +1255,7 @@ function drawCover(
      */
     document.image(
         BRAND_SUPERSIGN_PATH,
-        document.page.width -
-        document.page.margins.right -
-        95,
+    document.page.width - document.page.margins.right - 95,
         626,
         {
             width: 95,
@@ -2158,9 +1265,7 @@ function drawCover(
     document
         .font(FONT_REGULAR)
         .fontSize(7.5)
-        .fillColor(
-            COLORS.muted,
-        )
+    .fillColor(COLORS.muted)
         .text(
             "Unverbindliche Projektorientierung · Keine technische Planung oder Angebotszusage",
             left,
@@ -2172,147 +1277,549 @@ function drawCover(
         );
 }
 
-function drawProductPage(
+function drawMetricCard(
     document: PDFKit.PDFDocument,
-    configurator:
-        ConfiguratorPayload,
+  x: number,
+  y: number,
+  width: number,
+  value: string,
+  label: string,
 ): void {
-    document.addPage();
+  document.save().roundedRect(x, y, width, 76, 10).fill(COLORS.surfaceBlue).restore();
+  document
+    .font(FONT_BOLD)
+    .fontSize(17)
+    .fillColor(COLORS.primary)
+    .text(value, x + 14, y + 15, { width: width - 28 });
+  document
+    .font(FONT_REGULAR)
+    .fontSize(8)
+    .fillColor(COLORS.muted)
+    .text(label, x + 14, y + 47, { width: width - 28 });
+}
 
-    drawPageHeader(
-        document,
-    );
+function drawBarChart(
+  document: PDFKit.PDFDocument,
+  entries: readonly { label: string; value: number; color: string }[],
+  y: number,
+): number {
+  const left = document.page.margins.left;
+  const width = getPageContentWidth(document);
+  const maximum = Math.max(...entries.map((entry) => entry.value), 1);
+  let currentY = y;
 
-    const theme =
-        PRODUCT_THEMES[
-        configurator.type
-        ];
+  for (const entry of entries) {
+    document
+      .font(FONT_REGULAR)
+      .fontSize(8)
+      .fillColor(COLORS.muted)
+      .text(entry.label, left, currentY, { width: 180 });
+    document
+      .font(FONT_SEMIBOLD)
+      .fontSize(8)
+      .fillColor(COLORS.text)
+      .text(formatCurrency(entry.value), left + width - 120, currentY, {
+        width: 120,
+        align: "right",
+      });
+    currentY += 14;
+    document.save().roundedRect(left, currentY, width, 10, 5).fill(COLORS.lightMuted).restore();
+    document
+      .save()
+      .roundedRect(left, currentY, Math.max(4, width * (entry.value / maximum)), 10, 5)
+      .fill(entry.color)
+      .restore();
+    currentY += 24;
+  }
 
-    const left =
-        document.page.margins.left;
+  return currentY;
+}
 
-    const width =
-        getPageContentWidth(
-            document,
-        );
+function drawCashflowChart(
+  document: PDFKit.PDFDocument,
+  projections: ConfiguratorLeadPayload["economics"]["projections"],
+  y: number,
+): number {
+  const left = document.page.margins.left;
+  const width = getPageContentWidth(document);
+  const height = 190;
+  const values = projections.map((projection) => projection.cumulativeCashFlowEuro);
+  const minimum = Math.min(0, ...values);
+  const maximum = Math.max(0, ...values);
+  const range = Math.max(maximum - minimum, 1);
+  const mapY = (value: number) => y + height - ((value - minimum) / range) * height;
+  const zeroY = mapY(0);
 
-    const headerY =
-        document.y;
+  document.save().roundedRect(left, y, width, height, 10).fill(COLORS.lightMuted).restore();
+  document
+    .save()
+    .moveTo(left, zeroY)
+    .lineTo(left + width, zeroY)
+    .dash(5, { space: 4 })
+    .strokeColor(COLORS.muted)
+    .lineWidth(0.7)
+    .stroke()
+    .undash()
+    .restore();
 
-    /*
-     * Ein einziger kompakter Produktkopf.
-     * Der bisherige zusätzliche Badge und
-     * der doppelte Beschreibungstext entfallen.
-     */
+  projections.forEach((projection, index) => {
+    const x = left + (index / Math.max(projections.length - 1, 1)) * width;
+    const pointY = mapY(projection.cumulativeCashFlowEuro);
+    if (index === 0) document.moveTo(x, pointY);
+    else document.lineTo(x, pointY);
+  });
+  document.strokeColor(COLORS.primary).lineWidth(3).stroke();
+
+  const breakEven = projections.find(
+    (projection) => projection.cumulativeCashFlowEuro >= 0 && projection.year > 0,
+  );
+  if (breakEven) {
+    const index = projections.indexOf(breakEven);
+    const x = left + (index / Math.max(projections.length - 1, 1)) * width;
     document
         .save()
-        .roundedRect(
-            left,
-            headerY,
-            width,
-            52,
-            9,
-        )
-        .fill(
-            theme.background,
-        )
+      .circle(x, mapY(breakEven.cumulativeCashFlowEuro), 4)
+      .fill(COLORS.accent)
         .restore();
-
     document
         .font(FONT_SEMIBOLD)
-        .fontSize(19)
-        .fillColor(
-            theme.accent,
-        )
+      .fontSize(7)
+      .fillColor(COLORS.primary)
         .text(
-            theme.label,
-            left + 15,
-            headerY + 9,
+        `Break-even · Jahr ${breakEven.year}`,
+        Math.min(x + 7, left + width - 100),
+        Math.max(y + 8, mapY(breakEven.cumulativeCashFlowEuro) - 15),
+        { width: 100 },
         );
+  }
 
     document
         .font(FONT_REGULAR)
-        .fontSize(8)
-        .fillColor(
-            COLORS.muted,
-        )
+    .fontSize(7)
+    .fillColor(COLORS.muted)
+    .text("Jahr 0", left, y + height + 7);
+  document.text(
+    `Jahr ${projections[projections.length - 1]?.year ?? ""}`,
+    left + width - 60,
+    y + height + 7,
+    {
+    width: 60,
+    align: "right",
+    },
+  );
+  return y + height + 28;
+}
+
+function drawExecutiveSummary(
+  document: PDFKit.PDFDocument,
+  input: GenerateConfiguratorProjectPdfInput,
+): void {
+  document.addPage();
+  drawPageHeader(document);
+  drawSectionTitle(document, "Dein Projekt auf einen Blick");
+  document.font(FONT_BOLD).fontSize(25).fillColor(COLORS.navy).text("Executive Summary");
+  document
+    .font(FONT_REGULAR)
+    .fontSize(10)
+    .fillColor(COLORS.muted)
         .text(
-            "Deine persönliche Energie-Kraft Einschätzung",
-            left + 15,
-            headerY + 33,
+      "Die Basisansicht deiner modellierten Energielösung. Korridore und Szenarien machen Unsicherheit sichtbar.",
+      { width: getPageContentWidth(document) },
         );
+  document.moveDown(1.4);
 
-    document.y =
-        headerY + 64;
-
-    drawHighlightCards(
+  const economics = input.lead.economics;
+  const metrics = [
+    {
+      value: `${formatCurrency(economics.investmentMinEuro)}–${formatCurrency(economics.investmentMaxEuro)}`,
+      label: "Gesamter Projektkosten-Korridor",
+    },
+    ...(economics.firstYearQuantifiedEffectEuro !== 0
+      ? [
+          {
+            value: formatCurrency(economics.firstYearQuantifiedEffectEuro),
+            label: "Quantifizierter Effekt im ersten Jahr",
+          },
+        ]
+      : []),
+    ...(economics.paybackYears !== null
+      ? [
+          {
+            value: `${formatNumber(economics.paybackYears)} Jahre`,
+            label: "Modellierter Break-even im Basisszenario",
+          },
+        ]
+      : []),
+    {
+      value: formatCurrency(economics.finalCumulativeCashFlowEuro),
+      label: `Kumuliertes Modellergebnis nach ${economics.horizonYears} Jahren`,
+    },
+  ].slice(0, 4);
+  const gap = 12;
+  const cardWidth = (getPageContentWidth(document) - gap) / 2;
+  const startY = document.y;
+  metrics.forEach((metric, index) =>
+    drawMetricCard(
         document,
-        configurator,
+      document.page.margins.left + (index % 2) * (cardWidth + gap),
+      startY + Math.floor(index / 2) * 90,
+      cardWidth,
+      metric.value,
+      metric.label,
+    ),
     );
+  document.y = startY + Math.ceil(metrics.length / 2) * 90 + 14;
 
-    const {
-        inputRows,
-        resultRows,
-    } = getProductRows(
-        configurator,
+  document
+    .font(FONT_SEMIBOLD)
+    .fontSize(13)
+    .fillColor(COLORS.primary)
+    .text("Transparenter Nutzenbeitrag");
+  document.moveDown(0.6);
+  input.lead.economics.components.forEach((component) => {
+    document
+      .font(FONT_SEMIBOLD)
+      .fontSize(9)
+      .fillColor(COLORS.text)
+      .text(
+        `${PRODUCT_THEMES[component.component].label} · ${formatCurrency(component.investmentBaseEuro)}`,
     );
+    document
+      .font(FONT_REGULAR)
+      .fontSize(8)
+      .fillColor(COLORS.muted)
+      .text(component.explanation, { width: getPageContentWidth(document) });
+    document.moveDown(0.55);
+  });
+}
 
-    drawSectionTitle(
-        document,
-        "Deine Angaben",
-        configurator.type,
+function drawEnergySystemPage(
+  document: PDFKit.PDFDocument,
+  input: GenerateConfiguratorProjectPdfInput,
+): void {
+  document.addPage();
+  drawPageHeader(document);
+  drawSectionTitle(document, "Dein Energiesystem");
+  document
+    .font(FONT_BOLD)
+    .fontSize(24)
+    .fillColor(COLORS.navy)
+    .text("Ein Projekt. Klar getrennte Bausteine.");
+  document
+    .font(FONT_REGULAR)
+    .fontSize(10)
+    .fillColor(COLORS.muted)
+    .text(
+      "Die Komponenten werden als System betrachtet, Investition und Nutzen jedoch einzeln ausgewiesen – damit kein Vorteil doppelt zählt.",
+      { width: getPageContentWidth(document) },
     );
+  document.moveDown(1.5);
 
-    drawRows(
-        document,
-        inputRows,
-        configurator.type,
+  let y = document.y;
+  input.lead.products.forEach((product, index) => {
+    const theme = PRODUCT_THEMES[product];
+    const x = document.page.margins.left + (index % 2) * 250;
+    if (index > 0 && index % 2 === 0) y += 78;
+    document.save().roundedRect(x, y, 238, 62, 9).fill(theme.background).restore();
+    document.save().roundedRect(x, y, 6, 62, 3).fill(theme.accent).restore();
+    document
+      .font(FONT_SEMIBOLD)
+      .fontSize(12)
+      .fillColor(theme.accent)
+      .text(theme.label, x + 17, y + 13, { width: 205 });
+    const component = input.lead.economics.components.find((entry) => entry.component === product);
+    document
+      .font(FONT_REGULAR)
+      .fontSize(7.5)
+      .fillColor(COLORS.muted)
+      .text(
+        component
+          ? `${formatCurrency(component.investmentMinEuro)}–${formatCurrency(component.investmentMaxEuro)}`
+          : "Modellierter Projektbaustein",
+        x + 17,
+        y + 37,
+        { width: 205 },
     );
+  });
+  document.y = y + 98;
 
-    document.moveDown(
-        0.2,
+  if (input.lead.products.includes("photovoltaic")) {
+    document
+      .font(FONT_SEMIBOLD)
+      .fontSize(13)
+      .fillColor(COLORS.primary)
+      .text("Energiefluss im Jahresmodell");
+    document.moveDown(0.8);
+    const flowY = document.y;
+    const nodes = input.lead.products.includes("battery_storage")
+      ? ["PV-Erzeugung", "Direktverbrauch", "Stromspeicher", "Netz / Einspeisung"]
+      : ["PV-Erzeugung", "Direktverbrauch", "Netz / Einspeisung"];
+    const nodeWidth = (getPageContentWidth(document) - (nodes.length - 1) * 16) / nodes.length;
+    nodes.forEach((label, index) => {
+      const x = document.page.margins.left + index * (nodeWidth + 16);
+      document
+        .save()
+        .roundedRect(x, flowY, nodeWidth, 48, 8)
+        .fill(index === 0 ? COLORS.primary : COLORS.surfaceCyan)
+        .restore();
+      document
+        .font(FONT_SEMIBOLD)
+        .fontSize(7.5)
+        .fillColor(index === 0 ? COLORS.white : COLORS.secondary)
+        .text(label, x + 8, flowY + 17, { width: nodeWidth - 16, align: "center" });
+      if (index < nodes.length - 1)
+        document
+          .save()
+          .moveTo(x + nodeWidth + 3, flowY + 24)
+          .lineTo(x + nodeWidth + 13, flowY + 24)
+          .strokeColor(COLORS.accent)
+          .lineWidth(2)
+          .stroke()
+          .restore();
+    });
+    document.y = flowY + 70;
+    document
+      .font(FONT_REGULAR)
+      .fontSize(8)
+      .fillColor(COLORS.muted)
+      .text(
+        "Schematische Darstellung. Die Analyse nutzt Jahresenergiemengen und ist keine stündliche Lastgangsimulation.",
     );
+  }
+}
 
-    drawSectionTitle(
-        document,
-        "Ergebnis",
-        configurator.type,
+function drawProjectCostsPage(
+  document: PDFKit.PDFDocument,
+  input: GenerateConfiguratorProjectPdfInput,
+): void {
+  document.addPage();
+  drawPageHeader(document);
+  drawSectionTitle(document, "Projektkosten");
+  document
+    .font(FONT_BOLD)
+    .fontSize(24)
+    .fillColor(COLORS.navy)
+    .text("Investition ohne Scheingenauigkeit");
+  document
+    .font(FONT_REGULAR)
+    .fontSize(10)
+    .fillColor(COLORS.muted)
+    .text(
+      `Gesamtkorridor ${formatCurrency(input.lead.economics.investmentMinEuro)} bis ${formatCurrency(input.lead.economics.investmentMaxEuro)}. Der Basiswert dient ausschließlich der Modellrechnung.`,
     );
-
-    drawRows(
-        document,
-        resultRows,
-        configurator.type,
+  document.moveDown(1.5);
+  const entries = input.lead.economics.components.map((component) => ({
+    label: PRODUCT_THEMES[component.component].label,
+    value: component.investmentBaseEuro,
+    color: PRODUCT_THEMES[component.component].accent,
+  }));
+  document.y = drawBarChart(document, entries, document.y);
+  document.moveDown(1);
+  document
+    .font(FONT_REGULAR)
+    .fontSize(8)
+    .fillColor(COLORS.muted)
+    .text(
+      "Jeder Projektbaustein wird genau einmal in der Gesamtinvestition berücksichtigt. Vor-Ort-Bedingungen und konkrete Produktauswahl können den Korridor verändern.",
+      { width: getPageContentWidth(document) },
     );
 }
 
-function drawNextStepsPage(
+function drawEconomicAnalysisPage(
     document: PDFKit.PDFDocument,
-    input:
-        GenerateConfiguratorProjectPdfInput,
+  input: GenerateConfiguratorProjectPdfInput,
 ): void {
     document.addPage();
-
-    drawPageHeader(
-        document,
+  drawPageHeader(document);
+  drawSectionTitle(document, "Wirtschaftlichkeitsanalyse");
+  document
+    .font(FONT_BOLD)
+    .fontSize(24)
+    .fillColor(COLORS.navy)
+    .text("20 Jahre transparent modelliert");
+  document
+    .font(FONT_REGULAR)
+    .fontSize(9)
+    .fillColor(COLORS.muted)
+    .text(
+      "Der Basisfall ist führend. Konservativ und günstig zeigen einen begrenzten, dokumentierten Unsicherheitsraum.",
     );
+  document.moveDown(1.2);
 
+  const scenarioY = document.y;
+  const scenarioWidth = (getPageContentWidth(document) - 24) / 3;
+  const labels = { conservative: "Konservativ", base: "Basis", favorable: "Günstig" } as const;
+  input.lead.economics.scenarios.forEach((scenario, index) => {
+    const x = document.page.margins.left + index * (scenarioWidth + 12);
+    document
+      .save()
+      .roundedRect(x, scenarioY, scenarioWidth, 76, 9)
+      .fill(scenario.id === "base" ? COLORS.surfaceCyan : COLORS.lightMuted)
+      .restore();
     document
         .font(FONT_SEMIBOLD)
-        .fontSize(25)
-        .fillColor(
-            COLORS.primary,
-        )
+      .fontSize(9)
+      .fillColor(COLORS.primary)
+      .text(labels[scenario.id], x + 12, scenarioY + 12, { width: scenarioWidth - 24 });
+    document
+      .font(FONT_BOLD)
+      .fontSize(13)
+      .fillColor(COLORS.navy)
+      .text(formatCurrency(scenario.finalCumulativeCashFlowEuro), x + 12, scenarioY + 30, {
+        width: scenarioWidth - 24,
+      });
+    document
+      .font(FONT_REGULAR)
+      .fontSize(7)
+      .fillColor(COLORS.muted)
+      .text(
+        scenario.paybackYears === null
+          ? "Kein Break-even im Horizont"
+          : `Break-even nach ${formatNumber(scenario.paybackYears)} Jahren`,
+        x + 12,
+        scenarioY + 54,
+        { width: scenarioWidth - 24 },
+      );
+  });
+  document.y = scenarioY + 100;
+  document
+    .font(FONT_SEMIBOLD)
+    .fontSize(13)
+    .fillColor(COLORS.primary)
+    .text("Kumulativer Cashflow · Basisszenario");
+  document.y = drawCashflowChart(document, input.lead.economics.projections, document.y + 10);
+  document
+    .font(FONT_REGULAR)
+    .fontSize(8)
+    .fillColor(COLORS.muted)
+    .text(
+      input.lead.economics.paybackYears === null
+        ? "Die Gesamtinvestition erreicht im Modellhorizont keinen Break-even. Nicht monetarisierte Komfort- oder Resilienzaspekte werden nicht als Vorteil zugerechnet."
+        : "Der Break-even ist ein Modellwert und keine Garantie. Änderungen bei Kosten, Ertrag und Nutzung verschieben ihn.",
+    );
+}
+
+function drawAssumptionsPage(
+  document: PDFKit.PDFDocument,
+  input: GenerateConfiguratorProjectPdfInput,
+): void {
+  document.addPage();
+  drawPageHeader(document);
+  drawSectionTitle(document, "So haben wir gerechnet");
+  document.font(FONT_BOLD).fontSize(24).fillColor(COLORS.navy).text("Annahmen & Transparenz");
+  document.moveDown(1.1);
+  document.font(FONT_SEMIBOLD).fontSize(13).fillColor(COLORS.primary).text("Deine Angaben");
+  document
+    .font(FONT_REGULAR)
+    .fontSize(9)
+    .fillColor(COLORS.muted)
         .text(
-            "Wie geht es weiter?",
+      `Projektort: ${input.lead.installation.postalCode} ${input.lead.installation.city} · Ausgewählte Bereiche: ${input.lead.products.map((product) => PRODUCT_THEMES[product].label).join(", ")}.`,
+    );
+  document.moveDown(1.1);
+  document.font(FONT_SEMIBOLD).fontSize(13).fillColor(COLORS.primary).text("Modellannahmen");
+  document.moveDown(0.5);
+  input.lead.economics.assumptions.forEach((assumption) => {
+    document
+      .font(FONT_REGULAR)
+      .fontSize(8.5)
+      .fillColor(COLORS.muted)
+      .text(assumption.label, { continued: true, width: 250 });
+    document.font(FONT_SEMIBOLD).fillColor(COLORS.text).text(`  ${assumption.value}`);
+  });
+  document.moveDown(1.1);
+  document
+    .font(FONT_SEMIBOLD)
+    .fontSize(13)
+    .fillColor(COLORS.primary)
+    .text("Noch vor Ort zu prüfen");
+  const checks: Record<ConfiguratorPayload["type"], string> = {
+    photovoltaic: "Dachzustand, Verschattung, Elektroinstallation und Netzanschluss",
+    battery_storage: "Wechselrichter, Aufstellort, Ersatzstromkonzept und nutzbare Kapazität",
+    heat_pump: "Heizlast, Vorlauftemperaturen, Hydraulik und Wärmeverteilung",
+    climate: "Raumweise Kühllast, Fensterflächen, Leitungswege und Gerätepositionen",
+    wallbox: "Hausanschluss, Leitung, Schutztechnik, Ladeleistung und Fahrzeug",
+  };
+  input.lead.products.forEach((product) =>
+    document
+      .font(FONT_REGULAR)
+      .fontSize(8.5)
+      .fillColor(COLORS.muted)
+      .text(`• ${checks[product]}`, { indent: 4 }),
         );
+  document.moveDown(1);
+  input.lead.economics.limitations.forEach((limitation) =>
+    document
+      .font(FONT_REGULAR)
+      .fontSize(8)
+      .fillColor(COLORS.muted)
+      .text(`• ${limitation}`, { indent: 4 }),
+  );
+}
+
+function drawProductPage(document: PDFKit.PDFDocument, configurator: ConfiguratorPayload): void {
+  document.addPage();
+
+  drawPageHeader(document);
+
+  const theme = PRODUCT_THEMES[configurator.type];
+
+  const left = document.page.margins.left;
+
+  const width = getPageContentWidth(document);
+
+  const headerY = document.y;
+
+  /*
+   * Ein einziger kompakter Produktkopf.
+   * Der bisherige zusätzliche Badge und
+   * der doppelte Beschreibungstext entfallen.
+   */
+  document.save().roundedRect(left, headerY, width, 52, 9).fill(theme.background).restore();
+
+  document
+    .font(FONT_SEMIBOLD)
+    .fontSize(19)
+    .fillColor(theme.accent)
+    .text(theme.label, left + 15, headerY + 9);
+
+  document
+    .font(FONT_REGULAR)
+    .fontSize(8)
+    .fillColor(COLORS.muted)
+    .text("Deine persönliche Energie-Kraft Einschätzung", left + 15, headerY + 33);
+
+  document.y = headerY + 64;
+
+  drawHighlightCards(document, configurator);
+
+  const { inputRows, resultRows } = getProductRows(configurator);
+
+  drawSectionTitle(document, "Deine Angaben", configurator.type);
+
+  drawRows(document, inputRows, configurator.type);
+
+  document.moveDown(0.2);
+
+  drawSectionTitle(document, "Ergebnis", configurator.type);
+
+  drawRows(document, resultRows, configurator.type);
+}
+
+function drawNextStepsPage(
+  document: PDFKit.PDFDocument,
+  input: GenerateConfiguratorProjectPdfInput,
+): void {
+  document.addPage();
+
+  drawPageHeader(document);
+
+  document.font(FONT_SEMIBOLD).fontSize(25).fillColor(COLORS.primary).text("Wie geht es weiter?");
 
     document
         .font(FONT_REGULAR)
         .fontSize(11)
-        .fillColor(
-            COLORS.muted,
-        )
+    .fillColor(COLORS.muted)
         .text(
             "Deine Konfiguration ist bei uns eingegangen. " +
             "Die Ergebnisse helfen uns, dein Energieprojekt fachlich einzuordnen.",
@@ -2326,165 +1833,84 @@ function drawNextStepsPage(
     const steps = [
         {
             number: "01",
-            title:
-                "Wir prüfen deine Angaben",
-            text:
-                "Wir sehen uns die Konfiguration und die gewählten Energielösungen gemeinsam an.",
+      title: "Wir prüfen deine Angaben",
+      text: "Wir sehen uns die Konfiguration und die gewählten Energielösungen gemeinsam an.",
         },
 
         {
             number: "02",
-            title:
-                "Wir klären technische Details",
-            text:
-                "Falls Angaben fehlen oder eine technische Prüfung erforderlich ist, stimmen wir die nächsten Punkte mit dir ab.",
+      title: "Wir klären technische Details",
+      text: "Falls Angaben fehlen oder eine technische Prüfung erforderlich ist, stimmen wir die nächsten Punkte mit dir ab.",
         },
 
         {
             number: "03",
-            title:
-                "Du erhältst eine individuelle Einschätzung",
-            text:
-                "Erst auf Grundlage der fachlichen Prüfung können belastbare Aussagen zu Auslegung, Umsetzung und konkreten Kosten getroffen werden.",
+      title: "Du erhältst eine individuelle Einschätzung",
+      text: "Erst auf Grundlage der fachlichen Prüfung können belastbare Aussagen zu Auslegung, Umsetzung und konkreten Kosten getroffen werden.",
         },
     ];
 
-    const left =
-        document.page.margins.left;
+  const left = document.page.margins.left;
 
-    const width =
-        getPageContentWidth(
-            document,
-        );
+  const width = getPageContentWidth(document);
 
-    for (
-        const step of steps
-    ) {
-        const y =
-            document.y;
+  for (const step of steps) {
+    const y = document.y;
 
-        document
-            .save()
-            .roundedRect(
-                left,
-                y,
-                width,
-                86,
-                8,
-            )
-            .fill(
-                COLORS.lightMuted,
-            )
-            .restore();
+    document.save().roundedRect(left, y, width, 86, 8).fill(COLORS.lightMuted).restore();
 
         document
             .font(FONT_SEMIBOLD)
             .fontSize(18)
-            .fillColor(
-                COLORS.secondary,
-            )
-            .text(
-                step.number,
-                left + 15,
-                y + 17,
-                {
+      .fillColor(COLORS.secondary)
+      .text(step.number, left + 15, y + 17, {
                     width: 45,
-                },
-            );
+      });
 
         document
             .font(FONT_SEMIBOLD)
             .fontSize(11)
-            .fillColor(
-                COLORS.primary,
-            )
-            .text(
-                step.title,
-                left + 65,
-                y + 16,
-                {
-                    width:
-                        width - 80,
-                },
-            );
+      .fillColor(COLORS.primary)
+      .text(step.title, left + 65, y + 16, {
+        width: width - 80,
+      });
 
         document
             .font(FONT_REGULAR)
             .fontSize(9)
-            .fillColor(
-                COLORS.muted,
-            )
-            .text(
-                step.text,
-                left + 65,
-                y + 36,
-                {
-                    width:
-                        width - 80,
+      .fillColor(COLORS.muted)
+      .text(step.text, left + 65, y + 36, {
+        width: width - 80,
                     lineGap: 2,
-                },
-            );
+      });
 
-        document.y =
-            y + 98;
+    document.y = y + 98;
     }
 
     document.moveDown(0.5);
 
-    drawDisclaimer(
-        document,
-    );
+  drawDisclaimer(document);
 
     document.moveDown(1);
 
     document
         .font(FONT_REGULAR)
         .fontSize(9)
-        .fillColor(
-            COLORS.muted,
-        )
-        .text(
-            `Deine Referenz: ${input.leadId}`,
-        );
+    .fillColor(COLORS.muted)
+    .text(`Deine Referenz: ${input.leadId}`);
 
-    document
-        .font(FONT_SEMIBOLD)
-        .fontSize(10)
-        .fillColor(
-            COLORS.primary,
-        )
-        .text(
-            "Energie-Kraft",
-        );
+  document.font(FONT_SEMIBOLD).fontSize(10).fillColor(COLORS.primary).text("Energie-Kraft");
 
-    document
-        .font(FONT_REGULAR)
-        .fontSize(9)
-        .fillColor(
-            COLORS.muted,
-        )
-        .text(
-            "energie-kraft.de",
-        );
+  document.font(FONT_REGULAR).fontSize(9).fillColor(COLORS.muted).text("energie-kraft.de");
 }
 
-function addPageFooters(
-    document: PDFKit.PDFDocument,
-): void {
-    const range =
-        document.bufferedPageRange();
+function addPageFooters(document: PDFKit.PDFDocument): void {
+  const range = document.bufferedPageRange();
 
-    const totalPages =
-        range.count;
+  const totalPages = range.count;
 
-    for (
-        let index = 0;
-        index < totalPages;
-        index += 1
-    ) {
-        document.switchToPage(
-            range.start + index,
-        );
+  for (let index = 0; index < totalPages; index += 1) {
+    document.switchToPage(range.start + index);
 
         /*
          * PDFKit startet sonst beim Schreiben
@@ -2494,40 +1920,27 @@ function addPageFooters(
          * Deshalb deaktivieren wir den unteren
          * Margin nur temporär für die Fußzeile.
          */
-        const originalBottomMargin =
-            document.page.margins.bottom;
+    const originalBottomMargin = document.page.margins.bottom;
 
         document.page.margins.bottom = 0;
 
-        const footerY =
-            document.page.height - 32;
+    const footerY = document.page.height - 32;
 
         document
             .save()
-            .strokeColor(
-                COLORS.border,
-            )
+      .strokeColor(COLORS.border)
             .lineWidth(1)
-            .moveTo(
-                document.page.margins.left,
-                footerY - 8,
-            )
-            .lineTo(
-                document.page.width -
-                document.page.margins.right,
-                footerY - 8,
-            )
+      .moveTo(document.page.margins.left, footerY - 8)
+      .lineTo(document.page.width - document.page.margins.right, footerY - 8)
             .stroke()
             .restore();
 
         document
             .font(FONT_REGULAR)
             .fontSize(7.5)
-            .fillColor(
-                COLORS.muted,
-            )
+      .fillColor(COLORS.muted)
             .text(
-                "Energie-Kraft · Persönliche Projektübersicht",
+        "Energie-Kraft · Persönliche Energieprojekt-Analyse",
                 document.page.margins.left,
                 footerY,
                 {
@@ -2538,41 +1951,24 @@ function addPageFooters(
         document
             .font(FONT_REGULAR)
             .fontSize(7.5)
-            .fillColor(
-                COLORS.muted,
-            )
-            .text(
-                `Seite ${index + 1} von ${totalPages}`,
-                document.page.margins.left,
-                footerY,
-                {
-                    width:
-                        getPageContentWidth(
-                            document,
-                        ),
+      .fillColor(COLORS.muted)
+      .text(`Seite ${index + 1} von ${totalPages}`, document.page.margins.left, footerY, {
+        width: getPageContentWidth(document),
 
                     align: "right",
 
                     lineBreak: false,
-                },
-            );
+      });
 
-        document.page.margins.bottom =
-            originalBottomMargin;
+    document.page.margins.bottom = originalBottomMargin;
     }
 }
 
 export async function generateConfiguratorProjectPdf(
-    input:
-        GenerateConfiguratorProjectPdfInput,
+  input: GenerateConfiguratorProjectPdfInput,
 ): Promise<Buffer> {
-    return new Promise<Buffer>(
-        (
-            resolve,
-            reject,
-        ) => {
-            const document =
-                new PDFDocument({
+  return new Promise<Buffer>((resolve, reject) => {
+    const document = new PDFDocument({
                     size: "A4",
                     margins: {
                         top: 64,
@@ -2584,82 +1980,49 @@ export async function generateConfiguratorProjectPdf(
                     bufferPages: true,
 
                     info: {
-                        Title:
-                            "Energie-Kraft – Persönliche Projektübersicht",
+        Title: "Energie-Kraft – Persönliche Energieprojekt-Analyse",
 
-                        Author:
-                            "Energie-Kraft",
+        Author: "Energie-Kraft",
 
-                        Subject:
-                            `Energieprojekt ${input.leadId}`,
+        Subject: `Energieprojekt ${input.leadId}`,
 
-                        Creator:
-                            "Energie-Kraft Konfigurator",
+        Creator: "Energie-Kraft Konfigurator",
                     },
                 });
 
-            registerPdfFonts(
-                document,
-            );
+    registerPdfFonts(document);
 
-            const chunks:
-                Buffer[] = [];
+    const chunks: Buffer[] = [];
 
-            document.on(
-                "data",
-                (
-                    chunk: Buffer,
-                ) => {
+    document.on("data", (chunk: Buffer) => {
                     chunks.push(chunk);
-                },
-            );
+    });
 
-            document.on(
-                "error",
-                (
-                    error: Error,
-                ) => {
+    document.on("error", (error: Error) => {
                     reject(error);
-                },
-            );
+    });
 
-            document.on(
-                "end",
-                () => {
-                    resolve(
-                        Buffer.concat(
-                            chunks,
-                        ),
-                    );
-                },
-            );
+    document.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
 
-            drawCover(
-                document,
-                input,
-            );
+    drawCover(document, input);
 
-            for (
-                const configurator of
-                input.lead
-                    .configurators
-            ) {
-                drawProductPage(
-                    document,
-                    configurator,
-                );
+    drawExecutiveSummary(document, input);
+    drawEnergySystemPage(document, input);
+    drawProjectCostsPage(document, input);
+
+    for (const configurator of input.lead.configurators) {
+      drawProductPage(document, configurator);
             }
 
-            drawNextStepsPage(
-                document,
-                input,
-            );
+    drawEconomicAnalysisPage(document, input);
+    drawAssumptionsPage(document, input);
 
-            addPageFooters(
-                document,
-            );
+    drawNextStepsPage(document, input);
+
+    addPageFooters(document);
 
             document.end();
-        },
-    );
+  });
 }

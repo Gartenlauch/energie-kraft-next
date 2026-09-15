@@ -5,8 +5,7 @@ import type {
     ConfiguratorType,
 } from "@/types/configurator";
 
-export const CONFIGURATOR_JOURNEY_ORDER =
-    [
+export const CONFIGURATOR_JOURNEY_ORDER = [
         "photovoltaic",
         "battery_storage",
         "wallbox",
@@ -14,23 +13,18 @@ export const CONFIGURATOR_JOURNEY_ORDER =
         "climate",
     ] as const satisfies readonly ConfiguratorType[];
 
-function sortProducts(
-    products: readonly ConfiguratorType[],
-): ConfiguratorType[] {
-    const uniqueProducts =
-        new Set(products);
+function sortProducts(products: readonly ConfiguratorType[]): ConfiguratorType[] {
+  const uniqueProducts = new Set(products);
 
-    return CONFIGURATOR_JOURNEY_ORDER.filter(
-        (product) =>
-            uniqueProducts.has(product),
-    );
+  return CONFIGURATOR_JOURNEY_ORDER.filter((product) => uniqueProducts.has(product));
 }
 
-function getInterestProducts(
-    interests: ConfiguratorInterests,
-): ConfiguratorType[] {
-    const products: ConfiguratorType[] =
-        [];
+function getInterestProducts(interests: ConfiguratorInterests): ConfiguratorType[] {
+  const products: ConfiguratorType[] = [];
+
+  if (interests.photovoltaic) {
+    products.push("photovoltaic");
+  }
 
     if (interests.batteryStorage) {
         products.push("battery_storage");
@@ -51,10 +45,7 @@ function getInterestProducts(
     return products;
 }
 
-function hasConfiguratorResult(
-    product: ConfiguratorType,
-    results: ConfiguratorResults,
-): boolean {
+function hasConfiguratorResult(product: ConfiguratorType, results: ConfiguratorResults): boolean {
     switch (product) {
         case "photovoltaic":
             return results.photovoltaic !== undefined;
@@ -78,23 +69,13 @@ export function buildConfiguratorJourney(
     interests: ConfiguratorInterests,
     results: ConfiguratorResults,
 ): ConfiguratorJourneyState {
-    const selectedProducts =
-        sortProducts([
-            ...(entryPoint
-                ? [entryPoint]
-                : []),
-            ...getInterestProducts(
-                interests,
-            ),
-        ]);
+  const remainingProducts = sortProducts(getInterestProducts(interests)).filter(
+    (product) => product !== entryPoint,
+  );
+  const selectedProducts = entryPoint ? [entryPoint, ...remainingProducts] : remainingProducts;
 
-    const completedProducts =
-        selectedProducts.filter(
-            (product) =>
-                hasConfiguratorResult(
-                    product,
-                    results,
-                ),
+  const completedProducts = selectedProducts.filter((product) =>
+    hasConfiguratorResult(product, results),
         );
 
     return {
@@ -108,39 +89,20 @@ export function getNextConfiguratorProduct(
     journey: ConfiguratorJourneyState,
     currentProduct: ConfiguratorType,
 ): ConfiguratorType | null {
-    const currentIndex =
-        CONFIGURATOR_JOURNEY_ORDER.indexOf(
-            currentProduct,
-        );
+  const currentIndex = journey.selectedProducts.indexOf(currentProduct);
 
-    for (
-        let index = currentIndex + 1;
-        index <
-        CONFIGURATOR_JOURNEY_ORDER.length;
-        index += 1
-    ) {
-        const product =
-            CONFIGURATOR_JOURNEY_ORDER[
-            index
-            ];
+  for (let index = currentIndex + 1; index < journey.selectedProducts.length; index += 1) {
+    const product = journey.selectedProducts[index];
 
         if (!product) {
             continue;
         }
 
-        if (
-            !journey.selectedProducts.includes(
-                product,
-            )
-        ) {
+    if (!journey.selectedProducts.includes(product)) {
             continue;
         }
 
-        if (
-            journey.completedProducts.includes(
-                product,
-            )
-        ) {
+    if (journey.completedProducts.includes(product)) {
             continue;
         }
 
@@ -154,11 +116,6 @@ export function getFirstIncompleteConfiguratorProduct(
     journey: ConfiguratorJourneyState,
 ): ConfiguratorType | null {
     return (
-        journey.selectedProducts.find(
-            (product) =>
-                !journey.completedProducts.includes(
-                    product,
-                ),
-        ) ?? null
+    journey.selectedProducts.find((product) => !journey.completedProducts.includes(product)) ?? null
     );
 }

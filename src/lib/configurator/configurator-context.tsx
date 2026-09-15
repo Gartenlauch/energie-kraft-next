@@ -16,13 +16,12 @@ import {
   writeConfiguratorState,
 } from "@/lib/configurator/storage";
 import {
-  configuratorReducer,
-  createInitialConfiguratorState,
-} from "@/lib/configurator/state";
-import type {
-  ConfiguratorAction,
-  ConfiguratorState,
-} from "@/types/configurator";
+  applyCalculatorHandoff,
+  clearCalculatorHandoff,
+  readCalculatorHandoff,
+} from "@/lib/configurator/calculator-handoff";
+import { configuratorReducer, createInitialConfiguratorState } from "@/lib/configurator/state";
+import type { ConfiguratorAction, ConfiguratorState } from "@/types/configurator";
 
 interface ConfiguratorContextValue {
   state: ConfiguratorState;
@@ -31,39 +30,41 @@ interface ConfiguratorContextValue {
   isHydrated: boolean;
 }
 
-const ConfiguratorContext =
-  createContext<ConfiguratorContextValue | null>(null);
+const ConfiguratorContext = createContext<ConfiguratorContextValue | null>(null);
 
 interface ConfiguratorProviderProps {
   children: ReactNode;
 }
 
-export function ConfiguratorProvider({
-  children,
-}: ConfiguratorProviderProps) {
-  const [state, dispatch] = useReducer(
-    configuratorReducer,
-    createInitialConfiguratorState(),
-  );
+export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
+  const [state, dispatch] = useReducer(configuratorReducer, createInitialConfiguratorState());
 
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    const persistedState = readConfiguratorState(
-      window.sessionStorage,
-    );
+    const persistedState = readConfiguratorState(window.sessionStorage);
+    const calculatorHandoff = readCalculatorHandoff(window.sessionStorage);
 
     queueMicrotask(() => {
       if (cancelled) {
         return;
       }
 
-      if (persistedState) {
+      if (persistedState || calculatorHandoff) {
+        if (calculatorHandoff) {
+          clearCalculatorHandoff(window.sessionStorage);
+        }
+
         dispatch({
           type: "REPLACE_STATE",
-          payload: persistedState,
+          payload: calculatorHandoff
+            ? applyCalculatorHandoff(
+                persistedState ?? createInitialConfiguratorState(),
+                calculatorHandoff,
+              )
+            : (persistedState ?? createInitialConfiguratorState()),
         });
       }
 
@@ -80,10 +81,7 @@ export function ConfiguratorProvider({
       return;
     }
 
-    writeConfiguratorState(
-      window.sessionStorage,
-      state,
-    );
+    writeConfiguratorState(window.sessionStorage, state);
   }, [isHydrated, state]);
 
   function reset() {
@@ -112,9 +110,7 @@ export function useConfigurator() {
   const context = useContext(ConfiguratorContext);
 
   if (!context) {
-    throw new Error(
-      "useConfigurator must be used inside a ConfiguratorProvider.",
-    );
+    throw new Error("useConfigurator must be used inside a ConfiguratorProvider.");
   }
 
   return context;

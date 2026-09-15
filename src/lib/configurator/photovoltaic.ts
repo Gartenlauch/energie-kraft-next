@@ -10,6 +10,7 @@ import {
   PV_DEFAULT_BASE_SPECIFIC_YIELD_KWH_PER_KWP,
   PV_DEFAULT_TARGET_GENERATION_COVERAGE_PERCENT,
   PV_ORIENTATION_FACTORS,
+  calculatePvProjectCostCorridor,
 } from "@/lib/calculators/pv-model";
 
 export const PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MIN_KWH = 500;
@@ -25,9 +26,7 @@ export const PHOTOVOLTAIC_HOUSEHOLD_CONSUMPTION_DEFAULTS_KWH = {
   "4_5": 4_500,
 } satisfies Record<HouseholdPersons, number>;
 
-export function getPhotovoltaicHouseholdConsumptionDefault(
-  persons: HouseholdPersons,
-): number {
+export function getPhotovoltaicHouseholdConsumptionDefault(persons: HouseholdPersons): number {
   return PHOTOVOLTAIC_HOUSEHOLD_CONSUMPTION_DEFAULTS_KWH[persons];
 }
 
@@ -39,9 +38,7 @@ export function calculateAdditionalConsumptionKwh(
     return undefined;
   }
 
-  return Math.round(
-    annualConsumptionKwh * (futureIncreasePercent / 100),
-  );
+  return Math.round(annualConsumptionKwh * (futureIncreasePercent / 100));
 }
 
 export const PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT = 10;
@@ -53,18 +50,12 @@ const CONFIGURATOR_TO_SIZING_ORIENTATION = {
   north: "north",
 } satisfies Record<RoofOrientation, PvRoofOrientation>;
 
-function roundToStep(
-  value: number,
-  step: number,
-): number {
+function roundToStep(value: number, step: number): number {
   return Math.round(value / step) * step;
 }
 
-function getConfiguratorOrientationFactor(
-  orientation: RoofOrientation,
-): number {
-  const sizingOrientation =
-    CONFIGURATOR_TO_SIZING_ORIENTATION[orientation];
+function getConfiguratorOrientationFactor(orientation: RoofOrientation): number {
+  const sizingOrientation = CONFIGURATOR_TO_SIZING_ORIENTATION[orientation];
 
   return PV_ORIENTATION_FACTORS[sizingOrientation];
 }
@@ -72,73 +63,54 @@ function getConfiguratorOrientationFactor(
 export function buildPhotovoltaicConfiguratorResult(
   state: ConfiguratorState,
 ): PhotovoltaicConfiguratorResult | null {
-  const projectedAnnualConsumptionKwh =
-    state.household.projectedConsumptionKwh;
+  const projectedAnnualConsumptionKwh = state.household.projectedConsumptionKwh;
 
   const orientation = state.roof.orientation;
 
-  if (
-    projectedAnnualConsumptionKwh === undefined ||
-    orientation === undefined
-  ) {
+  if (projectedAnnualConsumptionKwh === undefined || orientation === undefined) {
     return null;
   }
 
-  const orientationFactor =
-    getConfiguratorOrientationFactor(orientation);
+  const orientationFactor = getConfiguratorOrientationFactor(orientation);
 
   const nominalSpecificYieldKwhPerKwp =
-    PV_DEFAULT_BASE_SPECIFIC_YIELD_KWH_PER_KWP *
-    orientationFactor;
+    PV_DEFAULT_BASE_SPECIFIC_YIELD_KWH_PER_KWP * orientationFactor;
 
-  const uncertaintyFactor =
-    PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT / 100;
+  const uncertaintyFactor = PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT / 100;
 
-  const specificYieldKwhPerKwpMin =
-    nominalSpecificYieldKwhPerKwp *
-    (1 - uncertaintyFactor);
+  const specificYieldKwhPerKwpMin = nominalSpecificYieldKwhPerKwp * (1 - uncertaintyFactor);
 
-  const specificYieldKwhPerKwpMax =
-    nominalSpecificYieldKwhPerKwp *
-    (1 + uncertaintyFactor);
+  const specificYieldKwhPerKwpMax = nominalSpecificYieldKwhPerKwp * (1 + uncertaintyFactor);
 
   const targetAnnualGenerationKwh = Math.round(
-    projectedAnnualConsumptionKwh *
-    (PV_DEFAULT_TARGET_GENERATION_COVERAGE_PERCENT /
-      100),
+    projectedAnnualConsumptionKwh * (PV_DEFAULT_TARGET_GENERATION_COVERAGE_PERCENT / 100),
   );
 
-  const requiredPowerKwpMin =
-    targetAnnualGenerationKwh /
-    specificYieldKwhPerKwpMax;
+  const requiredPowerKwpMin = targetAnnualGenerationKwh / specificYieldKwhPerKwpMax;
 
-  const requiredPowerKwpMax =
-    targetAnnualGenerationKwh /
-    specificYieldKwhPerKwpMin;
+  const requiredPowerKwpMax = targetAnnualGenerationKwh / specificYieldKwhPerKwpMin;
 
-  const recommendedPowerKwpMin = Math.max(
-    1,
-    Math.ceil(requiredPowerKwpMin),
-  );
+  const recommendedPowerKwpMin = Math.max(1, Math.ceil(requiredPowerKwpMin));
 
   const recommendedPowerKwpMax = Math.max(
     recommendedPowerKwpMin + 1,
     Math.ceil(requiredPowerKwpMax),
   );
 
-  const estimatedAnnualYieldKwhMin =
-    roundToStep(
-      recommendedPowerKwpMin *
-      specificYieldKwhPerKwpMin,
+  const estimatedAnnualYieldKwhMin = roundToStep(
+    recommendedPowerKwpMin * specificYieldKwhPerKwpMin,
       100,
     );
 
-  const estimatedAnnualYieldKwhMax =
-    roundToStep(
-      recommendedPowerKwpMax *
-      specificYieldKwhPerKwpMax,
+  const estimatedAnnualYieldKwhMax = roundToStep(
+    recommendedPowerKwpMax * specificYieldKwhPerKwpMax,
       100,
     );
+
+  const projectCost = calculatePvProjectCostCorridor(
+    recommendedPowerKwpMin,
+    recommendedPowerKwpMax,
+  );
 
   return {
     recommendedPowerKwpMin,
@@ -152,18 +124,14 @@ export function buildPhotovoltaicConfiguratorResult(
 
     orientationFactor,
 
-    specificYieldKwhPerKwpMin: Math.round(
-      specificYieldKwhPerKwpMin,
-    ),
-    specificYieldKwhPerKwpMax: Math.round(
-      specificYieldKwhPerKwpMax,
-    ),
+    specificYieldKwhPerKwpMin: Math.round(specificYieldKwhPerKwpMin),
+    specificYieldKwhPerKwpMax: Math.round(specificYieldKwhPerKwpMax),
 
-    batteryStorageRequested:
-      state.interests.batteryStorage,
+    ...projectCost,
+
+    batteryStorageRequested: state.interests.batteryStorage,
 
     technicalReviewRecommended:
-      orientation === "north" ||
-      state.roof.renovationPeriod === "before_1960",
+      orientation === "north" || state.roof.renovationPeriod === "before_1960",
   };
 }

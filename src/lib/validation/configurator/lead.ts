@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { projectEconomicsSchema } from "@/lib/validation/configurator/economics";
 
 import {
   annualConsumptionKwhSchema,
@@ -23,10 +24,7 @@ import type {
   ConfiguratorLeadType,
 } from "@/types/configurator";
 
-const optionalPhoneSchema = z
-  .string()
-  .trim()
-  .max(40, "Die Telefonnummer ist zu lang.");
+const optionalPhoneSchema = z.string().trim().max(40, "Die Telefonnummer ist zu lang.");
 
 export const configuratorContactFormSchema = z
   .object({
@@ -64,10 +62,7 @@ export const configuratorContactFormSchema = z
       .trim()
       .min(3, "Bitte gib eine gültige Postleitzahl ein.")
       .max(10, "Die Postleitzahl ist zu lang.")
-      .regex(
-        /^[0-9A-Za-z -]+$/,
-        "Bitte gib eine gültige Postleitzahl ein.",
-      ),
+      .regex(/^[0-9A-Za-z -]+$/, "Bitte gib eine gültige Postleitzahl ein."),
 
     city: z
       .string()
@@ -85,8 +80,7 @@ export const configuratorContactFormSchema = z
       context.addIssue({
         code: "custom",
         path: ["installationAtResidence"],
-        message:
-          "Bitte wähle aus, ob die Anlage an deinem Wohnort installiert werden soll.",
+        message: "Bitte wähle aus, ob die Anlage an deinem Wohnort installiert werden soll.",
       });
     }
 
@@ -94,8 +88,7 @@ export const configuratorContactFormSchema = z
       context.addIssue({
         code: "custom",
         path: ["privacyAccepted"],
-        message:
-          "Bitte bestätige die Datenschutzhinweise.",
+        message: "Bitte bestätige die Datenschutzhinweise.",
       });
     }
   });
@@ -105,12 +98,8 @@ const photovoltaicAnswersSchema = z
     household: z.object({
       persons: householdPersonsSchema,
       annualConsumptionKwh: annualConsumptionKwhSchema,
-      futureIncreasePercent:
-        futureIncreasePercentSchema,
-      projectedConsumptionKwh: z
-        .number()
-        .int()
-        .positive(),
+      futureIncreasePercent: futureIncreasePercentSchema,
+      projectedConsumptionKwh: z.number().int().positive(),
     }),
 
     building: z.object({
@@ -125,11 +114,11 @@ const photovoltaicAnswersSchema = z
       pitch: roofPitchSchema,
       material: roofMaterialSchema,
       orientation: roofOrientationSchema,
-      renovationPeriod:
-        roofRenovationPeriodSchema,
+      renovationPeriod: roofRenovationPeriodSchema,
     }),
 
     interests: z.object({
+      photovoltaic: z.boolean(),
       batteryStorage: z.boolean(),
       climate: z.boolean(),
       heatPump: z.boolean(),
@@ -142,23 +131,18 @@ const photovoltaicAnswersSchema = z
         text: z.string().trim().max(2_000).optional(),
       })
       .superRefine((values, context) => {
-        if (
-          values.hasNotes &&
-          !values.text?.trim()
-        ) {
+        if (values.hasNotes && !values.text?.trim()) {
           context.addIssue({
             code: "custom",
             path: ["text"],
-            message:
-              "Bei ausgewählten Anmerkungen muss ein Text vorhanden sein.",
+            message: "Bei ausgewählten Anmerkungen muss ein Text vorhanden sein.",
           });
         }
       }),
   })
   .strict();
 
-export const photovoltaicConfiguratorLeadInputSchema:
-  z.ZodType<SubmitPhotovoltaicConfiguratorLeadInput> =
+export const photovoltaicConfiguratorLeadInputSchema: z.ZodType<SubmitPhotovoltaicConfiguratorLeadInput> =
   z
     .object({
       type: z.literal("configurator"),
@@ -170,63 +154,30 @@ export const photovoltaicConfiguratorLeadInputSchema:
       }),
 
       contact: z.object({
-        firstName: z
-          .string()
-          .trim()
-          .min(2)
-          .max(80),
+        firstName: z.string().trim().min(2).max(80),
 
-        lastName: z
-          .string()
-          .trim()
-          .min(2)
-          .max(80),
+        lastName: z.string().trim().min(2).max(80),
 
-        email: z
-          .string()
-          .trim()
-          .email()
-          .max(254),
+        email: z.string().trim().email().max(254),
 
-        phone: optionalPhoneSchema
-          .transform((value) => value || undefined)
-          .optional(),
+        phone: optionalPhoneSchema.transform((value) => value || undefined).optional(),
       }),
 
       installation: z.object({
         atResidence: z.boolean(),
 
-        street: z
-          .string()
-          .trim()
-          .min(3)
-          .max(150),
+        street: z.string().trim().min(3).max(150),
 
-        postalCode: z
-          .string()
-          .trim()
-          .min(3)
-          .max(10),
+        postalCode: z.string().trim().min(3).max(10),
 
-        city: z
-          .string()
-          .trim()
-          .min(2)
-          .max(100),
+        city: z.string().trim().min(2).max(100),
       }),
 
       privacyAccepted: z.literal(true),
 
-      website: z
-        .string()
-        .trim()
-        .max(200)
-        .optional(),
+      website: z.string().trim().max(200).optional(),
 
-      formStartedAt: z
-        .number()
-        .int()
-        .positive(),
+      formStartedAt: z.number().int().positive(),
     })
     .strict();
 
@@ -239,9 +190,7 @@ const commonConfiguratorLeadShape = {
       lastName: z.string().trim().min(2).max(80),
       email: z.string().trim().email().max(254),
 
-      phone: optionalPhoneSchema
-        .transform((value) => value || undefined)
-        .optional(),
+      phone: optionalPhoneSchema.transform((value) => value || undefined).optional(),
     })
     .strict(),
 
@@ -271,112 +220,66 @@ const commonConfiguratorLeadShape = {
 
 const batteryStorageLeadResultSchema = z
   .object({
-    source: z.enum([
-      "photovoltaic",
-      "standalone",
-    ]),
+    source: z.enum(["photovoltaic", "standalone"]),
 
-    annualConsumptionKwh:
-      z.number().positive(),
+    annualConsumptionKwh: z.number().positive(),
 
-    pvPowerKwpMin:
-      z.number().nonnegative(),
+    pvPowerKwpMin: z.number().nonnegative(),
 
-    pvPowerKwpMax:
-      z.number().nonnegative(),
+    pvPowerKwpMax: z.number().nonnegative(),
 
-    recommendedUsableCapacityKwhMin:
-      z.number().nonnegative(),
+    recommendedUsableCapacityKwhMin: z.number().nonnegative(),
 
-    recommendedUsableCapacityKwhMax:
-      z.number().nonnegative(),
+    recommendedUsableCapacityKwhMax: z.number().nonnegative(),
 
-    technicalUpperBoundUsableCapacityKwh:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
+    estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    consumptionPattern: z.enum([
-      "mostly_daytime",
-      "mixed",
-      "mostly_evening",
-    ]),
+    technicalUpperBoundUsableCapacityKwh: z.number().nonnegative(),
 
-    backupPreference: z.enum([
-      "none",
-      "selected_loads",
-      "whole_home",
-    ]),
+    consumptionPattern: z.enum(["mostly_daytime", "mixed", "mostly_evening"]),
 
-    goal: z.enum([
-      "economic",
-      "balanced",
-      "high_autonomy",
-    ]),
+    backupPreference: z.enum(["none", "selected_loads", "whole_home"]),
+
+    goal: z.enum(["economic", "balanced", "high_autonomy"]),
 
     pvSurplusLikely: z.boolean(),
 
     backupPowerRequested: z.boolean(),
 
-    wholeHomeBackupRequested:
-      z.boolean(),
+    wholeHomeBackupRequested: z.boolean(),
 
-    modularExpansionRecommended:
-      z.boolean(),
+    modularExpansionRecommended: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
-export const batteryStorageConfiguratorLeadInputSchema:
-  z.ZodType<SubmitBatteryStorageConfiguratorLeadInput> =
+export const batteryStorageConfiguratorLeadInputSchema: z.ZodType<SubmitBatteryStorageConfiguratorLeadInput> =
   z
     .object({
       ...commonConfiguratorLeadShape,
 
       configurator: z
         .object({
-          type: z.literal(
-            "battery_storage",
-          ),
+          type: z.literal("battery_storage"),
 
           answers: z
             .object({
-              annualConsumptionKwh:
-                z.number()
-                  .positive()
-                  .max(1_000_000)
-                  .optional(),
+              annualConsumptionKwh: z.number().positive().max(1_000_000).optional(),
 
-              pvPowerKwp:
-                z.number()
-                  .positive()
-                  .max(10_000)
-                  .optional(),
+              pvPowerKwp: z.number().positive().max(10_000).optional(),
 
-              consumptionPattern:
-                z.enum([
-                  "mostly_daytime",
-                  "mixed",
-                  "mostly_evening",
-                ]),
+              consumptionPattern: z.enum(["mostly_daytime", "mixed", "mostly_evening"]),
 
-              backupPreference:
-                z.enum([
-                  "none",
-                  "selected_loads",
-                  "whole_home",
-                ]),
+              backupPreference: z.enum(["none", "selected_loads", "whole_home"]),
 
-              goal: z.enum([
-                "economic",
-                "balanced",
-                "high_autonomy",
-              ]),
+              goal: z.enum(["economic", "balanced", "high_autonomy"]),
             })
             .strict(),
 
-          result:
-            batteryStorageLeadResultSchema,
+          result: batteryStorageLeadResultSchema,
         })
         .strict(),
     })
@@ -384,47 +287,33 @@ export const batteryStorageConfiguratorLeadInputSchema:
 
 const wallboxLeadResultSchema = z
   .object({
-    annualVehicleEnergyDemandKwh:
-      z.number().nonnegative(),
+    annualVehicleEnergyDemandKwh: z.number().nonnegative(),
 
-    annualHomeChargingInputEnergyKwh:
-      z.number().nonnegative(),
+    annualHomeChargingInputEnergyKwh: z.number().nonnegative(),
 
-    annualPvChargingEnergyKwh:
-      z.number().nonnegative(),
+    annualPvChargingEnergyKwh: z.number().nonnegative(),
 
-    annualGridChargingEnergyKwh:
-      z.number().nonnegative(),
+    annualGridChargingEnergyKwh: z.number().nonnegative(),
 
-    typicalChargingTimeHours:
-      z.number().nonnegative(),
+    typicalChargingTimeHours: z.number().nonnegative(),
 
-    annualHomeChargingCostEuro:
-      z.number().nonnegative(),
+    annualHomeChargingCostEuro: z.number().nonnegative(),
 
-    monthlyHomeChargingCostEuro:
-      z.number().nonnegative(),
+    monthlyHomeChargingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+    estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    usesPhotovoltaicCharging:
-      z.boolean(),
+    usesPhotovoltaicCharging: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
-export const wallboxConfiguratorLeadInputSchema:
-  z.ZodType<SubmitWallboxConfiguratorLeadInput> =
-  z
+export const wallboxConfiguratorLeadInputSchema: z.ZodType<SubmitWallboxConfiguratorLeadInput> = z
     .object({
       ...commonConfiguratorLeadShape,
 
@@ -434,42 +323,21 @@ export const wallboxConfiguratorLeadInputSchema:
 
           answers: z
             .object({
-              annualDrivingKm:
-                z.number()
-                  .positive()
-                  .max(1_000_000),
+            annualDrivingKm: z.number().positive().max(1_000_000),
 
-              vehicleConsumptionKwhPer100Km:
-                z.number()
-                  .positive()
-                  .max(200),
+            vehicleConsumptionKwhPer100Km: z.number().positive().max(200),
 
-              batteryCapacityKwh:
-                z.number()
-                  .positive()
-                  .max(500),
+            batteryCapacityKwh: z.number().positive().max(500),
 
-              homeChargingSharePercent:
-                z.number()
-                  .min(0)
-                  .max(100),
+            homeChargingSharePercent: z.number().min(0).max(100),
 
-              chargingPowerKw:
-                z.union([
-                  z.literal(3.7),
-                  z.literal(11),
-                  z.literal(22),
-                ]),
+            chargingPowerKw: z.union([z.literal(3.7), z.literal(11), z.literal(22)]),
 
-              pvChargingSharePercent:
-                z.number()
-                  .min(0)
-                  .max(100),
+            pvChargingSharePercent: z.number().min(0).max(100),
             })
             .strict(),
 
-          result:
-            wallboxLeadResultSchema,
+        result: wallboxLeadResultSchema,
         })
         .strict(),
     })
@@ -477,49 +345,37 @@ export const wallboxConfiguratorLeadInputSchema:
 
 const heatPumpLeadResultSchema = z
   .object({
-    recommendedHeatPumpCapacityKw:
-      z.number().positive(),
+    recommendedHeatPumpCapacityKw: z.number().positive(),
 
-    totalAnnualHeatDemandKwh:
-      z.number().nonnegative(),
+    totalAnnualHeatDemandKwh: z.number().nonnegative(),
 
-    spaceHeatingDemandKwh:
-      z.number().nonnegative(),
+    spaceHeatingDemandKwh: z.number().nonnegative(),
 
-    hotWaterDemandKwh:
-      z.number().nonnegative(),
+    hotWaterDemandKwh: z.number().nonnegative(),
 
-    annualHeatPumpElectricityConsumptionKwh:
-      z.number().nonnegative(),
+    annualHeatPumpElectricityConsumptionKwh: z.number().nonnegative(),
 
-    annualHeatPumpOperatingCostEuro:
-      z.number().nonnegative(),
+    annualHeatPumpOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+    currentHeatingOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+    annualOperatingCostDifferenceEuro: z.number(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    flowTemperatureAssessment:
-      z.enum([
-        "ntReady",
-        "individualReview",
-      ]),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
+
+    estimatedMaximumCostEuro: z.number().nonnegative(),
+
+    flowTemperatureAssessment: z.enum(["ntReady", "individualReview"]),
 
     ntReady: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
-export const heatPumpConfiguratorLeadInputSchema:
-  z.ZodType<SubmitHeatPumpConfiguratorLeadInput> =
-  z
+export const heatPumpConfiguratorLeadInputSchema: z.ZodType<SubmitHeatPumpConfiguratorLeadInput> = z
     .object({
       ...commonConfiguratorLeadShape,
 
@@ -529,36 +385,19 @@ export const heatPumpConfiguratorLeadInputSchema:
 
           answers: z
             .object({
-              heatedAreaM2:
-                z.number()
-                  .min(20)
-                  .max(5_000),
+            heatedAreaM2: z.number().min(20).max(5_000),
 
-              specificSpaceHeatingDemandKwhPerM2Year:
-                z.number()
-                  .min(10)
-                  .max(400),
+            specificSpaceHeatingDemandKwhPerM2Year: z.number().min(10).max(400),
 
-              occupancyPersons:
-                z.number()
-                  .int()
-                  .min(1)
-                  .max(100),
+            occupancyPersons: z.number().int().min(1).max(100),
 
-              requiredFlowTemperatureC:
-                z.number()
-                  .min(25)
-                  .max(80),
+            requiredFlowTemperatureC: z.number().min(25).max(80),
 
-              annualPerformanceFactor:
-                z.number()
-                  .min(2)
-                  .max(7),
+            annualPerformanceFactor: z.number().min(2).max(7),
             })
             .strict(),
 
-          result:
-            heatPumpLeadResultSchema,
+        result: heatPumpLeadResultSchema,
         })
         .strict(),
     })
@@ -566,48 +405,31 @@ export const heatPumpConfiguratorLeadInputSchema:
 
 const climateLeadResultSchema = z
   .object({
-    calculatedCoolingLoadKw:
-      z.number().positive(),
+    calculatedCoolingLoadKw: z.number().positive(),
 
-    recommendedCoolingCapacityKw:
-      z.number().positive(),
+    recommendedCoolingCapacityKw: z.number().positive(),
 
-    recommendedIndoorUnitCount:
-      z.number().int().positive(),
+    recommendedIndoorUnitCount: z.number().int().positive(),
 
-    averageCapacityPerRoomKw:
-      z.number().positive(),
+    averageCapacityPerRoomKw: z.number().positive(),
 
-    systemRecommendation:
-      z.enum([
-        "singleSplit",
-        "multiSplit",
-        "projectPlanning",
-      ]),
+    systemRecommendation: z.enum(["singleSplit", "multiSplit", "projectPlanning"]),
 
-    annualElectricityConsumptionKwh:
-      z.number().nonnegative(),
+    annualElectricityConsumptionKwh: z.number().nonnegative(),
 
-    annualOperatingCostEuro:
-      z.number().nonnegative(),
+    annualOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+    estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    individualPlanningRecommended:
-      z.boolean(),
+    individualPlanningRecommended: z.boolean(),
   })
   .strict();
 
-export const climateConfiguratorLeadInputSchema:
-  z.ZodType<SubmitClimateConfiguratorLeadInput> =
-  z
+export const climateConfiguratorLeadInputSchema: z.ZodType<SubmitClimateConfiguratorLeadInput> = z
     .object({
       ...commonConfiguratorLeadShape,
 
@@ -617,48 +439,25 @@ export const climateConfiguratorLeadInputSchema:
 
           answers: z
             .object({
-              conditionedAreaM2:
-                z.number()
-                  .min(10)
-                  .max(2_000),
+            conditionedAreaM2: z.number().min(10).max(2_000),
 
-              roomCount:
-                z.number()
-                  .int()
-                  .min(1)
-                  .max(30),
+            roomCount: z.number().int().min(1).max(30),
 
-              insulationLevel:
-                z.enum([
-                  "good",
-                  "average",
-                  "weak",
-                ]),
+            insulationLevel: z.enum(["good", "average", "weak"]),
 
-              solarLoad:
-                z.enum([
-                  "low",
-                  "medium",
-                  "high",
-                ]),
+            solarLoad: z.enum(["low", "medium", "high"]),
 
-              occupancyPersons:
-                z.number()
-                  .int()
-                  .min(1)
-                  .max(200),
+            occupancyPersons: z.number().int().min(1).max(200),
             })
             .strict(),
 
-          result:
-            climateLeadResultSchema,
+        result: climateLeadResultSchema,
         })
         .strict(),
     })
     .strict();
 
-const configuratorLeadTypeSchema =
-  z.enum([
+const configuratorLeadTypeSchema = z.enum([
     "photovoltaic",
     "battery_storage",
     "wallbox",
@@ -666,45 +465,28 @@ const configuratorLeadTypeSchema =
     "climate",
   ]);
 
-const configuratorPayloadEnvelopeSchema =
-  z
+const configuratorPayloadEnvelopeSchema = z
     .object({
-      type:
-        configuratorLeadTypeSchema,
+    type: configuratorLeadTypeSchema,
 
-      answers:
-        z.unknown(),
+    answers: z.unknown(),
 
-      result:
-        z.unknown(),
+    result: z.unknown(),
     })
     .strict();
 
-function hasDuplicates(
-  values: readonly ConfiguratorLeadType[],
-): boolean {
-  return (
-    new Set(values).size !==
-    values.length
-  );
+function hasDuplicates(values: readonly ConfiguratorLeadType[]): boolean {
+  return new Set(values).size !== values.length;
 }
 
 function sameProductOrder(
   left: readonly ConfiguratorLeadType[],
   right: readonly ConfiguratorLeadType[],
 ): boolean {
-  return (
-    left.length === right.length &&
-    left.every(
-      (value, index) =>
-        value === right[index],
-    )
-  );
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
-function getSingleConfiguratorSchema(
-  type: ConfiguratorLeadType,
-) {
+function getSingleConfiguratorSchema(type: ConfiguratorLeadType) {
   switch (type) {
     case "photovoltaic":
       return photovoltaicConfiguratorLeadInputSchema;
@@ -723,105 +505,53 @@ function getSingleConfiguratorSchema(
   }
 }
 
-export const configuratorLeadInputSchema =
-  z
+export const configuratorLeadInputSchema = z
     .object({
       ...commonConfiguratorLeadShape,
 
-      products:
-        z
-          .array(
-            configuratorLeadTypeSchema,
-          )
-          .min(1)
-          .max(5),
+    products: z.array(configuratorLeadTypeSchema).min(1).max(5),
 
       journey: z
         .object({
-          entryPoint:
-            configuratorLeadTypeSchema,
+        entryPoint: configuratorLeadTypeSchema,
 
-          selectedProducts:
-            z
-              .array(
-                configuratorLeadTypeSchema,
-              )
-              .min(1)
-              .max(5),
+        selectedProducts: z.array(configuratorLeadTypeSchema).min(1).max(5),
 
-          completedProducts:
-            z
-              .array(
-                configuratorLeadTypeSchema,
-              )
-              .min(1)
-              .max(5),
+        completedProducts: z.array(configuratorLeadTypeSchema).min(1).max(5),
         })
         .strict(),
 
-      configurators:
-        z
-          .array(
-            configuratorPayloadEnvelopeSchema,
-          )
-          .min(1)
-          .max(5),
+    configurators: z.array(configuratorPayloadEnvelopeSchema).min(1).max(5),
+
+    economics: projectEconomicsSchema,
     })
     .strict()
-    .superRefine(
-      (values, context) => {
+  .superRefine((values, context) => {
         if (
-          hasDuplicates(
-            values.products,
-          ) ||
-          hasDuplicates(
-            values.journey
-              .selectedProducts,
-          ) ||
-          hasDuplicates(
-            values.journey
-              .completedProducts,
-          )
+      hasDuplicates(values.products) ||
+      hasDuplicates(values.journey.selectedProducts) ||
+      hasDuplicates(values.journey.completedProducts)
         ) {
           context.addIssue({
             code: "custom",
             path: ["journey"],
-            message:
-              "Konfigurator-Produkte dürfen nicht doppelt vorkommen.",
+        message: "Konfigurator-Produkte dürfen nicht doppelt vorkommen.",
           });
         }
 
-        if (
-          !values.journey
-            .selectedProducts
-            .includes(
-              values.journey
-                .entryPoint,
-            )
-        ) {
+    if (!values.journey.selectedProducts.includes(values.journey.entryPoint)) {
           context.addIssue({
             code: "custom",
-            path: [
-              "journey",
-              "entryPoint",
-            ],
-            message:
-              "Der Einstiegspunkt muss Teil des Energieprojekts sein.",
+        path: ["journey", "entryPoint"],
+        message: "Der Einstiegspunkt muss Teil des Energieprojekts sein.",
           });
         }
 
-        if (
-          !sameProductOrder(
-            values.products,
-            values.journey
-              .selectedProducts,
-          )
-        ) {
+    if (!sameProductOrder(values.products, values.journey.selectedProducts)) {
           context.addIssue({
             code: "custom",
             path: ["products"],
-            message:
-              "Produkte und ausgewählte Journey-Produkte stimmen nicht überein.",
+        message: "Produkte und ausgewählte Journey-Produkte stimmen nicht überein.",
           });
         }
 
@@ -830,38 +560,17 @@ export const configuratorLeadInputSchema =
          * wenn die komplette ausgewählte
          * Journey abgeschlossen wurde.
          */
-        if (
-          !sameProductOrder(
-            values.journey
-              .selectedProducts,
-            values.journey
-              .completedProducts,
-          )
-        ) {
+    if (!sameProductOrder(values.journey.selectedProducts, values.journey.completedProducts)) {
           context.addIssue({
             code: "custom",
-            path: [
-              "journey",
-              "completedProducts",
-            ],
-            message:
-              "Vor dem Absenden müssen alle ausgewählten Konfiguratoren abgeschlossen sein.",
+        path: ["journey", "completedProducts"],
+        message: "Vor dem Absenden müssen alle ausgewählten Konfiguratoren abgeschlossen sein.",
           });
         }
 
-        const configuratorTypes =
-          values.configurators.map(
-            (configurator) =>
-              configurator.type,
-          );
+    const configuratorTypes = values.configurators.map((configurator) => configurator.type);
 
-        if (
-          !sameProductOrder(
-            configuratorTypes,
-            values.journey
-              .completedProducts,
-          )
-        ) {
+    if (!sameProductOrder(configuratorTypes, values.journey.completedProducts)) {
           context.addIssue({
             code: "custom",
             path: ["configurators"],
@@ -870,66 +579,41 @@ export const configuratorLeadInputSchema =
           });
         }
 
-        values.configurators.forEach(
-          (configurator, index) => {
-            const schema =
-              getSingleConfiguratorSchema(
-                configurator.type,
-              );
+    values.configurators.forEach((configurator, index) => {
+      const schema = getSingleConfiguratorSchema(configurator.type);
 
             const singleLead = {
-              type:
-                values.type,
+        type: values.type,
 
-              contact:
-                values.contact,
+        contact: values.contact,
 
-              installation:
-                values.installation,
+        installation: values.installation,
 
-              privacyAccepted:
-                values.privacyAccepted,
+        privacyAccepted: values.privacyAccepted,
 
-              ...(values.website !==
-                undefined
+        ...(values.website !== undefined
                 ? {
-                  website:
-                    values.website,
+              website: values.website,
                 }
                 : {}),
 
-              formStartedAt:
-                values.formStartedAt,
+        formStartedAt: values.formStartedAt,
 
-              configurator:
-                configurator as ConfiguratorLeadPayload,
+        configurator: configurator as ConfiguratorLeadPayload,
             };
 
-            const result =
-              schema.safeParse(
-                singleLead,
-              );
+      const result = schema.safeParse(singleLead);
 
             if (!result.success) {
               context.addIssue({
                 code: "custom",
-                path: [
-                  "configurators",
-                  index,
-                ],
-                message:
-                  `Die Daten für ${configurator.type} sind unvollständig oder ungültig.`,
+          path: ["configurators", index],
+          message: `Die Daten für ${configurator.type} sind unvollständig oder ungültig.`,
               });
             }
-          },
-        );
-      },
-    );
+    });
+  });
 
-export function validateConfiguratorContactForm(
-  values: ConfiguratorContactFormValues,
-) {
-  return configuratorContactFormSchema.safeParse(
-    values,
-  );
+export function validateConfiguratorContactForm(values: ConfiguratorContactFormValues) {
+  return configuratorContactFormSchema.safeParse(values);
 }

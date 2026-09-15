@@ -6,7 +6,7 @@ import type {
   HouseholdConfiguratorState,
 } from "@/types/configurator";
 import { CONFIGURATOR_STATE_VERSION } from "@/types/configurator";
-import { buildConfiguratorJourney, } from "@/lib/configurator/journey";
+import { buildConfiguratorJourney } from "@/lib/configurator/journey";
 
 export function calculateProjectedConsumptionKwh(
   annualConsumptionKwh: number | undefined,
@@ -16,9 +16,7 @@ export function calculateProjectedConsumptionKwh(
     return undefined;
   }
 
-  return Math.round(
-    annualConsumptionKwh * (1 + futureIncreasePercent / 100),
-  );
+  return Math.round(annualConsumptionKwh * (1 + futureIncreasePercent / 100));
 }
 
 export function createInitialConfiguratorState(): ConfiguratorState {
@@ -45,6 +43,7 @@ export function createInitialConfiguratorState(): ConfiguratorState {
     climate: {},
 
     interests: {
+      photovoltaic: false,
       batteryStorage: false,
       climate: false,
       heatPump: false,
@@ -68,25 +67,54 @@ function normalizeHouseholdState(
   };
 }
 
-export function normalizeConfiguratorState(
+function householdPersonsAsNumber(
+  persons: HouseholdConfiguratorState["persons"],
+): number | undefined {
+  return persons === "4_5" ? 4 : persons;
+}
+
+function applyCrossProductPrefill(
   state: ConfiguratorState,
+  target: ConfiguratorState["activeConfigurator"],
 ): ConfiguratorState {
-  const household =
-    normalizeHouseholdState(
-      state.household,
-    );
+  const sharedPersons = householdPersonsAsNumber(state.household.persons);
+
+  if (target === "climate") {
+    return {
+      ...state,
+      climate: {
+        ...state.climate,
+        conditionedAreaM2: state.climate.conditionedAreaM2 ?? state.heatPump.heatedAreaM2,
+        occupancyPersons:
+          state.climate.occupancyPersons ?? state.heatPump.occupancyPersons ?? sharedPersons,
+      },
+    };
+  }
+
+  if (target === "heat_pump") {
+    return {
+      ...state,
+      heatPump: {
+        ...state.heatPump,
+        heatedAreaM2: state.heatPump.heatedAreaM2 ?? state.climate.conditionedAreaM2,
+        occupancyPersons:
+          state.heatPump.occupancyPersons ?? state.climate.occupancyPersons ?? sharedPersons,
+      },
+    };
+  }
+
+  return state;
+}
+
+export function normalizeConfiguratorState(state: ConfiguratorState): ConfiguratorState {
+  const household = normalizeHouseholdState(state.household);
 
   return {
     ...state,
 
     household,
 
-    journey:
-      buildConfiguratorJourney(
-        state.journey.entryPoint,
-        state.interests,
-        state.results,
-      ),
+    journey: buildConfiguratorJourney(state.journey.entryPoint, state.interests, state.results),
   };
 }
 
@@ -103,9 +131,7 @@ function withoutPhotovoltaicAndBatteryStorageResults(
   return nextResults;
 }
 
-function withoutBatteryStorageResult(
-  results: ConfiguratorResults,
-): ConfiguratorResults {
+function withoutBatteryStorageResult(results: ConfiguratorResults): ConfiguratorResults {
   const nextResults = {
     ...results,
   };
@@ -114,9 +140,7 @@ function withoutBatteryStorageResult(
 
   return nextResults;
 }
-function withoutWallboxResult(
-  results: ConfiguratorResults,
-): ConfiguratorResults {
+function withoutWallboxResult(results: ConfiguratorResults): ConfiguratorResults {
   const nextResults = {
     ...results,
   };
@@ -126,9 +150,7 @@ function withoutWallboxResult(
   return nextResults;
 }
 
-function withoutHeatPumpResult(
-  results: ConfiguratorResults,
-): ConfiguratorResults {
+function withoutHeatPumpResult(results: ConfiguratorResults): ConfiguratorResults {
   const nextResults = {
     ...results,
   };
@@ -138,9 +160,7 @@ function withoutHeatPumpResult(
   return nextResults;
 }
 
-function withoutClimateResult(
-  results: ConfiguratorResults,
-): ConfiguratorResults {
+function withoutClimateResult(results: ConfiguratorResults): ConfiguratorResults {
   const nextResults = {
     ...results,
   };
@@ -150,34 +170,30 @@ function withoutClimateResult(
   return nextResults;
 }
 
-function withoutChangedInterestResults(
+function withoutDeselectedInterestResults(
   results: ConfiguratorResults,
   currentInterests: ConfiguratorInterests,
   nextInterests: ConfiguratorInterests,
 ): ConfiguratorResults {
-  const nextResults =
-    withoutPhotovoltaicAndBatteryStorageResults(
-      results,
-    );
+  const nextResults = { ...results };
 
-  if (
-    currentInterests.wallbox !==
-    nextInterests.wallbox
-  ) {
+  if (currentInterests.photovoltaic && !nextInterests.photovoltaic) {
+    delete nextResults.photovoltaic;
+  }
+
+  if (currentInterests.batteryStorage && !nextInterests.batteryStorage) {
+    delete nextResults.batteryStorage;
+  }
+
+  if (currentInterests.wallbox && !nextInterests.wallbox) {
     delete nextResults.wallbox;
   }
 
-  if (
-    currentInterests.heatPump !==
-    nextInterests.heatPump
-  ) {
+  if (currentInterests.heatPump && !nextInterests.heatPump) {
     delete nextResults.heatPump;
   }
 
-  if (
-    currentInterests.climate !==
-    nextInterests.climate
-  ) {
+  if (currentInterests.climate && !nextInterests.climate) {
     delete nextResults.climate;
   }
 
@@ -190,11 +206,11 @@ function reduceConfiguratorState(
 ): ConfiguratorState {
   switch (action.type) {
     case "SET_ACTIVE_CONFIGURATOR":
-      return {
+      return applyCrossProductPrefill(
+        {
         ...state,
 
-        activeConfigurator:
-          action.payload,
+          activeConfigurator: action.payload,
 
         journey: {
           ...state.journey,
@@ -210,18 +226,16 @@ function reduceConfiguratorState(
            * hineinragen.
            */
           entryPoint:
-            action.payload ===
-              "photovoltaic"
+              action.payload === "photovoltaic" && !state.interests.photovoltaic
               ? "photovoltaic"
-              : state.journey
-                .entryPoint ??
-              action.payload,
+                : (state.journey.entryPoint ?? action.payload),
         },
-      };
+        },
+        action.payload,
+      );
 
     case "UPDATE_HOUSEHOLD": {
-      const household =
-        normalizeHouseholdState({
+      const household = normalizeHouseholdState({
           ...state.household,
           ...action.payload,
         });
@@ -230,10 +244,7 @@ function reduceConfiguratorState(
         ...state,
         household,
 
-        results:
-          withoutPhotovoltaicAndBatteryStorageResults(
-            state.results,
-          ),
+        results: withoutPhotovoltaicAndBatteryStorageResults(state.results),
       };
     }
 
@@ -246,10 +257,7 @@ function reduceConfiguratorState(
           ...action.payload,
         },
 
-        results:
-          withoutPhotovoltaicAndBatteryStorageResults(
-            state.results,
-          ),
+        results: withoutPhotovoltaicAndBatteryStorageResults(state.results),
       };
 
     case "UPDATE_ROOF":
@@ -261,10 +269,7 @@ function reduceConfiguratorState(
           ...action.payload,
         },
 
-        results:
-          withoutPhotovoltaicAndBatteryStorageResults(
-            state.results,
-          ),
+        results: withoutPhotovoltaicAndBatteryStorageResults(state.results),
       };
 
     case "UPDATE_BATTERY_STORAGE":
@@ -276,10 +281,7 @@ function reduceConfiguratorState(
           ...action.payload,
         },
 
-        results:
-          withoutBatteryStorageResult(
-            state.results,
-          ),
+        results: withoutBatteryStorageResult(state.results),
       };
     case "UPDATE_WALLBOX":
       return {
@@ -290,10 +292,7 @@ function reduceConfiguratorState(
           ...action.payload,
         },
 
-        results:
-          withoutWallboxResult(
-            state.results,
-          ),
+        results: withoutWallboxResult(state.results),
       };
 
     case "UPDATE_INTERESTS": {
@@ -302,17 +301,21 @@ function reduceConfiguratorState(
         ...action.payload,
       };
 
+      const results = withoutDeselectedInterestResults(state.results, state.interests, interests);
+
+      if (results.photovoltaic) {
+        results.photovoltaic = {
+          ...results.photovoltaic,
+          batteryStorageRequested: interests.batteryStorage,
+        };
+      }
+
       return {
         ...state,
 
         interests,
 
-        results:
-          withoutChangedInterestResults(
-            state.results,
-            state.interests,
-            interests,
-          ),
+        results,
       };
     }
 
@@ -327,10 +330,7 @@ function reduceConfiguratorState(
       };
 
     case "SET_PHOTOVOLTAIC_RESULT": {
-      const results =
-        withoutBatteryStorageResult(
-          state.results,
-        );
+      const results = withoutBatteryStorageResult(state.results);
 
       return {
         ...state,
@@ -363,9 +363,7 @@ function reduceConfiguratorState(
       };
 
     case "REPLACE_STATE":
-      return normalizeConfiguratorState(
-        action.payload,
-      );
+      return normalizeConfiguratorState(action.payload);
     case "UPDATE_HEAT_PUMP":
       return {
         ...state,
@@ -375,10 +373,7 @@ function reduceConfiguratorState(
           ...action.payload,
         },
 
-        results:
-          withoutHeatPumpResult(
-            state.results,
-          ),
+        results: withoutHeatPumpResult(state.results),
       };
     case "SET_HEAT_PUMP_RESULT":
       return {
@@ -398,10 +393,7 @@ function reduceConfiguratorState(
           ...action.payload,
         },
 
-        results:
-          withoutClimateResult(
-            state.results,
-          ),
+        results: withoutClimateResult(state.results),
       };
     case "SET_CLIMATE_RESULT":
       return {
@@ -428,10 +420,5 @@ export function configuratorReducer(
   state: ConfiguratorState,
   action: ConfiguratorAction,
 ): ConfiguratorState {
-  return normalizeConfiguratorState(
-    reduceConfiguratorState(
-      state,
-      action,
-    ),
-  );
+  return normalizeConfiguratorState(reduceConfiguratorState(state, action));
 }

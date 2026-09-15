@@ -1,136 +1,63 @@
 "use client";
 
-import {
-    type ReactNode,
-    useState,
-} from "react";
+import { type ReactNode, useState } from "react";
 
 import { ConfiguratorContactForm } from "@/components/configurator/configurator-contact-form";
 import { ConfiguratorSubmitReview } from "@/components/configurator/configurator-submit-review";
 import { ConfiguratorSubmitSuccess } from "@/components/configurator/configurator-submit-success";
-import {
-    buildConfiguratorLeadInput,
-} from "@/lib/configurator/lead";
-import {
-    useConfigurator,
-} from "@/lib/configurator/configurator-context";
-import {
-    submitConfiguratorLead,
-} from "@/lib/leads/submit-configurator-lead";
-import {
-    configuratorLeadInputSchema,
-} from "@/lib/validation/configurator/lead";
+import { buildConfiguratorLeadInput } from "@/lib/configurator/lead";
+import { useConfigurator } from "@/lib/configurator/configurator-context";
+import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
+import { configuratorLeadInputSchema } from "@/lib/validation/configurator/lead";
 import type {
     ConfiguratorContactFormValues,
     SubmitConfiguratorLeadInput,
 } from "@/types/configurator";
 
-type LeadFlowStage =
-    | "result"
-    | "contact"
-    | "submit"
-    | "success";
+type LeadFlowStage = "result" | "contact" | "submit" | "success";
 
 interface ConfiguratorLeadFlowProps {
-    renderResult: (
-        onContinue: () => void,
-    ) => ReactNode;
+  renderResult: (onContinue: () => void) => ReactNode;
 
     onRestart: () => void;
 }
 interface SubmissionOutcome {
     leadId: string;
 
-    reportStatus?:
-    | "generated"
-    | "failed";
+  reportStatus?: "generated" | "failed";
 
-    customerMailStatus?:
-    | "accepted"
-    | "failed";
+  customerMailStatus?: "accepted" | "failed";
 }
 
-export function ConfiguratorLeadFlow({
-    renderResult,
-    onRestart,
-}: ConfiguratorLeadFlowProps) {
-    const {
-        state,
-        reset,
-    } = useConfigurator();
+export function ConfiguratorLeadFlow({ renderResult, onRestart }: ConfiguratorLeadFlowProps) {
+  const { state, reset } = useConfigurator();
 
-    const [
-        stage,
-        setStage,
-    ] = useState<LeadFlowStage>(
-        "result",
-    );
+  const [stage, setStage] = useState<LeadFlowStage>("result");
 
-    const [
-        contactDraft,
-        setContactDraft,
-    ] =
-        useState<ConfiguratorContactFormValues | null>(
-            null,
-        );
+  const [contactDraft, setContactDraft] = useState<ConfiguratorContactFormValues | null>(null);
 
-    const [
-        contactFormStartedAt,
-        setContactFormStartedAt,
-    ] =
-        useState<number | null>(
-            null,
-        );
+  const [contactFormStartedAt, setContactFormStartedAt] = useState<number | null>(null);
 
-    const [
-        submissionOutcome,
-        setSubmissionOutcome,
-    ] =
-        useState<SubmissionOutcome | null>(
-            null,
-        );
+  const [submissionOutcome, setSubmissionOutcome] = useState<SubmissionOutcome | null>(null);
 
-    const [
-        isSubmitting,
-        setIsSubmitting,
-    ] =
-        useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [
-        submissionError,
-        setSubmissionError,
-    ] =
-        useState<string | null>(
-            null,
-        );
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
     const input =
-        contactDraft &&
-            contactFormStartedAt !== null
-            ? buildConfiguratorLeadInput(
-                state,
-                contactDraft,
-                contactFormStartedAt,
-            )
+    contactDraft && contactFormStartedAt !== null
+      ? buildConfiguratorLeadInput(state, contactDraft, contactFormStartedAt)
             : null;
 
-    async function handleSubmit(
-        leadInput:
-            SubmitConfiguratorLeadInput,
-    ) {
+  async function handleSubmit(leadInput: SubmitConfiguratorLeadInput) {
         if (isSubmitting) {
             return;
         }
 
-        const parsed =
-            configuratorLeadInputSchema.safeParse(
-                leadInput,
-            );
+    const parsed = configuratorLeadInputSchema.safeParse(leadInput);
 
         if (!parsed.success) {
-            setSubmissionError(
-                "Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.",
-            );
+      setSubmissionError("Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.");
 
             return;
         }
@@ -164,21 +91,12 @@ export function ConfiguratorLeadFlow({
         }
     }
 
-  if (
-    stage === "success" &&
-    submissionOutcome
-) {
+  if (stage === "success" && submissionOutcome) {
     return (
         <ConfiguratorSubmitSuccess
-            leadId={
-                submissionOutcome.leadId
-            }
-            reportStatus={
-                submissionOutcome.reportStatus
-            }
-            customerMailStatus={
-                submissionOutcome.customerMailStatus
-            }
+        leadId={submissionOutcome.leadId}
+        reportStatus={submissionOutcome.reportStatus}
+        customerMailStatus={submissionOutcome.customerMailStatus}
             onRestart={() => {
                 setContactDraft(null);
                 setContactFormStartedAt(null);
@@ -194,32 +112,16 @@ export function ConfiguratorLeadFlow({
     if (stage === "contact") {
         return (
             <ConfiguratorContactForm
-                initialValues={
-                    contactDraft ??
-                    undefined
-                }
-                initialFormStartedAt={
-                    contactFormStartedAt ??
-                    undefined
-                }
-                onBack={() =>
-                    setStage("result")
-                }
-                onContinue={(
-                    values,
-                    formStartedAt,
-                ) => {
-                    setContactDraft(
-                        values,
-                    );
+        focusFirstName={contactDraft === null}
+        initialValues={contactDraft ?? undefined}
+        initialFormStartedAt={contactFormStartedAt ?? undefined}
+        onBack={() => setStage("result")}
+        onContinue={(values, formStartedAt) => {
+          setContactDraft(values);
 
-                    setContactFormStartedAt(
-                        formStartedAt,
-                    );
+          setContactFormStartedAt(formStartedAt);
 
-                    setSubmissionError(
-                        null,
-                    );
+          setSubmissionError(null);
 
                     setStage("submit");
                 }}
@@ -230,25 +132,14 @@ export function ConfiguratorLeadFlow({
     if (stage === "submit") {
         if (!input) {
             return (
-                <div
-                    role="alert"
-                    className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800"
-                >
-                    <p className="font-semibold">
-                        Die Anfrage konnte nicht vorbereitet
-                        werden.
-                    </p>
+        <div role="alert" className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800">
+          <p className="font-semibold">Die Anfrage konnte nicht vorbereitet werden.</p>
 
-                    <p className="mt-2 text-sm">
-                        Bitte gehe zurück und prüfe deine
-                        Angaben.
-                    </p>
+          <p className="mt-2 text-sm">Bitte gehe zurück und prüfe deine Angaben.</p>
 
                     <button
                         type="button"
-                        onClick={() =>
-                            setStage("contact")
-                        }
+            onClick={() => setStage("contact")}
                         className="mt-5 min-h-12 rounded-xl border border-red-300 px-5 py-3 font-medium"
                     >
                         Zurück zu den Kontaktdaten
@@ -260,19 +151,11 @@ export function ConfiguratorLeadFlow({
         return (
             <ConfiguratorSubmitReview
                 input={input}
-                isSubmitting={
-                    isSubmitting
-                }
-                error={
-                    submissionError
-                }
-                onBack={() =>
-                    setStage("contact")
-                }
+        isSubmitting={isSubmitting}
+        error={submissionError}
+        onBack={() => setStage("contact")}
                 onSubmit={() => {
-                    void handleSubmit(
-                        input,
-                    );
+          void handleSubmit(input);
                 }}
             />
         );

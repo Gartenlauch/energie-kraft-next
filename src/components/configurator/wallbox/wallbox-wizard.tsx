@@ -14,92 +14,53 @@ import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isWallboxStepComplete } from "@/lib/validation/configurator/wallbox";
 import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
 import type { WallboxStepId } from "@/types/configurator";
+import { ProjectAnalysisPromise } from "@/components/configurator/project-analysis-promise";
 
 interface WallboxWizardProps {
   hasPhotovoltaicContext: boolean;
 }
 
-export function WallboxWizard({
-  hasPhotovoltaicContext,
-}: WallboxWizardProps) {
-  const {
-    state,
-    dispatch,
-  } = useConfigurator();
+export function WallboxWizard({ hasPhotovoltaicContext }: WallboxWizardProps) {
+  const { state, dispatch } = useConfigurator();
 
-  const [currentStepId, setCurrentStepId] =
-    useState<WallboxStepId>(
-      "vehicle_data",
-    );
+  const [currentStepId, setCurrentStepId] = useState<WallboxStepId>("vehicle_data");
 
-  const [showResult, setShowResult] =
-    useState(
-      () =>
-        state.results.wallbox !==
-        undefined,
-    );
+  const [showResult, setShowResult] = useState(() => state.results.wallbox !== undefined);
 
-  const currentStepIndex =
-    wallboxWizardSteps.findIndex(
-      (step) =>
-        step.id === currentStepId,
-    );
+  const currentStepIndex = wallboxWizardSteps.findIndex((step) => step.id === currentStepId);
 
-  const currentStep =
-    currentStepIndex >= 0
-      ? wallboxWizardSteps[
-      currentStepIndex
-      ]
-      : undefined;
+  const currentStep = currentStepIndex >= 0 ? wallboxWizardSteps[currentStepIndex] : undefined;
 
   if (!currentStep) {
     return (
-      <div
-        role="alert"
-        className="rounded-2xl border border-border-default bg-surface p-6"
-      >
-        <h1 className="text-xl font-semibold text-brand-primary">
+      <div role="alert" className="border-border-default bg-surface rounded-2xl border p-6">
+        <h1 className="text-brand-primary text-xl font-semibold">
           Konfiguration konnte nicht geladen werden
         </h1>
 
-        <p className="mt-2 text-foreground/70">
-          Der aktuelle Wallbox-Schritt ist nicht
-          verfügbar.
-        </p>
+        <p className="text-foreground/70 mt-2">Der aktuelle Wallbox-Schritt ist nicht verfügbar.</p>
       </div>
     );
   }
 
-  const isFirstStep =
-    currentStepIndex === 0;
+  const isFirstStep = currentStepIndex === 0;
 
-  const isLastStep =
-    currentStepIndex ===
-    wallboxWizardSteps.length - 1;
+  const isLastStep = currentStepIndex === wallboxWizardSteps.length - 1;
 
-  const currentStepComplete =
-    isWallboxStepComplete(
-      currentStep.id,
-      state,
-    );
+  const currentStepComplete = isWallboxStepComplete(currentStep.id, state);
 
   function goBack() {
     if (isFirstStep) {
       return;
     }
 
-    const previousStep =
-      wallboxWizardSteps[
-      currentStepIndex - 1
-      ];
+    const previousStep = wallboxWizardSteps[currentStepIndex - 1];
 
     if (!previousStep) {
       return;
     }
 
-    setCurrentStepId(
-      previousStep.id,
-    );
+    setCurrentStepId(previousStep.id);
   }
 
   function handleNext() {
@@ -108,10 +69,7 @@ export function WallboxWizard({
     }
 
     if (isLastStep) {
-      const result =
-        buildWallboxConfiguratorResult(
-          state,
-        );
+      const result = buildWallboxConfiguratorResult(state);
 
       if (!result) {
         return;
@@ -127,53 +85,35 @@ export function WallboxWizard({
       return;
     }
 
-    const nextStep =
-      wallboxWizardSteps[
-      currentStepIndex + 1
-      ];
+    const nextStep = wallboxWizardSteps[currentStepIndex + 1];
 
     if (!nextStep) {
       return;
     }
 
-    setCurrentStepId(
-      nextStep.id,
-    );
+    setCurrentStepId(nextStep.id);
   }
 
   if (showResult) {
     return (
       <ConfiguratorLeadFlow
         renderResult={(onContinue) => {
-          const result =
-            state.results.wallbox;
+          const result = state.results.wallbox;
 
           if (!result) {
             return (
-              <div
-                role="alert"
-                className="rounded-2xl border border-border-default bg-surface p-6"
-              >
-                Das Wallbox-Ergebnis ist nicht mehr
-                verfügbar.
+              <div role="alert" className="border-border-default bg-surface rounded-2xl border p-6">
+                Das Wallbox-Ergebnis ist nicht mehr verfügbar.
               </div>
             );
           }
-          const nextConfigurator =
-            getNextConfiguratorProduct(
-              state.journey,
-              "wallbox",
-            );
+          const nextConfigurator = getNextConfiguratorProduct(state.journey, "wallbox");
 
           return (
             <WallboxResult
               result={result}
-              nextConfigurator={
-                nextConfigurator
-              }
-              onBack={() =>
-                setShowResult(false)
-              }
+              nextConfigurator={nextConfigurator}
+              onBack={() => setShowResult(false)}
               onContinue={onContinue}
             />
           );
@@ -181,9 +121,7 @@ export function WallboxWizard({
         onRestart={() => {
           setShowResult(false);
 
-          setCurrentStepId(
-            "vehicle_data",
-          );
+          setCurrentStepId("vehicle_data");
         }}
       />
     );
@@ -191,141 +129,104 @@ export function WallboxWizard({
 
   return (
     <>
-      <ConfiguratorPhaseIndicator
-        currentPhase="configuration"
-      />
+      <ConfiguratorPhaseIndicator currentPhase="configuration" />
+
+      {isFirstStep ? <ProjectAnalysisPromise compact /> : null}
 
       <section aria-labelledby="wallbox-step-heading">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+          <p className="text-brand-secondary text-sm font-semibold tracking-widest uppercase">
             Wallbox
           </p>
 
-          <p className="text-sm text-foreground/60">
-            Schritt {currentStepIndex + 1} von{" "}
-            {wallboxWizardSteps.length}
+          <p className="text-foreground/60 text-sm">
+            Schritt {currentStepIndex + 1} von {wallboxWizardSteps.length}
           </p>
         </div>
 
         <h1
           id="wallbox-step-heading"
-          className="text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
+          className="text-brand-primary text-3xl font-semibold tracking-tight sm:text-4xl"
         >
           {currentStep.title}
         </h1>
 
         {currentStep.description ? (
-          <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/70 sm:text-lg">
+          <p className="text-foreground/70 mt-4 max-w-3xl text-base leading-7 sm:text-lg">
             {currentStep.description}
           </p>
         ) : null}
 
         <div className="mt-8">
-          {currentStep.id ===
-            "vehicle_data" ? (
+          {currentStep.id === "vehicle_data" ? (
             <WallboxVehicleDataStep
-              annualDrivingKm={
-                state.wallbox
-                  .annualDrivingKm
-              }
-              vehicleConsumptionKwhPer100Km={
-                state.wallbox
-                  .vehicleConsumptionKwhPer100Km
-              }
-              batteryCapacityKwh={
-                state.wallbox
-                  .batteryCapacityKwh
-              }
-              onAnnualDrivingKmChange={(
-                value,
-              ) =>
+              annualDrivingKm={state.wallbox.annualDrivingKm}
+              vehicleConsumptionKwhPer100Km={state.wallbox.vehicleConsumptionKwhPer100Km}
+              batteryCapacityKwh={state.wallbox.batteryCapacityKwh}
+              onAnnualDrivingKmChange={(value) =>
                 dispatch({
                   type: "UPDATE_WALLBOX",
                   payload: {
-                    annualDrivingKm:
-                      value,
+                    annualDrivingKm: value,
                   },
                 })
               }
-              onVehicleConsumptionChange={(
-                value,
-              ) =>
+              onVehicleConsumptionChange={(value) =>
                 dispatch({
                   type: "UPDATE_WALLBOX",
                   payload: {
-                    vehicleConsumptionKwhPer100Km:
-                      value,
+                    vehicleConsumptionKwhPer100Km: value,
                   },
                 })
               }
-              onBatteryCapacityChange={(
-                value,
-              ) =>
+              onBatteryCapacityChange={(value) =>
                 dispatch({
                   type: "UPDATE_WALLBOX",
                   payload: {
-                    batteryCapacityKwh:
-                      value,
+                    batteryCapacityKwh: value,
                   },
                 })
               }
             />
           ) : null}
 
-          {currentStep.id ===
-            "home_charging" ? (
+          {currentStep.id === "home_charging" ? (
             <WallboxHomeChargingStep
-              value={
-                state.wallbox
-                  .homeChargingSharePercent
-              }
+              value={state.wallbox.homeChargingSharePercent}
               onChange={(value) =>
                 dispatch({
                   type: "UPDATE_WALLBOX",
                   payload: {
-                    homeChargingSharePercent:
-                      value,
+                    homeChargingSharePercent: value,
                   },
                 })
               }
             />
           ) : null}
 
-          {currentStep.id ===
-            "charging_power" ? (
+          {currentStep.id === "charging_power" ? (
             <WallboxChargingPowerStep
-              value={
-                state.wallbox
-                  .chargingPowerKw
-              }
+              value={state.wallbox.chargingPowerKw}
               onChange={(value) =>
                 dispatch({
                   type: "UPDATE_WALLBOX",
                   payload: {
-                    chargingPowerKw:
-                      value,
+                    chargingPowerKw: value,
                   },
                 })
               }
             />
           ) : null}
 
-          {currentStep.id ===
-            "photovoltaics" ? (
+          {currentStep.id === "photovoltaics" ? (
             <WallboxPhotovoltaicStep
-              value={
-                state.wallbox
-                  .pvChargingSharePercent
-              }
-              hasPhotovoltaicContext={
-                hasPhotovoltaicContext
-              }
+              value={state.wallbox.pvChargingSharePercent}
+              hasPhotovoltaicContext={hasPhotovoltaicContext}
               onChange={(value) =>
                 dispatch({
                   type: "UPDATE_WALLBOX",
                   payload: {
-                    pvChargingSharePercent:
-                      value,
+                    pvChargingSharePercent: value,
                   },
                 })
               }
@@ -338,7 +239,7 @@ export function WallboxWizard({
             type="button"
             onClick={goBack}
             disabled={isFirstStep}
-            className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40"
+            className="border-border-default text-brand-primary hover:bg-surface min-h-12 rounded-xl border px-6 py-3 font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
           >
             Zurück
           </button>
@@ -346,14 +247,10 @@ export function WallboxWizard({
           <button
             type="button"
             onClick={handleNext}
-            disabled={
-              !currentStepComplete
-            }
-            className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={!currentStepComplete}
+            className="bg-brand-primary min-h-12 rounded-xl px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {isLastStep
-              ? "Ergebnis anzeigen"
-              : "Weiter"}
+            {isLastStep ? "Ergebnis anzeigen" : "Weiter"}
           </button>
         </div>
       </section>

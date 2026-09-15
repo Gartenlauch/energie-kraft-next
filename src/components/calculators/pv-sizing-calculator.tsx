@@ -16,6 +16,8 @@ import type {
   PvSizingCalculatorResult,
   PvSizingNumericInputKey,
 } from "@/types/pv-sizing-calculator";
+import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import { ComparisonBars, SegmentedEnergyBar } from "@/components/charts/energy-charts";
 
 type PvSizingFormValues = {
   [Key in keyof PvSizingCalculatorInput]: PvSizingCalculatorInput[Key] extends number
@@ -174,7 +176,7 @@ interface ResultCardProps {
 
 function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
+    <article className="border-border-default bg-background rounded-xl border p-5 shadow-[var(--shadow-sm)]">
       <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
       <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
@@ -269,10 +271,7 @@ export function PvSizingCalculator() {
   }
 
   return (
-    <section
-      id="pv-kosten-berechnung"
-      className="section-space bg-surface-soft"
-    >
+    <section id="pv-kosten-berechnung" className="section-space bg-surface-soft">
       <div className="section-shell grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div>
           <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
@@ -446,18 +445,11 @@ export function PvSizingCalculator() {
             ) : null}
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                type="submit"
-                className="button-primary"
-              >
+              <button type="submit" className="button-primary">
                 Größe und Kosten berechnen
               </button>
 
-              <button
-                type="button"
-                onClick={handleReset}
-                className="button-secondary"
-              >
+              <button type="button" onClick={handleReset} className="button-secondary">
                 Ausgangswerte wiederherstellen
               </button>
             </div>
@@ -600,6 +592,40 @@ export function PvSizingCalculator() {
                 ))}
               </ul>
             </div>
+
+            <div className="border-foreground/10 mt-6 rounded-2xl border p-5">
+              <h3 className="text-lg font-semibold">Kosten und Dachnutzung</h3>
+              <SegmentedEnergyBar
+                segments={[
+                  { label: "PV-Anlage", value: result.pvSystemCostEuro },
+                  { label: "Speicher", value: result.batteryCostEuro },
+                  { label: "Weitere Kosten", value: result.fixedAdditionalCostEuro },
+                ]}
+                unit="€"
+              />
+              <ComparisonBars
+                items={[
+                  { label: "Empfohlene Leistung", value: result.recommendedSystemSizeKwp },
+                  {
+                    label: "Maximale Dachkapazität",
+                    value: result.maximumSystemSizeKwp,
+                    color: "#0DA1D1",
+                  },
+                ]}
+                unit="kWp"
+              />
+            </div>
+
+            <CalculatorProjectCta
+              handoff={{
+                version: 1,
+                source: "pv_sizing",
+                values: {
+                  annualConsumptionKwh: result.input.annualConsumptionKwh,
+                  roofOrientation: result.input.roofOrientation,
+                },
+              }}
+            />
 
             <p className="text-foreground/60 mt-6 text-sm leading-6">
               {pvSizingCalculatorContent.disclaimer}

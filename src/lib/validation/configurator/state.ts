@@ -15,14 +15,11 @@ import {
   BATTERY_STORAGE_PV_POWER_MAX_KWP,
   BATTERY_STORAGE_PV_POWER_MIN_KWP,
 } from "@/lib/configurator/battery-storage";
-import { wallboxCalculatorInputSchema, } from "@/lib/validation/wallbox-calculator";
-import { WALLBOX_CHARGING_POWER_OPTIONS, } from "@/types/configurator";
-import { heatPumpCalculatorInputSchema, } from "@/lib/validation/heat-pump-calculator";
-import { climateCalculatorInputSchema, } from "@/lib/validation/climate-calculator";
-import {
-  CLIMATE_INSULATION_LEVELS,
-  CLIMATE_SOLAR_LOADS,
-} from "@/types/climate-calculator";
+import { wallboxCalculatorInputSchema } from "@/lib/validation/wallbox-calculator";
+import { WALLBOX_CHARGING_POWER_OPTIONS } from "@/types/configurator";
+import { heatPumpCalculatorInputSchema } from "@/lib/validation/heat-pump-calculator";
+import { climateCalculatorInputSchema } from "@/lib/validation/climate-calculator";
+import { CLIMATE_INSULATION_LEVELS, CLIMATE_SOLAR_LOADS } from "@/types/climate-calculator";
 
 export const householdPersonsSchema = z.union([
   z.literal(1),
@@ -39,10 +36,7 @@ const configuratorTypeSchema = z.enum([
   "wallbox",
 ]);
 
-export const buildingOwnershipSchema = z.enum([
-  "owner",
-  "tenant",
-]);
+export const buildingOwnershipSchema = z.enum(["owner", "tenant"]);
 
 export const buildingTypeSchema = z.enum([
   "detached_house",
@@ -63,12 +57,7 @@ export const futureIncreasePercentSchema = z
   .min(PHOTOVOLTAIC_FUTURE_INCREASE_MIN_PERCENT)
   .max(PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT);
 
-export const roofPitchSchema = z.union([
-  z.literal(0),
-  z.literal(15),
-  z.literal(30),
-  z.literal(45),
-]);
+export const roofPitchSchema = z.union([z.literal(0), z.literal(15), z.literal(30), z.literal(45)]);
 
 export const roofMaterialSchema = z.enum([
   "roof_tile",
@@ -97,74 +86,40 @@ export const roofRenovationPeriodSchema = z.enum([
   "unknown",
 ]);
 
-export const batteryStorageConsumptionPatternSchema =
-  z.enum([
+export const batteryStorageConsumptionPatternSchema = z.enum([
     "mostly_daytime",
     "mixed",
     "mostly_evening",
   ]);
 
-export const batteryStorageBackupPreferenceSchema =
-  z.enum([
+export const batteryStorageBackupPreferenceSchema = z.enum([
     "none",
     "selected_loads",
     "whole_home",
   ]);
 
-export const batteryStorageGoalSchema =
-  z.enum([
-    "economic",
-    "balanced",
-    "high_autonomy",
-  ]);
+export const batteryStorageGoalSchema = z.enum(["economic", "balanced", "high_autonomy"]);
 
-export const batteryStorageAnnualConsumptionKwhSchema =
-  z
+export const batteryStorageAnnualConsumptionKwhSchema = z
     .number()
     .int()
-    .min(
-      BATTERY_STORAGE_ANNUAL_CONSUMPTION_MIN_KWH,
-    )
-    .max(
-      BATTERY_STORAGE_ANNUAL_CONSUMPTION_MAX_KWH,
-    );
+  .min(BATTERY_STORAGE_ANNUAL_CONSUMPTION_MIN_KWH)
+  .max(BATTERY_STORAGE_ANNUAL_CONSUMPTION_MAX_KWH);
 
-export const batteryStoragePvPowerKwpSchema =
-  z
+export const batteryStoragePvPowerKwpSchema = z
     .number()
-    .min(
-      BATTERY_STORAGE_PV_POWER_MIN_KWP,
-    )
-    .max(
-      BATTERY_STORAGE_PV_POWER_MAX_KWP,
-    );
+  .min(BATTERY_STORAGE_PV_POWER_MIN_KWP)
+  .max(BATTERY_STORAGE_PV_POWER_MAX_KWP);
 
-export const climateConditionedAreaSchema =
-  z
-    .number()
-    .finite()
-    .min(10)
-    .max(2_000);
+export const climateConditionedAreaSchema = z.number().finite().min(10).max(2_000);
 
-export const climateRoomCountSchema =
-  z
-    .number()
-    .int()
-    .min(1)
-    .max(30);
+export const climateRoomCountSchema = z.number().int().min(1).max(30);
 
-export const climateInsulationLevelSchema =
-  z.enum(CLIMATE_INSULATION_LEVELS);
+export const climateInsulationLevelSchema = z.enum(CLIMATE_INSULATION_LEVELS);
 
-export const climateSolarLoadSchema =
-  z.enum(CLIMATE_SOLAR_LOADS);
+export const climateSolarLoadSchema = z.enum(CLIMATE_SOLAR_LOADS);
 
-export const climateOccupancyPersonsSchema =
-  z
-    .number()
-    .int()
-    .min(1)
-    .max(200);
+export const climateOccupancyPersonsSchema = z.number().int().min(1).max(200);
 
 export const photovoltaicResultSchema = z.object({
   recommendedPowerKwpMin: z.number().int().positive(),
@@ -181,308 +136,177 @@ export const photovoltaicResultSchema = z.object({
   specificYieldKwhPerKwpMin: z.number().int().positive(),
   specificYieldKwhPerKwpMax: z.number().int().positive(),
 
+  estimatedTotalCostEuro: z.number().nonnegative(),
+  estimatedMinimumCostEuro: z.number().nonnegative(),
+  estimatedMaximumCostEuro: z.number().nonnegative(),
+
   batteryStorageRequested: z.boolean(),
   technicalReviewRecommended: z.boolean(),
 });
 
-export const batteryStorageResultSchema =
-  z.object({
-    source: z.enum([
-      "photovoltaic",
-      "standalone",
-    ]),
+export const batteryStorageResultSchema = z.object({
+  source: z.enum(["photovoltaic", "standalone"]),
 
-    annualConsumptionKwh: z
-      .number()
-      .int()
-      .positive(),
+  annualConsumptionKwh: z.number().int().positive(),
 
-    pvPowerKwpMin: z
-      .number()
-      .positive(),
+  pvPowerKwpMin: z.number().positive(),
 
-    pvPowerKwpMax: z
-      .number()
-      .positive(),
+  pvPowerKwpMax: z.number().positive(),
 
-    recommendedUsableCapacityKwhMin:
-      z.number().positive(),
+  recommendedUsableCapacityKwhMin: z.number().positive(),
 
-    recommendedUsableCapacityKwhMax:
-      z.number().positive(),
+  recommendedUsableCapacityKwhMax: z.number().positive(),
 
-    technicalUpperBoundUsableCapacityKwh:
-      z.number().positive(),
+  estimatedTotalCostEuro: z.number().nonnegative(),
+  estimatedMinimumCostEuro: z.number().nonnegative(),
+  estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    consumptionPattern:
-      batteryStorageConsumptionPatternSchema,
+  technicalUpperBoundUsableCapacityKwh: z.number().positive(),
 
-    backupPreference:
-      batteryStorageBackupPreferenceSchema,
+  consumptionPattern: batteryStorageConsumptionPatternSchema,
 
-    goal:
-      batteryStorageGoalSchema,
+  backupPreference: batteryStorageBackupPreferenceSchema,
 
-    pvSurplusLikely:
-      z.boolean(),
+  goal: batteryStorageGoalSchema,
 
-    backupPowerRequested:
-      z.boolean(),
+  pvSurplusLikely: z.boolean(),
 
-    wholeHomeBackupRequested:
-      z.boolean(),
+  backupPowerRequested: z.boolean(),
 
-    modularExpansionRecommended:
-      z.boolean(),
+  wholeHomeBackupRequested: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+  modularExpansionRecommended: z.boolean(),
+
+  technicalReviewRecommended: z.boolean(),
   });
 
 const projectedConsumptionMaxKwh =
-  PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH *
-  (1 + PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT / 100);
+  PHOTOVOLTAIC_ANNUAL_CONSUMPTION_MAX_KWH * (1 + PHOTOVOLTAIC_FUTURE_INCREASE_MAX_PERCENT / 100);
 
-export const wallboxAnnualDrivingKmSchema =
-  z
-    .number()
-    .finite()
-    .min(1_000)
-    .max(100_000);
+export const wallboxAnnualDrivingKmSchema = z.number().finite().min(1_000).max(100_000);
 
-export const wallboxVehicleConsumptionSchema =
-  z
-    .number()
-    .finite()
-    .min(8)
-    .max(50);
+export const wallboxVehicleConsumptionSchema = z.number().finite().min(8).max(50);
 
-export const wallboxBatteryCapacitySchema =
-  z
-    .number()
-    .finite()
-    .min(10)
-    .max(250);
+export const wallboxBatteryCapacitySchema = z.number().finite().min(10).max(250);
 
-export const wallboxHomeChargingShareSchema =
-  z
-    .number()
-    .finite()
-    .min(0)
-    .max(100);
+export const wallboxHomeChargingShareSchema = z.number().finite().min(0).max(100);
 
-export const wallboxChargingPowerSchema =
-  z.union([
-    z.literal(
-      WALLBOX_CHARGING_POWER_OPTIONS[0],
-    ),
-    z.literal(
-      WALLBOX_CHARGING_POWER_OPTIONS[1],
-    ),
-    z.literal(
-      WALLBOX_CHARGING_POWER_OPTIONS[2],
-    ),
-  ]);
+export const wallboxChargingPowerSchema = z.union([
+  z.literal(WALLBOX_CHARGING_POWER_OPTIONS[0]),
+  z.literal(WALLBOX_CHARGING_POWER_OPTIONS[1]),
+  z.literal(WALLBOX_CHARGING_POWER_OPTIONS[2]),
+]);
 
-export const wallboxPvChargingShareSchema =
-  z
-    .number()
-    .finite()
-    .min(0)
-    .max(100);
+export const wallboxPvChargingShareSchema = z.number().finite().min(0).max(100);
 
+export const wallboxConfiguratorResultSchema = z.object({
+  systemRecommendation: z.enum(["basicCharging", "standard11Kw", "highPowerReview"]),
 
-export const wallboxConfiguratorResultSchema =
-  z.object({
-    systemRecommendation:
-      z.enum([
-        "basicCharging",
-        "standard11Kw",
-        "highPowerReview",
-      ]),
+  calculationInput: wallboxCalculatorInputSchema,
 
-    calculationInput:
-      wallboxCalculatorInputSchema,
+  annualVehicleEnergyDemandKwh: z.number().nonnegative(),
 
-    annualVehicleEnergyDemandKwh:
-      z.number().nonnegative(),
+  annualHomeChargingInputEnergyKwh: z.number().nonnegative(),
 
-    annualHomeChargingInputEnergyKwh:
-      z.number().nonnegative(),
+  annualPvChargingEnergyKwh: z.number().nonnegative(),
 
-    annualPvChargingEnergyKwh:
-      z.number().nonnegative(),
+  annualGridChargingEnergyKwh: z.number().nonnegative(),
 
-    annualGridChargingEnergyKwh:
-      z.number().nonnegative(),
+  typicalChargingTimeHours: z.number().positive(),
 
-    typicalChargingTimeHours:
-      z.number().positive(),
+  annualHomeChargingCostEuro: z.number().nonnegative(),
 
-    annualHomeChargingCostEuro:
-      z.number().nonnegative(),
+  monthlyHomeChargingCostEuro: z.number().nonnegative(),
 
-    monthlyHomeChargingCostEuro:
-      z.number().nonnegative(),
+  estimatedTotalCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+  estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+  estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+  usesPhotovoltaicCharging: z.boolean(),
 
-    usesPhotovoltaicCharging:
-      z.boolean(),
-
-    technicalReviewRecommended:
-      z.boolean(),
+  technicalReviewRecommended: z.boolean(),
   });
 
-export const heatPumpHeatedAreaSchema =
-  z
-    .number()
-    .finite()
-    .min(20)
-    .max(5_000);
+export const heatPumpHeatedAreaSchema = z.number().finite().min(20).max(5_000);
 
-export const heatPumpSpecificHeatingDemandSchema =
-  z
-    .number()
-    .finite()
-    .min(10)
-    .max(400);
+export const heatPumpSpecificHeatingDemandSchema = z.number().finite().min(10).max(400);
 
-export const heatPumpOccupancyPersonsSchema =
-  z
-    .number()
-    .int()
-    .min(1)
-    .max(100);
+export const heatPumpOccupancyPersonsSchema = z.number().int().min(1).max(100);
 
-export const heatPumpFlowTemperatureSchema =
-  z
-    .number()
-    .finite()
-    .min(25)
-    .max(80);
+export const heatPumpFlowTemperatureSchema = z.number().finite().min(25).max(80);
 
-export const heatPumpAnnualPerformanceFactorSchema =
-  z
-    .number()
-    .finite()
-    .min(2)
-    .max(7);
+export const heatPumpAnnualPerformanceFactorSchema = z.number().finite().min(2).max(7);
 
-export const heatPumpConfiguratorResultSchema =
-  z.object({
-    calculationInput:
-      heatPumpCalculatorInputSchema,
+export const heatPumpConfiguratorResultSchema = z.object({
+  calculationInput: heatPumpCalculatorInputSchema,
 
-    recommendedHeatPumpCapacityKw:
-      z.number().positive(),
+  recommendedHeatPumpCapacityKw: z.number().positive(),
 
-    totalAnnualHeatDemandKwh:
-      z.number().nonnegative(),
+  totalAnnualHeatDemandKwh: z.number().nonnegative(),
 
-    spaceHeatingDemandKwh:
-      z.number().nonnegative(),
+  spaceHeatingDemandKwh: z.number().nonnegative(),
 
-    hotWaterDemandKwh:
-      z.number().nonnegative(),
+  hotWaterDemandKwh: z.number().nonnegative(),
 
-    annualHeatPumpElectricityConsumptionKwh:
-      z.number().nonnegative(),
+  annualHeatPumpElectricityConsumptionKwh: z.number().nonnegative(),
 
-    annualHeatPumpOperatingCostEuro:
-      z.number().nonnegative(),
+  annualHeatPumpOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+  currentHeatingOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+  annualOperatingCostDifferenceEuro: z.number(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+  estimatedTotalCostEuro: z.number().nonnegative(),
 
-    flowTemperatureAssessment:
-      z.enum([
-        "ntReady",
-        "individualReview",
-      ]),
+  estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    ntReady:
-      z.boolean(),
+  estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+  flowTemperatureAssessment: z.enum(["ntReady", "individualReview"]),
+
+  ntReady: z.boolean(),
+
+  technicalReviewRecommended: z.boolean(),
   });
 
-export const climateConfiguratorResultSchema =
-  z.object({
-    calculationInput:
-      climateCalculatorInputSchema,
+export const climateConfiguratorResultSchema = z.object({
+  calculationInput: climateCalculatorInputSchema,
 
-    calculatedCoolingLoadKw:
-      z.number().positive(),
+  calculatedCoolingLoadKw: z.number().positive(),
 
-    recommendedCoolingCapacityKw:
-      z.number().positive(),
+  recommendedCoolingCapacityKw: z.number().positive(),
 
-    recommendedIndoorUnitCount:
-      z.number().int().positive(),
+  recommendedIndoorUnitCount: z.number().int().positive(),
 
-    averageCapacityPerRoomKw:
-      z.number().positive(),
+  averageCapacityPerRoomKw: z.number().positive(),
 
-    systemRecommendation:
-      z.enum([
-        "singleSplit",
-        "multiSplit",
-        "projectPlanning",
-      ]),
+  systemRecommendation: z.enum(["singleSplit", "multiSplit", "projectPlanning"]),
 
-    annualElectricityConsumptionKwh:
-      z.number().nonnegative(),
+  annualElectricityConsumptionKwh: z.number().nonnegative(),
 
-    annualOperatingCostEuro:
-      z.number().nonnegative(),
+  annualOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+  estimatedTotalCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+  estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+  estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    individualPlanningRecommended:
-      z.boolean(),
+  individualPlanningRecommended: z.boolean(),
   });
 
-
-export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
-  z.object({
+export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
     version: z.literal(CONFIGURATOR_STATE_VERSION),
 
     activeConfigurator: configuratorTypeSchema.nullable(),
     journey: z.object({
-      entryPoint:
-        configuratorTypeSchema.nullable(),
+    entryPoint: configuratorTypeSchema.nullable(),
 
-      selectedProducts:
-        z.array(
-          configuratorTypeSchema,
-        ),
+    selectedProducts: z.array(configuratorTypeSchema),
 
-      completedProducts:
-        z.array(
-          configuratorTypeSchema,
-        ),
+    completedProducts: z.array(configuratorTypeSchema),
     }),
 
     household: z.object({
@@ -510,77 +334,57 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
     }),
 
     batteryStorage: z.object({
-      annualConsumptionKwh:
-        batteryStorageAnnualConsumptionKwhSchema.optional(),
+    annualConsumptionKwh: batteryStorageAnnualConsumptionKwhSchema.optional(),
 
-      pvPowerKwp:
-        batteryStoragePvPowerKwpSchema.optional(),
+    pvPowerKwp: batteryStoragePvPowerKwpSchema.optional(),
 
-      consumptionPattern:
-        batteryStorageConsumptionPatternSchema.optional(),
+    consumptionPattern: batteryStorageConsumptionPatternSchema.optional(),
 
-      backupPreference:
-        batteryStorageBackupPreferenceSchema.optional(),
+    backupPreference: batteryStorageBackupPreferenceSchema.optional(),
 
-      goal:
-        batteryStorageGoalSchema.optional(),
+    goal: batteryStorageGoalSchema.optional(),
     }),
 
     wallbox: z.object({
-      annualDrivingKm:
-        wallboxAnnualDrivingKmSchema.optional(),
+    annualDrivingKm: wallboxAnnualDrivingKmSchema.optional(),
 
-      vehicleConsumptionKwhPer100Km:
-        wallboxVehicleConsumptionSchema.optional(),
+    vehicleConsumptionKwhPer100Km: wallboxVehicleConsumptionSchema.optional(),
 
-      batteryCapacityKwh:
-        wallboxBatteryCapacitySchema.optional(),
+    batteryCapacityKwh: wallboxBatteryCapacitySchema.optional(),
 
-      homeChargingSharePercent:
-        wallboxHomeChargingShareSchema.optional(),
+    homeChargingSharePercent: wallboxHomeChargingShareSchema.optional(),
 
-      chargingPowerKw:
-        wallboxChargingPowerSchema.optional(),
+    chargingPowerKw: wallboxChargingPowerSchema.optional(),
 
-      pvChargingSharePercent:
-        wallboxPvChargingShareSchema.optional(),
+    pvChargingSharePercent: wallboxPvChargingShareSchema.optional(),
     }),
 
     heatPump: z.object({
-      heatedAreaM2:
-        heatPumpHeatedAreaSchema.optional(),
+    heatedAreaM2: heatPumpHeatedAreaSchema.optional(),
 
-      specificSpaceHeatingDemandKwhPerM2Year:
-        heatPumpSpecificHeatingDemandSchema.optional(),
+    specificSpaceHeatingDemandKwhPerM2Year: heatPumpSpecificHeatingDemandSchema.optional(),
 
-      occupancyPersons:
-        heatPumpOccupancyPersonsSchema.optional(),
+    occupancyPersons: heatPumpOccupancyPersonsSchema.optional(),
 
-      requiredFlowTemperatureC:
-        heatPumpFlowTemperatureSchema.optional(),
+    requiredFlowTemperatureC: heatPumpFlowTemperatureSchema.optional(),
 
-      annualPerformanceFactor:
-        heatPumpAnnualPerformanceFactorSchema.optional(),
+    annualPerformanceFactor: heatPumpAnnualPerformanceFactorSchema.optional(),
     }),
 
     climate: z.object({
-      conditionedAreaM2:
-        climateConditionedAreaSchema.optional(),
+    conditionedAreaM2: climateConditionedAreaSchema.optional(),
 
-      roomCount:
-        climateRoomCountSchema.optional(),
+    roomCount: climateRoomCountSchema.optional(),
 
-      insulationLevel:
-        climateInsulationLevelSchema.optional(),
+    insulationLevel: climateInsulationLevelSchema.optional(),
 
-      solarLoad:
-        climateSolarLoadSchema.optional(),
+    solarLoad: climateSolarLoadSchema.optional(),
 
-      occupancyPersons:
-        climateOccupancyPersonsSchema.optional(),
+    occupancyPersons: climateOccupancyPersonsSchema.optional(),
     }),
 
     interests: z.object({
+    photovoltaic: z.boolean(),
       batteryStorage: z.boolean(),
       climate: z.boolean(),
       heatPump: z.boolean(),
@@ -593,26 +397,19 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> =
     }),
 
     results: z.object({
-      photovoltaic:
-        photovoltaicResultSchema.optional(),
+    photovoltaic: photovoltaicResultSchema.optional(),
 
-      batteryStorage:
-        batteryStorageResultSchema.optional(),
+    batteryStorage: batteryStorageResultSchema.optional(),
 
-      wallbox:
-        wallboxConfiguratorResultSchema.optional(),
+    wallbox: wallboxConfiguratorResultSchema.optional(),
 
-      heatPump:
-        heatPumpConfiguratorResultSchema.optional(),
+    heatPump: heatPumpConfiguratorResultSchema.optional(),
 
-      climate:
-        climateConfiguratorResultSchema.optional(),
+    climate: climateConfiguratorResultSchema.optional(),
     }),
   });
 
-export function parseConfiguratorState(
-  input: unknown,
-): ConfiguratorState | null {
+export function parseConfiguratorState(input: unknown): ConfiguratorState | null {
   const result = configuratorStateSchema.safeParse(input);
 
   if (!result.success) {

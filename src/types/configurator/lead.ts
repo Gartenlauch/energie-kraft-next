@@ -4,13 +4,8 @@ import type {
   BatteryStorageConsumptionPattern,
   BatteryStorageGoal,
 } from "./battery-storage";
-import type {
-  ClimateInsulationLevel,
-  ClimateSolarLoad,
-} from "@/types/climate-calculator";
-import type {
-  HeatPumpFlowTemperatureAssessment,
-} from "@/types/heat-pump-calculator";
+import type { ClimateInsulationLevel, ClimateSolarLoad } from "@/types/climate-calculator";
+import type { HeatPumpFlowTemperatureAssessment } from "@/types/heat-pump-calculator";
 import type {
   BuildingConfiguratorState,
   BuildingType,
@@ -26,19 +21,13 @@ import type {
   RoofPitch,
   RoofRenovationPeriod,
 } from "./state";
+import type { ProjectEconomicsResult } from "./economics";
 
 import type { FirestoreTimestamp } from "@/types/firestore";
-import type {
-  LeadMailInfo,
-  LeadStatus,
-} from "@/types/lead";
+import type { LeadMailInfo, LeadStatus } from "@/types/lead";
 
 export type ConfiguratorLeadType =
-  | "photovoltaic"
-  | "battery_storage"
-  | "wallbox"
-  | "heat_pump"
-  | "climate";
+  "photovoltaic" | "battery_storage" | "wallbox" | "heat_pump" | "climate";
 
 export type ConfiguratorLeadSource =
   | "konfigurator/photovoltaik"
@@ -107,8 +96,7 @@ export interface PhotovoltaicConfiguratorLeadAnswers {
   notes: ConfiguratorNotes;
 }
 
-export interface SubmitPhotovoltaicConfiguratorLeadInput
-  extends SubmitConfiguratorLeadCommonInput {
+export interface SubmitPhotovoltaicConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
   configurator: {
     type: "photovoltaic";
     answers: PhotovoltaicConfiguratorLeadAnswers;
@@ -129,8 +117,7 @@ export interface BatteryStorageConfiguratorLeadAnswers {
   goal: BatteryStorageGoal;
 }
 
-export interface SubmitBatteryStorageConfiguratorLeadInput
-  extends SubmitConfiguratorLeadCommonInput {
+export interface SubmitBatteryStorageConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
   configurator: {
     type: "battery_storage";
     answers: BatteryStorageConfiguratorLeadAnswers;
@@ -175,8 +162,7 @@ export interface WallboxConfiguratorLeadResult {
   technicalReviewRecommended: boolean;
 }
 
-export interface SubmitWallboxConfiguratorLeadInput
-  extends SubmitConfiguratorLeadCommonInput {
+export interface SubmitWallboxConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
   configurator: {
     type: "wallbox";
     answers: WallboxConfiguratorLeadAnswers;
@@ -206,19 +192,21 @@ export interface HeatPumpConfiguratorLeadResult {
   annualHeatPumpElectricityConsumptionKwh: number;
   annualHeatPumpOperatingCostEuro: number;
 
+  currentHeatingOperatingCostEuro: number;
+
+  annualOperatingCostDifferenceEuro: number;
+
   estimatedTotalCostEuro: number;
   estimatedMinimumCostEuro: number;
   estimatedMaximumCostEuro: number;
 
-  flowTemperatureAssessment:
-  HeatPumpFlowTemperatureAssessment;
+  flowTemperatureAssessment: HeatPumpFlowTemperatureAssessment;
 
   ntReady: boolean;
   technicalReviewRecommended: boolean;
 }
 
-export interface SubmitHeatPumpConfiguratorLeadInput
-  extends SubmitConfiguratorLeadCommonInput {
+export interface SubmitHeatPumpConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
   configurator: {
     type: "heat_pump";
     answers: HeatPumpConfiguratorLeadAnswers;
@@ -244,10 +232,7 @@ export interface ClimateConfiguratorLeadResult {
   recommendedIndoorUnitCount: number;
   averageCapacityPerRoomKw: number;
 
-  systemRecommendation:
-  | "singleSplit"
-  | "multiSplit"
-  | "projectPlanning";
+  systemRecommendation: "singleSplit" | "multiSplit" | "projectPlanning";
 
   annualElectricityConsumptionKwh: number;
   annualOperatingCostEuro: number;
@@ -259,8 +244,7 @@ export interface ClimateConfiguratorLeadResult {
   individualPlanningRecommended: boolean;
 }
 
-export interface SubmitClimateConfiguratorLeadInput
-  extends SubmitConfiguratorLeadCommonInput {
+export interface SubmitClimateConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
   configurator: {
     type: "climate";
     answers: ClimateConfiguratorLeadAnswers;
@@ -281,8 +265,7 @@ export type ConfiguratorLeadPayload =
   | SubmitHeatPumpConfiguratorLeadInput["configurator"]
   | SubmitClimateConfiguratorLeadInput["configurator"];
 
-export interface SubmitConfiguratorLeadInput
-  extends SubmitConfiguratorLeadCommonInput {
+export interface SubmitConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
   /**
    * Alle vom Benutzer ausgewählten Produkte.
    * Die Reihenfolge entspricht der zentralen
@@ -303,6 +286,8 @@ export interface SubmitConfiguratorLeadInput
    * Konfiguratoren mit Antworten und Ergebnis.
    */
   configurators: ConfiguratorLeadPayload[];
+
+  economics: ProjectEconomicsResult;
 }
 
 export interface SubmitConfiguratorLeadResult {
@@ -314,17 +299,11 @@ export interface SubmitConfiguratorLeadResult {
    * Bestehender Status der internen
    * Energie-Kraft Benachrichtigung.
    */
-  mailStatus?:
-  | "accepted"
-  | "failed";
+  mailStatus?: "accepted" | "failed";
 
-  customerMailStatus?:
-  | "accepted"
-  | "failed";
+  customerMailStatus?: "accepted" | "failed";
 
-  reportStatus?:
-  | "generated"
-  | "failed";
+  reportStatus?: "generated" | "failed";
 }
 
 /*
@@ -337,9 +316,9 @@ export interface SubmitConfiguratorLeadResult {
 /*
  * Persistierter Gesamtprojekt-Lead.
  *
- * Seit schemaVersion 3 wird eine Kundenanfrage
+ * Seit schemaVersion 4 wird eine Kundenanfrage
  * immer als ein gemeinsames Energieprojekt mit
- * mehreren configurators[] gespeichert.
+ * mehreren configurators[] und einer kanonischen Projektökonomie gespeichert.
  */
 
 export interface StoredPhotovoltaicConfiguratorAnswers {
@@ -366,12 +345,10 @@ export interface StoredPhotovoltaicConfiguratorAnswers {
 
     orientation: RoofOrientation;
 
-    renovationPeriod:
-    RoofRenovationPeriod;
+    renovationPeriod: RoofRenovationPeriod;
   };
 
-  interests:
-  ConfiguratorInterests;
+  interests: ConfiguratorInterests;
 
   notes: {
     hasNotes: boolean;
@@ -383,11 +360,9 @@ export interface StoredPhotovoltaicConfiguratorAnswers {
 export interface StoredPhotovoltaicConfiguratorLeadPayload {
   type: "photovoltaic";
 
-  answers:
-  StoredPhotovoltaicConfiguratorAnswers;
+  answers: StoredPhotovoltaicConfiguratorAnswers;
 
-  result:
-  PhotovoltaicConfiguratorResult;
+  result: PhotovoltaicConfiguratorResult;
 }
 
 export type StoredConfiguratorLeadPayload =
@@ -400,21 +375,15 @@ export type StoredConfiguratorLeadPayload =
   >;
 
 export interface ConfiguratorLeadReportInfo {
-  status:
-  | "generated"
-  | "failed";
+  status: "generated" | "failed";
 
-  filename:
-  string | null;
+  filename: string | null;
 
-  sizeBytes:
-  number | null;
+  sizeBytes: number | null;
 
-  generatedAt:
-  FirestoreTimestamp | null;
+  generatedAt: FirestoreTimestamp | null;
 
-  updatedAt:
-  FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
 }
 
 export interface ConfiguratorLeadDocument {
@@ -422,22 +391,19 @@ export interface ConfiguratorLeadDocument {
 
   status: LeadStatus;
 
-  products:
-  ConfiguratorLeadType[];
+  products: ConfiguratorLeadType[];
 
   journey: {
-    entryPoint:
-    ConfiguratorLeadType;
+    entryPoint: ConfiguratorLeadType;
 
-    selectedProducts:
-    ConfiguratorLeadType[];
+    selectedProducts: ConfiguratorLeadType[];
 
-    completedProducts:
-    ConfiguratorLeadType[];
+    completedProducts: ConfiguratorLeadType[];
   };
 
-  configurators:
-  StoredConfiguratorLeadPayload[];
+  configurators: StoredConfiguratorLeadPayload[];
+
+  economics: ProjectEconomicsResult;
 
   contact: {
     firstName: string;
@@ -459,28 +425,23 @@ export interface ConfiguratorLeadDocument {
   };
 
   meta: {
-    source:
-    ConfiguratorLeadSource;
+    source: ConfiguratorLeadSource;
 
-    schemaVersion: 3;
+    schemaVersion: 4;
   };
 
   mail?: LeadMailInfo;
 
-  report?:
-  ConfiguratorLeadReportInfo;
+  report?: ConfiguratorLeadReportInfo;
 
-  createdAt:
-  FirestoreTimestamp;
+  createdAt: FirestoreTimestamp;
 
-  updatedAt:
-  FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
 
   updatedBy?: string;
 }
 
-export interface ConfiguratorLead
-  extends ConfiguratorLeadDocument {
+export interface ConfiguratorLead extends ConfiguratorLeadDocument {
   id: string;
 }
 

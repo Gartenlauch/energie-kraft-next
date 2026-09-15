@@ -15,7 +15,10 @@ import { TenantStop } from "@/components/configurator/photovoltaic/tenant-stop";
 import { WizardActions } from "@/components/configurator/wizard-actions";
 import { photovoltaicWizardSteps } from "@/content/configurators";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
-import { buildPhotovoltaicConfiguratorResult, getPhotovoltaicHouseholdConsumptionDefault } from "@/lib/configurator/photovoltaic";
+import {
+  buildPhotovoltaicConfiguratorResult,
+  getPhotovoltaicHouseholdConsumptionDefault,
+} from "@/lib/configurator/photovoltaic";
 import { useConfiguratorWizard } from "@/lib/configurator/use-configurator-wizard";
 import { isPhotovoltaicStepComplete } from "@/lib/validation/configurator/photovoltaic";
 import { EnergySolutionsStep } from "@/components/configurator/photovoltaic/energy-solutions-step";
@@ -29,6 +32,7 @@ import { buildConfiguratorLeadInput } from "@/lib/configurator/lead";
 import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
 import { configuratorLeadInputSchema } from "@/lib/validation/configurator/lead";
 import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
+import { ProjectAnalysisPromise } from "@/components/configurator/project-analysis-promise";
 
 import type {
   BuildingOwnership,
@@ -45,72 +49,35 @@ import type {
 } from "@/types/configurator";
 
 export function PhotovoltaicWizard() {
-  const {
-    state,
-    dispatch,
-    reset,
-    isHydrated,
-  } = useConfigurator();
+  const { state, dispatch, reset, isHydrated } = useConfigurator();
 
-  const {
-    currentStepId,
-    isFirstStep,
-    isLastStep,
-    goNext,
-    goBack,
-    goTo,
-  } = useConfiguratorWizard<PhotovoltaicStepId>(
-    photovoltaicWizardSteps,
-    "household_persons",
-  );
+  const { currentStepId, isFirstStep, isLastStep, goNext, goBack, goTo } =
+    useConfiguratorWizard<PhotovoltaicStepId>(photovoltaicWizardSteps, "household_persons");
 
   const [showTenantStop, setShowTenantStop] = useState(false);
-  type PostWizardStage =
-    | "result"
-    | "contact"
-    | "submit"
-    | "success";
+  type PostWizardStage = "result" | "contact" | "submit" | "success";
 
-  const [postWizardStage, setPostWizardStage] =
-    useState<PostWizardStage | null>(null);
+  const [postWizardStage, setPostWizardStage] = useState<PostWizardStage | null>(null);
 
-  const [contactDraft, setContactDraft] =
-    useState<ConfiguratorContactFormValues | null>(
-      null,
-    );
+  const [contactDraft, setContactDraft] = useState<ConfiguratorContactFormValues | null>(null);
 
-  const [
-    contactFormStartedAt,
-    setContactFormStartedAt,
-  ] = useState<number | null>(null);
+  const [contactFormStartedAt, setContactFormStartedAt] = useState<number | null>(null);
 
-  const [submittedLeadId, setSubmittedLeadId] =
-    useState<string | null>(null);
+  const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null);
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [submissionError, setSubmissionError] =
-    useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   if (!isHydrated) {
     return (
-      <div
-        className="rounded-2xl border border-border-default bg-surface p-8"
-        aria-busy="true"
-      >
-        <p className="font-medium text-brand-primary">
-          Konfigurator wird vorbereitet …
-        </p>
+      <div className="border-border-default bg-surface rounded-2xl border p-8" aria-busy="true">
+        <p className="text-brand-primary font-medium">Konfigurator wird vorbereitet …</p>
       </div>
     );
   }
 
-  const currentStepComplete =
-    isPhotovoltaicStepComplete(
-      currentStepId,
-      state,
-    );
+  const currentStepComplete = isPhotovoltaicStepComplete(currentStepId, state);
 
   function activatePhotovoltaic() {
     if (state.activeConfigurator === "photovoltaic") {
@@ -123,26 +90,19 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handlePersonsSelect(
-    persons: HouseholdPersons,
-  ) {
+  function handlePersonsSelect(persons: HouseholdPersons) {
     activatePhotovoltaic();
 
     dispatch({
       type: "UPDATE_HOUSEHOLD",
       payload: {
         persons,
-        annualConsumptionKwh:
-          getPhotovoltaicHouseholdConsumptionDefault(
-            persons,
-          ),
+        annualConsumptionKwh: getPhotovoltaicHouseholdConsumptionDefault(persons),
       },
     });
   }
 
-  function handleOwnershipSelect(
-    ownership: BuildingOwnership,
-  ) {
+  function handleOwnershipSelect(ownership: BuildingOwnership) {
     activatePhotovoltaic();
 
     dispatch({
@@ -153,9 +113,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleBuildingTypeSelect(
-    buildingType: BuildingType,
-  ) {
+  function handleBuildingTypeSelect(buildingType: BuildingType) {
     activatePhotovoltaic();
 
     dispatch({
@@ -166,9 +124,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleConsumptionChange(
-    annualConsumptionKwh: number | undefined,
-  ) {
+  function handleConsumptionChange(annualConsumptionKwh: number | undefined) {
     activatePhotovoltaic();
 
     dispatch({
@@ -179,9 +135,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleRoofPitchSelect(
-    pitch: RoofPitch,
-  ) {
+  function handleRoofPitchSelect(pitch: RoofPitch) {
     activatePhotovoltaic();
 
     dispatch({
@@ -192,9 +146,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleRoofMaterialSelect(
-    material: RoofMaterial,
-  ) {
+  function handleRoofMaterialSelect(material: RoofMaterial) {
     activatePhotovoltaic();
 
     dispatch({
@@ -205,9 +157,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleRoofOrientationSelect(
-    orientation: RoofOrientation,
-  ) {
+  function handleRoofOrientationSelect(orientation: RoofOrientation) {
     activatePhotovoltaic();
 
     dispatch({
@@ -218,9 +168,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleRoofRenovationSelect(
-    renovationPeriod: RoofRenovationPeriod,
-  ) {
+  function handleRoofRenovationSelect(renovationPeriod: RoofRenovationPeriod) {
     activatePhotovoltaic();
 
     dispatch({
@@ -231,9 +179,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleFutureIncreaseChange(
-    futureIncreasePercent: number,
-  ) {
+  function handleFutureIncreaseChange(futureIncreasePercent: number) {
     activatePhotovoltaic();
 
     dispatch({
@@ -244,9 +190,7 @@ export function PhotovoltaicWizard() {
     });
   }
 
-  function handleEnergySolutionToggle(
-    solution: PhotovoltaicEnergySolution,
-  ) {
+  function handleEnergySolutionToggle(solution: PhotovoltaicEnergySolution) {
     activatePhotovoltaic();
 
     switch (solution) {
@@ -254,8 +198,7 @@ export function PhotovoltaicWizard() {
         dispatch({
           type: "UPDATE_INTERESTS",
           payload: {
-            batteryStorage:
-              !state.interests.batteryStorage,
+            batteryStorage: !state.interests.batteryStorage,
           },
         });
         break;
@@ -264,8 +207,7 @@ export function PhotovoltaicWizard() {
         dispatch({
           type: "UPDATE_INTERESTS",
           payload: {
-            wallbox:
-              !state.interests.wallbox,
+            wallbox: !state.interests.wallbox,
           },
         });
         break;
@@ -274,8 +216,7 @@ export function PhotovoltaicWizard() {
         dispatch({
           type: "UPDATE_INTERESTS",
           payload: {
-            heatPump:
-              !state.interests.heatPump,
+            heatPump: !state.interests.heatPump,
           },
         });
         break;
@@ -284,17 +225,14 @@ export function PhotovoltaicWizard() {
         dispatch({
           type: "UPDATE_INTERESTS",
           payload: {
-            climate:
-              !state.interests.climate,
+            climate: !state.interests.climate,
           },
         });
         break;
     }
   }
 
-  function handleHasNotesChange(
-    hasNotes: boolean,
-  ) {
+  function handleHasNotesChange(hasNotes: boolean) {
     activatePhotovoltaic();
 
     dispatch({
@@ -326,18 +264,13 @@ export function PhotovoltaicWizard() {
       return;
     }
 
-    if (
-      currentStepId === "ownership" &&
-      state.building.ownership === "tenant"
-    ) {
+    if (currentStepId === "ownership" && state.building.ownership === "tenant") {
       setShowTenantStop(true);
       return;
     }
 
-
     if (isLastStep) {
-      const result =
-        buildPhotovoltaicConfiguratorResult(state);
+      const result = buildPhotovoltaicConfiguratorResult(state);
 
       if (!result) {
         return;
@@ -355,19 +288,15 @@ export function PhotovoltaicWizard() {
     goNext();
   }
 
-  async function handleSubmitConfiguratorLead(
-    input: SubmitConfiguratorLeadInput,
-  ) {
+  async function handleSubmitConfiguratorLead(input: SubmitConfiguratorLeadInput) {
     if (isSubmitting) {
       return;
     }
 
-    const parsed = configuratorLeadInputSchema.safeParse(input)
+    const parsed = configuratorLeadInputSchema.safeParse(input);
 
     if (!parsed.success) {
-      setSubmissionError(
-        "Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.",
-      );
+      setSubmissionError("Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.");
       return;
     }
 
@@ -375,14 +304,9 @@ export function PhotovoltaicWizard() {
     setIsSubmitting(true);
 
     try {
-      const result =
-        await submitConfiguratorLead(
-          input,
-        );
+      const result = await submitConfiguratorLead(input);
 
-      setSubmittedLeadId(
-        result.leadId,
-      );
+      setSubmittedLeadId(result.leadId);
 
       /*
        * Technische Wizard-Daten erst nach
@@ -390,9 +314,7 @@ export function PhotovoltaicWizard() {
        */
       reset();
 
-      setPostWizardStage(
-        "success",
-      );
+      setPostWizardStage("success");
     } catch {
       setSubmissionError(
         "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
@@ -403,16 +325,9 @@ export function PhotovoltaicWizard() {
   }
 
   if (showTenantStop) {
-    return (
-      <TenantStop
-        onBack={() => setShowTenantStop(false)}
-      />
-    );
+    return <TenantStop onBack={() => setShowTenantStop(false)} />;
   }
-  if (
-    postWizardStage === "success" &&
-    submittedLeadId
-  ) {
+  if (postWizardStage === "success" && submittedLeadId) {
     return (
       <ConfiguratorSubmitSuccess
         leadId={submittedLeadId}
@@ -431,24 +346,13 @@ export function PhotovoltaicWizard() {
   if (postWizardStage === "contact") {
     return (
       <ConfiguratorContactForm
-        initialValues={
-          contactDraft ?? undefined
-        }
-        initialFormStartedAt={
-          contactFormStartedAt ??
-          undefined
-        }
-        onBack={() =>
-          setPostWizardStage("result")
-        }
-        onContinue={(
-          values,
-          formStartedAt,
-        ) => {
+        focusFirstName={contactDraft === null}
+        initialValues={contactDraft ?? undefined}
+        initialFormStartedAt={contactFormStartedAt ?? undefined}
+        onBack={() => setPostWizardStage("result")}
+        onContinue={(values, formStartedAt) => {
           setContactDraft(values);
-          setContactFormStartedAt(
-            formStartedAt,
-          );
+          setContactFormStartedAt(formStartedAt);
           setSubmissionError(null);
           setPostWizardStage("submit");
         }}
@@ -456,26 +360,13 @@ export function PhotovoltaicWizard() {
     );
   }
 
-  if (
-    postWizardStage === "submit" &&
-    contactDraft &&
-    contactFormStartedAt
-  ) {
-    const input =
-      buildConfiguratorLeadInput(
-        state,
-        contactDraft,
-        contactFormStartedAt,
-      )
+  if (postWizardStage === "submit" && contactDraft && contactFormStartedAt) {
+    const input = buildConfiguratorLeadInput(state, contactDraft, contactFormStartedAt);
 
     if (!input) {
       return (
-        <div
-          role="alert"
-          className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800"
-        >
-          Die Anfrage konnte nicht vorbereitet werden.
-          Bitte gehe zurück und prüfe deine Angaben.
+        <div role="alert" className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800">
+          Die Anfrage konnte nicht vorbereitet werden. Bitte gehe zurück und prüfe deine Angaben.
         </div>
       );
     }
@@ -485,73 +376,42 @@ export function PhotovoltaicWizard() {
         input={input}
         isSubmitting={isSubmitting}
         error={submissionError}
-        onBack={() =>
-          setPostWizardStage("contact")
-        }
+        onBack={() => setPostWizardStage("contact")}
         onSubmit={() => {
-          void handleSubmitConfiguratorLead(
-            input,
-          );
+          void handleSubmitConfiguratorLead(input);
         }}
       />
     );
   }
 
-  if (
-    postWizardStage === "result" &&
-    state.results.photovoltaic
-  ) {
-    const nextConfigurator =
-      getNextConfiguratorProduct(
-        state.journey,
-        "photovoltaic",
-      );
+  if (postWizardStage === "result" && state.results.photovoltaic) {
+    const nextConfigurator = getNextConfiguratorProduct(state.journey, "photovoltaic");
 
     return (
       <PhotovoltaicResult
-        result={
-          state.results.photovoltaic
-        }
-        nextConfigurator={
-          nextConfigurator
-        }
-        onBack={() =>
-          setPostWizardStage(null)
-        }
-        onContinue={() =>
-          setPostWizardStage("contact")
-        }
+        result={state.results.photovoltaic}
+        nextConfigurator={nextConfigurator}
+        onBack={() => setPostWizardStage(null)}
+        onContinue={() => setPostWizardStage("contact")}
       />
     );
   }
 
-
   return (
     <>
-      <ConfiguratorProgress
-        steps={photovoltaicWizardSteps}
-        currentStepId={currentStepId}
-      />
+      {currentStepId === "household_persons" ? <ProjectAnalysisPromise /> : null}
+      <ConfiguratorProgress steps={photovoltaicWizardSteps} currentStepId={currentStepId} />
 
       {currentStepId === "household_persons" ? (
-        <HouseholdPersonsStep
-          selected={state.household.persons}
-          onSelect={handlePersonsSelect}
-        />
+        <HouseholdPersonsStep selected={state.household.persons} onSelect={handlePersonsSelect} />
       ) : null}
 
       {currentStepId === "ownership" ? (
-        <OwnershipStep
-          selected={state.building.ownership}
-          onSelect={handleOwnershipSelect}
-        />
+        <OwnershipStep selected={state.building.ownership} onSelect={handleOwnershipSelect} />
       ) : null}
 
       {currentStepId === "building_type" ? (
-        <BuildingTypeStep
-          selected={state.building.type}
-          onSelect={handleBuildingTypeSelect}
-        />
+        <BuildingTypeStep selected={state.building.type} onSelect={handleBuildingTypeSelect} />
       ) : null}
 
       {currentStepId === "annual_consumption" ? (
@@ -562,17 +422,11 @@ export function PhotovoltaicWizard() {
       ) : null}
 
       {currentStepId === "roof_pitch" ? (
-        <RoofPitchStep
-          selected={state.roof.pitch}
-          onSelect={handleRoofPitchSelect}
-        />
+        <RoofPitchStep selected={state.roof.pitch} onSelect={handleRoofPitchSelect} />
       ) : null}
 
       {currentStepId === "roof_material" ? (
-        <RoofMaterialStep
-          selected={state.roof.material}
-          onSelect={handleRoofMaterialSelect}
-        />
+        <RoofMaterialStep selected={state.roof.material} onSelect={handleRoofMaterialSelect} />
       ) : null}
 
       {currentStepId === "roof_orientation" ? (
@@ -591,24 +445,15 @@ export function PhotovoltaicWizard() {
 
       {currentStepId === "future_consumption" ? (
         <FutureConsumptionStep
-          annualConsumptionKwh={
-            state.household.annualConsumptionKwh
-          }
-          futureIncreasePercent={
-            state.household.futureIncreasePercent
-          }
-          projectedConsumptionKwh={
-            state.household.projectedConsumptionKwh
-          }
+          annualConsumptionKwh={state.household.annualConsumptionKwh}
+          futureIncreasePercent={state.household.futureIncreasePercent}
+          projectedConsumptionKwh={state.household.projectedConsumptionKwh}
           onChange={handleFutureIncreaseChange}
         />
       ) : null}
 
       {currentStepId === "energy_solutions" ? (
-        <EnergySolutionsStep
-          interests={state.interests}
-          onToggle={handleEnergySolutionToggle}
-        />
+        <EnergySolutionsStep interests={state.interests} onToggle={handleEnergySolutionToggle} />
       ) : null}
 
       {currentStepId === "notes" ? (
@@ -624,11 +469,7 @@ export function PhotovoltaicWizard() {
         onBack={isFirstStep ? undefined : goBack}
         onNext={handleNext}
         nextDisabled={!currentStepComplete}
-        nextLabel={
-          isLastStep
-            ? "Weiter zum Ergebnis"
-            : "Weiter"
-        }
+        nextLabel={isLastStep ? "Weiter zum Ergebnis" : "Weiter"}
       />
     </>
   );

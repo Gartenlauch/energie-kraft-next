@@ -17,6 +17,8 @@ import type {
   ClimateSolarLoad,
   ClimateSystemRecommendation,
 } from "@/types/climate-calculator";
+import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import { ComparisonBars } from "@/components/charts/energy-charts";
 
 type ClimateFormValues = {
   [Key in keyof ClimateCalculatorInput]: ClimateCalculatorInput[Key] extends number
@@ -150,7 +152,7 @@ interface ResultCardProps {
 
 function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
+    <article className="border-border-default bg-background rounded-xl border p-5 shadow-[var(--shadow-sm)]">
       <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
       <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
@@ -239,10 +241,7 @@ export function ClimateCostCalculator() {
   }
 
   return (
-    <section
-      id="klima-berechnung"
-      className="section-space bg-surface-soft"
-    >
+    <section id="klima-berechnung" className="section-space bg-surface-soft">
       <div className="section-shell grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div>
           <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
@@ -384,18 +383,11 @@ export function ClimateCostCalculator() {
             ) : null}
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                type="submit"
-                className="button-primary"
-              >
+              <button type="submit" className="button-primary">
                 Leistung und Kosten berechnen
               </button>
 
-              <button
-                type="button"
-                onClick={handleReset}
-                className="button-secondary"
-              >
+              <button type="button" onClick={handleReset} className="button-secondary">
                 Ausgangswerte wiederherstellen
               </button>
             </div>
@@ -520,6 +512,35 @@ export function ClimateCostCalculator() {
                 ))}
               </ul>
             </div>
+
+            <div className="border-foreground/10 mt-6 rounded-2xl border p-5">
+              <h3 className="text-lg font-semibold">Kühllast und Strombedarf</h3>
+              <ComparisonBars
+                items={[
+                  { label: "Empfohlene Kühlleistung", value: result.recommendedCoolingCapacityKw },
+                  { label: "Ø je Raum", value: result.averageCapacityPerRoomKw, color: "#0DA1D1" },
+                ]}
+                unit="kW"
+              />
+              <p className="text-foreground/65 mt-4 text-sm">
+                Betriebskostenanalyse: {currencyFormatter.format(result.annualOperatingCostEuro)}{" "}
+                pro Jahr. Keine behauptete Amortisation.
+              </p>
+            </div>
+
+            <CalculatorProjectCta
+              handoff={{
+                version: 1,
+                source: "climate",
+                values: {
+                  conditionedAreaM2: result.input.conditionedAreaM2,
+                  roomCount: result.input.roomCount,
+                  insulationLevel: result.input.insulationLevel,
+                  solarLoad: result.input.solarLoad,
+                  occupancyPersons: result.input.occupancyPersons,
+                },
+              }}
+            />
 
             <p className="text-foreground/60 mt-6 text-sm leading-6">
               {climateCalculatorContent.disclaimer}

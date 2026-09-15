@@ -1,6 +1,4 @@
-import {
-  CONFIGURATOR_JOURNEY_ORDER,
-} from "@/lib/configurator/journey";
+import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
 import type {
   ClimateConfiguratorResult,
   ConfiguratorContactFormValues,
@@ -17,30 +15,23 @@ function buildCommonLeadInput(
   contactValues: ConfiguratorContactFormValues,
   formStartedAt: number,
 ): SubmitConfiguratorLeadCommonInput | null {
-  if (
-    contactValues.installationAtResidence === null
-  ) {
+  if (contactValues.installationAtResidence === null) {
     return null;
   }
 
-  const phone =
-    contactValues.phone.trim();
+  const phone = contactValues.phone.trim();
 
-  const website =
-    contactValues.website.trim();
+  const website = contactValues.website.trim();
 
   return {
     type: "configurator",
 
     contact: {
-      firstName:
-        contactValues.firstName.trim(),
+      firstName: contactValues.firstName.trim(),
 
-      lastName:
-        contactValues.lastName.trim(),
+      lastName: contactValues.lastName.trim(),
 
-      email:
-        contactValues.email.trim(),
+      email: contactValues.email.trim(),
 
       ...(phone
         ? {
@@ -50,21 +41,16 @@ function buildCommonLeadInput(
     },
 
     installation: {
-      atResidence:
-        contactValues.installationAtResidence,
+      atResidence: contactValues.installationAtResidence,
 
-      street:
-        contactValues.street.trim(),
+      street: contactValues.street.trim(),
 
-      postalCode:
-        contactValues.postalCode.trim(),
+      postalCode: contactValues.postalCode.trim(),
 
-      city:
-        contactValues.city.trim(),
+      city: contactValues.city.trim(),
     },
 
-    privacyAccepted:
-      contactValues.privacyAccepted,
+    privacyAccepted: contactValues.privacyAccepted,
 
     ...(website
       ? {
@@ -76,11 +62,8 @@ function buildCommonLeadInput(
   };
 }
 
-function buildPhotovoltaicPayload(
-  state: ConfiguratorState,
-): ConfiguratorLeadPayload | null {
-  const result =
-    state.results.photovoltaic;
+function buildPhotovoltaicPayload(state: ConfiguratorState): ConfiguratorLeadPayload | null {
+  const result = state.results.photovoltaic;
 
   if (!result) {
     return null;
@@ -115,19 +98,11 @@ function buildPhotovoltaicPayload(
   };
 }
 
-function buildBatteryStoragePayload(
-  state: ConfiguratorState,
-): ConfiguratorLeadPayload | null {
-  const result =
-    state.results.batteryStorage;
+function buildBatteryStoragePayload(state: ConfiguratorState): ConfiguratorLeadPayload | null {
+  const result = state.results.batteryStorage;
 
-  const {
-    annualConsumptionKwh,
-    pvPowerKwp,
-    consumptionPattern,
-    backupPreference,
-    goal,
-  } = state.batteryStorage;
+  const { annualConsumptionKwh, pvPowerKwp, consumptionPattern, backupPreference, goal } =
+    state.batteryStorage;
 
   if (
     !result ||
@@ -163,53 +138,36 @@ function buildBatteryStoragePayload(
   };
 }
 
-function buildWallboxLeadResult(
-  result: WallboxConfiguratorResult,
-) {
+function buildWallboxLeadResult(result: WallboxConfiguratorResult) {
   return {
-    annualVehicleEnergyDemandKwh:
-      result.annualVehicleEnergyDemandKwh,
+    annualVehicleEnergyDemandKwh: result.annualVehicleEnergyDemandKwh,
 
-    annualHomeChargingInputEnergyKwh:
-      result.annualHomeChargingInputEnergyKwh,
+    annualHomeChargingInputEnergyKwh: result.annualHomeChargingInputEnergyKwh,
 
-    annualPvChargingEnergyKwh:
-      result.annualPvChargingEnergyKwh,
+    annualPvChargingEnergyKwh: result.annualPvChargingEnergyKwh,
 
-    annualGridChargingEnergyKwh:
-      result.annualGridChargingEnergyKwh,
+    annualGridChargingEnergyKwh: result.annualGridChargingEnergyKwh,
 
-    typicalChargingTimeHours:
-      result.typicalChargingTimeHours,
+    typicalChargingTimeHours: result.typicalChargingTimeHours,
 
-    annualHomeChargingCostEuro:
-      result.annualHomeChargingCostEuro,
+    annualHomeChargingCostEuro: result.annualHomeChargingCostEuro,
 
-    monthlyHomeChargingCostEuro:
-      result.monthlyHomeChargingCostEuro,
+    monthlyHomeChargingCostEuro: result.monthlyHomeChargingCostEuro,
 
-    estimatedTotalCostEuro:
-      result.estimatedTotalCostEuro,
+    estimatedTotalCostEuro: result.estimatedTotalCostEuro,
 
-    estimatedMinimumCostEuro:
-      result.estimatedMinimumCostEuro,
+    estimatedMinimumCostEuro: result.estimatedMinimumCostEuro,
 
-    estimatedMaximumCostEuro:
-      result.estimatedMaximumCostEuro,
+    estimatedMaximumCostEuro: result.estimatedMaximumCostEuro,
 
-    usesPhotovoltaicCharging:
-      result.usesPhotovoltaicCharging,
+    usesPhotovoltaicCharging: result.usesPhotovoltaicCharging,
 
-    technicalReviewRecommended:
-      result.technicalReviewRecommended,
+    technicalReviewRecommended: result.technicalReviewRecommended,
   };
 }
 
-function buildWallboxPayload(
-  state: ConfiguratorState,
-): ConfiguratorLeadPayload | null {
-  const result =
-    state.results.wallbox;
+function buildWallboxPayload(state: ConfiguratorState): ConfiguratorLeadPayload | null {
+  const result = state.results.wallbox;
 
   const {
     annualDrivingKm,
@@ -223,8 +181,7 @@ function buildWallboxPayload(
   if (
     !result ||
     annualDrivingKm === undefined ||
-    vehicleConsumptionKwhPer100Km ===
-    undefined ||
+    vehicleConsumptionKwhPer100Km === undefined ||
     batteryCapacityKwh === undefined ||
     homeChargingSharePercent === undefined ||
     chargingPowerKw === undefined ||
@@ -245,59 +202,44 @@ function buildWallboxPayload(
       pvChargingSharePercent,
     },
 
-    result:
-      buildWallboxLeadResult(result),
+    result: buildWallboxLeadResult(result),
   };
 }
 
-function buildHeatPumpLeadResult(
-  result: HeatPumpConfiguratorResult,
-) {
+function buildHeatPumpLeadResult(result: HeatPumpConfiguratorResult) {
   return {
-    recommendedHeatPumpCapacityKw:
-      result.recommendedHeatPumpCapacityKw,
+    recommendedHeatPumpCapacityKw: result.recommendedHeatPumpCapacityKw,
 
-    totalAnnualHeatDemandKwh:
-      result.totalAnnualHeatDemandKwh,
+    totalAnnualHeatDemandKwh: result.totalAnnualHeatDemandKwh,
 
-    spaceHeatingDemandKwh:
-      result.spaceHeatingDemandKwh,
+    spaceHeatingDemandKwh: result.spaceHeatingDemandKwh,
 
-    hotWaterDemandKwh:
-      result.hotWaterDemandKwh,
+    hotWaterDemandKwh: result.hotWaterDemandKwh,
 
-    annualHeatPumpElectricityConsumptionKwh:
-      result
-        .annualHeatPumpElectricityConsumptionKwh,
+    annualHeatPumpElectricityConsumptionKwh: result.annualHeatPumpElectricityConsumptionKwh,
 
-    annualHeatPumpOperatingCostEuro:
-      result.annualHeatPumpOperatingCostEuro,
+    annualHeatPumpOperatingCostEuro: result.annualHeatPumpOperatingCostEuro,
 
-    estimatedTotalCostEuro:
-      result.estimatedTotalCostEuro,
+    currentHeatingOperatingCostEuro: result.currentHeatingOperatingCostEuro,
 
-    estimatedMinimumCostEuro:
-      result.estimatedMinimumCostEuro,
+    annualOperatingCostDifferenceEuro: result.annualOperatingCostDifferenceEuro,
 
-    estimatedMaximumCostEuro:
-      result.estimatedMaximumCostEuro,
+    estimatedTotalCostEuro: result.estimatedTotalCostEuro,
 
-    flowTemperatureAssessment:
-      result.flowTemperatureAssessment,
+    estimatedMinimumCostEuro: result.estimatedMinimumCostEuro,
 
-    ntReady:
-      result.ntReady,
+    estimatedMaximumCostEuro: result.estimatedMaximumCostEuro,
 
-    technicalReviewRecommended:
-      result.technicalReviewRecommended,
+    flowTemperatureAssessment: result.flowTemperatureAssessment,
+
+    ntReady: result.ntReady,
+
+    technicalReviewRecommended: result.technicalReviewRecommended,
   };
 }
 
-function buildHeatPumpPayload(
-  state: ConfiguratorState,
-): ConfiguratorLeadPayload | null {
-  const result =
-    state.results.heatPump;
+function buildHeatPumpPayload(state: ConfiguratorState): ConfiguratorLeadPayload | null {
+  const result = state.results.heatPump;
 
   const {
     heatedAreaM2,
@@ -310,8 +252,7 @@ function buildHeatPumpPayload(
   if (
     !result ||
     heatedAreaM2 === undefined ||
-    specificSpaceHeatingDemandKwhPerM2Year ===
-    undefined ||
+    specificSpaceHeatingDemandKwhPerM2Year === undefined ||
     occupancyPersons === undefined ||
     requiredFlowTemperatureC === undefined ||
     annualPerformanceFactor === undefined
@@ -330,63 +271,41 @@ function buildHeatPumpPayload(
       annualPerformanceFactor,
     },
 
-    result:
-      buildHeatPumpLeadResult(result),
+    result: buildHeatPumpLeadResult(result),
   };
 }
 
-function buildClimateLeadResult(
-  result: ClimateConfiguratorResult,
-) {
+function buildClimateLeadResult(result: ClimateConfiguratorResult) {
   return {
-    calculatedCoolingLoadKw:
-      result.calculatedCoolingLoadKw,
+    calculatedCoolingLoadKw: result.calculatedCoolingLoadKw,
 
-    recommendedCoolingCapacityKw:
-      result.recommendedCoolingCapacityKw,
+    recommendedCoolingCapacityKw: result.recommendedCoolingCapacityKw,
 
-    recommendedIndoorUnitCount:
-      result.recommendedIndoorUnitCount,
+    recommendedIndoorUnitCount: result.recommendedIndoorUnitCount,
 
-    averageCapacityPerRoomKw:
-      result.averageCapacityPerRoomKw,
+    averageCapacityPerRoomKw: result.averageCapacityPerRoomKw,
 
-    systemRecommendation:
-      result.systemRecommendation,
+    systemRecommendation: result.systemRecommendation,
 
-    annualElectricityConsumptionKwh:
-      result.annualElectricityConsumptionKwh,
+    annualElectricityConsumptionKwh: result.annualElectricityConsumptionKwh,
 
-    annualOperatingCostEuro:
-      result.annualOperatingCostEuro,
+    annualOperatingCostEuro: result.annualOperatingCostEuro,
 
-    estimatedTotalCostEuro:
-      result.estimatedTotalCostEuro,
+    estimatedTotalCostEuro: result.estimatedTotalCostEuro,
 
-    estimatedMinimumCostEuro:
-      result.estimatedMinimumCostEuro,
+    estimatedMinimumCostEuro: result.estimatedMinimumCostEuro,
 
-    estimatedMaximumCostEuro:
-      result.estimatedMaximumCostEuro,
+    estimatedMaximumCostEuro: result.estimatedMaximumCostEuro,
 
-    individualPlanningRecommended:
-      result.individualPlanningRecommended,
+    individualPlanningRecommended: result.individualPlanningRecommended,
   };
 }
 
-function buildClimatePayload(
-  state: ConfiguratorState,
-): ConfiguratorLeadPayload | null {
-  const result =
-    state.results.climate;
+function buildClimatePayload(state: ConfiguratorState): ConfiguratorLeadPayload | null {
+  const result = state.results.climate;
 
-  const {
-    conditionedAreaM2,
-    roomCount,
-    insulationLevel,
-    solarLoad,
-    occupancyPersons,
-  } = state.climate;
+  const { conditionedAreaM2, roomCount, insulationLevel, solarLoad, occupancyPersons } =
+    state.climate;
 
   if (
     !result ||
@@ -410,8 +329,7 @@ function buildClimatePayload(
       occupancyPersons,
     },
 
-    result:
-      buildClimateLeadResult(result),
+    result: buildClimateLeadResult(result),
   };
 }
 
@@ -421,29 +339,19 @@ function buildConfiguratorPayload(
 ): ConfiguratorLeadPayload | null {
   switch (configuratorType) {
     case "photovoltaic":
-      return buildPhotovoltaicPayload(
-        state,
-      );
+      return buildPhotovoltaicPayload(state);
 
     case "battery_storage":
-      return buildBatteryStoragePayload(
-        state,
-      );
+      return buildBatteryStoragePayload(state);
 
     case "wallbox":
-      return buildWallboxPayload(
-        state,
-      );
+      return buildWallboxPayload(state);
 
     case "heat_pump":
-      return buildHeatPumpPayload(
-        state,
-      );
+      return buildHeatPumpPayload(state);
 
     case "climate":
-      return buildClimatePayload(
-        state,
-      );
+      return buildClimatePayload(state);
   }
 }
 
@@ -452,28 +360,15 @@ export function buildConfiguratorLeadInput(
   contactValues: ConfiguratorContactFormValues,
   formStartedAt: number,
 ): SubmitConfiguratorLeadInput | null {
-  const common =
-    buildCommonLeadInput(
-      contactValues,
-      formStartedAt,
-    );
+  const common = buildCommonLeadInput(contactValues, formStartedAt);
 
-  const entryPoint =
-    state.journey.entryPoint;
+  const entryPoint = state.journey.entryPoint;
 
-  const selectedProducts = [
-    ...state.journey.selectedProducts,
-  ];
+  const selectedProducts = [...state.journey.selectedProducts];
 
-  const completedProducts = [
-    ...state.journey.completedProducts,
-  ];
+  const completedProducts = [...state.journey.completedProducts];
 
-  if (
-    !common ||
-    !entryPoint ||
-    selectedProducts.length === 0
-  ) {
+  if (!common || !entryPoint || selectedProducts.length === 0) {
     return null;
   }
 
@@ -482,37 +377,14 @@ export function buildConfiguratorLeadInput(
    * werden, wenn alle ausgewählten Produkte
    * abgeschlossen sind.
    */
-  if (
-    selectedProducts.some(
-      (product) =>
-        !completedProducts.includes(
-          product,
-        ),
-    )
-  ) {
+  if (selectedProducts.some((product) => !completedProducts.includes(product))) {
     return null;
   }
 
-  const configurators:
-    ConfiguratorLeadPayload[] = [];
+  const configurators: ConfiguratorLeadPayload[] = [];
 
-  for (
-    const product of
-    CONFIGURATOR_JOURNEY_ORDER
-  ) {
-    if (
-      !selectedProducts.includes(
-        product,
-      )
-    ) {
-      continue;
-    }
-
-    const payload =
-      buildConfiguratorPayload(
-        product,
-        state,
-      );
+  for (const product of selectedProducts) {
+    const payload = buildConfiguratorPayload(product, state);
 
     if (!payload) {
       return null;
@@ -524,8 +396,7 @@ export function buildConfiguratorLeadInput(
   return {
     ...common,
 
-    products:
-      selectedProducts,
+    products: selectedProducts,
 
     journey: {
       entryPoint,
@@ -536,5 +407,7 @@ export function buildConfiguratorLeadInput(
     },
 
     configurators,
+
+    economics: calculateProjectEconomics(state),
   };
 }

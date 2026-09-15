@@ -1,18 +1,19 @@
 import type { CalculatorFieldContent, PvCalculatorPageContent } from "@/types/content";
 import type { PvCalculatorInput } from "@/types/pv-calculator";
+import { PV_ECONOMIC_ASSUMPTIONS } from "@/lib/calculators/pv-model";
 
 export const defaultPvCalculatorInput = {
   annualConsumptionKwh: 4_500,
   systemSizeKwp: 10,
   specificYieldKwhPerKwp: 1_000,
-  selfConsumptionRatePercent: 35,
-  electricityPriceEuroPerKwh: 0.32,
-  feedInTariffEuroPerKwh: 0.08,
+  selfConsumptionRatePercent: PV_ECONOMIC_ASSUMPTIONS.selfConsumptionRatePercent,
+  electricityPriceEuroPerKwh: PV_ECONOMIC_ASSUMPTIONS.electricityPriceEuroPerKwh,
+  feedInTariffEuroPerKwh: PV_ECONOMIC_ASSUMPTIONS.feedInTariffEuroPerKwh,
   netInvestmentCostEuro: 18_000,
-  annualOperatingCostEuro: 200,
-  annualDegradationPercent: 0.5,
-  electricityPriceIncreasePercent: 2,
-  calculationYears: 20,
+  annualOperatingCostEuro: PV_ECONOMIC_ASSUMPTIONS.annualOperatingCostEuro,
+  annualDegradationPercent: PV_ECONOMIC_ASSUMPTIONS.annualDegradationPercent,
+  electricityPriceIncreasePercent: PV_ECONOMIC_ASSUMPTIONS.electricityPriceIncreasePercent,
+  calculationYears: PV_ECONOMIC_ASSUMPTIONS.calculationYears,
 } satisfies PvCalculatorInput;
 
 const primaryFields = [

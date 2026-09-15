@@ -1,19 +1,10 @@
 import type { ConfiguratorStepDefinition } from "./wizard";
 
-export type BatteryStorageConsumptionPattern =
-  | "mostly_daytime"
-  | "mixed"
-  | "mostly_evening";
+export type BatteryStorageConsumptionPattern = "mostly_daytime" | "mixed" | "mostly_evening";
 
-export type BatteryStorageGoal =
-  | "economic"
-  | "balanced"
-  | "high_autonomy";
+export type BatteryStorageGoal = "economic" | "balanced" | "high_autonomy";
 
-export type BatteryStorageBackupPreference =
-  | "none"
-  | "selected_loads"
-  | "whole_home";
+export type BatteryStorageBackupPreference = "none" | "selected_loads" | "whole_home";
 
 export interface BatteryStoragePhotovoltaicHandoff {
   source: "photovoltaic";
@@ -59,6 +50,10 @@ export interface BatteryStorageConfiguratorResult {
   recommendedUsableCapacityKwhMin: number;
   recommendedUsableCapacityKwhMax: number;
 
+  estimatedTotalCostEuro: number;
+  estimatedMinimumCostEuro: number;
+  estimatedMaximumCostEuro: number;
+
   technicalUpperBoundUsableCapacityKwh: number;
 
   consumptionPattern: BatteryStorageConsumptionPattern;
@@ -76,14 +71,8 @@ export interface BatteryStorageConfiguratorResult {
 }
 
 export type BatteryStorageStepId =
-  | "system_data"
-  | "consumption_pattern"
-  | "backup_preference"
-  | "goal";
+  "system_data" | "consumption_pattern" | "backup_preference" | "goal";
 
-export type BatteryStorageStepDefinition = Omit<
-  ConfiguratorStepDefinition,
-  "id"
-> & {
+export type BatteryStorageStepDefinition = Omit<ConfiguratorStepDefinition, "id"> & {
   id: BatteryStorageStepId;
 };

@@ -2,28 +2,14 @@ import type {
   BatteryStorageConfiguratorResult,
   BatteryStorageConfiguratorState,
 } from "./battery-storage";
-import type {
-  WallboxConfiguratorResult,
-  WallboxConfiguratorState,
-} from "./wallbox";
-import type {
-  HeatPumpConfiguratorResult,
-  HeatPumpConfiguratorState,
-} from "./heat-pump";
-import type {
-  ClimateConfiguratorResult,
-  ClimateConfiguratorState,
-} from "./climate";
+import type { WallboxConfiguratorResult, WallboxConfiguratorState } from "./wallbox";
+import type { HeatPumpConfiguratorResult, HeatPumpConfiguratorState } from "./heat-pump";
+import type { ClimateConfiguratorResult, ClimateConfiguratorState } from "./climate";
 
-
-export const CONFIGURATOR_STATE_VERSION = 7 as const;
+export const CONFIGURATOR_STATE_VERSION = 8 as const;
 
 export type ConfiguratorType =
-  | "photovoltaic"
-  | "battery_storage"
-  | "climate"
-  | "heat_pump"
-  | "wallbox";
+  "photovoltaic" | "battery_storage" | "climate" | "heat_pump" | "wallbox";
 
 export interface ConfiguratorJourneyState {
   entryPoint: ConfiguratorType | null;
@@ -56,18 +42,10 @@ export type RoofMaterial =
   | "other"
   | "unknown";
 
-export type RoofOrientation =
-  | "south"
-  | "south_east_south_west"
-  | "east_west"
-  | "north";
+export type RoofOrientation = "south" | "south_east_south_west" | "east_west" | "north";
 
 export type RoofRenovationPeriod =
-  | "new_build"
-  | "after_1990"
-  | "before_1990"
-  | "before_1960"
-  | "unknown";
+  "new_build" | "after_1990" | "before_1990" | "before_1960" | "unknown";
 
 export interface HouseholdConfiguratorState {
   persons?: HouseholdPersons;
@@ -89,6 +67,7 @@ export interface RoofConfiguratorState {
 }
 
 export interface ConfiguratorInterests {
+  photovoltaic: boolean;
   batteryStorage: boolean;
   climate: boolean;
   heatPump: boolean;
@@ -114,6 +93,10 @@ export interface PhotovoltaicConfiguratorResult {
 
   specificYieldKwhPerKwpMin: number;
   specificYieldKwhPerKwpMax: number;
+
+  estimatedTotalCostEuro: number;
+  estimatedMinimumCostEuro: number;
+  estimatedMaximumCostEuro: number;
 
   batteryStorageRequested: boolean;
   technicalReviewRecommended: boolean;

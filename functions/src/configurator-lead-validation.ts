@@ -19,12 +19,7 @@ const buildingTypeSchema = z.enum([
   "multi_family_house",
 ]);
 
-const roofPitchSchema = z.union([
-  z.literal(0),
-  z.literal(15),
-  z.literal(30),
-  z.literal(45),
-]);
+const roofPitchSchema = z.union([z.literal(0), z.literal(15), z.literal(30), z.literal(45)]);
 
 const roofMaterialSchema = z.enum([
   "roof_tile",
@@ -38,12 +33,7 @@ const roofMaterialSchema = z.enum([
   "unknown",
 ]);
 
-const roofOrientationSchema = z.enum([
-  "south",
-  "south_east_south_west",
-  "east_west",
-  "north",
-]);
+const roofOrientationSchema = z.enum(["south", "south_east_south_west", "east_west", "north"]);
 
 const roofRenovationPeriodSchema = z.enum([
   "new_build",
@@ -58,32 +48,29 @@ const photovoltaicResultSchema = z
     recommendedPowerKwpMin: z.number().int().positive(),
     recommendedPowerKwpMax: z.number().int().positive(),
 
-    estimatedAnnualYieldKwhMin:
-      z.number().int().positive(),
+    estimatedAnnualYieldKwhMin: z.number().int().positive(),
 
-    estimatedAnnualYieldKwhMax:
-      z.number().int().positive(),
+    estimatedAnnualYieldKwhMax: z.number().int().positive(),
 
-    projectedAnnualConsumptionKwh:
-      z.number().int().positive(),
+    projectedAnnualConsumptionKwh: z.number().int().positive(),
 
-    targetAnnualGenerationKwh:
-      z.number().int().positive(),
+    targetAnnualGenerationKwh: z.number().int().positive(),
 
-    orientationFactor:
-      z.number().positive().max(1),
+    orientationFactor: z.number().positive().max(1),
 
-    specificYieldKwhPerKwpMin:
-      z.number().int().positive(),
+    specificYieldKwhPerKwpMin: z.number().int().positive(),
 
-    specificYieldKwhPerKwpMax:
-      z.number().int().positive(),
+    specificYieldKwhPerKwpMax: z.number().int().positive(),
 
-    batteryStorageRequested:
-      z.boolean(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
+
+    estimatedMaximumCostEuro: z.number().nonnegative(),
+
+    batteryStorageRequested: z.boolean(),
+
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
@@ -93,21 +80,11 @@ const photovoltaicAnswersSchema = z
       .object({
         persons: householdPersonsSchema,
 
-        annualConsumptionKwh:
-          z.number()
-            .int()
-            .min(500)
-            .max(100_000),
+        annualConsumptionKwh: z.number().int().min(500).max(100_000),
 
-        futureIncreasePercent:
-          z.number()
-            .min(0)
-            .max(200),
+        futureIncreasePercent: z.number().min(0).max(200),
 
-        projectedConsumptionKwh:
-          z.number()
-            .int()
-            .positive(),
+        projectedConsumptionKwh: z.number().int().positive(),
       })
       .strict(),
 
@@ -123,13 +100,13 @@ const photovoltaicAnswersSchema = z
         pitch: roofPitchSchema,
         material: roofMaterialSchema,
         orientation: roofOrientationSchema,
-        renovationPeriod:
-          roofRenovationPeriodSchema,
+        renovationPeriod: roofRenovationPeriodSchema,
       })
       .strict(),
 
     interests: z
       .object({
+        photovoltaic: z.boolean(),
         batteryStorage: z.boolean(),
         climate: z.boolean(),
         heatPump: z.boolean(),
@@ -141,28 +118,18 @@ const photovoltaicAnswersSchema = z
       .object({
         hasNotes: z.boolean(),
 
-        text: z
-          .string()
-          .trim()
-          .max(2_000)
-          .optional(),
+        text: z.string().trim().max(2_000).optional(),
       })
       .strict()
-      .superRefine(
-        (values, context) => {
-          if (
-            values.hasNotes &&
-            !values.text?.trim()
-          ) {
+      .superRefine((values, context) => {
+        if (values.hasNotes && !values.text?.trim()) {
             context.addIssue({
               code: "custom",
               path: ["text"],
-              message:
-                "Bei ausgewählten Anmerkungen muss ein Text vorhanden sein.",
+            message: "Bei ausgewählten Anmerkungen muss ein Text vorhanden sein.",
             });
           }
-        },
-      ),
+      }),
   })
   .strict();
 
@@ -172,95 +139,55 @@ const photovoltaicAnswersSchema = z
 
 const batteryStorageAnswersSchema = z
   .object({
-    annualConsumptionKwh:
-      z.number()
-        .positive()
-        .max(1_000_000)
-        .optional(),
+    annualConsumptionKwh: z.number().positive().max(1_000_000).optional(),
 
-    pvPowerKwp:
-      z.number()
-        .positive()
-        .max(10_000)
-        .optional(),
+    pvPowerKwp: z.number().positive().max(10_000).optional(),
 
-    consumptionPattern: z.enum([
-      "mostly_daytime",
-      "mixed",
-      "mostly_evening",
-    ]),
+    consumptionPattern: z.enum(["mostly_daytime", "mixed", "mostly_evening"]),
 
-    backupPreference: z.enum([
-      "none",
-      "selected_loads",
-      "whole_home",
-    ]),
+    backupPreference: z.enum(["none", "selected_loads", "whole_home"]),
 
-    goal: z.enum([
-      "economic",
-      "balanced",
-      "high_autonomy",
-    ]),
+    goal: z.enum(["economic", "balanced", "high_autonomy"]),
   })
   .strict();
 
 const batteryStorageResultSchema = z
   .object({
-    source: z.enum([
-      "photovoltaic",
-      "standalone",
-    ]),
+    source: z.enum(["photovoltaic", "standalone"]),
 
-    annualConsumptionKwh:
-      z.number().positive(),
+    annualConsumptionKwh: z.number().positive(),
 
-    pvPowerKwpMin:
-      z.number().nonnegative(),
+    pvPowerKwpMin: z.number().nonnegative(),
 
-    pvPowerKwpMax:
-      z.number().nonnegative(),
+    pvPowerKwpMax: z.number().nonnegative(),
 
-    recommendedUsableCapacityKwhMin:
-      z.number().nonnegative(),
+    recommendedUsableCapacityKwhMin: z.number().nonnegative(),
 
-    recommendedUsableCapacityKwhMax:
-      z.number().nonnegative(),
+    recommendedUsableCapacityKwhMax: z.number().nonnegative(),
 
-    technicalUpperBoundUsableCapacityKwh:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    consumptionPattern: z.enum([
-      "mostly_daytime",
-      "mixed",
-      "mostly_evening",
-    ]),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    backupPreference: z.enum([
-      "none",
-      "selected_loads",
-      "whole_home",
-    ]),
+    estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    goal: z.enum([
-      "economic",
-      "balanced",
-      "high_autonomy",
-    ]),
+    technicalUpperBoundUsableCapacityKwh: z.number().nonnegative(),
 
-    pvSurplusLikely:
-      z.boolean(),
+    consumptionPattern: z.enum(["mostly_daytime", "mixed", "mostly_evening"]),
 
-    backupPowerRequested:
-      z.boolean(),
+    backupPreference: z.enum(["none", "selected_loads", "whole_home"]),
 
-    wholeHomeBackupRequested:
-      z.boolean(),
+    goal: z.enum(["economic", "balanced", "high_autonomy"]),
 
-    modularExpansionRecommended:
-      z.boolean(),
+    pvSurplusLikely: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    backupPowerRequested: z.boolean(),
+
+    wholeHomeBackupRequested: z.boolean(),
+
+    modularExpansionRecommended: z.boolean(),
+
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
@@ -270,76 +197,45 @@ const batteryStorageResultSchema = z
 
 const wallboxAnswersSchema = z
   .object({
-    annualDrivingKm:
-      z.number()
-        .positive()
-        .max(1_000_000),
+    annualDrivingKm: z.number().positive().max(1_000_000),
 
-    vehicleConsumptionKwhPer100Km:
-      z.number()
-        .positive()
-        .max(200),
+    vehicleConsumptionKwhPer100Km: z.number().positive().max(200),
 
-    batteryCapacityKwh:
-      z.number()
-        .positive()
-        .max(500),
+    batteryCapacityKwh: z.number().positive().max(500),
 
-    homeChargingSharePercent:
-      z.number()
-        .min(0)
-        .max(100),
+    homeChargingSharePercent: z.number().min(0).max(100),
 
-    chargingPowerKw: z.union([
-      z.literal(3.7),
-      z.literal(11),
-      z.literal(22),
-    ]),
+    chargingPowerKw: z.union([z.literal(3.7), z.literal(11), z.literal(22)]),
 
-    pvChargingSharePercent:
-      z.number()
-        .min(0)
-        .max(100),
+    pvChargingSharePercent: z.number().min(0).max(100),
   })
   .strict();
 
 const wallboxResultSchema = z
   .object({
-    annualVehicleEnergyDemandKwh:
-      z.number().nonnegative(),
+    annualVehicleEnergyDemandKwh: z.number().nonnegative(),
 
-    annualHomeChargingInputEnergyKwh:
-      z.number().nonnegative(),
+    annualHomeChargingInputEnergyKwh: z.number().nonnegative(),
 
-    annualPvChargingEnergyKwh:
-      z.number().nonnegative(),
+    annualPvChargingEnergyKwh: z.number().nonnegative(),
 
-    annualGridChargingEnergyKwh:
-      z.number().nonnegative(),
+    annualGridChargingEnergyKwh: z.number().nonnegative(),
 
-    typicalChargingTimeHours:
-      z.number().nonnegative(),
+    typicalChargingTimeHours: z.number().nonnegative(),
 
-    annualHomeChargingCostEuro:
-      z.number().nonnegative(),
+    annualHomeChargingCostEuro: z.number().nonnegative(),
 
-    monthlyHomeChargingCostEuro:
-      z.number().nonnegative(),
+    monthlyHomeChargingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+    estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    usesPhotovoltaicCharging:
-      z.boolean(),
+    usesPhotovoltaicCharging: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
@@ -349,73 +245,47 @@ const wallboxResultSchema = z
 
 const heatPumpAnswersSchema = z
   .object({
-    heatedAreaM2:
-      z.number()
-        .min(20)
-        .max(5_000),
+    heatedAreaM2: z.number().min(20).max(5_000),
 
-    specificSpaceHeatingDemandKwhPerM2Year:
-      z.number()
-        .min(10)
-        .max(400),
+    specificSpaceHeatingDemandKwhPerM2Year: z.number().min(10).max(400),
 
-    occupancyPersons:
-      z.number()
-        .int()
-        .min(1)
-        .max(100),
+    occupancyPersons: z.number().int().min(1).max(100),
 
-    requiredFlowTemperatureC:
-      z.number()
-        .min(25)
-        .max(80),
+    requiredFlowTemperatureC: z.number().min(25).max(80),
 
-    annualPerformanceFactor:
-      z.number()
-        .min(2)
-        .max(7),
+    annualPerformanceFactor: z.number().min(2).max(7),
   })
   .strict();
 
 const heatPumpResultSchema = z
   .object({
-    recommendedHeatPumpCapacityKw:
-      z.number().positive(),
+    recommendedHeatPumpCapacityKw: z.number().positive(),
 
-    totalAnnualHeatDemandKwh:
-      z.number().nonnegative(),
+    totalAnnualHeatDemandKwh: z.number().nonnegative(),
 
-    spaceHeatingDemandKwh:
-      z.number().nonnegative(),
+    spaceHeatingDemandKwh: z.number().nonnegative(),
 
-    hotWaterDemandKwh:
-      z.number().nonnegative(),
+    hotWaterDemandKwh: z.number().nonnegative(),
 
-    annualHeatPumpElectricityConsumptionKwh:
-      z.number().nonnegative(),
+    annualHeatPumpElectricityConsumptionKwh: z.number().nonnegative(),
 
-    annualHeatPumpOperatingCostEuro:
-      z.number().nonnegative(),
+    annualHeatPumpOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+    currentHeatingOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+    annualOperatingCostDifferenceEuro: z.number(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    flowTemperatureAssessment:
-      z.enum([
-        "ntReady",
-        "individualReview",
-      ]),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
+
+    estimatedMaximumCostEuro: z.number().nonnegative(),
+
+    flowTemperatureAssessment: z.enum(["ntReady", "individualReview"]),
 
     ntReady: z.boolean(),
 
-    technicalReviewRecommended:
-      z.boolean(),
+    technicalReviewRecommended: z.boolean(),
   })
   .strict();
 
@@ -425,77 +295,41 @@ const heatPumpResultSchema = z
 
 const climateAnswersSchema = z
   .object({
-    conditionedAreaM2:
-      z.number()
-        .min(10)
-        .max(2_000),
+    conditionedAreaM2: z.number().min(10).max(2_000),
 
-    roomCount:
-      z.number()
-        .int()
-        .min(1)
-        .max(30),
+    roomCount: z.number().int().min(1).max(30),
 
-    insulationLevel:
-      z.enum([
-        "good",
-        "average",
-        "weak",
-      ]),
+    insulationLevel: z.enum(["good", "average", "weak"]),
 
-    solarLoad:
-      z.enum([
-        "low",
-        "medium",
-        "high",
-      ]),
+    solarLoad: z.enum(["low", "medium", "high"]),
 
-    occupancyPersons:
-      z.number()
-        .int()
-        .min(1)
-        .max(200),
+    occupancyPersons: z.number().int().min(1).max(200),
   })
   .strict();
 
 const climateResultSchema = z
   .object({
-    calculatedCoolingLoadKw:
-      z.number().positive(),
+    calculatedCoolingLoadKw: z.number().positive(),
 
-    recommendedCoolingCapacityKw:
-      z.number().positive(),
+    recommendedCoolingCapacityKw: z.number().positive(),
 
-    recommendedIndoorUnitCount:
-      z.number().int().positive(),
+    recommendedIndoorUnitCount: z.number().int().positive(),
 
-    averageCapacityPerRoomKw:
-      z.number().positive(),
+    averageCapacityPerRoomKw: z.number().positive(),
 
-    systemRecommendation:
-      z.enum([
-        "singleSplit",
-        "multiSplit",
-        "projectPlanning",
-      ]),
+    systemRecommendation: z.enum(["singleSplit", "multiSplit", "projectPlanning"]),
 
-    annualElectricityConsumptionKwh:
-      z.number().nonnegative(),
+    annualElectricityConsumptionKwh: z.number().nonnegative(),
 
-    annualOperatingCostEuro:
-      z.number().nonnegative(),
+    annualOperatingCostEuro: z.number().nonnegative(),
 
-    estimatedTotalCostEuro:
-      z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative(),
 
-    estimatedMinimumCostEuro:
-      z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative(),
 
-    estimatedMaximumCostEuro:
-      z.number().nonnegative(),
+    estimatedMaximumCostEuro: z.number().nonnegative(),
 
-    individualPlanningRecommended:
-      z.boolean(),
+    individualPlanningRecommended: z.boolean(),
   })
   .strict();
 
@@ -504,63 +338,47 @@ const climateResultSchema = z
  * der gemeinsame Discriminator.
  */
 
-const configuratorSchema =
-  z.discriminatedUnion("type", [
+const configuratorSchema = z.discriminatedUnion("type", [
     z
       .object({
-        type: z.literal(
-          "photovoltaic",
-        ),
-        answers:
-          photovoltaicAnswersSchema,
-        result:
-          photovoltaicResultSchema,
+      type: z.literal("photovoltaic"),
+      answers: photovoltaicAnswersSchema,
+      result: photovoltaicResultSchema,
       })
       .strict(),
 
     z
       .object({
-        type: z.literal(
-          "battery_storage",
-        ),
-        answers:
-          batteryStorageAnswersSchema,
-        result:
-          batteryStorageResultSchema,
+      type: z.literal("battery_storage"),
+      answers: batteryStorageAnswersSchema,
+      result: batteryStorageResultSchema,
       })
       .strict(),
 
     z
       .object({
         type: z.literal("wallbox"),
-        answers:
-          wallboxAnswersSchema,
-        result:
-          wallboxResultSchema,
+      answers: wallboxAnswersSchema,
+      result: wallboxResultSchema,
       })
       .strict(),
 
     z
       .object({
         type: z.literal("heat_pump"),
-        answers:
-          heatPumpAnswersSchema,
-        result:
-          heatPumpResultSchema,
+      answers: heatPumpAnswersSchema,
+      result: heatPumpResultSchema,
       })
       .strict(),
 
     z
       .object({
         type: z.literal("climate"),
-        answers:
-          climateAnswersSchema,
-        result:
-          climateResultSchema,
+      answers: climateAnswersSchema,
+      result: climateResultSchema,
       })
       .strict(),
   ]);
-
 
 const configuratorTypeSchema = z.enum([
   "photovoltaic",
@@ -570,6 +388,76 @@ const configuratorTypeSchema = z.enum([
   "climate",
 ]);
 
+const economicMoneySchema = z.number().finite();
+const economicCostShape = {
+  investmentMinEuro: economicMoneySchema.nonnegative(),
+  investmentBaseEuro: economicMoneySchema.nonnegative(),
+  investmentMaxEuro: economicMoneySchema.nonnegative(),
+};
+
+const projectEconomicsSchema = z
+  .object({
+    horizonYears: z.number().int().min(1).max(50),
+    ...economicCostShape,
+    firstYearQuantifiedEffectEuro: economicMoneySchema,
+    paybackYears: z.number().nonnegative().max(50).nullable(),
+    finalCumulativeCashFlowEuro: economicMoneySchema,
+    components: z
+      .array(
+        z
+          .object({
+            component: configuratorTypeSchema,
+            analysisKind: z.enum(["economic_effect", "operating_cost", "investment_only"]),
+            ...economicCostShape,
+            firstYearEconomicEffectEuro: economicMoneySchema,
+            economicLifetimeYears: z.number().int().min(1).max(50),
+            explanation: z.string().min(1).max(500),
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(5),
+    projections: z
+      .array(
+        z
+          .object({
+            year: z.number().int().min(0).max(50),
+            quantifiedEconomicEffectEuro: economicMoneySchema,
+            cumulativeCashFlowEuro: economicMoneySchema,
+          })
+          .strict(),
+      )
+      .min(2)
+      .max(51),
+    scenarios: z
+      .array(
+        z
+          .object({
+            id: z.enum(["conservative", "base", "favorable"]),
+            ...economicCostShape,
+            firstYearQuantifiedEffectEuro: economicMoneySchema,
+            paybackYears: z.number().nonnegative().max(50).nullable(),
+            finalCumulativeCashFlowEuro: economicMoneySchema,
+          })
+          .strict(),
+      )
+      .length(3),
+    assumptions: z
+      .array(
+        z
+          .object({
+            key: z.string().min(1).max(80),
+            label: z.string().min(1).max(120),
+            value: z.string().min(1).max(120),
+            source: z.enum(["user_input", "modeled", "default_assumption"]),
+          })
+          .strict(),
+      )
+      .max(30),
+    limitations: z.array(z.string().min(1).max(500)).max(20),
+  })
+  .strict();
+
 const CONFIGURATOR_ORDER = [
   "photovoltaic",
   "battery_storage",
@@ -578,270 +466,138 @@ const CONFIGURATOR_ORDER = [
   "climate",
 ] as const;
 
-type ConfiguratorType =
-  z.infer<typeof configuratorTypeSchema>;
+type ConfiguratorType = z.infer<typeof configuratorTypeSchema>;
 
-function hasDuplicates(
-  values: readonly ConfiguratorType[],
-): boolean {
-  return (
-    new Set(values).size !==
-    values.length
-  );
+function hasDuplicates(values: readonly ConfiguratorType[]): boolean {
+  return new Set(values).size !== values.length;
 }
 
 function sameProductOrder(
   left: readonly ConfiguratorType[],
   right: readonly ConfiguratorType[],
 ): boolean {
-  return (
-    left.length === right.length &&
-    left.every(
-      (value, index) =>
-        value === right[index],
-    )
-  );
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
-export const configuratorLeadPayloadSchema =
-  z
+export const configuratorLeadPayloadSchema = z
     .object({
       type: z.literal("configurator"),
 
-      products: z
-        .array(
-          configuratorTypeSchema,
-        )
-        .min(1)
-        .max(5),
+    products: z.array(configuratorTypeSchema).min(1).max(5),
 
       journey: z
         .object({
-          entryPoint:
-            configuratorTypeSchema,
+        entryPoint: configuratorTypeSchema,
 
-          selectedProducts:
-            z
-              .array(
-                configuratorTypeSchema,
-              )
-              .min(1)
-              .max(5),
+        selectedProducts: z.array(configuratorTypeSchema).min(1).max(5),
 
-          completedProducts:
-            z
-              .array(
-                configuratorTypeSchema,
-              )
-              .min(1)
-              .max(5),
+        completedProducts: z.array(configuratorTypeSchema).min(1).max(5),
         })
         .strict(),
 
-      configurators:
-        z
-          .array(
-            configuratorSchema,
-          )
-          .min(1)
-          .max(5),
+    configurators: z.array(configuratorSchema).min(1).max(5),
+
+    economics: projectEconomicsSchema,
 
       contact: z
         .object({
-          firstName:
-            z.string()
-              .trim()
-              .min(2)
-              .max(80),
+        firstName: z.string().trim().min(2).max(80),
 
-          lastName:
-            z.string()
-              .trim()
-              .min(2)
-              .max(80),
+        lastName: z.string().trim().min(2).max(80),
 
-          email:
-            z.string()
-              .trim()
-              .max(254)
-              .email(),
+        email: z.string().trim().max(254).email(),
 
-          phone:
-            z.string()
-              .trim()
-              .max(40)
-              .optional(),
+        phone: z.string().trim().max(40).optional(),
         })
         .strict(),
 
       installation: z
         .object({
-          atResidence:
-            z.boolean(),
+        atResidence: z.boolean(),
 
-          street:
-            z.string()
-              .trim()
-              .min(3)
-              .max(150),
+        street: z.string().trim().min(3).max(150),
 
-          postalCode:
-            z.string()
+        postalCode: z
+          .string()
               .trim()
               .min(3)
               .max(10)
-              .regex(
-                /^[0-9A-Za-z -]+$/,
-              ),
+          .regex(/^[0-9A-Za-z -]+$/),
 
-          city:
-            z.string()
-              .trim()
-              .min(2)
-              .max(100),
+        city: z.string().trim().min(2).max(100),
         })
         .strict(),
 
-      privacyAccepted:
-        z.literal(true),
+    privacyAccepted: z.literal(true),
 
-      website:
-        z.string()
-          .trim()
-          .max(200)
-          .optional(),
+    website: z.string().trim().max(200).optional(),
 
-      formStartedAt:
-        z.number()
-          .int()
-          .positive(),
+    formStartedAt: z.number().int().positive(),
     })
     .strict()
-    .superRefine(
-      (values, context) => {
+  .superRefine((values, context) => {
         if (
-          hasDuplicates(
-            values.products,
-          ) ||
-          hasDuplicates(
-            values.journey
-              .selectedProducts,
-          ) ||
-          hasDuplicates(
-            values.journey
-              .completedProducts,
-          )
+      hasDuplicates(values.products) ||
+      hasDuplicates(values.journey.selectedProducts) ||
+      hasDuplicates(values.journey.completedProducts)
         ) {
           context.addIssue({
             code: "custom",
             path: ["journey"],
-            message:
-              "Konfigurator-Produkte dürfen nicht doppelt vorkommen.",
+        message: "Konfigurator-Produkte dürfen nicht doppelt vorkommen.",
           });
         }
 
-        if (
-          !values.journey
-            .selectedProducts
-            .includes(
-              values.journey
-                .entryPoint,
-            )
-        ) {
+    if (!values.journey.selectedProducts.includes(values.journey.entryPoint)) {
           context.addIssue({
             code: "custom",
-            path: [
-              "journey",
-              "entryPoint",
-            ],
-            message:
-              "Der Einstiegspunkt muss Teil der ausgewählten Produkte sein.",
+        path: ["journey", "entryPoint"],
+        message: "Der Einstiegspunkt muss Teil der ausgewählten Produkte sein.",
           });
         }
 
-        if (
-          !sameProductOrder(
-            values.products,
-            values.journey
-              .selectedProducts,
-          )
-        ) {
+    if (!sameProductOrder(values.products, values.journey.selectedProducts)) {
           context.addIssue({
             code: "custom",
             path: ["products"],
-            message:
-              "Produkte und Journey stimmen nicht überein.",
+        message: "Produkte und Journey stimmen nicht überein.",
           });
         }
 
-        if (
-          !sameProductOrder(
-            values.journey
-              .selectedProducts,
-            values.journey
-              .completedProducts,
-          )
-        ) {
+    if (!sameProductOrder(values.journey.selectedProducts, values.journey.completedProducts)) {
           context.addIssue({
             code: "custom",
-            path: [
-              "journey",
-              "completedProducts",
-            ],
-            message:
-              "Alle ausgewählten Konfiguratoren müssen abgeschlossen sein.",
+        path: ["journey", "completedProducts"],
+        message: "Alle ausgewählten Konfiguratoren müssen abgeschlossen sein.",
           });
         }
 
-        const configuratorTypes =
-          values.configurators.map(
-            (configurator) =>
-              configurator.type,
-          );
+    const configuratorTypes = values.configurators.map((configurator) => configurator.type);
 
-        if (
-          !sameProductOrder(
-            configuratorTypes,
-            values.journey
-              .completedProducts,
-          )
-        ) {
+    if (!sameProductOrder(configuratorTypes, values.journey.completedProducts)) {
           context.addIssue({
             code: "custom",
             path: ["configurators"],
-            message:
-              "Konfigurator-Ergebnisse und Journey stimmen nicht überein.",
+        message: "Konfigurator-Ergebnisse und Journey stimmen nicht überein.",
           });
         }
 
-        const canonicalProducts =
-          CONFIGURATOR_ORDER.filter(
-            (product) =>
-              values.products.includes(
-                product,
+    const canonicalProducts = [
+      values.journey.entryPoint,
+      ...CONFIGURATOR_ORDER.filter(
+        (product) => product !== values.journey.entryPoint && values.products.includes(product),
               ),
-          );
+    ];
 
-        if (
-          !sameProductOrder(
-            values.products,
-            canonicalProducts,
-          )
-        ) {
+    if (!sameProductOrder(values.products, canonicalProducts)) {
           context.addIssue({
             code: "custom",
             path: ["products"],
-            message:
-              "Die Konfiguratoren befinden sich nicht in der vorgesehenen Reihenfolge.",
+        message: "Die Konfiguratoren befinden sich nicht in der vorgesehenen Reihenfolge.",
           });
         }
-      },
-    );
+  });
 
-export type ConfiguratorPayload =
-  z.infer<typeof configuratorSchema>;
+export type ConfiguratorPayload = z.infer<typeof configuratorSchema>;
 
-export type ConfiguratorLeadPayload =
-  z.infer<
-    typeof configuratorLeadPayloadSchema
-  >;
+export type ConfiguratorLeadPayload = z.infer<typeof configuratorLeadPayloadSchema>;

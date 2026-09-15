@@ -14,84 +14,51 @@ import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isClimateStepComplete } from "@/lib/validation/configurator/climate";
 import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
 import type { ClimateStepId } from "@/types/configurator";
+import { ProjectAnalysisPromise } from "@/components/configurator/project-analysis-promise";
 
 export function ClimateWizard() {
-    const {
-        state,
-        dispatch,
-    } = useConfigurator();
+  const { state, dispatch } = useConfigurator();
 
-    const [currentStepId, setCurrentStepId] =
-        useState<ClimateStepId>("rooms");
+  const [currentStepId, setCurrentStepId] = useState<ClimateStepId>("rooms");
 
-    const [showResult, setShowResult] =
-        useState(
-            () =>
-                state.results.climate !==
-                undefined,
-        );
+  const [showResult, setShowResult] = useState(() => state.results.climate !== undefined);
 
-    const currentStepIndex =
-        climateWizardSteps.findIndex(
-            (step) =>
-                step.id === currentStepId,
-        );
+  const currentStepIndex = climateWizardSteps.findIndex((step) => step.id === currentStepId);
 
-    const currentStep =
-        currentStepIndex >= 0
-            ? climateWizardSteps[
-            currentStepIndex
-            ]
-            : undefined;
+  const currentStep = currentStepIndex >= 0 ? climateWizardSteps[currentStepIndex] : undefined;
 
     if (!currentStep) {
         return (
-            <div
-                role="alert"
-                className="rounded-2xl border border-border-default bg-surface p-6"
-            >
-                <h1 className="text-xl font-semibold text-brand-primary">
+      <div role="alert" className="border-border-default bg-surface rounded-2xl border p-6">
+        <h1 className="text-brand-primary text-xl font-semibold">
                     Konfiguration konnte nicht geladen werden
                 </h1>
 
-                <p className="mt-2 text-foreground/70">
-                    Der aktuelle Klimaanlagen-Schritt ist nicht
-                    verfügbar.
+        <p className="text-foreground/70 mt-2">
+          Der aktuelle Klimaanlagen-Schritt ist nicht verfügbar.
                 </p>
             </div>
         );
     }
 
-    const isFirstStep =
-        currentStepIndex === 0;
+  const isFirstStep = currentStepIndex === 0;
 
-    const isLastStep =
-        currentStepIndex ===
-        climateWizardSteps.length - 1;
+  const isLastStep = currentStepIndex === climateWizardSteps.length - 1;
 
-    const currentStepComplete =
-        isClimateStepComplete(
-            currentStep.id,
-            state,
-        );
+  const currentStepComplete = isClimateStepComplete(currentStep.id, state);
 
     function goBack() {
         if (isFirstStep) {
             return;
         }
 
-        const previousStep =
-            climateWizardSteps[
-            currentStepIndex - 1
-            ];
+    const previousStep = climateWizardSteps[currentStepIndex - 1];
 
         if (!previousStep) {
             return;
         }
 
-        setCurrentStepId(
-            previousStep.id,
-        );
+    setCurrentStepId(previousStep.id);
     }
 
     function handleNext() {
@@ -100,10 +67,7 @@ export function ClimateWizard() {
         }
 
         if (isLastStep) {
-            const result =
-                buildClimateConfiguratorResult(
-                    state,
-                );
+      const result = buildClimateConfiguratorResult(state);
 
             if (!result) {
                 return;
@@ -119,53 +83,35 @@ export function ClimateWizard() {
             return;
         }
 
-        const nextStep =
-            climateWizardSteps[
-            currentStepIndex + 1
-            ];
+    const nextStep = climateWizardSteps[currentStepIndex + 1];
 
         if (!nextStep) {
             return;
         }
 
-        setCurrentStepId(
-            nextStep.id,
-        );
+    setCurrentStepId(nextStep.id);
     }
 
     if (showResult) {
         return (
             <ConfiguratorLeadFlow
                 renderResult={(onContinue) => {
-                    const result =
-                        state.results.climate;
+          const result = state.results.climate;
 
                     if (!result) {
                         return (
-                            <div
-                                role="alert"
-                                className="rounded-2xl border border-border-default bg-surface p-6"
-                            >
-                                Das Klimaanlagen-Ergebnis ist nicht
-                                mehr verfügbar.
+              <div role="alert" className="border-border-default bg-surface rounded-2xl border p-6">
+                Das Klimaanlagen-Ergebnis ist nicht mehr verfügbar.
                             </div>
                         );
                     }
-                    const nextConfigurator =
-                        getNextConfiguratorProduct(
-                            state.journey,
-                            "climate",
-                        );
+          const nextConfigurator = getNextConfiguratorProduct(state.journey, "climate");
 
                     return (
                         <ClimateResult
                             result={result}
-                            nextConfigurator={
-                                nextConfigurator
-                            }
-                            onBack={() =>
-                                setShowResult(false)
-                            }
+              nextConfigurator={nextConfigurator}
+              onBack={() => setShowResult(false)}
                             onContinue={onContinue}
                         />
                     );
@@ -173,9 +119,7 @@ export function ClimateWizard() {
                 onRestart={() => {
                     setShowResult(false);
 
-                    setCurrentStepId(
-                        "rooms",
-                    );
+          setCurrentStepId("rooms");
                 }}
             />
         );
@@ -183,31 +127,30 @@ export function ClimateWizard() {
 
     return (
         <>
-            <ConfiguratorPhaseIndicator
-                currentPhase="configuration"
-            />
+      <ConfiguratorPhaseIndicator currentPhase="configuration" />
+
+      {isFirstStep ? <ProjectAnalysisPromise compact /> : null}
 
             <section aria-labelledby="climate-step-heading">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-semibold tracking-widest text-brand-secondary uppercase">
+          <p className="text-brand-secondary text-sm font-semibold tracking-widest uppercase">
                         Klimaanlage
                     </p>
 
-                    <p className="text-sm text-foreground/60">
-                        Schritt {currentStepIndex + 1} von{" "}
-                        {climateWizardSteps.length}
+          <p className="text-foreground/60 text-sm">
+            Schritt {currentStepIndex + 1} von {climateWizardSteps.length}
                     </p>
                 </div>
 
                 <h1
                     id="climate-step-heading"
-                    className="text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
+          className="text-brand-primary text-3xl font-semibold tracking-tight sm:text-4xl"
                 >
                     {currentStep.title}
                 </h1>
 
                 {currentStep.description ? (
-                    <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/70 sm:text-lg">
+          <p className="text-foreground/70 mt-4 max-w-3xl text-base leading-7 sm:text-lg">
                         {currentStep.description}
                     </p>
                 ) : null}
@@ -215,21 +158,13 @@ export function ClimateWizard() {
                 <div className="mt-8">
                     {currentStep.id === "rooms" ? (
                         <ClimateRoomsStep
-                            conditionedAreaM2={
-                                state.climate
-                                    .conditionedAreaM2
-                            }
-                            roomCount={
-                                state.climate.roomCount
-                            }
-                            onConditionedAreaChange={(
-                                value,
-                            ) =>
+              conditionedAreaM2={state.climate.conditionedAreaM2}
+              roomCount={state.climate.roomCount}
+              onConditionedAreaChange={(value) =>
                                 dispatch({
                                     type: "UPDATE_CLIMATE",
                                     payload: {
-                                        conditionedAreaM2:
-                                            value,
+                    conditionedAreaM2: value,
                                     },
                                 })
                             }
@@ -244,31 +179,23 @@ export function ClimateWizard() {
                         />
                     ) : null}
 
-                    {currentStep.id ===
-                        "insulation" ? (
+          {currentStep.id === "insulation" ? (
                         <ClimateInsulationStep
-                            value={
-                                state.climate
-                                    .insulationLevel
-                            }
+              value={state.climate.insulationLevel}
                             onChange={(value) =>
                                 dispatch({
                                     type: "UPDATE_CLIMATE",
                                     payload: {
-                                        insulationLevel:
-                                            value,
+                    insulationLevel: value,
                                     },
                                 })
                             }
                         />
                     ) : null}
 
-                    {currentStep.id ===
-                        "solar_load" ? (
+          {currentStep.id === "solar_load" ? (
                         <ClimateSolarLoadStep
-                            value={
-                                state.climate.solarLoad
-                            }
+              value={state.climate.solarLoad}
                             onChange={(value) =>
                                 dispatch({
                                     type: "UPDATE_CLIMATE",
@@ -280,19 +207,14 @@ export function ClimateWizard() {
                         />
                     ) : null}
 
-                    {currentStep.id ===
-                        "occupancy" ? (
+          {currentStep.id === "occupancy" ? (
                         <ClimateOccupancyStep
-                            value={
-                                state.climate
-                                    .occupancyPersons
-                            }
+              value={state.climate.occupancyPersons}
                             onChange={(value) =>
                                 dispatch({
                                     type: "UPDATE_CLIMATE",
                                     payload: {
-                                        occupancyPersons:
-                                            value,
+                    occupancyPersons: value,
                                     },
                                 })
                             }
@@ -305,7 +227,7 @@ export function ClimateWizard() {
                         type="button"
                         onClick={goBack}
                         disabled={isFirstStep}
-                        className="min-h-12 rounded-xl border border-border-default px-6 py-3 font-medium text-brand-primary transition hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40"
+            className="border-border-default text-brand-primary hover:bg-surface min-h-12 rounded-xl border px-6 py-3 font-medium transition disabled:cursor-not-allowed disabled:opacity-40"
                     >
                         Zurück
                     </button>
@@ -314,11 +236,9 @@ export function ClimateWizard() {
                         type="button"
                         onClick={handleNext}
                         disabled={!currentStepComplete}
-                        className="min-h-12 rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="bg-brand-primary min-h-12 rounded-xl px-6 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                        {isLastStep
-                            ? "Ergebnis anzeigen"
-                            : "Weiter"}
+            {isLastStep ? "Ergebnis anzeigen" : "Weiter"}
                     </button>
                 </div>
             </section>

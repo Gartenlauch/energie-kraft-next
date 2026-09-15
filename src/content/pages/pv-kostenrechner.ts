@@ -8,8 +8,8 @@ import type {
 import {
   PV_DEFAULT_BASE_SPECIFIC_YIELD_KWH_PER_KWP,
   PV_DEFAULT_TARGET_GENERATION_COVERAGE_PERCENT,
+  PV_PROJECT_COST_ASSUMPTIONS,
 } from "@/lib/calculators/pv-model";
-
 
 export interface PvSizingNumberFieldContent {
   name: PvSizingNumericInputKey;
@@ -62,12 +62,12 @@ export const defaultPvSizingCalculatorInput = {
   moduleAreaM2: 2,
   usableRoofAreaPercent: 80,
   baseSpecificYieldKwhPerKwp: PV_DEFAULT_BASE_SPECIFIC_YIELD_KWH_PER_KWP,
-  pvCostEuroPerKwp: 1_500,
+  pvCostEuroPerKwp: PV_PROJECT_COST_ASSUMPTIONS.pvCostEuroPerKwp,
   includeBattery: true,
-  batteryCostEuroPerKwh: 700,
+  batteryCostEuroPerKwh: PV_PROJECT_COST_ASSUMPTIONS.batteryCostEuroPerKwh,
   batteryCapacityPerKwp: 1,
-  fixedAdditionalCostEuro: 2_000,
-  costUncertaintyPercent: 15,
+  fixedAdditionalCostEuro: PV_PROJECT_COST_ASSUMPTIONS.fixedAdditionalCostEuro,
+  costUncertaintyPercent: PV_PROJECT_COST_ASSUMPTIONS.costUncertaintyPercent,
 } satisfies PvSizingCalculatorInput;
 
 const primaryFields = [

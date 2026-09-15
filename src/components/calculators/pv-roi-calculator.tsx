@@ -6,6 +6,8 @@ import { calculatePvRoi } from "@/lib/calculators/pv-roi";
 import { pvCalculatorInputSchema } from "@/lib/validation/pv-calculator";
 import type { CalculatorFieldContent } from "@/types/content";
 import type { PvCalculatorInput, PvCalculatorResult } from "@/types/pv-calculator";
+import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import { CashflowSparkline, SegmentedEnergyBar } from "@/components/charts/energy-charts";
 
 type PvCalculatorFormValues = Record<keyof PvCalculatorInput, string>;
 
@@ -73,7 +75,8 @@ function CalculatorField({ field, value, error, onChange }: CalculatorFieldProps
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           onChange={(event) => onChange(field.name, event.currentTarget.value)}
-          className={`bg-background min-h-12 min-w-0 flex-1 rounded-l-md border px-4 py-3 text-base ${error ? "border-red-600" : "border-foreground/20"
+          className={`bg-background min-h-12 min-w-0 flex-1 rounded-l-md border px-4 py-3 text-base ${
+            error ? "border-red-600" : "border-foreground/20"
             }`}
         />
 
@@ -103,7 +106,7 @@ interface ResultCardProps {
 
 function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
+    <article className="border-border-default bg-background rounded-xl border p-5 shadow-[var(--shadow-sm)]">
       <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
       <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
@@ -258,18 +261,11 @@ export function PvRoiCalculator() {
             ) : null}
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                type="submit"
-                className="button-primary"
-              >
+              <button type="submit" className="button-primary">
                 Berechnung aktualisieren
               </button>
 
-              <button
-                type="button"
-                onClick={handleReset}
-                className="button-secondary"
-              >
+              <button type="button" onClick={handleReset} className="button-secondary">
                 Ausgangswerte wiederherstellen
               </button>
             </div>
@@ -408,6 +404,31 @@ export function PvRoiCalculator() {
                 </table>
               </div>
             </div>
+
+            <div className="border-foreground/10 mt-6 rounded-2xl border p-5">
+              <h3 className="text-lg font-semibold">Energiefluss und kumulierter Cashflow</h3>
+              <SegmentedEnergyBar
+                segments={[
+                  { label: "Eigenverbrauch", value: result.firstYear.selfConsumedKwh },
+                  { label: "Einspeisung", value: result.firstYear.exportedKwh },
+                ]}
+                unit="kWh"
+              />
+              <CashflowSparkline
+                values={[
+                  -result.input.netInvestmentCostEuro,
+                  ...result.projections.map((projection) => projection.cumulativeCashFlowEuro),
+                ]}
+              />
+            </div>
+
+            <CalculatorProjectCta
+              handoff={{
+                version: 1,
+                source: "pv_roi",
+                values: { annualConsumptionKwh: result.input.annualConsumptionKwh },
+              }}
+            />
 
             <p className="text-foreground/60 mt-6 text-sm leading-6">
               {pvCalculatorContent.disclaimer}

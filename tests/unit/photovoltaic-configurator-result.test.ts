@@ -4,18 +4,10 @@ import {
   buildPhotovoltaicConfiguratorResult,
   PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT,
 } from "@/lib/configurator/photovoltaic";
-import {
-  configuratorReducer,
-  createInitialConfiguratorState,
-} from "@/lib/configurator/state";
-import type {
-  ConfiguratorState,
-  RoofOrientation,
-} from "@/types/configurator";
+import { configuratorReducer, createInitialConfiguratorState } from "@/lib/configurator/state";
+import type { ConfiguratorState, RoofOrientation } from "@/types/configurator";
 
-function createCompleteResultState(
-  orientation: RoofOrientation = "south",
-): ConfiguratorState {
+function createCompleteResultState(orientation: RoofOrientation = "south"): ConfiguratorState {
   let state = createInitialConfiguratorState();
 
   state = configuratorReducer(state, {
@@ -50,16 +42,13 @@ function createCompleteResultState(
 
 describe("photovoltaic configurator result", () => {
   it("uses a documented yield uncertainty corridor", () => {
-    expect(
-      PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT,
-    ).toBe(10);
+    expect(PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT).toBe(10);
   });
 
   it("builds an orientation-aware result corridor", () => {
     const state = createCompleteResultState("south");
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
     expect(result).not.toBeNull();
 
@@ -78,42 +67,33 @@ describe("photovoltaic configurator result", () => {
       specificYieldKwhPerKwpMin: 900,
       specificYieldKwhPerKwpMax: 1100,
 
+      estimatedTotalCostEuro: 8_750,
+      estimatedMinimumCostEuro: 6_800,
+      estimatedMaximumCostEuro: 10_925,
+
       batteryStorageRequested: false,
       technicalReviewRecommended: false,
     });
   });
 
   it("uses the existing east-west orientation factor", () => {
-    const state = createCompleteResultState(
-      "east_west",
-    );
+    const state = createCompleteResultState("east_west");
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
     expect(result?.orientationFactor).toBe(0.85);
 
-    expect(
-      result?.recommendedPowerKwpMin,
-    ).toBeGreaterThanOrEqual(4);
+    expect(result?.recommendedPowerKwpMin).toBeGreaterThanOrEqual(4);
 
-    expect(
-      result?.recommendedPowerKwpMax,
-    ).toBeGreaterThan(
-      result?.recommendedPowerKwpMin ?? 0,
-    );
+    expect(result?.recommendedPowerKwpMax).toBeGreaterThan(result?.recommendedPowerKwpMin ?? 0);
   });
 
   it("flags north orientation for technical review", () => {
-    const state =
-      createCompleteResultState("north");
+    const state = createCompleteResultState("north");
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
-    expect(
-      result?.technicalReviewRecommended,
-    ).toBe(true);
+    expect(result?.technicalReviewRecommended).toBe(true);
 
     expect(result?.orientationFactor).toBe(0.65);
   });
@@ -128,20 +108,15 @@ describe("photovoltaic configurator result", () => {
       },
     });
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
-    expect(
-      result?.technicalReviewRecommended,
-    ).toBe(true);
+    expect(result?.technicalReviewRecommended).toBe(true);
   });
 
   it("returns null when required result data is missing", () => {
     const state = createInitialConfiguratorState();
 
-    expect(
-      buildPhotovoltaicConfiguratorResult(state),
-    ).toBeNull();
+    expect(buildPhotovoltaicConfiguratorResult(state)).toBeNull();
   });
 
   it("keeps the battery request in the result", () => {
@@ -154,24 +129,18 @@ describe("photovoltaic configurator result", () => {
       },
     });
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
-    expect(
-      result?.batteryStorageRequested,
-    ).toBe(true);
+    expect(result?.batteryStorageRequested).toBe(true);
   });
 
   it("invalidates an existing PV result when technical answers change", () => {
     let state = createCompleteResultState();
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
     if (!result) {
-      throw new Error(
-        "Expected photovoltaic configurator result.",
-      );
+      throw new Error("Expected photovoltaic configurator result.");
     }
 
     state = configuratorReducer(state, {
@@ -179,9 +148,7 @@ describe("photovoltaic configurator result", () => {
       payload: result,
     });
 
-    expect(
-      state.results.photovoltaic,
-    ).toBeDefined();
+    expect(state.results.photovoltaic).toBeDefined();
 
     state = configuratorReducer(state, {
       type: "UPDATE_HOUSEHOLD",
@@ -190,20 +157,15 @@ describe("photovoltaic configurator result", () => {
       },
     });
 
-    expect(
-      state.results.photovoltaic,
-    ).toBeUndefined();
+    expect(state.results.photovoltaic).toBeUndefined();
   });
   it("does not invalidate the result when notes change", () => {
     let state = createCompleteResultState();
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
     if (!result) {
-      throw new Error(
-        "Expected photovoltaic configurator result.",
-      );
+      throw new Error("Expected photovoltaic configurator result.");
     }
 
     state = configuratorReducer(state, {
@@ -219,21 +181,16 @@ describe("photovoltaic configurator result", () => {
       },
     });
 
-    expect(
-      state.results.photovoltaic,
-    ).toEqual(result);
+    expect(state.results.photovoltaic).toEqual(result);
   });
 
   it("invalidates the result when the roof changes", () => {
     let state = createCompleteResultState();
 
-    const result =
-      buildPhotovoltaicConfiguratorResult(state);
+    const result = buildPhotovoltaicConfiguratorResult(state);
 
     if (!result) {
-      throw new Error(
-        "Expected photovoltaic configurator result.",
-      );
+      throw new Error("Expected photovoltaic configurator result.");
     }
 
     state = configuratorReducer(state, {
@@ -248,9 +205,6 @@ describe("photovoltaic configurator result", () => {
       },
     });
 
-    expect(
-      state.results.photovoltaic,
-    ).toBeUndefined();
+    expect(state.results.photovoltaic).toBeUndefined();
   });
-
 });

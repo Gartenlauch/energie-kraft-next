@@ -4,34 +4,29 @@ import type {
   BatteryStoragePhotovoltaicHandoff,
   ConfiguratorState,
 } from "@/types/configurator";
+import { calculateBatteryProjectCostCorridor } from "@/lib/calculators/pv-model";
 
-export const BATTERY_STORAGE_ANNUAL_CONSUMPTION_MIN_KWH =
-  500;
+export const BATTERY_STORAGE_ANNUAL_CONSUMPTION_MIN_KWH = 500;
 
-export const BATTERY_STORAGE_ANNUAL_CONSUMPTION_MAX_KWH =
-  100_000;
+export const BATTERY_STORAGE_ANNUAL_CONSUMPTION_MAX_KWH = 100_000;
 
-export const BATTERY_STORAGE_PV_POWER_MIN_KWP =
-  1;
+export const BATTERY_STORAGE_PV_POWER_MIN_KWP = 1;
 
-export const BATTERY_STORAGE_PV_POWER_MAX_KWP =
-  100;
+export const BATTERY_STORAGE_PV_POWER_MAX_KWP = 100;
 
 /**
  * HTW Berlin:
  * max. 1,5 kWh nutzbare Speicherkapazität
  * je 1 kWp PV-Leistung.
  */
-export const BATTERY_STORAGE_MAX_KWH_PER_KWP =
-  1.5;
+export const BATTERY_STORAGE_MAX_KWH_PER_KWP = 1.5;
 
 /**
  * HTW Berlin:
  * max. 1,5 kWh nutzbare Speicherkapazität
  * je 1.000 kWh Jahresstromverbrauch.
  */
-export const BATTERY_STORAGE_MAX_KWH_PER_1000_KWH_CONSUMPTION =
-  1.5;
+export const BATTERY_STORAGE_MAX_KWH_PER_1000_KWH_CONSUMPTION = 1.5;
 
 /**
  * HTW Berlin:
@@ -39,13 +34,9 @@ export const BATTERY_STORAGE_MAX_KWH_PER_1000_KWH_CONSUMPTION =
  * gegeben, wenn die PV-Leistung 0,5 kW je
  * 1.000 kWh Jahresverbrauch übersteigt.
  */
-export const BATTERY_STORAGE_MIN_PV_KW_PER_1000_KWH_CONSUMPTION =
-  0.5;
+export const BATTERY_STORAGE_MIN_PV_KW_PER_1000_KWH_CONSUMPTION = 0.5;
 
-const GOAL_FACTORS: Record<
-  BatteryStorageGoal,
-  number
-> = {
+const GOAL_FACTORS: Record<BatteryStorageGoal, number> = {
   economic: 0.7,
   balanced: 0.9,
   high_autonomy: 1,
@@ -72,21 +63,14 @@ function roundToHalf(value: number): number {
   return Math.round(value * 2) / 2;
 }
 
-function roundToTwoDecimals(
-  value: number,
-): number {
-  return (
-    Math.round(
-      (value + Number.EPSILON) * 100,
-    ) / 100
-  );
+function roundToTwoDecimals(value: number): number {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
 export function buildBatteryStoragePhotovoltaicHandoff(
   state: ConfiguratorState,
 ): BatteryStoragePhotovoltaicHandoff | null {
-  const photovoltaicResult =
-    state.results.photovoltaic;
+  const photovoltaicResult = state.results.photovoltaic;
 
   if (!photovoltaicResult) {
     return null;
@@ -95,65 +79,46 @@ export function buildBatteryStoragePhotovoltaicHandoff(
   return {
     source: "photovoltaic",
 
-    projectedAnnualConsumptionKwh:
-      photovoltaicResult.projectedAnnualConsumptionKwh,
+    projectedAnnualConsumptionKwh: photovoltaicResult.projectedAnnualConsumptionKwh,
 
-    recommendedPvPowerKwpMin:
-      photovoltaicResult.recommendedPowerKwpMin,
+    recommendedPvPowerKwpMin: photovoltaicResult.recommendedPowerKwpMin,
 
-    recommendedPvPowerKwpMax:
-      photovoltaicResult.recommendedPowerKwpMax,
+    recommendedPvPowerKwpMax: photovoltaicResult.recommendedPowerKwpMax,
 
-    estimatedAnnualPvYieldKwhMin:
-      photovoltaicResult.estimatedAnnualYieldKwhMin,
+    estimatedAnnualPvYieldKwhMin: photovoltaicResult.estimatedAnnualYieldKwhMin,
 
-    estimatedAnnualPvYieldKwhMax:
-      photovoltaicResult.estimatedAnnualYieldKwhMax,
+    estimatedAnnualPvYieldKwhMax: photovoltaicResult.estimatedAnnualYieldKwhMax,
 
-    batteryStorageRequested:
-      photovoltaicResult.batteryStorageRequested,
+    batteryStorageRequested: photovoltaicResult.batteryStorageRequested,
 
-    technicalReviewRecommended:
-      photovoltaicResult.technicalReviewRecommended,
+    technicalReviewRecommended: photovoltaicResult.technicalReviewRecommended,
   };
 }
 
 function resolveBatteryStorageSizingInput(
   state: ConfiguratorState,
 ): ResolvedBatteryStorageSizingInput | null {
-  const handoff =
-    buildBatteryStoragePhotovoltaicHandoff(
-      state,
-    );
+  const handoff = buildBatteryStoragePhotovoltaicHandoff(state);
 
   if (handoff) {
     return {
       source: "photovoltaic",
 
-      annualConsumptionKwh:
-        handoff.projectedAnnualConsumptionKwh,
+      annualConsumptionKwh: handoff.projectedAnnualConsumptionKwh,
 
-      pvPowerKwpMin:
-        handoff.recommendedPvPowerKwpMin,
+      pvPowerKwpMin: handoff.recommendedPvPowerKwpMin,
 
-      pvPowerKwpMax:
-        handoff.recommendedPvPowerKwpMax,
+      pvPowerKwpMax: handoff.recommendedPvPowerKwpMax,
 
-      inheritedTechnicalReviewRecommended:
-        handoff.technicalReviewRecommended,
+      inheritedTechnicalReviewRecommended: handoff.technicalReviewRecommended,
     };
   }
 
-  const annualConsumptionKwh =
-    state.batteryStorage.annualConsumptionKwh;
+  const annualConsumptionKwh = state.batteryStorage.annualConsumptionKwh;
 
-  const pvPowerKwp =
-    state.batteryStorage.pvPowerKwp;
+  const pvPowerKwp = state.batteryStorage.pvPowerKwp;
 
-  if (
-    annualConsumptionKwh === undefined ||
-    pvPowerKwp === undefined
-  ) {
+  if (annualConsumptionKwh === undefined || pvPowerKwp === undefined) {
     return null;
   }
 
@@ -165,27 +130,20 @@ function resolveBatteryStorageSizingInput(
     pvPowerKwpMin: pvPowerKwp,
     pvPowerKwpMax: pvPowerKwp,
 
-    inheritedTechnicalReviewRecommended:
-      false,
+    inheritedTechnicalReviewRecommended: false,
   };
 }
 
 export function buildBatteryStorageConfiguratorResult(
   state: ConfiguratorState,
 ): BatteryStorageConfiguratorResult | null {
-  const sizingInput =
-    resolveBatteryStorageSizingInput(
-      state,
-    );
+  const sizingInput = resolveBatteryStorageSizingInput(state);
 
-  const consumptionPattern =
-    state.batteryStorage.consumptionPattern;
+  const consumptionPattern = state.batteryStorage.consumptionPattern;
 
-  const backupPreference =
-    state.batteryStorage.backupPreference;
+  const backupPreference = state.batteryStorage.backupPreference;
 
-  const goal =
-    state.batteryStorage.goal;
+  const goal = state.batteryStorage.goal;
 
   if (
     !sizingInput ||
@@ -196,96 +154,64 @@ export function buildBatteryStorageConfiguratorResult(
     return null;
   }
 
-  const annualConsumptionInThousands =
-    sizingInput.annualConsumptionKwh /
-    1_000;
+  const annualConsumptionInThousands = sizingInput.annualConsumptionKwh / 1_000;
 
   const consumptionUpperBoundKwh =
-    annualConsumptionInThousands *
-    BATTERY_STORAGE_MAX_KWH_PER_1000_KWH_CONSUMPTION;
+    annualConsumptionInThousands * BATTERY_STORAGE_MAX_KWH_PER_1000_KWH_CONSUMPTION;
 
-  const pvUpperBoundKwh =
-    sizingInput.pvPowerKwpMax *
-    BATTERY_STORAGE_MAX_KWH_PER_KWP;
+  const pvUpperBoundKwh = sizingInput.pvPowerKwpMax * BATTERY_STORAGE_MAX_KWH_PER_KWP;
 
-  const technicalUpperBoundUsableCapacityKwh =
-    Math.min(
-      consumptionUpperBoundKwh,
-      pvUpperBoundKwh,
-    );
+  const technicalUpperBoundUsableCapacityKwh = Math.min(consumptionUpperBoundKwh, pvUpperBoundKwh);
 
-  const targetCapacityKwh =
-    Math.min(
+  const targetCapacityKwh = Math.min(
       technicalUpperBoundUsableCapacityKwh,
       technicalUpperBoundUsableCapacityKwh *
         GOAL_FACTORS[goal] *
-        CONSUMPTION_PATTERN_FACTORS[
-          consumptionPattern
-        ],
+      CONSUMPTION_PATTERN_FACTORS[consumptionPattern],
     );
 
-  const recommendedUsableCapacityKwhMin =
-    Math.max(
-      0.5,
-      roundToHalf(
-        targetCapacityKwh * 0.85,
-      ),
-    );
+  const recommendedUsableCapacityKwhMin = Math.max(0.5, roundToHalf(targetCapacityKwh * 0.85));
 
-  const recommendedUsableCapacityKwhMax =
-    Math.max(
+  const recommendedUsableCapacityKwhMax = Math.max(
       recommendedUsableCapacityKwhMin,
-      roundToHalf(
-        Math.min(
-          technicalUpperBoundUsableCapacityKwh,
-          targetCapacityKwh * 1.15,
-        ),
-      ),
+    roundToHalf(Math.min(technicalUpperBoundUsableCapacityKwh, targetCapacityKwh * 1.15)),
     );
 
   const minimumPvPowerForLikelySurplus =
-    annualConsumptionInThousands *
-    BATTERY_STORAGE_MIN_PV_KW_PER_1000_KWH_CONSUMPTION;
+    annualConsumptionInThousands * BATTERY_STORAGE_MIN_PV_KW_PER_1000_KWH_CONSUMPTION;
 
-  const pvSurplusLikely =
-    sizingInput.pvPowerKwpMin >
-    minimumPvPowerForLikelySurplus;
+  const pvSurplusLikely = sizingInput.pvPowerKwpMin > minimumPvPowerForLikelySurplus;
 
-  const backupPowerRequested =
-    backupPreference !== "none";
+  const backupPowerRequested = backupPreference !== "none";
 
-  const wholeHomeBackupRequested =
-    backupPreference === "whole_home";
+  const wholeHomeBackupRequested = backupPreference === "whole_home";
 
   const modularExpansionRecommended =
-    state.interests.wallbox ||
-    state.interests.heatPump ||
-    state.interests.climate;
+    state.interests.wallbox || state.interests.heatPump || state.interests.climate;
 
   const technicalReviewRecommended =
-    sizingInput.inheritedTechnicalReviewRecommended ||
-    !pvSurplusLikely ||
-    wholeHomeBackupRequested;
+    sizingInput.inheritedTechnicalReviewRecommended || !pvSurplusLikely || wholeHomeBackupRequested;
+
+  const projectCost = calculateBatteryProjectCostCorridor(
+    recommendedUsableCapacityKwhMin,
+    recommendedUsableCapacityKwhMax,
+  );
 
   return {
     source: sizingInput.source,
 
-    annualConsumptionKwh:
-      sizingInput.annualConsumptionKwh,
+    annualConsumptionKwh: sizingInput.annualConsumptionKwh,
 
-    pvPowerKwpMin:
-      sizingInput.pvPowerKwpMin,
+    pvPowerKwpMin: sizingInput.pvPowerKwpMin,
 
-    pvPowerKwpMax:
-      sizingInput.pvPowerKwpMax,
+    pvPowerKwpMax: sizingInput.pvPowerKwpMax,
 
     recommendedUsableCapacityKwhMin,
     recommendedUsableCapacityKwhMax,
 
-    technicalUpperBoundUsableCapacityKwh:
-      roundToTwoDecimals(
-        technicalUpperBoundUsableCapacityKwh,
-      ),
+    ...projectCost,
+
+    technicalUpperBoundUsableCapacityKwh: roundToTwoDecimals(technicalUpperBoundUsableCapacityKwh),
 
     consumptionPattern,
     backupPreference,

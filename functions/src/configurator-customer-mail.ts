@@ -1,27 +1,13 @@
-import type {
-  ConfiguratorLeadPayload,
-  ConfiguratorPayload,
-} from "./configurator-lead-validation";
-import {
-  LEAD_MAIL_RECIPIENT,
-  sendMailgunMail,
-} from "./mailgun";
+import type { ConfiguratorLeadPayload, ConfiguratorPayload } from "./configurator-lead-validation";
+import { LEAD_MAIL_RECIPIENT, sendMailgunMail } from "./mailgun";
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-const CUSTOMER_MAIL_LOGO_FILENAME =
-  "energie-kraft-logo.png";
+const CUSTOMER_MAIL_LOGO_FILENAME = "energie-kraft-logo.png";
 
-const CUSTOMER_MAIL_LOGO =
-  readFileSync(
-    path.resolve(
-      __dirname,
-      "..",
-      "assets",
-      "branding",
-      "energie-kraft-logo-transparent.png",
-    ),
+const CUSTOMER_MAIL_LOGO = readFileSync(
+  path.resolve(__dirname, "..", "assets", "branding", "energie-kraft-logo-transparent.png"),
   );
 
 interface SendConfiguratorCustomerMailInput {
@@ -31,29 +17,19 @@ interface SendConfiguratorCustomerMailInput {
   filename: string;
 }
 
-const PRODUCT_LABELS: Record<
-  ConfiguratorPayload["type"],
-  string
-> = {
-  photovoltaic:
-    "Photovoltaik",
+const PRODUCT_LABELS: Record<ConfiguratorPayload["type"], string> = {
+  photovoltaic: "Photovoltaik",
 
-  battery_storage:
-    "Stromspeicher",
+  battery_storage: "Stromspeicher",
 
-  wallbox:
-    "Wallbox",
+  wallbox: "Wallbox",
 
-  heat_pump:
-    "Wärmepumpe",
+  heat_pump: "Wärmepumpe",
 
-  climate:
-    "Klimaanlage",
+  climate: "Klimaanlage",
 };
 
-function escapeHtml(
-  value: string,
-): string {
+function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -62,9 +38,7 @@ function escapeHtml(
     .replace(/'/g, "&#039;");
 }
 
-function buildProductBadgesHtml(
-  products: readonly string[],
-): string {
+function buildProductBadgesHtml(products: readonly string[]): string {
   return products
     .map(
       (product) => `
@@ -88,42 +62,24 @@ function buildProductBadgesHtml(
     .join("");
 }
 
-export async function sendConfiguratorCustomerMail(
-  input:
-    SendConfiguratorCustomerMailInput,
-) {
-  const {
-    lead,
-    leadId,
-    pdf,
-    filename,
-  } = input;
+export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustomerMailInput) {
+  const { lead, leadId, pdf, filename } = input;
 
-  const firstName =
-    lead.contact.firstName.trim();
+  const firstName = lead.contact.firstName.trim();
 
-  const products =
-    lead.products.map(
-      (product) =>
-        PRODUCT_LABELS[
-        product
-        ],
-    );
+  const products = lead.products.map((product) => PRODUCT_LABELS[product]);
 
-  const productText =
-    products.join(", ");
+  const productText = products.join(", ");
 
-  const productBadgesHtml =
-    buildProductBadgesHtml(
-      products,
-    );
+  const productBadgesHtml = buildProductBadgesHtml(products);
 
   const text = [
     `Hallo ${firstName},`,
     "",
     "vielen Dank für deine Konfiguration bei Energie-Kraft.",
     "",
-    "Im Anhang findest du deine persönliche Projektübersicht als PDF.",
+    "Deine persönliche Energieprojekt-Analyse wurde erstellt.",
+    "Im Anhang findest du die PDF mit Systemempfehlungen, modellierten Projektkosten, Wirtschaftlichkeit, Annahmen und nächsten Schritten.",
     "",
     `Berücksichtigte Energielösungen: ${productText}`,
     "",
@@ -134,7 +90,7 @@ export async function sendConfiguratorCustomerMail(
     "Sie stellen kein Angebot und keine technische Planung dar.",
     "Verbindliche Aussagen zu Auslegung, Kosten und technischer Umsetzbarkeit sind erst nach fachlicher Prüfung möglich.",
     "",
-    "Wir prüfen deine Angaben und melden uns bei dir.",
+    "Als nächsten Schritt prüfen wir deine Angaben gemeinsam und konkretisieren die technischen Details.",
     "",
     "Viele Grüße",
     "Dein Energie-Kraft Team",
@@ -232,7 +188,7 @@ export async function sendConfiguratorCustomerMail(
                     font-weight:700;
                   "
                 >
-                  Deine Projektübersicht ist da
+                  Deine Energieprojekt-Analyse ist da
                 </div>
               </td>
             </tr>
@@ -257,7 +213,7 @@ export async function sendConfiguratorCustomerMail(
 
                 <p>
                   Im Anhang findest du deine persönliche
-                  Projektübersicht mit den wichtigsten
+                  Energieprojekt-Analyse mit den wichtigsten
                   Angaben und Ergebnissen deines
                   Energieprojekts.
                 </p>
@@ -300,15 +256,15 @@ export async function sendConfiguratorCustomerMail(
                   <strong
                     style="color:#005ca9;"
                   >
-                    Deine Projektübersicht findest du
+                    Deine persönliche Energieprojekt-Analyse findest du
                     als PDF im Anhang dieser E-Mail.
                   </strong>
                 </div>
 
                 <p>
-                  Wir prüfen deine Angaben und melden
-                  uns bei dir, falls weitere technische
-                  Details erforderlich sind.
+                  Die Analyse fasst deine ausgewählten Systeme,
+                  Kostenkorridore, die modellierte Wirtschaftlichkeit,
+                  Annahmen und nächste Schritte übersichtlich zusammen.
                 </p>
 
                 <!-- Hinweis -->
@@ -397,7 +353,7 @@ export async function sendConfiguratorCustomerMail(
 
   return sendMailgunMail({
     to: lead.contact.email,
-    subject: "Deine persönliche Energie-Kraft Projektübersicht",
+    subject: "Deine persönliche Energieprojekt-Analyse",
     text,
     html,
     /*
@@ -417,11 +373,9 @@ export async function sendConfiguratorCustomerMail(
       {
         filename,
 
-        data:
-          pdf,
+        data: pdf,
 
-        contentType:
-          "application/pdf",
+        contentType: "application/pdf",
       },
     ],
   });

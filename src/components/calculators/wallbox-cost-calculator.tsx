@@ -14,14 +14,14 @@ import type {
   WallboxCalculatorResult,
   WallboxNumericInputKey,
 } from "@/types/wallbox-calculator";
+import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import { ComparisonBars, SegmentedEnergyBar } from "@/components/charts/energy-charts";
 
 type WallboxFormValues = {
   [Key in keyof WallboxCalculatorInput]: string;
 };
 
-type WallboxFieldErrors = Partial<
-  Record<keyof WallboxCalculatorInput, string>
->;
+type WallboxFieldErrors = Partial<Record<keyof WallboxCalculatorInput, string>>;
 
 const currencyFormatter = new Intl.NumberFormat("de-DE", {
   style: "currency",
@@ -49,65 +49,37 @@ function formatChargingDuration(hours: number): string {
   return `${fullHours} Std. ${minutes} Min.`;
 }
 
-function createFormValues(
-  input: WallboxCalculatorInput,
-): WallboxFormValues {
+function createFormValues(input: WallboxCalculatorInput): WallboxFormValues {
   return Object.fromEntries(
-    Object.entries(input).map(([key, value]) => [
-      key,
-      String(value),
-    ]),
+    Object.entries(input).map(([key, value]) => [key, String(value)]),
   ) as WallboxFormValues;
 }
 
-function createCalculatorInput(
-  values: WallboxFormValues,
-): WallboxCalculatorInput {
+function createCalculatorInput(values: WallboxFormValues): WallboxCalculatorInput {
   return Object.fromEntries(
-    Object.entries(values).map(([key, value]) => [
-      key,
-      Number(value),
-    ]),
+    Object.entries(values).map(([key, value]) => [key, Number(value)]),
   ) as unknown as WallboxCalculatorInput;
 }
 
-function isWallboxFieldName(
-  value: unknown,
-): value is keyof WallboxCalculatorInput {
-  return (
-    typeof value === "string" &&
-    Object.hasOwn(defaultWallboxCalculatorInput, value)
-  );
+function isWallboxFieldName(value: unknown): value is keyof WallboxCalculatorInput {
+  return typeof value === "string" && Object.hasOwn(defaultWallboxCalculatorInput, value);
 }
 
 interface NumberFieldProps {
   field: WallboxNumberFieldContent;
   value: string;
   error?: string;
-  onChange: (
-    name: WallboxNumericInputKey,
-    value: string,
-  ) => void;
+  onChange: (name: WallboxNumericInputKey, value: string) => void;
 }
 
-function NumberField({
-  field,
-  value,
-  error,
-  onChange,
-}: NumberFieldProps) {
+function NumberField({ field, value, error, onChange }: NumberFieldProps) {
   const id = `wallbox-calculator-${field.name}`;
 
-  const describedBy = error
-    ? `${id}-help ${id}-error`
-    : `${id}-help`;
+  const describedBy = error ? `${id}-help ${id}-error` : `${id}-help`;
 
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="block text-sm font-semibold">
         {field.label}
       </label>
 
@@ -123,16 +95,9 @@ function NumberField({
           inputMode={field.step < 1 ? "decimal" : "numeric"}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          onChange={(event) =>
-            onChange(
-              field.name,
-              event.currentTarget.value,
-            )
-          }
+          onChange={(event) => onChange(field.name, event.currentTarget.value)}
           className={`bg-background min-h-12 min-w-0 flex-1 rounded-l-md border px-4 py-3 text-base ${
-            error
-              ? "border-red-600"
-              : "border-foreground/20"
+            error ? "border-red-600" : "border-foreground/20"
           }`}
         />
 
@@ -141,18 +106,12 @@ function NumberField({
         </span>
       </div>
 
-      <p
-        id={`${id}-help`}
-        className="text-foreground/60 mt-2 text-sm leading-6"
-      >
+      <p id={`${id}-help`} className="text-foreground/60 mt-2 text-sm leading-6">
         {field.helpText}
       </p>
 
       {error ? (
-        <p
-          id={`${id}-error`}
-          className="mt-2 text-sm font-medium text-red-700"
-        >
+        <p id={`${id}-error`} className="mt-2 text-sm font-medium text-red-700">
           {error}
         </p>
       ) : null}
@@ -166,51 +125,32 @@ interface ResultCardProps {
   description: string;
 }
 
-function ResultCard({
-  label,
-  value,
-  description,
-}: ResultCardProps) {
+function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
-      <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">
-        {label}
-      </p>
+    <article className="border-border-default bg-background rounded-xl border p-5 shadow-[var(--shadow-sm)]">
+      <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
-      <p className="mt-3 text-3xl font-semibold tracking-tight">
-        {value}
-      </p>
+      <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
 
-      <p className="text-foreground/65 mt-3 text-sm leading-6">
-        {description}
-      </p>
+      <p className="text-foreground/65 mt-3 text-sm leading-6">{description}</p>
     </article>
   );
 }
 
 export function WallboxCostCalculator() {
-  const [formValues, setFormValues] =
-    useState<WallboxFormValues>(() =>
+  const [formValues, setFormValues] = useState<WallboxFormValues>(() =>
       createFormValues(defaultWallboxCalculatorInput),
     );
 
-  const [fieldErrors, setFieldErrors] =
-    useState<WallboxFieldErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<WallboxFieldErrors>({});
 
-  const [generalError, setGeneralError] = useState<
-    string | null
-  >(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const [result, setResult] =
-    useState<WallboxCalculatorResult>(() =>
-      calculateWallboxCost(
-        defaultWallboxCalculatorInput,
-      ),
+  const [result, setResult] = useState<WallboxCalculatorResult>(() =>
+    calculateWallboxCost(defaultWallboxCalculatorInput),
     );
 
-  function clearFieldError(
-    name: keyof WallboxCalculatorInput,
-  ) {
+  function clearFieldError(name: keyof WallboxCalculatorInput) {
     setFieldErrors((currentErrors) => {
       if (!currentErrors[name]) {
         return currentErrors;
@@ -225,10 +165,7 @@ export function WallboxCostCalculator() {
     setGeneralError(null);
   }
 
-  function handleNumberChange(
-    name: WallboxNumericInputKey,
-    value: string,
-  ) {
+  function handleNumberChange(name: WallboxNumericInputKey, value: string) {
     setFormValues((currentValues) => ({
       ...currentValues,
       [name]: value,
@@ -240,8 +177,7 @@ export function WallboxCostCalculator() {
   function handleSubmit() {
     const input = createCalculatorInput(formValues);
 
-    const validationResult =
-      wallboxCalculatorInputSchema.safeParse(input);
+    const validationResult = wallboxCalculatorInputSchema.safeParse(input);
 
     if (!validationResult.success) {
       const nextErrors: WallboxFieldErrors = {};
@@ -249,13 +185,8 @@ export function WallboxCostCalculator() {
       for (const issue of validationResult.error.issues) {
         const fieldName = issue.path[0];
 
-        if (
-          isWallboxFieldName(fieldName) &&
-          !nextErrors[fieldName]
-        ) {
-          nextErrors[fieldName] =
-            issue.message ||
-            "Bitte geben Sie einen gültigen Wert ein.";
+        if (isWallboxFieldName(fieldName) && !nextErrors[fieldName]) {
+          nextErrors[fieldName] = issue.message || "Bitte geben Sie einen gültigen Wert ein.";
         }
       }
 
@@ -271,57 +202,39 @@ export function WallboxCostCalculator() {
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(
-      calculateWallboxCost(validationResult.data),
-    );
+    setResult(calculateWallboxCost(validationResult.data));
   }
 
   function handleReset() {
-    setFormValues(
-      createFormValues(defaultWallboxCalculatorInput),
-    );
+    setFormValues(createFormValues(defaultWallboxCalculatorInput));
 
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(
-      calculateWallboxCost(
-        defaultWallboxCalculatorInput,
-      ),
-    );
+    setResult(calculateWallboxCost(defaultWallboxCalculatorInput));
   }
 
   const recommendation =
-    wallboxCalculatorContent.recommendationContent[
-      result.systemRecommendation
-    ];
+    wallboxCalculatorContent.recommendationContent[result.systemRecommendation];
 
-  const hasChargingCostAdvantage =
-    result.annualChargingCostDifferenceEuro >= 0;
+  const hasChargingCostAdvantage = result.annualChargingCostDifferenceEuro >= 0;
 
-  const chargingDifferenceValue =
-    currencyFormatter.format(
+  const chargingDifferenceValue = currencyFormatter.format(
       Math.abs(result.annualChargingCostDifferenceEuro),
     );
 
   return (
-    <section
-      id="wallbox-berechnung"
-      className="section-space bg-surface-soft"
-    >
+    <section id="wallbox-berechnung" className="section-space bg-surface-soft">
       <div className="section-shell grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div>
-          <p className="text-sm font-semibold tracking-widest uppercase">
-            Ihre Angaben
-          </p>
+          <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
 
           <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
             Fahrzeug- und Ladedaten erfassen
           </h2>
 
           <p className="text-foreground/70 mt-5 max-w-2xl text-lg leading-8">
-            Die Modellrechnung verbindet Fahrleistung,
-            Fahrzeugverbrauch, Ladefenster, Ladeleistung,
+            Die Modellrechnung verbindet Fahrleistung, Fahrzeugverbrauch, Ladefenster, Ladeleistung,
             Stromkosten und einen möglichen PV-Anteil.
           </p>
 
@@ -334,13 +247,10 @@ export function WallboxCostCalculator() {
             }}
           >
             <fieldset>
-              <legend className="text-xl font-semibold">
-                Grunddaten
-              </legend>
+              <legend className="text-xl font-semibold">Grunddaten</legend>
 
               <div className="mt-6 grid gap-7 md:grid-cols-2">
-                {wallboxCalculatorContent.primaryFields.map(
-                  (field) => (
+                {wallboxCalculatorContent.primaryFields.map((field) => (
                     <NumberField
                       key={field.name}
                       field={field}
@@ -348,8 +258,7 @@ export function WallboxCostCalculator() {
                       error={fieldErrors[field.name]}
                       onChange={handleNumberChange}
                     />
-                  ),
-                )}
+                ))}
               </div>
             </fieldset>
 
@@ -359,13 +268,10 @@ export function WallboxCostCalculator() {
               </summary>
 
               <fieldset className="border-foreground/10 border-t p-5">
-                <legend className="sr-only">
-                  Erweiterte Modellannahmen
-                </legend>
+                <legend className="sr-only">Erweiterte Modellannahmen</legend>
 
                 <div className="grid gap-7 md:grid-cols-2">
-                  {wallboxCalculatorContent.advancedFields.map(
-                    (field) => (
+                  {wallboxCalculatorContent.advancedFields.map((field) => (
                       <NumberField
                         key={field.name}
                         field={field}
@@ -373,8 +279,7 @@ export function WallboxCostCalculator() {
                         error={fieldErrors[field.name]}
                         onChange={handleNumberChange}
                       />
-                    ),
-                  )}
+                  ))}
                 </div>
               </fieldset>
             </details>
@@ -389,42 +294,27 @@ export function WallboxCostCalculator() {
             ) : null}
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                type="submit"
-                className="button-primary"
-              >
+              <button type="submit" className="button-primary">
                 Ladezeit und Kosten berechnen
               </button>
 
-              <button
-                type="button"
-                onClick={handleReset}
-                className="button-secondary"
-              >
+              <button type="button" onClick={handleReset} className="button-secondary">
                 Ausgangswerte wiederherstellen
               </button>
             </div>
           </form>
         </div>
 
-        <div
-          aria-live="polite"
-          aria-atomic="false"
-          className="lg:sticky lg:top-28 lg:self-start"
-        >
+        <div aria-live="polite" aria-atomic="false" className="lg:sticky lg:top-28 lg:self-start">
           <div className="premium-card p-5 md:p-7">
-            <p className="text-sm font-semibold tracking-widest uppercase">
-              Ergebnis
-            </p>
+            <p className="text-sm font-semibold tracking-widest uppercase">Ergebnis</p>
 
             <h2 className="mt-3 text-3xl font-semibold tracking-tight">
               Unverbindliche Wallbox-Orientierung
             </h2>
 
             <div className="border-foreground/15 bg-background mt-6 rounded-xl border p-5">
-              <p className="font-semibold">
-                {recommendation.label}
-              </p>
+              <p className="font-semibold">{recommendation.label}</p>
 
               <p className="text-foreground/70 mt-2 text-sm leading-6">
                 {recommendation.description}
@@ -434,9 +324,7 @@ export function WallboxCostCalculator() {
             <div className="mt-7 grid gap-4 sm:grid-cols-2">
               <ResultCard
                 label="Typische Ladedauer"
-                value={formatChargingDuration(
-                  result.typicalChargingTimeHours,
-                )}
+                value={formatChargingDuration(result.typicalChargingTimeHours)}
                 description={`${numberFormatter.format(
                   result.typicalBatteryEnergyAddedKwh,
                 )} kWh werden im Modell zwischen ${numberFormatter.format(
@@ -448,17 +336,13 @@ export function WallboxCostCalculator() {
 
               <ResultCard
                 label="Wallbox-Leistung"
-                value={`${numberFormatter.format(
-                  result.input.chargingPowerKw,
-                )} kW`}
+                value={`${numberFormatter.format(result.input.chargingPowerKw)} kW`}
                 description="Die tatsächlich nutzbare Leistung kann durch Fahrzeug und Elektroinstallation begrenzt werden."
               />
 
               <ResultCard
                 label="Jährlicher Fahrstrombedarf"
-                value={`${numberFormatter.format(
-                  result.annualVehicleEnergyDemandKwh,
-                )} kWh`}
+                value={`${numberFormatter.format(result.annualVehicleEnergyDemandKwh)} kWh`}
                 description={`Berechnet aus ${numberFormatter.format(
                   result.input.annualDrivingKm,
                 )} km Fahrleistung und ${numberFormatter.format(
@@ -468,9 +352,7 @@ export function WallboxCostCalculator() {
 
               <ResultCard
                 label="Jährliche Heimladeenergie"
-                value={`${numberFormatter.format(
-                  result.annualHomeChargingInputEnergyKwh,
-                )} kWh`}
+                value={`${numberFormatter.format(result.annualHomeChargingInputEnergyKwh)} kWh`}
                 description={`Beinhaltet den angenommenen Ladewirkungsgrad von ${numberFormatter.format(
                   result.input.chargingEfficiencyPercent,
                 )} %.`}
@@ -478,9 +360,7 @@ export function WallboxCostCalculator() {
 
               <ResultCard
                 label="Jährliche Heimladekosten"
-                value={currencyFormatter.format(
-                  result.annualHomeChargingCostEuro,
-                )}
+                value={currencyFormatter.format(result.annualHomeChargingCostEuro)}
                 description={`${currencyFormatter.format(
                   result.monthlyHomeChargingCostEuro,
                 )} durchschnittliche Modellkosten pro Monat.`}
@@ -502,9 +382,7 @@ export function WallboxCostCalculator() {
 
               <ResultCard
                 label="Geschätzte Projektkosten"
-                value={currencyFormatter.format(
-                  result.estimatedTotalCostEuro,
-                )}
+                value={currencyFormatter.format(result.estimatedTotalCostEuro)}
                 description="Wallbox, modellierte Installation und weitere eingegebene Projektkosten."
               />
 
@@ -512,9 +390,7 @@ export function WallboxCostCalculator() {
                 label="Kostenkorridor"
                 value={`${currencyFormatter.format(
                   result.estimatedMinimumCostEuro,
-                )} – ${currencyFormatter.format(
-                  result.estimatedMaximumCostEuro,
-                )}`}
+                )} – ${currencyFormatter.format(result.estimatedMaximumCostEuro)}`}
                 description={`Orientierungsbereich mit ± ${numberFormatter.format(
                   result.input.costUncertaintyPercent,
                 )} % Abweichung.`}
@@ -523,47 +399,31 @@ export function WallboxCostCalculator() {
 
             <div className="border-foreground/10 bg-background mt-6 overflow-hidden rounded-xl border">
               <div className="border-foreground/10 border-b px-5 py-4">
-                <h3 className="text-lg font-semibold">
-                  Aufteilung der Heimladeenergie
-                </h3>
+                <h3 className="text-lg font-semibold">Aufteilung der Heimladeenergie</h3>
               </div>
 
               <dl className="divide-foreground/10 divide-y">
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Strom aus Photovoltaik
-                  </dt>
+                  <dt className="text-foreground/70">Strom aus Photovoltaik</dt>
 
                   <dd className="font-semibold">
-                    {numberFormatter.format(
-                      result.annualPvChargingEnergyKwh,
-                    )}{" "}
-                    kWh
+                    {numberFormatter.format(result.annualPvChargingEnergyKwh)} kWh
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Netzstrom
-                  </dt>
+                  <dt className="text-foreground/70">Netzstrom</dt>
 
                   <dd className="font-semibold">
-                    {numberFormatter.format(
-                      result.annualGridChargingEnergyKwh,
-                    )}{" "}
-                    kWh
+                    {numberFormatter.format(result.annualGridChargingEnergyKwh)} kWh
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Vergleich öffentliches Laden
-                  </dt>
+                  <dt className="text-foreground/70">Vergleich öffentliches Laden</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.comparablePublicChargingCostEuro,
-                    )}
+                    {currencyFormatter.format(result.comparablePublicChargingCostEuro)}
                   </dd>
                 </div>
               </dl>
@@ -571,78 +431,93 @@ export function WallboxCostCalculator() {
 
             <div className="border-foreground/10 bg-background mt-6 overflow-hidden rounded-xl border">
               <div className="border-foreground/10 border-b px-5 py-4">
-                <h3 className="text-lg font-semibold">
-                  Projektkosten
-                </h3>
+                <h3 className="text-lg font-semibold">Projektkosten</h3>
               </div>
 
               <dl className="divide-foreground/10 divide-y">
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Wallbox
-                  </dt>
+                  <dt className="text-foreground/70">Wallbox</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.wallboxCostEuro,
-                    )}
+                    {currencyFormatter.format(result.wallboxCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Installation
-                  </dt>
+                  <dt className="text-foreground/70">Installation</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.installationBaseCostEuro,
-                    )}
+                    {currencyFormatter.format(result.installationBaseCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Weitere Projektkosten
-                  </dt>
+                  <dt className="text-foreground/70">Weitere Projektkosten</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.fixedAdditionalCostEuro,
-                    )}
+                    {currencyFormatter.format(result.fixedAdditionalCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="font-semibold">
-                    Orientierungswert gesamt
-                  </dt>
+                  <dt className="font-semibold">Orientierungswert gesamt</dt>
 
                   <dd className="text-lg font-semibold">
-                    {currencyFormatter.format(
-                      result.estimatedTotalCostEuro,
-                    )}
+                    {currencyFormatter.format(result.estimatedTotalCostEuro)}
                   </dd>
                 </div>
               </dl>
             </div>
 
             <div className="mt-6">
-              <h3 className="text-lg font-semibold">
-                Modellannahmen
-              </h3>
+              <h3 className="text-lg font-semibold">Modellannahmen</h3>
 
               <ul className="text-foreground/65 mt-4 space-y-3 text-sm leading-6">
-                {wallboxCalculatorContent.modelNotes.map(
-                  (note) => (
+                {wallboxCalculatorContent.modelNotes.map((note) => (
                     <li key={note} className="flex gap-3">
                       <span aria-hidden="true">•</span>
                       <span>{note}</span>
                     </li>
-                  ),
-                )}
+                ))}
               </ul>
             </div>
+
+            <div className="border-foreground/10 mt-6 rounded-2xl border p-5">
+              <h3 className="text-lg font-semibold">Ladestrom und Kostenvergleich</h3>
+              <SegmentedEnergyBar
+                segments={[
+                  { label: "PV-Strom", value: result.annualPvChargingEnergyKwh },
+                  { label: "Netzstrom", value: result.annualGridChargingEnergyKwh },
+                ]}
+                unit="kWh/Jahr"
+              />
+              <ComparisonBars
+                items={[
+                  { label: "Heimladen", value: result.annualHomeChargingCostEuro },
+                  {
+                    label: "Öffentliches Laden",
+                    value: result.comparablePublicChargingCostEuro,
+                    color: "#91A4C4",
+                  },
+                ]}
+                unit="€/Jahr"
+              />
+            </div>
+
+            <CalculatorProjectCta
+              handoff={{
+                version: 1,
+                source: "wallbox",
+                values: {
+                  annualDrivingKm: result.input.annualDrivingKm,
+                  vehicleConsumptionKwhPer100Km: result.input.vehicleConsumptionKwhPer100Km,
+                  batteryCapacityKwh: result.input.batteryCapacityKwh,
+                  homeChargingSharePercent: result.input.homeChargingSharePercent,
+                  chargingPowerKw: result.input.chargingPowerKw as 3.7 | 11 | 22,
+                  pvChargingSharePercent: result.input.pvChargingSharePercent,
+                },
+              }}
+            />
 
             <p className="text-foreground/60 mt-6 text-sm leading-6">
               {wallboxCalculatorContent.disclaimer}

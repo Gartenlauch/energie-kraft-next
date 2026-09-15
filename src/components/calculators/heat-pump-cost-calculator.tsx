@@ -14,14 +14,14 @@ import type {
   HeatPumpCalculatorResult,
   HeatPumpNumericInputKey,
 } from "@/types/heat-pump-calculator";
+import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import { ComparisonBars } from "@/components/charts/energy-charts";
 
 type HeatPumpFormValues = {
   [Key in keyof HeatPumpCalculatorInput]: string;
 };
 
-type HeatPumpFieldErrors = Partial<
-  Record<keyof HeatPumpCalculatorInput, string>
->;
+type HeatPumpFieldErrors = Partial<Record<keyof HeatPumpCalculatorInput, string>>;
 
 const currencyFormatter = new Intl.NumberFormat("de-DE", {
   style: "currency",
@@ -33,167 +33,93 @@ const numberFormatter = new Intl.NumberFormat("de-DE", {
   maximumFractionDigits: 2,
 });
 
-function createFormValues(
-  input: HeatPumpCalculatorInput,
-): HeatPumpFormValues {
+function createFormValues(input: HeatPumpCalculatorInput): HeatPumpFormValues {
   return {
     heatedAreaM2: String(input.heatedAreaM2),
 
-    specificSpaceHeatingDemandKwhPerM2Year: String(
-      input.specificSpaceHeatingDemandKwhPerM2Year,
-    ),
+    specificSpaceHeatingDemandKwhPerM2Year: String(input.specificSpaceHeatingDemandKwhPerM2Year),
 
     occupancyPersons: String(input.occupancyPersons),
 
-    hotWaterDemandKwhPerPersonYear: String(
-      input.hotWaterDemandKwhPerPersonYear,
-    ),
+    hotWaterDemandKwhPerPersonYear: String(input.hotWaterDemandKwhPerPersonYear),
 
-    annualPerformanceFactor: String(
-      input.annualPerformanceFactor,
-    ),
+    annualPerformanceFactor: String(input.annualPerformanceFactor),
 
-    equivalentFullLoadHours: String(
-      input.equivalentFullLoadHours,
-    ),
+    equivalentFullLoadHours: String(input.equivalentFullLoadHours),
 
-    capacityReservePercent: String(
-      input.capacityReservePercent,
-    ),
+    capacityReservePercent: String(input.capacityReservePercent),
 
-    requiredFlowTemperatureC: String(
-      input.requiredFlowTemperatureC,
-    ),
+    requiredFlowTemperatureC: String(input.requiredFlowTemperatureC),
 
-    electricityPriceEuroPerKwh: String(
-      input.electricityPriceEuroPerKwh,
-    ),
+    electricityPriceEuroPerKwh: String(input.electricityPriceEuroPerKwh),
 
-    currentHeatingEnergyPriceEuroPerKwh: String(
-      input.currentHeatingEnergyPriceEuroPerKwh,
-    ),
+    currentHeatingEnergyPriceEuroPerKwh: String(input.currentHeatingEnergyPriceEuroPerKwh),
 
-    currentHeatingEfficiencyPercent: String(
-      input.currentHeatingEfficiencyPercent,
-    ),
+    currentHeatingEfficiencyPercent: String(input.currentHeatingEfficiencyPercent),
 
-    heatPumpCostEuroPerKw: String(
-      input.heatPumpCostEuroPerKw,
-    ),
+    heatPumpCostEuroPerKw: String(input.heatPumpCostEuroPerKw),
 
-    installationBaseCostEuro: String(
-      input.installationBaseCostEuro,
-    ),
+    installationBaseCostEuro: String(input.installationBaseCostEuro),
 
-    fixedAdditionalCostEuro: String(
-      input.fixedAdditionalCostEuro,
-    ),
+    fixedAdditionalCostEuro: String(input.fixedAdditionalCostEuro),
 
-    costUncertaintyPercent: String(
-      input.costUncertaintyPercent,
-    ),
+    costUncertaintyPercent: String(input.costUncertaintyPercent),
   };
 }
 
-function createCalculatorInput(
-  values: HeatPumpFormValues,
-): HeatPumpCalculatorInput {
+function createCalculatorInput(values: HeatPumpFormValues): HeatPumpCalculatorInput {
   return {
     heatedAreaM2: Number(values.heatedAreaM2),
 
-    specificSpaceHeatingDemandKwhPerM2Year: Number(
-      values.specificSpaceHeatingDemandKwhPerM2Year,
-    ),
+    specificSpaceHeatingDemandKwhPerM2Year: Number(values.specificSpaceHeatingDemandKwhPerM2Year),
 
     occupancyPersons: Number(values.occupancyPersons),
 
-    hotWaterDemandKwhPerPersonYear: Number(
-      values.hotWaterDemandKwhPerPersonYear,
-    ),
+    hotWaterDemandKwhPerPersonYear: Number(values.hotWaterDemandKwhPerPersonYear),
 
-    annualPerformanceFactor: Number(
-      values.annualPerformanceFactor,
-    ),
+    annualPerformanceFactor: Number(values.annualPerformanceFactor),
 
-    equivalentFullLoadHours: Number(
-      values.equivalentFullLoadHours,
-    ),
+    equivalentFullLoadHours: Number(values.equivalentFullLoadHours),
 
-    capacityReservePercent: Number(
-      values.capacityReservePercent,
-    ),
+    capacityReservePercent: Number(values.capacityReservePercent),
 
-    requiredFlowTemperatureC: Number(
-      values.requiredFlowTemperatureC,
-    ),
+    requiredFlowTemperatureC: Number(values.requiredFlowTemperatureC),
 
-    electricityPriceEuroPerKwh: Number(
-      values.electricityPriceEuroPerKwh,
-    ),
+    electricityPriceEuroPerKwh: Number(values.electricityPriceEuroPerKwh),
 
-    currentHeatingEnergyPriceEuroPerKwh: Number(
-      values.currentHeatingEnergyPriceEuroPerKwh,
-    ),
+    currentHeatingEnergyPriceEuroPerKwh: Number(values.currentHeatingEnergyPriceEuroPerKwh),
 
-    currentHeatingEfficiencyPercent: Number(
-      values.currentHeatingEfficiencyPercent,
-    ),
+    currentHeatingEfficiencyPercent: Number(values.currentHeatingEfficiencyPercent),
 
-    heatPumpCostEuroPerKw: Number(
-      values.heatPumpCostEuroPerKw,
-    ),
+    heatPumpCostEuroPerKw: Number(values.heatPumpCostEuroPerKw),
 
-    installationBaseCostEuro: Number(
-      values.installationBaseCostEuro,
-    ),
+    installationBaseCostEuro: Number(values.installationBaseCostEuro),
 
-    fixedAdditionalCostEuro: Number(
-      values.fixedAdditionalCostEuro,
-    ),
+    fixedAdditionalCostEuro: Number(values.fixedAdditionalCostEuro),
 
-    costUncertaintyPercent: Number(
-      values.costUncertaintyPercent,
-    ),
+    costUncertaintyPercent: Number(values.costUncertaintyPercent),
   };
 }
 
-function isHeatPumpFieldName(
-  value: unknown,
-): value is keyof HeatPumpCalculatorInput {
-  return (
-    typeof value === "string" &&
-    Object.hasOwn(defaultHeatPumpCalculatorInput, value)
-  );
+function isHeatPumpFieldName(value: unknown): value is keyof HeatPumpCalculatorInput {
+  return typeof value === "string" && Object.hasOwn(defaultHeatPumpCalculatorInput, value);
 }
 
 interface NumberFieldProps {
   field: HeatPumpNumberFieldContent;
   value: string;
   error?: string;
-  onChange: (
-    name: HeatPumpNumericInputKey,
-    value: string,
-  ) => void;
+  onChange: (name: HeatPumpNumericInputKey, value: string) => void;
 }
 
-function NumberField({
-  field,
-  value,
-  error,
-  onChange,
-}: NumberFieldProps) {
+function NumberField({ field, value, error, onChange }: NumberFieldProps) {
   const id = `heat-pump-calculator-${field.name}`;
 
-  const describedBy = error
-    ? `${id}-help ${id}-error`
-    : `${id}-help`;
+  const describedBy = error ? `${id}-help ${id}-error` : `${id}-help`;
 
   return (
     <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-semibold"
-      >
+      <label htmlFor={id} className="block text-sm font-semibold">
         {field.label}
       </label>
 
@@ -209,16 +135,9 @@ function NumberField({
           inputMode={field.step < 1 ? "decimal" : "numeric"}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          onChange={(event) =>
-            onChange(
-              field.name,
-              event.currentTarget.value,
-            )
-          }
+          onChange={(event) => onChange(field.name, event.currentTarget.value)}
           className={`bg-background min-h-12 min-w-0 flex-1 rounded-l-md border px-4 py-3 text-base ${
-            error
-              ? "border-red-600"
-              : "border-foreground/20"
+            error ? "border-red-600" : "border-foreground/20"
           }`}
         />
 
@@ -227,18 +146,12 @@ function NumberField({
         </span>
       </div>
 
-      <p
-        id={`${id}-help`}
-        className="text-foreground/60 mt-2 text-sm leading-6"
-      >
+      <p id={`${id}-help`} className="text-foreground/60 mt-2 text-sm leading-6">
         {field.helpText}
       </p>
 
       {error ? (
-        <p
-          id={`${id}-error`}
-          className="mt-2 text-sm font-medium text-red-700"
-        >
+        <p id={`${id}-error`} className="mt-2 text-sm font-medium text-red-700">
           {error}
         </p>
       ) : null}
@@ -252,51 +165,32 @@ interface ResultCardProps {
   description: string;
 }
 
-function ResultCard({
-  label,
-  value,
-  description,
-}: ResultCardProps) {
+function ResultCard({ label, value, description }: ResultCardProps) {
   return (
-    <article className="rounded-xl border border-border-default bg-background p-5 shadow-[var(--shadow-sm)]">
-      <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">
-        {label}
-      </p>
+    <article className="border-border-default bg-background rounded-xl border p-5 shadow-[var(--shadow-sm)]">
+      <p className="text-foreground/60 text-sm font-semibold tracking-wide uppercase">{label}</p>
 
-      <p className="mt-3 text-3xl font-semibold tracking-tight">
-        {value}
-      </p>
+      <p className="mt-3 text-3xl font-semibold tracking-tight">{value}</p>
 
-      <p className="text-foreground/65 mt-3 text-sm leading-6">
-        {description}
-      </p>
+      <p className="text-foreground/65 mt-3 text-sm leading-6">{description}</p>
     </article>
   );
 }
 
 export function HeatPumpCostCalculator() {
-  const [formValues, setFormValues] =
-    useState<HeatPumpFormValues>(() =>
+  const [formValues, setFormValues] = useState<HeatPumpFormValues>(() =>
       createFormValues(defaultHeatPumpCalculatorInput),
     );
 
-  const [fieldErrors, setFieldErrors] =
-    useState<HeatPumpFieldErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<HeatPumpFieldErrors>({});
 
-  const [generalError, setGeneralError] = useState<
-    string | null
-  >(null);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const [result, setResult] =
-    useState<HeatPumpCalculatorResult>(() =>
-      calculateHeatPumpCost(
-        defaultHeatPumpCalculatorInput,
-      ),
+  const [result, setResult] = useState<HeatPumpCalculatorResult>(() =>
+    calculateHeatPumpCost(defaultHeatPumpCalculatorInput),
     );
 
-  function clearFieldError(
-    name: keyof HeatPumpCalculatorInput,
-  ) {
+  function clearFieldError(name: keyof HeatPumpCalculatorInput) {
     setFieldErrors((currentErrors) => {
       if (!currentErrors[name]) {
         return currentErrors;
@@ -311,10 +205,7 @@ export function HeatPumpCostCalculator() {
     setGeneralError(null);
   }
 
-  function handleNumberChange(
-    name: HeatPumpNumericInputKey,
-    value: string,
-  ) {
+  function handleNumberChange(name: HeatPumpNumericInputKey, value: string) {
     setFormValues((currentValues) => ({
       ...currentValues,
       [name]: value,
@@ -326,8 +217,7 @@ export function HeatPumpCostCalculator() {
   function handleSubmit() {
     const input = createCalculatorInput(formValues);
 
-    const validationResult =
-      heatPumpCalculatorInputSchema.safeParse(input);
+    const validationResult = heatPumpCalculatorInputSchema.safeParse(input);
 
     if (!validationResult.success) {
       const nextErrors: HeatPumpFieldErrors = {};
@@ -335,10 +225,7 @@ export function HeatPumpCostCalculator() {
       for (const issue of validationResult.error.issues) {
         const fieldName = issue.path[0];
 
-        if (
-          isHeatPumpFieldName(fieldName) &&
-          !nextErrors[fieldName]
-        ) {
+        if (isHeatPumpFieldName(fieldName) && !nextErrors[fieldName]) {
           nextErrors[fieldName] =
             "Bitte geben Sie einen gültigen Wert innerhalb des zulässigen Bereichs ein.";
         }
@@ -356,57 +243,38 @@ export function HeatPumpCostCalculator() {
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(
-      calculateHeatPumpCost(validationResult.data),
-    );
+    setResult(calculateHeatPumpCost(validationResult.data));
   }
 
   function handleReset() {
-    setFormValues(
-      createFormValues(defaultHeatPumpCalculatorInput),
-    );
+    setFormValues(createFormValues(defaultHeatPumpCalculatorInput));
 
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(
-      calculateHeatPumpCost(
-        defaultHeatPumpCalculatorInput,
-      ),
-    );
+    setResult(calculateHeatPumpCost(defaultHeatPumpCalculatorInput));
   }
 
-  const assessment =
-    heatPumpCalculatorContent.assessmentContent[
-      result.flowTemperatureAssessment
-    ];
+  const assessment = heatPumpCalculatorContent.assessmentContent[result.flowTemperatureAssessment];
 
-  const hasOperatingCostAdvantage =
-    result.annualOperatingCostDifferenceEuro >= 0;
+  const hasOperatingCostAdvantage = result.annualOperatingCostDifferenceEuro >= 0;
 
-  const operatingCostDifferenceValue =
-    currencyFormatter.format(
+  const operatingCostDifferenceValue = currencyFormatter.format(
       Math.abs(result.annualOperatingCostDifferenceEuro),
     );
 
   return (
-    <section
-      id="waermepumpen-berechnung"
-      className="section-space bg-surface-soft"
-    >
+    <section id="waermepumpen-berechnung" className="section-space bg-surface-soft">
       <div className="section-shell grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
         <div>
-          <p className="text-sm font-semibold tracking-widest uppercase">
-            Ihre Angaben
-          </p>
+          <p className="text-sm font-semibold tracking-widest uppercase">Ihre Angaben</p>
 
           <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
             Gebäude- und Heizungsdaten erfassen
           </h2>
 
           <p className="text-foreground/70 mt-5 max-w-2xl text-lg leading-8">
-            Die Modellrechnung verbindet Wärmebedarf,
-            Warmwasser, Vorlauftemperatur, Effizienz,
+            Die Modellrechnung verbindet Wärmebedarf, Warmwasser, Vorlauftemperatur, Effizienz,
             Energiepreise und veränderbare Kostenannahmen.
           </p>
 
@@ -419,13 +287,10 @@ export function HeatPumpCostCalculator() {
             }}
           >
             <fieldset>
-              <legend className="text-xl font-semibold">
-                Grunddaten
-              </legend>
+              <legend className="text-xl font-semibold">Grunddaten</legend>
 
               <div className="mt-6 grid gap-7 md:grid-cols-2">
-                {heatPumpCalculatorContent.primaryFields.map(
-                  (field) => (
+                {heatPumpCalculatorContent.primaryFields.map((field) => (
                     <NumberField
                       key={field.name}
                       field={field}
@@ -433,8 +298,7 @@ export function HeatPumpCostCalculator() {
                       error={fieldErrors[field.name]}
                       onChange={handleNumberChange}
                     />
-                  ),
-                )}
+                ))}
               </div>
             </fieldset>
 
@@ -444,13 +308,10 @@ export function HeatPumpCostCalculator() {
               </summary>
 
               <fieldset className="border-foreground/10 border-t p-5">
-                <legend className="sr-only">
-                  Erweiterte Modellannahmen
-                </legend>
+                <legend className="sr-only">Erweiterte Modellannahmen</legend>
 
                 <div className="grid gap-7 md:grid-cols-2">
-                  {heatPumpCalculatorContent.advancedFields.map(
-                    (field) => (
+                  {heatPumpCalculatorContent.advancedFields.map((field) => (
                       <NumberField
                         key={field.name}
                         field={field}
@@ -458,8 +319,7 @@ export function HeatPumpCostCalculator() {
                         error={fieldErrors[field.name]}
                         onChange={handleNumberChange}
                       />
-                    ),
-                  )}
+                  ))}
                 </div>
               </fieldset>
             </details>
@@ -474,33 +334,20 @@ export function HeatPumpCostCalculator() {
             ) : null}
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <button
-                type="submit"
-                className="button-primary"
-              >
+              <button type="submit" className="button-primary">
                 Wärmepumpe berechnen
               </button>
 
-              <button
-                type="button"
-                onClick={handleReset}
-                className="button-secondary"
-              >
+              <button type="button" onClick={handleReset} className="button-secondary">
                 Ausgangswerte wiederherstellen
               </button>
             </div>
           </form>
         </div>
 
-        <div
-          aria-live="polite"
-          aria-atomic="false"
-          className="lg:sticky lg:top-28 lg:self-start"
-        >
+        <div aria-live="polite" aria-atomic="false" className="lg:sticky lg:top-28 lg:self-start">
           <div className="premium-card p-5 md:p-7">
-            <p className="text-sm font-semibold tracking-widest uppercase">
-              Ergebnis
-            </p>
+            <p className="text-sm font-semibold tracking-widest uppercase">Ergebnis</p>
 
             <h2 className="mt-3 text-3xl font-semibold tracking-tight">
               Unverbindliche Wärmepumpen-Orientierung
@@ -513,21 +360,15 @@ export function HeatPumpCostCalculator() {
                   : "border-amber-400 bg-amber-50 text-amber-950"
               }`}
             >
-              <p className="font-semibold">
-                {assessment.label}
-              </p>
+              <p className="font-semibold">{assessment.label}</p>
 
-              <p className="mt-2 text-sm leading-6">
-                {assessment.description}
-              </p>
+              <p className="mt-2 text-sm leading-6">{assessment.description}</p>
             </div>
 
             <div className="mt-7 grid gap-4 sm:grid-cols-2">
               <ResultCard
                 label="Empfohlene Wärmepumpenleistung"
-                value={`${numberFormatter.format(
-                  result.recommendedHeatPumpCapacityKw,
-                )} kW`}
+                value={`${numberFormatter.format(result.recommendedHeatPumpCapacityKw)} kW`}
                 description={`Überschlägiger Bedarf von ${numberFormatter.format(
                   result.requiredCapacityBeforeReserveKw,
                 )} kW zuzüglich ${numberFormatter.format(
@@ -537,9 +378,7 @@ export function HeatPumpCostCalculator() {
 
               <ResultCard
                 label="Jährlicher Wärmebedarf"
-                value={`${numberFormatter.format(
-                  result.totalAnnualHeatDemandKwh,
-                )} kWh`}
+                value={`${numberFormatter.format(result.totalAnnualHeatDemandKwh)} kWh`}
                 description={`${numberFormatter.format(
                   result.spaceHeatingDemandKwh,
                 )} kWh Raumwärme und ${numberFormatter.format(
@@ -559,9 +398,7 @@ export function HeatPumpCostCalculator() {
 
               <ResultCard
                 label="Wärmepumpen-Stromkosten"
-                value={currencyFormatter.format(
-                  result.annualHeatPumpOperatingCostEuro,
-                )}
+                value={currencyFormatter.format(result.annualHeatPumpOperatingCostEuro)}
                 description={`Jährliche Modellkosten bei ${numberFormatter.format(
                   result.input.electricityPriceEuroPerKwh,
                 )} € je kWh Strom.`}
@@ -569,9 +406,7 @@ export function HeatPumpCostCalculator() {
 
               <ResultCard
                 label="Kosten bestehende Heizung"
-                value={currencyFormatter.format(
-                  result.currentHeatingOperatingCostEuro,
-                )}
+                value={currencyFormatter.format(result.currentHeatingOperatingCostEuro)}
                 description={`Jährliche Modellkosten bei ${numberFormatter.format(
                   result.input.currentHeatingEfficiencyPercent,
                 )} % Wirkungsgrad.`}
@@ -579,9 +414,7 @@ export function HeatPumpCostCalculator() {
 
               <ResultCard
                 label={
-                  hasOperatingCostAdvantage
-                    ? "Jährlicher Kostenvorteil"
-                    : "Jährliche Mehrkosten"
+                  hasOperatingCostAdvantage ? "Jährlicher Kostenvorteil" : "Jährliche Mehrkosten"
                 }
                 value={operatingCostDifferenceValue}
                 description={
@@ -593,9 +426,7 @@ export function HeatPumpCostCalculator() {
 
               <ResultCard
                 label="Geschätzte Gesamtkosten"
-                value={currencyFormatter.format(
-                  result.estimatedTotalCostEuro,
-                )}
+                value={currencyFormatter.format(result.estimatedTotalCostEuro)}
                 description="Wärmepumpe, modellierte Installation und weitere eingegebene Projektkosten."
               />
 
@@ -603,9 +434,7 @@ export function HeatPumpCostCalculator() {
                 label="Kostenkorridor"
                 value={`${currencyFormatter.format(
                   result.estimatedMinimumCostEuro,
-                )} – ${currencyFormatter.format(
-                  result.estimatedMaximumCostEuro,
-                )}`}
+                )} – ${currencyFormatter.format(result.estimatedMaximumCostEuro)}`}
                 description={`Orientierungsbereich mit ± ${numberFormatter.format(
                   result.input.costUncertaintyPercent,
                 )} % Abweichung.`}
@@ -614,78 +443,86 @@ export function HeatPumpCostCalculator() {
 
             <div className="border-foreground/10 bg-background mt-6 overflow-hidden rounded-xl border">
               <div className="border-foreground/10 border-b px-5 py-4">
-                <h3 className="text-lg font-semibold">
-                  Kostenaufteilung
-                </h3>
+                <h3 className="text-lg font-semibold">Kostenaufteilung</h3>
               </div>
 
               <dl className="divide-foreground/10 divide-y">
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Wärmepumpe
-                  </dt>
+                  <dt className="text-foreground/70">Wärmepumpe</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.heatPumpEquipmentCostEuro,
-                    )}
+                    {currencyFormatter.format(result.heatPumpEquipmentCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Installation und Einbindung
-                  </dt>
+                  <dt className="text-foreground/70">Installation und Einbindung</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.installationBaseCostEuro,
-                    )}
+                    {currencyFormatter.format(result.installationBaseCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="text-foreground/70">
-                    Weitere Projektkosten
-                  </dt>
+                  <dt className="text-foreground/70">Weitere Projektkosten</dt>
 
                   <dd className="font-semibold">
-                    {currencyFormatter.format(
-                      result.fixedAdditionalCostEuro,
-                    )}
+                    {currencyFormatter.format(result.fixedAdditionalCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
-                  <dt className="font-semibold">
-                    Orientierungswert gesamt
-                  </dt>
+                  <dt className="font-semibold">Orientierungswert gesamt</dt>
 
                   <dd className="text-lg font-semibold">
-                    {currencyFormatter.format(
-                      result.estimatedTotalCostEuro,
-                    )}
+                    {currencyFormatter.format(result.estimatedTotalCostEuro)}
                   </dd>
                 </div>
               </dl>
             </div>
 
             <div className="mt-6">
-              <h3 className="text-lg font-semibold">
-                Modellannahmen
-              </h3>
+              <h3 className="text-lg font-semibold">Modellannahmen</h3>
 
               <ul className="text-foreground/65 mt-4 space-y-3 text-sm leading-6">
-                {heatPumpCalculatorContent.modelNotes.map(
-                  (note) => (
+                {heatPumpCalculatorContent.modelNotes.map((note) => (
                     <li key={note} className="flex gap-3">
                       <span aria-hidden="true">•</span>
                       <span>{note}</span>
                     </li>
-                  ),
-                )}
+                ))}
               </ul>
             </div>
+
+            <div className="border-foreground/10 mt-6 rounded-2xl border p-5">
+              <h3 className="text-lg font-semibold">Betriebskostenvergleich</h3>
+              <ComparisonBars
+                items={[
+                  { label: "Bisheriges Heizsystem", value: result.currentHeatingOperatingCostEuro },
+                  {
+                    label: "Wärmepumpenmodell",
+                    value: result.annualHeatPumpOperatingCostEuro,
+                    color: "#0DA1D1",
+                  },
+                ]}
+                unit="€/Jahr"
+              />
+            </div>
+
+            <CalculatorProjectCta
+              handoff={{
+                version: 1,
+                source: "heat_pump",
+                values: {
+                  heatedAreaM2: result.input.heatedAreaM2,
+                  specificSpaceHeatingDemandKwhPerM2Year:
+                    result.input.specificSpaceHeatingDemandKwhPerM2Year,
+                  occupancyPersons: result.input.occupancyPersons,
+                  requiredFlowTemperatureC: result.input.requiredFlowTemperatureC,
+                  annualPerformanceFactor: result.input.annualPerformanceFactor,
+                },
+              }}
+            />
 
             <p className="text-foreground/60 mt-6 text-sm leading-6">
               {heatPumpCalculatorContent.disclaimer}

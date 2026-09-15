@@ -5,16 +5,9 @@ import type {
 import type { ConfiguratorStepDefinition } from "./wizard";
 
 export type HeatPumpStepId =
-  | "heated_area"
-  | "heating_demand"
-  | "occupancy"
-  | "flow_temperature"
-  | "efficiency";
+  "heated_area" | "heating_demand" | "occupancy" | "flow_temperature" | "efficiency";
 
-export type HeatPumpStepDefinition = Omit<
-  ConfiguratorStepDefinition,
-  "id"
-> & {
+export type HeatPumpStepDefinition = Omit<ConfiguratorStepDefinition, "id"> & {
   id: HeatPumpStepId;
 };
 
@@ -45,14 +38,17 @@ export interface HeatPumpConfiguratorResult {
 
   annualHeatPumpOperatingCostEuro: number;
 
+  currentHeatingOperatingCostEuro: number;
+
+  annualOperatingCostDifferenceEuro: number;
+
   estimatedTotalCostEuro: number;
 
   estimatedMinimumCostEuro: number;
 
   estimatedMaximumCostEuro: number;
 
-  flowTemperatureAssessment:
-  HeatPumpFlowTemperatureAssessment;
+  flowTemperatureAssessment: HeatPumpFlowTemperatureAssessment;
 
   ntReady: boolean;
 

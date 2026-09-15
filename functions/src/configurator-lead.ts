@@ -1,15 +1,9 @@
-import {
-  FieldValue,
-  getFirestore,
-} from "firebase-admin/firestore";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { mailgunSendingKey } from "./mailgun";
 import { sendConfiguratorCustomerMail } from "./configurator-customer-mail";
 import { generateConfiguratorProjectPdf } from "./configurator-project-pdf";
-import {
-  HttpsError,
-  onCall,
-} from "firebase-functions/v2/https";
+import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 import { sendConfiguratorLeadMail } from "./configurator-lead-mail";
 import {
@@ -18,54 +12,33 @@ import {
   configuratorLeadPayloadSchema,
 } from "./configurator-lead-validation";
 
-
 const LEADS_COLLECTION = "leads";
 
-const ADMIN_REALTIME_COLLECTION =
-  "adminRealtime";
+const ADMIN_REALTIME_COLLECTION = "adminRealtime";
 
-const LEADS_REALTIME_DOCUMENT =
-  "leads";
+const LEADS_REALTIME_DOCUMENT = "leads";
 
-const MINIMUM_FORM_DURATION_MS =
-  1_500;
+const MINIMUM_FORM_DURATION_MS = 1_500;
 
-const CONFIGURATOR_SOURCE: Record<
-  ConfiguratorPayload["type"],
-  string
-> = {
-  photovoltaic:
-    "konfigurator/photovoltaik",
+const CONFIGURATOR_SOURCE: Record<ConfiguratorPayload["type"], string> = {
+  photovoltaic: "konfigurator/photovoltaik",
 
-  battery_storage:
-    "konfigurator/stromspeicher",
+  battery_storage: "konfigurator/stromspeicher",
 
-  wallbox:
-    "konfigurator/wallbox",
+  wallbox: "konfigurator/wallbox",
 
-  heat_pump:
-    "konfigurator/waermepumpe",
+  heat_pump: "konfigurator/waermepumpe",
 
-  climate:
-    "konfigurator/klimaanlage",
+  climate: "konfigurator/klimaanlage",
 };
 
+function optionalValue(value: string | undefined): string | null {
+  const normalized = value?.trim();
 
-
-function optionalValue(
-  value: string | undefined,
-): string | null {
-  const normalized =
-    value?.trim();
-
-  return normalized
-    ? normalized
-    : null;
+  return normalized ? normalized : null;
 }
 
-function buildStoredConfigurator(
-  configurator: ConfiguratorPayload,
-) {
+function buildStoredConfigurator(configurator: ConfiguratorPayload) {
   switch (configurator.type) {
     case "photovoltaic":
       return {
@@ -89,14 +62,9 @@ function buildStoredConfigurator(
           },
 
           notes: {
-            hasNotes:
-              configurator.answers.notes
-                .hasNotes,
+            hasNotes: configurator.answers.notes.hasNotes,
 
-            text: optionalValue(
-              configurator.answers.notes
-                .text,
-            ),
+            text: optionalValue(configurator.answers.notes.text),
           },
         },
 
@@ -159,30 +127,20 @@ function buildStoredConfigurator(
   }
 }
 
-export const submitConfiguratorLead =
-  onCall(
+export const submitConfiguratorLead = onCall(
     {
       maxInstances: 10,
 
-      secrets: [
-        mailgunSendingKey,
-      ],
+    secrets: [mailgunSendingKey],
     },
 
     async (request) => {
-      const parsed =
-        configuratorLeadPayloadSchema.safeParse(
-          request.data,
-        );
+    const parsed = configuratorLeadPayloadSchema.safeParse(request.data);
 
       if (!parsed.success) {
-        logger.warn(
-          "Invalid configurator lead payload",
-          {
-            issueCount:
-              parsed.error.issues.length,
-          },
-        );
+      logger.warn("Invalid configurator lead payload", {
+        issueCount: parsed.error.issues.length,
+      });
 
         throw new HttpsError(
           "invalid-argument",
@@ -190,162 +148,97 @@ export const submitConfiguratorLead =
         );
       }
 
-      const input:
-        ConfiguratorLeadPayload =
-        parsed.data;
+    const input: ConfiguratorLeadPayload = parsed.data;
 
       if (input.website) {
-        logger.warn(
-          "Configurator lead honeypot triggered",
-        );
+      logger.warn("Configurator lead honeypot triggered");
 
-        throw new HttpsError(
-          "invalid-argument",
-          "Die Anfrage konnte nicht verarbeitet werden.",
-        );
+      throw new HttpsError("invalid-argument", "Die Anfrage konnte nicht verarbeitet werden.");
       }
 
-      if (
-        Date.now() -
-        input.formStartedAt <
-        MINIMUM_FORM_DURATION_MS
-      ) {
-        logger.warn(
-          "Configurator lead submitted too quickly",
-        );
+    if (Date.now() - input.formStartedAt < MINIMUM_FORM_DURATION_MS) {
+      logger.warn("Configurator lead submitted too quickly");
 
-        throw new HttpsError(
-          "invalid-argument",
-          "Die Anfrage konnte nicht verarbeitet werden.",
-        );
+      throw new HttpsError("invalid-argument", "Die Anfrage konnte nicht verarbeitet werden.");
       }
 
-      const source =
-        CONFIGURATOR_SOURCE[
-        input.journey.entryPoint
-        ];
+    const source = CONFIGURATOR_SOURCE[input.journey.entryPoint];
 
-      const firestore =
-        getFirestore();
+    const firestore = getFirestore();
 
-      const leadReference =
-        firestore
-          .collection(
-            LEADS_COLLECTION,
-          )
-          .doc();
-      const projectPdfFilename =
-        `energie-kraft-projektuebersicht-${leadReference.id}.pdf`;
+    const leadReference = firestore.collection(LEADS_COLLECTION).doc();
+    const projectPdfFilename = `energie-kraft-projektuebersicht-${leadReference.id}.pdf`;
 
-      const realtimeReference =
-        firestore
-          .collection(
-            ADMIN_REALTIME_COLLECTION,
-          )
-          .doc(
-            LEADS_REALTIME_DOCUMENT,
-          );
+    const realtimeReference = firestore
+      .collection(ADMIN_REALTIME_COLLECTION)
+      .doc(LEADS_REALTIME_DOCUMENT);
 
-      const timestamp =
-        FieldValue.serverTimestamp();
+    const timestamp = FieldValue.serverTimestamp();
 
-      const batch =
-        firestore.batch();
+    const batch = firestore.batch();
 
-      batch.set(
-        leadReference,
-        {
+    batch.set(leadReference, {
           type: "configurator",
 
           status: "new",
 
           contact: {
-            firstName:
-              input.contact.firstName,
+        firstName: input.contact.firstName,
 
-            lastName:
-              input.contact.lastName,
+        lastName: input.contact.lastName,
 
-            email:
-              input.contact.email,
+        email: input.contact.email,
 
-            phone:
-              optionalValue(
-                input.contact.phone,
-              ),
+        phone: optionalValue(input.contact.phone),
           },
 
           installation: {
-            atResidence:
-              input.installation
-                .atResidence,
+        atResidence: input.installation.atResidence,
 
-            street:
-              input.installation
-                .street,
+        street: input.installation.street,
 
-            postalCode:
-              input.installation
-                .postalCode,
+        postalCode: input.installation.postalCode,
 
-            city:
-              input.installation
-                .city,
+        city: input.installation.city,
           },
 
-          products: [
-            ...input.products,
-          ],
+      products: [...input.products],
 
           journey: {
-            entryPoint:
-              input.journey.entryPoint,
+        entryPoint: input.journey.entryPoint,
 
-            selectedProducts: [
-              ...input.journey
-                .selectedProducts,
-            ],
+        selectedProducts: [...input.journey.selectedProducts],
 
-            completedProducts: [
-              ...input.journey
-                .completedProducts,
-            ],
+        completedProducts: [...input.journey.completedProducts],
           },
 
-          configurators:
-            input.configurators.map(
-              buildStoredConfigurator,
-            ),
+      configurators: input.configurators.map(buildStoredConfigurator),
+
+      economics: input.economics,
 
           consent: {
             privacyAccepted: true,
 
-            acceptedAt:
-              timestamp,
+        acceptedAt: timestamp,
           },
 
           meta: {
             source,
 
-            schemaVersion: 3,
+        schemaVersion: 4,
           },
 
-          createdAt:
-            timestamp,
+      createdAt: timestamp,
 
-          updatedAt:
-            timestamp,
-        },
-      );
+      updatedAt: timestamp,
+    });
 
       batch.set(
         realtimeReference,
         {
-          revision:
-            FieldValue.increment(1),
+        revision: FieldValue.increment(1),
 
-          updatedAt:
-            FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
         },
         {
           merge: true,
@@ -359,127 +252,79 @@ export const submitConfiguratorLead =
        */
       await batch.commit();
 
-      let mailStatus:
-        | "accepted"
-        | "failed" =
-        "accepted";
+    let mailStatus: "accepted" | "failed" = "accepted";
 
-      let mailMessageId:
-        string | null =
-        null;
+    let mailMessageId: string | null = null;
 
       try {
-        const mailResult =
-          await sendConfiguratorLeadMail(
-            {
-              leadId:
-                leadReference.id,
+      const mailResult = await sendConfiguratorLeadMail({
+        leadId: leadReference.id,
 
               lead: input,
-            },
-          );
+      });
 
-        mailMessageId =
-          mailResult.id;
+      mailMessageId = mailResult.id;
 
-        await leadReference.update(
-          {
-            "mail.internal.status":
-              "accepted",
+      await leadReference.update({
+        "mail.internal.status": "accepted",
 
-            "mail.internal.provider":
-              "mailgun",
+        "mail.internal.provider": "mailgun",
 
-            "mail.internal.messageId":
-              mailMessageId,
+        "mail.internal.messageId": mailMessageId,
 
-            "mail.internal.updatedAt":
-              FieldValue.serverTimestamp(),
-          },
-        );
+        "mail.internal.updatedAt": FieldValue.serverTimestamp(),
+      });
 
-        logger.info(
-          "Configurator lead notification accepted",
-          {
-            leadId:
-              leadReference.id,
+      logger.info("Configurator lead notification accepted", {
+        leadId: leadReference.id,
 
-            products:
-              input.products,
+        products: input.products,
 
-            productCount:
-              input.products.length,
+        productCount: input.products.length,
 
-            provider:
-              "mailgun",
+        provider: "mailgun",
 
-            messageId:
-              mailMessageId,
-          },
-        );
+        messageId: mailMessageId,
+      });
       } catch (error) {
-        mailStatus =
-          "failed";
+      mailStatus = "failed";
 
         await leadReference
           .update({
-            "mail.internal.status":
-              "failed",
+          "mail.internal.status": "failed",
 
-            "mail.internal.provider":
-              "mailgun",
+          "mail.internal.provider": "mailgun",
 
-            "mail.internal.messageId":
-              null,
+          "mail.internal.messageId": null,
 
-            "mail.internal.updatedAt":
-              FieldValue.serverTimestamp(),
+          "mail.internal.updatedAt": FieldValue.serverTimestamp(),
           })
-          .catch(
-            () => undefined,
-          );
+        .catch(() => undefined);
 
-        logger.error(
-          "Configurator lead notification failed",
-          {
-            leadId:
-              leadReference.id,
+      logger.error("Configurator lead notification failed", {
+        leadId: leadReference.id,
 
-            products:
-              input.products,
+        products: input.products,
 
-            productCount:
-              input.products.length,
+        productCount: input.products.length,
 
-            provider:
-              "mailgun",
+        provider: "mailgun",
 
             error:
               error instanceof Error
                 ? {
-                  name:
-                    error.name,
+                name: error.name,
 
-                  message:
-                    error.message,
+                message: error.message,
                 }
                 : "Unknown mail error",
-          },
-        );
+      });
       }
-      let reportStatus:
-        | "generated"
-        | "failed" =
-        "failed";
+    let reportStatus: "generated" | "failed" = "failed";
 
-      let customerMailStatus:
-        | "accepted"
-        | "failed" =
-        "failed";
+    let customerMailStatus: "accepted" | "failed" = "failed";
 
-      let projectPdf:
-        Buffer | null =
-        null;
+    let projectPdf: Buffer | null = null;
 
       /*
        * PDF-Erzeugung ist bewusst von der
@@ -490,122 +335,81 @@ export const submitConfiguratorLead =
        * gespeicherten Lead niemals gefährden.
        */
       try {
-        projectPdf =
-          await generateConfiguratorProjectPdf(
-            {
-              leadId:
-                leadReference.id,
+      projectPdf = await generateConfiguratorProjectPdf({
+        leadId: leadReference.id,
 
-              lead:
-                input,
-            },
-          );
+        lead: input,
+      });
 
-        reportStatus =
-          "generated";
+      reportStatus = "generated";
 
         await leadReference
           .update({
-            "report.status":
-              "generated",
+          "report.status": "generated",
 
-            "report.filename":
-              projectPdfFilename,
+          "report.filename": projectPdfFilename,
 
-            "report.sizeBytes":
-              projectPdf.length,
+          "report.sizeBytes": projectPdf.length,
 
-            "report.generatedAt":
-              FieldValue.serverTimestamp(),
+          "report.generatedAt": FieldValue.serverTimestamp(),
 
-            "report.updatedAt":
-              FieldValue.serverTimestamp(),
+          "report.updatedAt": FieldValue.serverTimestamp(),
           })
-          .catch(
-            (error) => {
-              logger.error(
-                "Configurator report metadata update failed",
-                {
-                  leadId:
-                    leadReference.id,
+        .catch((error) => {
+          logger.error("Configurator report metadata update failed", {
+            leadId: leadReference.id,
 
                   error:
                     error instanceof Error
                       ? {
-                        name:
-                          error.name,
+                    name: error.name,
 
-                        message:
-                          error.message,
+                    message: error.message,
                       }
                       : "Unknown Firestore error",
-                },
-              );
-            },
-          );
+          });
+        });
 
-        logger.info(
-          "Configurator project report generated",
-          {
-            leadId:
-              leadReference.id,
+      logger.info("Configurator project report generated", {
+        leadId: leadReference.id,
 
-            filename:
-              projectPdfFilename,
+        filename: projectPdfFilename,
 
-            sizeBytes:
-              projectPdf.length,
+        sizeBytes: projectPdf.length,
 
-            productCount:
-              input.products.length,
-          },
-        );
+        productCount: input.products.length,
+      });
       } catch (error) {
-        reportStatus =
-          "failed";
+      reportStatus = "failed";
 
         await leadReference
           .update({
-            "report.status":
-              "failed",
+          "report.status": "failed",
 
-            "report.filename":
-              null,
+          "report.filename": null,
 
-            "report.sizeBytes":
-              null,
+          "report.sizeBytes": null,
 
-            "report.generatedAt":
-              null,
+          "report.generatedAt": null,
 
-            "report.updatedAt":
-              FieldValue.serverTimestamp(),
+          "report.updatedAt": FieldValue.serverTimestamp(),
           })
-          .catch(
-            () => undefined,
-          );
+        .catch(() => undefined);
 
-        logger.error(
-          "Configurator project report generation failed",
-          {
-            leadId:
-              leadReference.id,
+      logger.error("Configurator project report generation failed", {
+        leadId: leadReference.id,
 
-            products:
-              input.products,
+        products: input.products,
 
             error:
               error instanceof Error
                 ? {
-                  name:
-                    error.name,
+                name: error.name,
 
-                  message:
-                    error.message,
+                message: error.message,
                 }
                 : "Unknown PDF error",
-          },
-        );
+      });
       }
 
       /*
@@ -617,110 +421,72 @@ export const submitConfiguratorLead =
        */
       if (projectPdf) {
         try {
-          const customerMailResult =
-            await sendConfiguratorCustomerMail(
-              {
-                leadId:
-                  leadReference.id,
+        const customerMailResult = await sendConfiguratorCustomerMail({
+          leadId: leadReference.id,
 
-                lead:
-                  input,
+          lead: input,
 
-                pdf:
-                  projectPdf,
+          pdf: projectPdf,
 
-                filename:
-                  projectPdfFilename,
-              },
-            );
+          filename: projectPdfFilename,
+        });
 
-          customerMailStatus =
-            "accepted";
+        customerMailStatus = "accepted";
 
-          await leadReference.update(
-            {
-              "mail.customer.status":
-                "accepted",
+        await leadReference.update({
+          "mail.customer.status": "accepted",
 
-              "mail.customer.provider":
-                "mailgun",
+          "mail.customer.provider": "mailgun",
 
-              "mail.customer.messageId":
-                customerMailResult.id,
+          "mail.customer.messageId": customerMailResult.id,
 
-              "mail.customer.updatedAt":
-                FieldValue.serverTimestamp(),
-            },
-          );
+          "mail.customer.updatedAt": FieldValue.serverTimestamp(),
+        });
 
-          logger.info(
-            "Configurator customer mail accepted",
-            {
-              leadId:
-                leadReference.id,
+        logger.info("Configurator customer mail accepted", {
+          leadId: leadReference.id,
 
-              recipient:
-                input.contact.email,
+          recipient: input.contact.email,
 
-              provider:
-                "mailgun",
+          provider: "mailgun",
 
-              messageId:
-                customerMailResult.id,
+          messageId: customerMailResult.id,
 
-              attachment:
-                projectPdfFilename,
+          attachment: projectPdfFilename,
 
-              attachmentSizeBytes:
-                projectPdf.length,
-            },
-          );
+          attachmentSizeBytes: projectPdf.length,
+        });
         } catch (error) {
-          customerMailStatus =
-            "failed";
+        customerMailStatus = "failed";
 
           await leadReference
             .update({
-              "mail.customer.status":
-                "failed",
+            "mail.customer.status": "failed",
 
-              "mail.customer.provider":
-                "mailgun",
+            "mail.customer.provider": "mailgun",
 
-              "mail.customer.messageId":
-                null,
+            "mail.customer.messageId": null,
 
-              "mail.customer.updatedAt":
-                FieldValue.serverTimestamp(),
+            "mail.customer.updatedAt": FieldValue.serverTimestamp(),
             })
-            .catch(
-              () => undefined,
-            );
+          .catch(() => undefined);
 
-          logger.error(
-            "Configurator customer mail failed",
-            {
-              leadId:
-                leadReference.id,
+        logger.error("Configurator customer mail failed", {
+          leadId: leadReference.id,
 
-              recipient:
-                input.contact.email,
+          recipient: input.contact.email,
 
-              provider:
-                "mailgun",
+          provider: "mailgun",
 
               error:
                 error instanceof Error
                   ? {
-                    name:
-                      error.name,
+                  name: error.name,
 
-                    message:
-                      error.message,
+                  message: error.message,
                   }
                   : "Unknown customer mail error",
-            },
-          );
+        });
         }
       } else {
         /*
@@ -729,47 +495,33 @@ export const submitConfiguratorLead =
          */
         await leadReference
           .update({
-            "mail.customer.status":
-              "failed",
+          "mail.customer.status": "failed",
 
-            "mail.customer.provider":
-              "mailgun",
+          "mail.customer.provider": "mailgun",
 
-            "mail.customer.messageId":
-              null,
+          "mail.customer.messageId": null,
 
-            "mail.customer.updatedAt":
-              FieldValue.serverTimestamp(),
+          "mail.customer.updatedAt": FieldValue.serverTimestamp(),
           })
-          .catch(
-            () => undefined,
-          );
+        .catch(() => undefined);
       }
 
-      logger.info(
-        "Configurator lead created",
-        {
-          leadId:
-            leadReference.id,
+    logger.info("Configurator lead created", {
+      leadId: leadReference.id,
 
-          products:
-            input.products,
+      products: input.products,
 
-          productCount:
-            input.products.length,
+      productCount: input.products.length,
 
-          entryPoint:
-            input.journey.entryPoint,
+      entryPoint: input.journey.entryPoint,
 
           source,
-        },
-      );
+    });
 
       return {
         ok: true,
 
-        leadId:
-          leadReference.id,
+      leadId: leadReference.id,
 
         mailStatus,
 
