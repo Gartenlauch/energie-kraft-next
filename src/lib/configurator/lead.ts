@@ -224,6 +224,20 @@ function buildHeatPumpLeadResult(result: HeatPumpConfiguratorResult) {
 
     annualOperatingCostDifferenceEuro: result.annualOperatingCostDifferenceEuro,
 
+    heatingComparisonKind: result.heatingComparisonKind,
+
+    heatingComparisonBasis: result.heatingComparisonBasis,
+
+    heatingComparisonLabel: result.heatingComparisonLabel,
+
+    comparisonFuelPriceEuroPerUnit: result.comparisonFuelPriceEuroPerUnit,
+
+    comparisonFuelUnit: result.comparisonFuelUnit,
+
+    comparisonEfficiencyPercent: result.comparisonEfficiencyPercent,
+
+    oilEnergyContentKwhPerLitre: result.oilEnergyContentKwhPerLitre,
+
     estimatedTotalCostEuro: result.estimatedTotalCostEuro,
 
     estimatedMinimumCostEuro: result.estimatedMinimumCostEuro,
@@ -242,6 +256,9 @@ function buildHeatPumpPayload(state: ConfiguratorState): ConfiguratorLeadPayload
   const result = state.results.heatPump;
 
   const {
+    existingHeatingSystem,
+    annualGasConsumptionKwh,
+    annualOilConsumptionLitres,
     heatedAreaM2,
     specificSpaceHeatingDemandKwhPerM2Year,
     occupancyPersons,
@@ -251,6 +268,7 @@ function buildHeatPumpPayload(state: ConfiguratorState): ConfiguratorLeadPayload
 
   if (
     !result ||
+    existingHeatingSystem === undefined ||
     heatedAreaM2 === undefined ||
     specificSpaceHeatingDemandKwhPerM2Year === undefined ||
     occupancyPersons === undefined ||
@@ -264,6 +282,9 @@ function buildHeatPumpPayload(state: ConfiguratorState): ConfiguratorLeadPayload
     type: "heat_pump",
 
     answers: {
+      existingHeatingSystem,
+      ...(annualGasConsumptionKwh === undefined ? {} : { annualGasConsumptionKwh }),
+      ...(annualOilConsumptionLitres === undefined ? {} : { annualOilConsumptionLitres }),
       heatedAreaM2,
       specificSpaceHeatingDemandKwhPerM2Year,
       occupancyPersons,
@@ -395,6 +416,7 @@ export function buildConfiguratorLeadInput(
 
   return {
     ...common,
+    settingsVersion: state.settingsVersion,
 
     products: selectedProducts,
 

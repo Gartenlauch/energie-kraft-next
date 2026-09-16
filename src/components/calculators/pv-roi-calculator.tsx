@@ -8,6 +8,7 @@ import type { CalculatorFieldContent } from "@/types/content";
 import type { PvCalculatorInput, PvCalculatorResult } from "@/types/pv-calculator";
 import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
 import { CashflowSparkline, SegmentedEnergyBar } from "@/components/charts/energy-charts";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 
 type PvCalculatorFormValues = Record<keyof PvCalculatorInput, string>;
 
@@ -116,9 +117,9 @@ function ResultCard({ label, value, description }: ResultCardProps) {
   );
 }
 
-export function PvRoiCalculator() {
+export function PvRoiCalculator({ initialInput = defaultPvCalculatorInput, settings }: { initialInput?: PvCalculatorInput; settings: ConfiguratorSettings }) {
   const [formValues, setFormValues] = useState<PvCalculatorFormValues>(() =>
-    createFormValues(defaultPvCalculatorInput),
+    createFormValues(initialInput),
   );
 
   const [fieldErrors, setFieldErrors] = useState<PvCalculatorFieldErrors>({});
@@ -126,7 +127,7 @@ export function PvRoiCalculator() {
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const [result, setResult] = useState<PvCalculatorResult>(() =>
-    calculatePvRoi(defaultPvCalculatorInput),
+    calculatePvRoi(initialInput),
   );
 
   function handleFieldChange(name: keyof PvCalculatorInput, value: string) {
@@ -181,10 +182,10 @@ export function PvRoiCalculator() {
   }
 
   function handleReset() {
-    setFormValues(createFormValues(defaultPvCalculatorInput));
+    setFormValues(createFormValues(initialInput));
     setFieldErrors({});
     setGeneralError(null);
-    setResult(calculatePvRoi(defaultPvCalculatorInput));
+    setResult(calculatePvRoi(initialInput));
   }
 
   const selfConsumptionSharePercent =
@@ -425,6 +426,7 @@ export function PvRoiCalculator() {
             <CalculatorProjectCta
               handoff={{
                 version: 1,
+                settings,
                 source: "pv_roi",
                 values: { annualConsumptionKwh: result.input.annualConsumptionKwh },
               }}

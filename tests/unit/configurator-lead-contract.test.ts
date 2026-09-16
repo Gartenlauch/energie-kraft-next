@@ -34,6 +34,7 @@ function asProjectLead(configurator: ConfiguratorLeadPayload) {
   const component = {
     component: configurator.type,
     analysisKind: "investment_only" as const,
+    pricingMode: "modeled" as const,
     investmentMinEuro: 1_000,
     investmentBaseEuro: 1_200,
     investmentMaxEuro: 1_400,
@@ -44,6 +45,7 @@ function asProjectLead(configurator: ConfiguratorLeadPayload) {
 
   return {
     ...common,
+    settingsVersion: 0,
 
     products: [configurator.type],
 
@@ -59,6 +61,10 @@ function asProjectLead(configurator: ConfiguratorLeadPayload) {
 
     economics: {
       horizonYears: 20,
+      pricingMode: "modeled" as const,
+      modeledComponentsInvestmentMinEuro: 1_000,
+      modeledComponentsInvestmentBaseEuro: 1_200,
+      modeledComponentsInvestmentMaxEuro: 1_400,
       investmentMinEuro: 1_000,
       investmentBaseEuro: 1_200,
       investmentMaxEuro: 1_400,
@@ -118,6 +124,7 @@ describe("configurator lead contract", () => {
           recommendedUsableCapacityKwhMax: 10,
 
           estimatedTotalCostEuro: 5_950,
+          pricingMode: "modeled" as const,
           estimatedMinimumCostEuro: 4_165,
           estimatedMaximumCostEuro: 8_050,
 
@@ -213,6 +220,8 @@ describe("configurator lead contract", () => {
         type: "heat_pump" as const,
 
             answers: {
+          existingHeatingSystem: "gas" as const,
+
           heatedAreaM2: 160,
 
           specificSpaceHeatingDemandKwhPerM2Year: 90,
@@ -240,6 +249,20 @@ describe("configurator lead contract", () => {
           currentHeatingOperatingCostEuro: 2_485,
 
           annualOperatingCostDifferenceEuro: 976.43,
+
+          heatingComparisonKind: "existing_system" as const,
+
+          heatingComparisonBasis: "modeled_heat_demand" as const,
+
+          heatingComparisonLabel: "Gasheizung",
+
+          comparisonFuelPriceEuroPerUnit: 0.12,
+
+          comparisonFuelUnit: "kWh" as const,
+
+          comparisonEfficiencyPercent: 85,
+
+          oilEnergyContentKwhPerLitre: null,
 
           estimatedTotalCostEuro: 27_600,
 

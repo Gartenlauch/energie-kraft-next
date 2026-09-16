@@ -15,6 +15,7 @@ import type {
   HeatPumpNumericInputKey,
 } from "@/types/heat-pump-calculator";
 import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 import { ComparisonBars } from "@/components/charts/energy-charts";
 
 type HeatPumpFormValues = {
@@ -177,9 +178,9 @@ function ResultCard({ label, value, description }: ResultCardProps) {
   );
 }
 
-export function HeatPumpCostCalculator() {
+export function HeatPumpCostCalculator({ initialInput = defaultHeatPumpCalculatorInput, settings }: { initialInput?: HeatPumpCalculatorInput; settings: ConfiguratorSettings }) {
   const [formValues, setFormValues] = useState<HeatPumpFormValues>(() =>
-      createFormValues(defaultHeatPumpCalculatorInput),
+      createFormValues(initialInput),
     );
 
   const [fieldErrors, setFieldErrors] = useState<HeatPumpFieldErrors>({});
@@ -187,7 +188,7 @@ export function HeatPumpCostCalculator() {
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const [result, setResult] = useState<HeatPumpCalculatorResult>(() =>
-    calculateHeatPumpCost(defaultHeatPumpCalculatorInput),
+    calculateHeatPumpCost(initialInput),
     );
 
   function clearFieldError(name: keyof HeatPumpCalculatorInput) {
@@ -247,12 +248,12 @@ export function HeatPumpCostCalculator() {
   }
 
   function handleReset() {
-    setFormValues(createFormValues(defaultHeatPumpCalculatorInput));
+    setFormValues(createFormValues(initialInput));
 
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(calculateHeatPumpCost(defaultHeatPumpCalculatorInput));
+    setResult(calculateHeatPumpCost(initialInput));
   }
 
   const assessment = heatPumpCalculatorContent.assessmentContent[result.flowTemperatureAssessment];
@@ -512,6 +513,7 @@ export function HeatPumpCostCalculator() {
             <CalculatorProjectCta
               handoff={{
                 version: 1,
+                settings,
                 source: "heat_pump",
                 values: {
                   heatedAreaM2: result.input.heatedAreaM2,

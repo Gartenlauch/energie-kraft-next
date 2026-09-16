@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { ConfiguratorProgress } from "@/components/configurator/configurator-progress";
+import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { AnnualConsumptionStep } from "@/components/configurator/photovoltaic/annual-consumption-step";
 import { BuildingTypeStep } from "@/components/configurator/photovoltaic/building-type-step";
 import { HouseholdPersonsStep } from "@/components/configurator/photovoltaic/household-persons-step";
@@ -51,7 +52,7 @@ import type {
 export function PhotovoltaicWizard() {
   const { state, dispatch, reset, isHydrated } = useConfigurator();
 
-  const { currentStepId, isFirstStep, isLastStep, goNext, goBack, goTo } =
+  const { currentStepId, isFirstStep, isLastStep, goNext, goBack } =
     useConfiguratorWizard<PhotovoltaicStepId>(photovoltaicWizardSteps, "household_persons");
 
   const [showTenantStop, setShowTenantStop] = useState(false);
@@ -269,6 +270,10 @@ export function PhotovoltaicWizard() {
       return;
     }
 
+    if (currentStepId === "energy_solutions") {
+      dispatch({ type: "MARK_ADDITIONAL_SOLUTIONS_REVIEWED" });
+    }
+
     if (isLastStep) {
       const result = buildPhotovoltaicConfiguratorResult(state);
 
@@ -306,13 +311,16 @@ export function PhotovoltaicWizard() {
     try {
       const result = await submitConfiguratorLead(input);
 
-      setSubmittedLeadId(result.leadId);
+      setSubmittedLeadId(result.publicReference);
 
       /*
        * Technische Wizard-Daten erst nach
        * erfolgreicher Speicherung löschen.
        */
       reset();
+
+      setContactDraft(null);
+      setContactFormStartedAt(null);
 
       setPostWizardStage("success");
     } catch {
@@ -330,15 +338,7 @@ export function PhotovoltaicWizard() {
   if (postWizardStage === "success" && submittedLeadId) {
     return (
       <ConfiguratorSubmitSuccess
-        leadId={submittedLeadId}
-        onRestart={() => {
-          setSubmittedLeadId(null);
-          setContactDraft(null);
-          setContactFormStartedAt(null);
-          setSubmissionError(null);
-          setPostWizardStage(null);
-          goTo("household_persons");
-        }}
+        publicReference={submittedLeadId}
       />
     );
   }
@@ -400,6 +400,7 @@ export function PhotovoltaicWizard() {
   return (
     <>
       {currentStepId === "household_persons" ? <ProjectAnalysisPromise /> : null}
+      <ConfiguratorPhaseIndicator currentPhase="configuration" />
       <ConfiguratorProgress steps={photovoltaicWizardSteps} currentStepId={currentStepId} />
 
       {currentStepId === "household_persons" ? (

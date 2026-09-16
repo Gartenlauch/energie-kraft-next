@@ -47,6 +47,7 @@ export function NotesStep({
             label="Deine Anmerkungen"
             value={text}
             onChange={onTextChange}
+            maxLength={1_000}
             helpText="Bitte beschreibe kurz, was wir bei deinem Projekt berücksichtigen sollen."
             error={
               textRequired

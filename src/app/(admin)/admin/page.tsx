@@ -68,6 +68,13 @@ export default function AdminPage() {
           <p className="mt-2 text-sm leading-6 text-slate-600">Empfehlungsgeber, Empfehlungskunden und Bearbeitungsstatus prüfen.</p>
           <p className="mt-5 text-sm font-semibold text-emerald-800 group-hover:underline">Empfehlungen öffnen →</p>
         </Link>
+
+        <Link href="/admin/einstellungen/konfiguratoren" className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md">
+          <p className="text-sm font-medium text-emerald-800">Einstellungen</p>
+          <h2 className="mt-2 text-xl font-semibold text-slate-950">Konfiguratoren</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Preisstufen und Modellannahmen versioniert verwalten.</p>
+          <p className="mt-5 text-sm font-semibold text-emerald-800 group-hover:underline">Konfigurator-Einstellungen öffnen →</p>
+        </Link>
       </div>
     </main>
   );

@@ -64,6 +64,7 @@ export default async function AdminLayout({
           <Link href="/admin/bewerbungen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Bewerbungen</Link>
           <Link href="/admin/empfehlungen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Empfehlungen</Link>
           <Link href="/admin/faqs" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">FAQs</Link>
+          <Link href="/admin/einstellungen/konfiguratoren" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Einstellungen</Link>
         </nav>
       </header>
 

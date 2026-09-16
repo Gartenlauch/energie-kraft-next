@@ -71,8 +71,9 @@ export function PhotovoltaicResult({
             Modellierter Projektkosten-Korridor · nur Photovoltaik
           </p>
           <p className="mt-2 text-3xl font-semibold tracking-tight">
-            {currency.format(result.estimatedMinimumCostEuro)} –{" "}
-            {currency.format(result.estimatedMaximumCostEuro)}
+            {result.estimatedMinimumCostEuro === null || result.estimatedMaximumCostEuro === null
+              ? "Individuelle Kalkulation"
+              : `${currency.format(result.estimatedMinimumCostEuro)} – ${currency.format(result.estimatedMaximumCostEuro)}`}
           </p>
           <p className="mt-3 text-sm leading-6 text-white/65">
             Ein separat ausgewählter Stromspeicher ist in diesem PV-Korridor nicht enthalten.

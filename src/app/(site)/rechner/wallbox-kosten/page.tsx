@@ -6,6 +6,8 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { wallboxCalculatorContent } from "@/content/pages/wallbox-rechner";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { buildCurrentCalculatorInputs } from "@/lib/calculators/settings-inputs";
+import { getCurrentConfiguratorSettings } from "@/lib/configurator/settings-repository";
 import {
   buildBreadcrumbJsonLd,
   buildWebPageJsonLd,
@@ -15,7 +17,11 @@ export const metadata: Metadata = buildMetadata(
   wallboxCalculatorContent.seo,
 );
 
-export default function WallboxCalculatorPage() {
+export const dynamic = "force-dynamic";
+
+export default async function WallboxCalculatorPage() {
+  const settings = await getCurrentConfiguratorSettings();
+  const inputs = buildCurrentCalculatorInputs(settings);
   return (
     <>
       <JsonLdScript
@@ -80,7 +86,7 @@ export default function WallboxCalculatorPage() {
           </div>
         </section>
 
-        <WallboxCostCalculator />
+        <WallboxCostCalculator initialInput={inputs.wallbox} settings={settings} />
 
         <section className="section-space bg-surface">
           <div className="section-shell">

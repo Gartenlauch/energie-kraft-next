@@ -11,6 +11,13 @@ import {
   type ConfiguratorPayload,
   configuratorLeadPayloadSchema,
 } from "./configurator-lead-validation";
+import {
+  DEFAULT_CONFIGURATOR_SETTINGS,
+  buildConfiguratorPublicReference,
+  configuratorSettingsSchema,
+  nextConfiguratorReferenceSequence,
+} from "./configurator-settings-model.js";
+import { applyAuthoritativeConfiguratorModel } from "./configurator-server-model.js";
 
 const LEADS_COLLECTION = "leads";
 
@@ -167,54 +174,80 @@ export const submitConfiguratorLead = onCall(
     const firestore = getFirestore();
 
     const leadReference = firestore.collection(LEADS_COLLECTION).doc();
-    const projectPdfFilename = `energie-kraft-projektuebersicht-${leadReference.id}.pdf`;
 
     const realtimeReference = firestore
       .collection(ADMIN_REALTIME_COLLECTION)
       .doc(LEADS_REALTIME_DOCUMENT);
 
-    const timestamp = FieldValue.serverTimestamp();
+    const counterReference = firestore.collection("systemCounters").doc("configuratorLead");
+    let publicReference = "";
+    let authoritativeInput: ConfiguratorLeadPayload = input;
 
-    const batch = firestore.batch();
+    await firestore.runTransaction(async (transaction) => {
+      let authoritativeSettings =
+        input.settingsVersion === 0 ? DEFAULT_CONFIGURATOR_SETTINGS : undefined;
+      if (!authoritativeSettings) {
+        const settingsDocument = await transaction.get(
+          firestore.collection("configuratorSettingsVersions").doc(String(input.settingsVersion)),
+        );
+        const parsedSettings = configuratorSettingsSchema.safeParse(settingsDocument.data()?.settings);
+        if (!parsedSettings.success) {
+          throw new HttpsError(
+            "failed-precondition",
+            "Die verwendete Modellversion ist nicht mehr verfügbar. Bitte starte die Konfiguration neu.",
+          );
+        }
+        authoritativeSettings = parsedSettings.data;
+      }
+      const counterDocument = await transaction.get(counterReference);
+      const previousValue = counterDocument.data()?.lastValue;
+      const sequence = nextConfiguratorReferenceSequence(previousValue);
+      publicReference = buildConfiguratorPublicReference(input.products, sequence);
+      authoritativeInput = applyAuthoritativeConfiguratorModel(input, authoritativeSettings);
+      const timestamp = FieldValue.serverTimestamp();
 
-    batch.set(leadReference, {
+      transaction.set(counterReference, { lastValue: sequence, updatedAt: timestamp }, { merge: true });
+      transaction.set(leadReference, {
           type: "configurator",
 
           status: "new",
+          publicReference,
+          settingsVersion: authoritativeSettings.version,
+          settings: authoritativeSettings,
 
           contact: {
-        firstName: input.contact.firstName,
+        firstName: authoritativeInput.contact.firstName,
 
-        lastName: input.contact.lastName,
+        lastName: authoritativeInput.contact.lastName,
 
-        email: input.contact.email,
+        email: authoritativeInput.contact.email,
 
-        phone: optionalValue(input.contact.phone),
+        phone: optionalValue(authoritativeInput.contact.phone),
           },
 
           installation: {
-        atResidence: input.installation.atResidence,
+        atResidence: authoritativeInput.installation.atResidence,
 
-        street: input.installation.street,
+        street: authoritativeInput.installation.street,
 
-        postalCode: input.installation.postalCode,
+        postalCode: authoritativeInput.installation.postalCode,
 
-        city: input.installation.city,
+        city: authoritativeInput.installation.city,
           },
 
-      products: [...input.products],
+      products: [...authoritativeInput.products],
 
           journey: {
-        entryPoint: input.journey.entryPoint,
+        entryPoint: authoritativeInput.journey.entryPoint,
 
-        selectedProducts: [...input.journey.selectedProducts],
+        selectedProducts: [...authoritativeInput.journey.selectedProducts],
 
-        completedProducts: [...input.journey.completedProducts],
+        completedProducts: [...authoritativeInput.journey.completedProducts],
           },
 
-      configurators: input.configurators.map(buildStoredConfigurator),
+      configurators: authoritativeInput.configurators.map(buildStoredConfigurator),
 
-      economics: input.economics,
+      economics: authoritativeInput.economics,
 
           consent: {
             privacyAccepted: true,
@@ -231,9 +264,9 @@ export const submitConfiguratorLead = onCall(
       createdAt: timestamp,
 
       updatedAt: timestamp,
-    });
+      });
 
-      batch.set(
+      transaction.set(
         realtimeReference,
         {
         revision: FieldValue.increment(1),
@@ -244,23 +277,24 @@ export const submitConfiguratorLead = onCall(
           merge: true,
         },
       );
+    });
+
+    const projectPdfFilename = `energie-kraft-${publicReference}.pdf`;
 
       /*
        * Lead und Realtime-Signal werden
        * vollständig gespeichert, bevor
        * Mailgun aufgerufen wird.
        */
-      await batch.commit();
-
     let mailStatus: "accepted" | "failed" = "accepted";
 
     let mailMessageId: string | null = null;
 
       try {
       const mailResult = await sendConfiguratorLeadMail({
-        leadId: leadReference.id,
+        leadId: publicReference,
 
-              lead: input,
+              lead: authoritativeInput,
       });
 
       mailMessageId = mailResult.id;
@@ -278,9 +312,9 @@ export const submitConfiguratorLead = onCall(
       logger.info("Configurator lead notification accepted", {
         leadId: leadReference.id,
 
-        products: input.products,
+        products: authoritativeInput.products,
 
-        productCount: input.products.length,
+        productCount: authoritativeInput.products.length,
 
         provider: "mailgun",
 
@@ -304,9 +338,9 @@ export const submitConfiguratorLead = onCall(
       logger.error("Configurator lead notification failed", {
         leadId: leadReference.id,
 
-        products: input.products,
+        products: authoritativeInput.products,
 
-        productCount: input.products.length,
+        productCount: authoritativeInput.products.length,
 
         provider: "mailgun",
 
@@ -336,9 +370,9 @@ export const submitConfiguratorLead = onCall(
        */
       try {
       projectPdf = await generateConfiguratorProjectPdf({
-        leadId: leadReference.id,
+        leadId: publicReference,
 
-        lead: input,
+        lead: authoritativeInput,
       });
 
       reportStatus = "generated";
@@ -377,7 +411,7 @@ export const submitConfiguratorLead = onCall(
 
         sizeBytes: projectPdf.length,
 
-        productCount: input.products.length,
+        productCount: authoritativeInput.products.length,
       });
       } catch (error) {
       reportStatus = "failed";
@@ -399,7 +433,7 @@ export const submitConfiguratorLead = onCall(
       logger.error("Configurator project report generation failed", {
         leadId: leadReference.id,
 
-        products: input.products,
+        products: authoritativeInput.products,
 
             error:
               error instanceof Error
@@ -422,9 +456,9 @@ export const submitConfiguratorLead = onCall(
       if (projectPdf) {
         try {
         const customerMailResult = await sendConfiguratorCustomerMail({
-          leadId: leadReference.id,
+          leadId: publicReference,
 
-          lead: input,
+          lead: authoritativeInput,
 
           pdf: projectPdf,
 
@@ -446,7 +480,7 @@ export const submitConfiguratorLead = onCall(
         logger.info("Configurator customer mail accepted", {
           leadId: leadReference.id,
 
-          recipient: input.contact.email,
+          recipient: authoritativeInput.contact.email,
 
           provider: "mailgun",
 
@@ -474,7 +508,7 @@ export const submitConfiguratorLead = onCall(
         logger.error("Configurator customer mail failed", {
           leadId: leadReference.id,
 
-          recipient: input.contact.email,
+          recipient: authoritativeInput.contact.email,
 
           provider: "mailgun",
 
@@ -509,9 +543,9 @@ export const submitConfiguratorLead = onCall(
     logger.info("Configurator lead created", {
       leadId: leadReference.id,
 
-      products: input.products,
+      products: authoritativeInput.products,
 
-      productCount: input.products.length,
+      productCount: authoritativeInput.products.length,
 
       entryPoint: input.journey.entryPoint,
 
@@ -522,6 +556,8 @@ export const submitConfiguratorLead = onCall(
         ok: true,
 
       leadId: leadReference.id,
+
+      publicReference,
 
         mailStatus,
 

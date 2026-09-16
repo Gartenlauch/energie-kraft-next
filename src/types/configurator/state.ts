@@ -5,8 +5,9 @@ import type {
 import type { WallboxConfiguratorResult, WallboxConfiguratorState } from "./wallbox";
 import type { HeatPumpConfiguratorResult, HeatPumpConfiguratorState } from "./heat-pump";
 import type { ClimateConfiguratorResult, ClimateConfiguratorState } from "./climate";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 
-export const CONFIGURATOR_STATE_VERSION = 8 as const;
+export const CONFIGURATOR_STATE_VERSION = 10 as const;
 
 export type ConfiguratorType =
   "photovoltaic" | "battery_storage" | "climate" | "heat_pump" | "wallbox";
@@ -17,6 +18,8 @@ export interface ConfiguratorJourneyState {
   selectedProducts: ConfiguratorType[];
 
   completedProducts: ConfiguratorType[];
+
+  additionalSolutionsReviewed: boolean;
 }
 export type HouseholdPersons = 1 | 2 | 3 | "4_5";
 
@@ -94,9 +97,10 @@ export interface PhotovoltaicConfiguratorResult {
   specificYieldKwhPerKwpMin: number;
   specificYieldKwhPerKwpMax: number;
 
-  estimatedTotalCostEuro: number;
-  estimatedMinimumCostEuro: number;
-  estimatedMaximumCostEuro: number;
+  pricingMode: "modeled" | "individual_quote_required";
+  estimatedTotalCostEuro: number | null;
+  estimatedMinimumCostEuro: number | null;
+  estimatedMaximumCostEuro: number | null;
 
   batteryStorageRequested: boolean;
   technicalReviewRecommended: boolean;
@@ -112,6 +116,8 @@ export interface ConfiguratorResults {
 
 export interface ConfiguratorState {
   version: typeof CONFIGURATOR_STATE_VERSION;
+  settingsVersion: number;
+  settings: ConfiguratorSettings;
   activeConfigurator: ConfiguratorType | null;
   journey: ConfiguratorJourneyState;
   household: HouseholdConfiguratorState;
@@ -190,6 +196,9 @@ export type ConfiguratorAction =
   | {
     type: "SET_CLIMATE_RESULT";
     payload: ClimateConfiguratorResult;
+  }
+  | {
+    type: "MARK_ADDITIONAL_SOLUTIONS_REVIEWED";
   }
   | {
     type: "RESET";

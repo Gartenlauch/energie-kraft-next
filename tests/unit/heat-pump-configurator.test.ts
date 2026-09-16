@@ -12,18 +12,32 @@ import {
 import { isHeatPumpStepComplete } from "@/lib/validation/configurator/heat-pump";
 
 describe("heat pump configurator", () => {
-    it("defines the expected five wizard steps", () => {
+    it("defines the existing-heating question as the first of six wizard steps", () => {
         expect(
             heatPumpWizardSteps.map(
                 (step) => step.id,
             ),
         ).toEqual([
+            "existing_heating",
             "heated_area",
             "heating_demand",
             "occupancy",
             "flow_temperature",
             "efficiency",
         ]);
+    });
+
+    it("requires a heating-system selection without requiring consumption data", () => {
+        let state = createInitialConfiguratorState();
+
+        expect(isHeatPumpStepComplete("existing_heating", state)).toBe(false);
+
+        state = configuratorReducer(state, {
+            type: "UPDATE_HEAT_PUMP",
+            payload: { existingHeatingSystem: "other_unknown" },
+        });
+
+        expect(isHeatPumpStepComplete("existing_heating", state)).toBe(true);
     });
 
     it("requires a valid heated area", () => {

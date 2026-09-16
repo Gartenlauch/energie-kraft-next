@@ -2,18 +2,22 @@ import { z } from "zod";
 
 const moneySchema = z.number().finite();
 const costShape = {
-  investmentMinEuro: moneySchema.nonnegative(),
-  investmentBaseEuro: moneySchema.nonnegative(),
-  investmentMaxEuro: moneySchema.nonnegative(),
+  investmentMinEuro: moneySchema.nonnegative().nullable(),
+  investmentBaseEuro: moneySchema.nonnegative().nullable(),
+  investmentMaxEuro: moneySchema.nonnegative().nullable(),
 };
 
 export const projectEconomicsSchema = z
   .object({
     horizonYears: z.number().int().min(1).max(50),
+    pricingMode: z.enum(["modeled", "individual_quote_required"]),
+    modeledComponentsInvestmentMinEuro: moneySchema.nonnegative(),
+    modeledComponentsInvestmentBaseEuro: moneySchema.nonnegative(),
+    modeledComponentsInvestmentMaxEuro: moneySchema.nonnegative(),
     ...costShape,
     firstYearQuantifiedEffectEuro: moneySchema,
     paybackYears: z.number().nonnegative().max(50).nullable(),
-    finalCumulativeCashFlowEuro: moneySchema,
+    finalCumulativeCashFlowEuro: moneySchema.nullable(),
     components: z
       .array(
         z
@@ -26,6 +30,7 @@ export const projectEconomicsSchema = z
               "climate",
             ]),
             analysisKind: z.enum(["economic_effect", "operating_cost", "investment_only"]),
+            pricingMode: z.enum(["modeled", "individual_quote_required"]),
             ...costShape,
             firstYearEconomicEffectEuro: moneySchema,
             economicLifetimeYears: z.number().int().min(1).max(50),
@@ -45,7 +50,7 @@ export const projectEconomicsSchema = z
           })
           .strict(),
       )
-      .min(2)
+      .min(0)
       .max(51),
     scenarios: z
       .array(
@@ -55,7 +60,7 @@ export const projectEconomicsSchema = z
             ...costShape,
             firstYearQuantifiedEffectEuro: moneySchema,
             paybackYears: z.number().nonnegative().max(50).nullable(),
-            finalCumulativeCashFlowEuro: moneySchema,
+            finalCumulativeCashFlowEuro: moneySchema.nullable(),
           })
           .strict(),
       )
@@ -77,8 +82,11 @@ export const projectEconomicsSchema = z
   .strict()
   .superRefine((value, context) => {
     if (
-      value.investmentMinEuro > value.investmentBaseEuro ||
-      value.investmentBaseEuro > value.investmentMaxEuro
+      value.investmentMinEuro !== null &&
+      value.investmentBaseEuro !== null &&
+      value.investmentMaxEuro !== null &&
+      (value.investmentMinEuro > value.investmentBaseEuro ||
+        value.investmentBaseEuro > value.investmentMaxEuro)
     ) {
       context.addIssue({
         code: "custom",
@@ -86,7 +94,10 @@ export const projectEconomicsSchema = z
         message: "Ungültiger Investitionskorridor.",
       });
     }
-    if (value.projections[0]?.year !== 0 || value.projections.at(-1)?.year !== value.horizonYears) {
+    if (
+      value.pricingMode === "modeled" &&
+      (value.projections[0]?.year !== 0 || value.projections.at(-1)?.year !== value.horizonYears)
+    ) {
       context.addIssue({
         code: "custom",
         path: ["projections"],

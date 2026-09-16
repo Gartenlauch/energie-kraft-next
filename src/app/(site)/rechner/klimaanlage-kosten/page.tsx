@@ -6,11 +6,17 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { climateCalculatorContent } from "@/content/pages/klima-kostenrechner";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { buildCurrentCalculatorInputs } from "@/lib/calculators/settings-inputs";
+import { getCurrentConfiguratorSettings } from "@/lib/configurator/settings-repository";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = buildMetadata(climateCalculatorContent.seo);
 
-export default function ClimateCalculatorPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ClimateCalculatorPage() {
+  const settings = await getCurrentConfiguratorSettings();
+  const inputs = buildCurrentCalculatorInputs(settings);
   return (
     <>
       <JsonLdScript data={buildWebPageJsonLd(climateCalculatorContent.seo)} />
@@ -57,7 +63,7 @@ export default function ClimateCalculatorPage() {
           </div>
         </section>
 
-        <ClimateCostCalculator />
+        <ClimateCostCalculator initialInput={inputs.climate} settings={settings} />
 
         <section className="section-space bg-surface">
           <div className="section-shell">

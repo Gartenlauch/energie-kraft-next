@@ -18,18 +18,16 @@ type LeadFlowStage = "result" | "contact" | "submit" | "success";
 
 interface ConfiguratorLeadFlowProps {
   renderResult: (onContinue: () => void) => ReactNode;
-
-    onRestart: () => void;
 }
 interface SubmissionOutcome {
-    leadId: string;
+    publicReference: string;
 
   reportStatus?: "generated" | "failed";
 
   customerMailStatus?: "accepted" | "failed";
 }
 
-export function ConfiguratorLeadFlow({ renderResult, onRestart }: ConfiguratorLeadFlowProps) {
+export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps) {
   const { state, reset } = useConfigurator();
 
   const [stage, setStage] = useState<LeadFlowStage>("result");
@@ -69,7 +67,7 @@ export function ConfiguratorLeadFlow({ renderResult, onRestart }: ConfiguratorLe
             const result = await submitConfiguratorLead(leadInput);
 
             setSubmissionOutcome({
-                leadId: result.leadId,
+                publicReference: result.publicReference,
                 reportStatus: result.reportStatus,
                 customerMailStatus: result.customerMailStatus,
             });
@@ -80,6 +78,9 @@ export function ConfiguratorLeadFlow({ renderResult, onRestart }: ConfiguratorLe
              * Speicherung löschen.
              */
             reset();
+
+            setContactDraft(null);
+            setContactFormStartedAt(null);
 
             setStage("success");
         } catch {
@@ -94,17 +95,9 @@ export function ConfiguratorLeadFlow({ renderResult, onRestart }: ConfiguratorLe
   if (stage === "success" && submissionOutcome) {
     return (
         <ConfiguratorSubmitSuccess
-        leadId={submissionOutcome.leadId}
+        publicReference={submissionOutcome.publicReference}
         reportStatus={submissionOutcome.reportStatus}
         customerMailStatus={submissionOutcome.customerMailStatus}
-            onRestart={() => {
-                setContactDraft(null);
-                setContactFormStartedAt(null);
-                setSubmissionOutcome(null);
-                setSubmissionError(null);
-                setStage("result");
-                onRestart();
-            }}
         />
     );
 }

@@ -7,6 +7,10 @@ import type {
 } from "@/types/configurator";
 import { CONFIGURATOR_STATE_VERSION } from "@/types/configurator";
 import { buildConfiguratorJourney } from "@/lib/configurator/journey";
+import {
+  DEFAULT_CONFIGURATOR_SETTINGS,
+  type ConfiguratorSettings,
+} from "@/lib/configurator/settings-model";
 
 export function calculateProjectedConsumptionKwh(
   annualConsumptionKwh: number | undefined,
@@ -19,14 +23,19 @@ export function calculateProjectedConsumptionKwh(
   return Math.round(annualConsumptionKwh * (1 + futureIncreasePercent / 100));
 }
 
-export function createInitialConfiguratorState(): ConfiguratorState {
+export function createInitialConfiguratorState(
+  settings: ConfiguratorSettings = DEFAULT_CONFIGURATOR_SETTINGS,
+): ConfiguratorState {
   return {
     version: CONFIGURATOR_STATE_VERSION,
+    settingsVersion: settings.version,
+    settings: structuredClone(settings),
     activeConfigurator: null,
     journey: {
       entryPoint: null,
       selectedProducts: [],
       completedProducts: [],
+      additionalSolutionsReviewed: false,
     },
 
     household: {
@@ -114,7 +123,12 @@ export function normalizeConfiguratorState(state: ConfiguratorState): Configurat
 
     household,
 
-    journey: buildConfiguratorJourney(state.journey.entryPoint, state.interests, state.results),
+    journey: buildConfiguratorJourney(
+      state.journey.entryPoint,
+      state.interests,
+      state.results,
+      state.journey.additionalSolutionsReviewed,
+    ),
   };
 }
 
@@ -405,8 +419,17 @@ function reduceConfiguratorState(
         },
       };
 
+    case "MARK_ADDITIONAL_SOLUTIONS_REVIEWED":
+      return {
+        ...state,
+        journey: {
+          ...state.journey,
+          additionalSolutionsReviewed: true,
+        },
+      };
+
     case "RESET":
-      return createInitialConfiguratorState();
+      return createInitialConfiguratorState(state.settings);
 
     default: {
       const exhaustiveCheck: never = action;

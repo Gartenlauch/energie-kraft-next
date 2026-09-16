@@ -1314,13 +1314,13 @@ export async function sendConfiguratorLeadMail({
   const text = `
 ${content.title}
 
-Lead-ID: ${leadId}
+Projektreferenz: ${leadId}
 
 ${allSections
       .map(renderTextSection)
       .join("\n\n")}
 
-Lead-ID:
+Projektreferenz:
 ${leadId}
   `.trim();
 
@@ -1328,7 +1328,7 @@ ${leadId}
     <h2>${escapeHtml(content.title)}</h2>
 
     <p>
-      <strong>Lead-ID:</strong>
+      <strong>Projektreferenz:</strong>
       ${escapeHtml(leadId)}
     </p>
 
@@ -1339,7 +1339,7 @@ ${leadId}
     <hr />
 
     <p style="font-size: 12px; color: #666;">
-      Lead-ID: ${escapeHtml(leadId)}
+      Projektreferenz: ${escapeHtml(leadId)}
     </p>
   `;
 
@@ -1350,7 +1350,7 @@ ${leadId}
       lead.contact.email,
 
     subject:
-      content.subject,
+      `${content.subject} · ${leadId}`,
 
     text,
 

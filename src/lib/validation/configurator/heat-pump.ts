@@ -1,5 +1,6 @@
 import {
     heatPumpAnnualPerformanceFactorSchema,
+    existingHeatingSystemSchema,
     heatPumpFlowTemperatureSchema,
     heatPumpHeatedAreaSchema,
     heatPumpOccupancyPersonsSchema,
@@ -17,6 +18,9 @@ import {
     const heatPump = state.heatPump;
   
     switch (stepId) {
+      case "existing_heating":
+        return existingHeatingSystemSchema.safeParse(heatPump.existingHeatingSystem).success;
+
       case "heated_area":
         return heatPumpHeatedAreaSchema.safeParse(
           heatPump.heatedAreaM2,

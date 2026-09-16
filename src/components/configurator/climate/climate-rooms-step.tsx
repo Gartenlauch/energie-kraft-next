@@ -5,6 +5,7 @@ import { useState } from "react";
 interface ClimateRoomsStepProps {
   conditionedAreaM2: number | undefined;
   roomCount: number | undefined;
+  areaPrefilledFromHeatPump?: boolean;
 
   onConditionedAreaChange: (
     value: number | undefined,
@@ -44,18 +45,14 @@ function parseNumber(
 export function ClimateRoomsStep({
   conditionedAreaM2,
   roomCount,
+  areaPrefilledFromHeatPump = false,
   onConditionedAreaChange,
   onRoomCountChange,
 }: ClimateRoomsStepProps) {
-  const [areaText, setAreaText] =
-    useState(() =>
-      formatInputValue(conditionedAreaM2),
-    );
-
-  const [roomText, setRoomText] =
-    useState(() =>
-      formatInputValue(roomCount),
-    );
+  const [areaDraft, setAreaDraft] = useState<string | null>(null);
+  const [roomDraft, setRoomDraft] = useState<string | null>(null);
+  const areaText = areaDraft ?? formatInputValue(conditionedAreaM2);
+  const roomText = roomDraft ?? formatInputValue(roomCount);
 
   const areaError =
     conditionedAreaM2 !== undefined &&
@@ -82,6 +79,12 @@ export function ClimateRoomsStep({
           Zu klimatisierende Fläche
         </label>
 
+        {areaPrefilledFromHeatPump ? (
+          <p className="mt-2 text-xs font-semibold text-cyan-700">
+            Aus deiner Wärmepumpen-Konfiguration übernommen – weiterhin frei änderbar.
+          </p>
+        ) : null}
+
         <div className="relative mt-2">
           <input
             id="climate-conditioned-area"
@@ -93,7 +96,7 @@ export function ClimateRoomsStep({
               const value =
                 event.currentTarget.value;
 
-              setAreaText(value);
+              setAreaDraft(value);
 
               onConditionedAreaChange(
                 parseNumber(value),
@@ -146,7 +149,7 @@ export function ClimateRoomsStep({
               const value =
                 event.currentTarget.value;
 
-              setRoomText(value);
+              setRoomDraft(value);
 
               onRoomCountChange(
                 parseNumber(value),

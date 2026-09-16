@@ -17,6 +17,7 @@ import type {
   PvSizingNumericInputKey,
 } from "@/types/pv-sizing-calculator";
 import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 import { ComparisonBars, SegmentedEnergyBar } from "@/components/charts/energy-charts";
 
 type PvSizingFormValues = {
@@ -186,9 +187,9 @@ function ResultCard({ label, value, description }: ResultCardProps) {
   );
 }
 
-export function PvSizingCalculator() {
+export function PvSizingCalculator({ initialInput = defaultPvSizingCalculatorInput, settings }: { initialInput?: PvSizingCalculatorInput; settings: ConfiguratorSettings }) {
   const [formValues, setFormValues] = useState<PvSizingFormValues>(() =>
-    createFormValues(defaultPvSizingCalculatorInput),
+    createFormValues(initialInput),
   );
 
   const [fieldErrors, setFieldErrors] = useState<PvSizingFieldErrors>({});
@@ -196,7 +197,7 @@ export function PvSizingCalculator() {
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const [result, setResult] = useState<PvSizingCalculatorResult>(() =>
-    calculatePvSizing(defaultPvSizingCalculatorInput),
+    calculatePvSizing(initialInput, settings),
   );
 
   function clearFieldError(name: keyof PvSizingCalculatorInput) {
@@ -258,16 +259,16 @@ export function PvSizingCalculator() {
 
     setFieldErrors({});
     setGeneralError(null);
-    setResult(calculatePvSizing(validationResult.data));
+    setResult(calculatePvSizing(validationResult.data, settings));
   }
 
   function handleReset() {
-    setFormValues(createFormValues(defaultPvSizingCalculatorInput));
+    setFormValues(createFormValues(initialInput));
 
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(calculatePvSizing(defaultPvSizingCalculatorInput));
+    setResult(calculatePvSizing(initialInput, settings));
   }
 
   return (
@@ -415,7 +416,14 @@ export function PvSizingCalculator() {
                 <legend className="sr-only">Erweiterte Modellannahmen</legend>
 
                 <div className="grid gap-7 md:grid-cols-2">
-                  {pvSizingCalculatorContent.advancedFields.map((field) => {
+                  {pvSizingCalculatorContent.advancedFields
+                    .filter((field) => ![
+                      "pvCostEuroPerKwp",
+                      "batteryCostEuroPerKwh",
+                      "fixedAdditionalCostEuro",
+                      "costUncertaintyPercent",
+                    ].includes(field.name))
+                    .map((field) => {
                     const isBatteryField =
                       field.name === "batteryCostEuroPerKwh" ||
                       field.name === "batteryCapacityPerKwp";
@@ -432,6 +440,10 @@ export function PvSizingCalculator() {
                     );
                   })}
                 </div>
+                <p className="text-foreground/60 mt-5 text-sm leading-6">
+                  Preisstaffeln, zusätzliche Projektkosten und Kostenkorridor stammen aus der
+                  zentral gepflegten Modellversion {settings.version}.
+                </p>
               </fieldset>
             </details>
 
@@ -513,15 +525,15 @@ export function PvSizingCalculator() {
 
               <ResultCard
                 label="Geschätzte Gesamtkosten"
-                value={currencyFormatter.format(result.estimatedTotalCostEuro)}
+                value={result.estimatedTotalCostEuro === null ? "Individuelle Kalkulation" : currencyFormatter.format(result.estimatedTotalCostEuro)}
                 description="PV-Anlage, optionaler Speicher und eingegebene zusätzliche Projektkosten."
               />
 
               <ResultCard
                 label="Kostenkorridor"
-                value={`${currencyFormatter.format(
-                  result.estimatedMinimumCostEuro,
-                )} – ${currencyFormatter.format(result.estimatedMaximumCostEuro)}`}
+                value={result.estimatedMinimumCostEuro === null || result.estimatedMaximumCostEuro === null
+                  ? "Gesamtprojekt: individuelle Kalkulation erforderlich"
+                  : `${currencyFormatter.format(result.estimatedMinimumCostEuro)} – ${currencyFormatter.format(result.estimatedMaximumCostEuro)}`}
                 description={`Orientierungsbereich mit ± ${numberFormatter.format(
                   result.input.costUncertaintyPercent,
                 )} % Abweichung.`}
@@ -553,14 +565,14 @@ export function PvSizingCalculator() {
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
                   <dt className="text-foreground/70">Photovoltaikanlage</dt>
                   <dd className="font-semibold">
-                    {currencyFormatter.format(result.pvSystemCostEuro)}
+                    {result.pvSystemCostEuro === null ? "Individuell" : currencyFormatter.format(result.pvSystemCostEuro)}
                   </dd>
                 </div>
 
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
                   <dt className="text-foreground/70">Stromspeicher</dt>
                   <dd className="font-semibold">
-                    {currencyFormatter.format(result.batteryCostEuro)}
+                    {result.batteryCostEuro === null ? "Individuell" : currencyFormatter.format(result.batteryCostEuro)}
                   </dd>
                 </div>
 
@@ -574,7 +586,7 @@ export function PvSizingCalculator() {
                 <div className="flex items-center justify-between gap-5 px-5 py-4">
                   <dt className="font-semibold">Orientierungswert gesamt</dt>
                   <dd className="text-lg font-semibold">
-                    {currencyFormatter.format(result.estimatedTotalCostEuro)}
+                    {result.estimatedTotalCostEuro === null ? "Individuell" : currencyFormatter.format(result.estimatedTotalCostEuro)}
                   </dd>
                 </div>
               </dl>
@@ -595,14 +607,21 @@ export function PvSizingCalculator() {
 
             <div className="border-foreground/10 mt-6 rounded-2xl border p-5">
               <h3 className="text-lg font-semibold">Kosten und Dachnutzung</h3>
-              <SegmentedEnergyBar
-                segments={[
-                  { label: "PV-Anlage", value: result.pvSystemCostEuro },
-                  { label: "Speicher", value: result.batteryCostEuro },
-                  { label: "Weitere Kosten", value: result.fixedAdditionalCostEuro },
-                ]}
-                unit="€"
-              />
+              {result.pvSystemCostEuro !== null && result.batteryCostEuro !== null ? (
+                <SegmentedEnergyBar
+                  segments={[
+                    { label: "PV-Anlage", value: result.pvSystemCostEuro },
+                    { label: "Speicher", value: result.batteryCostEuro },
+                    { label: "Weitere Kosten", value: result.fixedAdditionalCostEuro },
+                  ]}
+                  unit="€"
+                />
+              ) : (
+                <p className="text-foreground/70 mt-3 leading-7">
+                  Die empfohlene Größe liegt außerhalb der freigegebenen Preisstaffel. Eine
+                  Kostenaufteilung erfolgt deshalb erst in der individuellen Projektkalkulation.
+                </p>
+              )}
               <ComparisonBars
                 items={[
                   { label: "Empfohlene Leistung", value: result.recommendedSystemSizeKwp },
@@ -619,6 +638,7 @@ export function PvSizingCalculator() {
             <CalculatorProjectCta
               handoff={{
                 version: 1,
+                settings,
                 source: "pv_sizing",
                 values: {
                   annualConsumptionKwh: result.input.annualConsumptionKwh,

@@ -78,8 +78,9 @@ export function BatteryStorageResult({
         <article className="bg-brand-navy rounded-2xl p-6 text-white sm:col-span-2">
           <p className="text-sm font-medium text-cyan-200">Modellierter Projektkosten-Korridor</p>
           <p className="mt-2 text-3xl font-semibold tracking-tight">
-            {currency.format(result.estimatedMinimumCostEuro)} –{" "}
-            {currency.format(result.estimatedMaximumCostEuro)}
+            {result.estimatedMinimumCostEuro === null || result.estimatedMaximumCostEuro === null
+              ? "Individuelle Kalkulation"
+              : `${currency.format(result.estimatedMinimumCostEuro)} – ${currency.format(result.estimatedMaximumCostEuro)}`}
           </p>
           <p className="mt-3 text-sm leading-6 text-white/65">
             Separater Speicherbaustein auf Basis der empfohlenen nutzbaren Kapazität und der

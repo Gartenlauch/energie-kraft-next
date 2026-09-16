@@ -117,13 +117,14 @@ export interface PvSizingCalculatorResult {
 
   recommendedBatteryCapacityKwh: number;
 
-  pvSystemCostEuro: number;
-  batteryCostEuro: number;
+  pricingMode: "modeled" | "individual_quote_required";
+  pvSystemCostEuro: number | null;
+  batteryCostEuro: number | null;
   fixedAdditionalCostEuro: number;
 
-  estimatedTotalCostEuro: number;
-  estimatedMinimumCostEuro: number;
-  estimatedMaximumCostEuro: number;
+  estimatedTotalCostEuro: number | null;
+  estimatedMinimumCostEuro: number | null;
+  estimatedMaximumCostEuro: number | null;
 
   /**
    * True, wenn für die gewünschte Erzeugungsmenge mehr Module

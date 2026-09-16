@@ -4,9 +4,10 @@ import { FieldValue, type QueryDocumentSnapshot } from "firebase-admin/firestore
 import { adminFirestore } from "@/lib/firebase/admin";
 import { FIRESTORE_COLLECTIONS } from "@/lib/firebase/collections";
 import type { AdminLead } from "@/types/admin-lead";
-import type { ContactLeadDocument } from "@/types/contact-lead";
-import type { ConfiguratorLeadDocument } from "@/types/configurator";
 import type { LeadStatus } from "@/types/lead";
+import { normalizeAdminLeadDocument } from "@/lib/leads/normalize-admin-lead";
+
+export { normalizeAdminLeadDocument } from "@/lib/leads/normalize-admin-lead";
 
 export class LeadNotFoundError extends Error {
   constructor(leadId: string) {
@@ -29,41 +30,6 @@ const leadsRealtimeReference =
       FIRESTORE_COLLECTIONS.adminRealtime,
     )
     .doc("leads");
-
-function mapLead(
-  document: QueryDocumentSnapshot,
-): AdminLead | null {
-  const data = document.data();
-
-  if (data.type === "contact") {
-    return {
-      id: document.id,
-      ...(data as ContactLeadDocument),
-    };
-  }
-
-  if (data.type === "configurator") {
-    if (
-      data.meta?.schemaVersion !== 3 ||
-      !Array.isArray(
-        data.products,
-      ) ||
-      !Array.isArray(
-        data.configurators,
-      ) ||
-      !data.journey
-    ) {
-      return null;
-    }
-
-    return {
-      id: document.id,
-      ...(data as ConfiguratorLeadDocument),
-    };
-  }
-
-  return null;
-}
 
 function getCreatedAtMillis(
   lead: AdminLead,
@@ -211,4 +177,16 @@ export async function deleteLead(
       );
     },
   );
+}
+
+function mapLead(document: QueryDocumentSnapshot): AdminLead | null {
+  const data = document.data();
+  const normalized = normalizeAdminLeadDocument(document.id, data);
+  if (!normalized && data.type === "configurator") {
+    console.warn("Unsupported or malformed configurator lead skipped", {
+      leadId: document.id,
+      schemaVersion: data.meta?.schemaVersion,
+    });
+  }
+  return normalized;
 }

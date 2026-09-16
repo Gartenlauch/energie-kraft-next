@@ -4,6 +4,7 @@ import { useState } from "react";
 
 interface ClimateOccupancyStepProps {
     value: number | undefined;
+    prefilledFromHeatPump?: boolean;
 
     onChange: (
         value: number | undefined,
@@ -28,6 +29,7 @@ function parseNumber(
 
 export function ClimateOccupancyStep({
     value,
+    prefilledFromHeatPump = false,
     onChange,
 }: ClimateOccupancyStepProps) {
     const [textValue, setTextValue] =
@@ -53,6 +55,12 @@ export function ClimateOccupancyStep({
             >
                 Üblicherweise anwesende Personen
             </label>
+
+            {prefilledFromHeatPump ? (
+                <p className="mt-2 text-xs font-semibold text-cyan-700">
+                    Aus deiner Wärmepumpen-Konfiguration übernommen – weiterhin frei änderbar.
+                </p>
+            ) : null}
 
             <div className="relative mt-2">
                 <input

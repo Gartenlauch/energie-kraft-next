@@ -6,6 +6,14 @@ import type {
   export const heatPumpWizardSteps: readonly HeatPumpStepDefinition[] =
     [
       {
+        id: "existing_heating",
+        title: "Wie wird das Gebäude aktuell beheizt?",
+        shortLabel: "Heizung heute",
+        description:
+          "Eine grobe Auswahl genügt. Verbrauchsdaten sind optional und können auf der letzten Abrechnung stehen.",
+        phase: "configuration",
+      },
+      {
         id: "heated_area",
         title: "Wie groß ist die beheizte Fläche?",
         shortLabel: "Fläche",

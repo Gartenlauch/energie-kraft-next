@@ -10,18 +10,16 @@ import {
   useState,
 } from "react";
 
-import {
-  clearConfiguratorState,
-  readConfiguratorState,
-  writeConfiguratorState,
-} from "@/lib/configurator/storage";
+import { readConfiguratorState, writeConfiguratorState } from "@/lib/configurator/storage";
 import {
   applyCalculatorHandoff,
   clearCalculatorHandoff,
   readCalculatorHandoff,
 } from "@/lib/configurator/calculator-handoff";
 import { configuratorReducer, createInitialConfiguratorState } from "@/lib/configurator/state";
+import { clearSubmittedConfiguratorProject } from "@/lib/configurator/project-reset";
 import type { ConfiguratorAction, ConfiguratorState } from "@/types/configurator";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 
 interface ConfiguratorContextValue {
   state: ConfiguratorState;
@@ -34,10 +32,12 @@ const ConfiguratorContext = createContext<ConfiguratorContextValue | null>(null)
 
 interface ConfiguratorProviderProps {
   children: ReactNode;
+  settings: ConfiguratorSettings;
 }
 
-export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
-  const [state, dispatch] = useReducer(configuratorReducer, createInitialConfiguratorState());
+export function ConfiguratorProvider({ children, settings }: ConfiguratorProviderProps) {
+  const [initialSettings] = useState(() => settings);
+  const [state, dispatch] = useReducer(configuratorReducer, initialSettings, createInitialConfiguratorState);
 
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -61,10 +61,10 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
           type: "REPLACE_STATE",
           payload: calculatorHandoff
             ? applyCalculatorHandoff(
-                persistedState ?? createInitialConfiguratorState(),
+                persistedState ?? createInitialConfiguratorState(initialSettings),
                 calculatorHandoff,
               )
-            : (persistedState ?? createInitialConfiguratorState()),
+            : (persistedState ?? createInitialConfiguratorState(initialSettings)),
         });
       }
 
@@ -74,7 +74,7 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialSettings]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -85,7 +85,7 @@ export function ConfiguratorProvider({ children }: ConfiguratorProviderProps) {
   }, [isHydrated, state]);
 
   function reset() {
-    clearConfiguratorState(window.sessionStorage);
+    clearSubmittedConfiguratorProject(window.sessionStorage);
 
     dispatch({
       type: "RESET",

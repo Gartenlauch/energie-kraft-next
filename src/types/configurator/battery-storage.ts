@@ -50,9 +50,10 @@ export interface BatteryStorageConfiguratorResult {
   recommendedUsableCapacityKwhMin: number;
   recommendedUsableCapacityKwhMax: number;
 
-  estimatedTotalCostEuro: number;
-  estimatedMinimumCostEuro: number;
-  estimatedMaximumCostEuro: number;
+  pricingMode: "modeled" | "individual_quote_required";
+  estimatedTotalCostEuro: number | null;
+  estimatedMinimumCostEuro: number | null;
+  estimatedMaximumCostEuro: number | null;
 
   technicalUpperBoundUsableCapacityKwh: number;
 

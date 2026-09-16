@@ -12,6 +12,8 @@ interface HeatPumpResultProps {
   nextConfigurator: ConfiguratorType | null;
     onBack: () => void;
     onContinue: () => void;
+    reviewAdditionalSolutions: boolean;
+    onAdditionalSolutionsReviewed: () => void;
 }
 
 const numberFormatter = new Intl.NumberFormat("de-DE", {
@@ -29,6 +31,8 @@ export function HeatPumpResult({
     onBack,
     onContinue,
     nextConfigurator,
+    reviewAdditionalSolutions,
+    onAdditionalSolutionsReviewed,
 }: HeatPumpResultProps) {
   const assessment = heatPumpCalculatorContent.assessmentContent[result.flowTemperatureAssessment];
 
@@ -128,24 +132,40 @@ export function HeatPumpResult({
 
       <div className="border-border-default bg-surface mt-6 rounded-2xl border p-6">
         <p className="text-brand-primary text-sm font-semibold">Betriebskostenvergleich</p>
-        <ComparisonBars
-          items={[
-            {
-              label: "Bisheriges Heizsystem",
-              value: result.currentHeatingOperatingCostEuro,
-              color: "#91A4C4",
-            },
-            {
-              label: "Wärmepumpenmodell",
-              value: result.annualHeatPumpOperatingCostEuro,
-              color: "#0DA1D1",
-            },
-          ]}
-          unit="€/Jahr"
-        />
+        {result.currentHeatingOperatingCostEuro === null ? (
+          <div className="mt-4 border-l-4 border-cyan-500 pl-4">
+            <p className="text-brand-navy font-semibold">Vergleich nicht verfügbar</p>
+            <p className="text-foreground/70 mt-2 text-sm leading-6">
+              Für „Andere / weiß nicht“ zeigen wir bewusst nur die modellierten
+              Wärmepumpen-Betriebskosten von{" "}
+              {currencyFormatter.format(result.annualHeatPumpOperatingCostEuro)} pro Jahr. Ein
+              genauer Altanlagenvergleich hängt vom tatsächlichen Energieträger und Verbrauch ab.
+            </p>
+          </div>
+        ) : (
+          <ComparisonBars
+            items={[
+              {
+                label: result.heatingComparisonLabel,
+                value: result.currentHeatingOperatingCostEuro,
+                color: "#91A4C4",
+              },
+              {
+                label: "Wärmepumpenmodell",
+                value: result.annualHeatPumpOperatingCostEuro,
+                color: "#0DA1D1",
+              },
+            ]}
+            unit="€/Jahr"
+          />
+        )}
         <p className="text-foreground/65 mt-4 text-sm">
-          Förderung nicht eingerechnet. Das bisherige Heizsystem basiert auf den ausgewiesenen
-          Modellannahmen.
+          Förderung nicht eingerechnet.{" "}
+          {result.heatingComparisonBasis === "user_consumption"
+            ? "Der Vergleich basiert auf deiner Verbrauchsangabe."
+            : result.heatingComparisonKind === "unavailable"
+              ? "Der Altanlagenvergleich bleibt modellabhängig."
+              : "Der Vergleich basiert auf den ausgewiesenen Modellannahmen."}
         </p>
       </div>
 
@@ -161,13 +181,16 @@ export function HeatPumpResult({
                 </div>
             ) : null}
 
-      <AdditionalEnergySolutions currentProduct="heat_pump" />
+      {reviewAdditionalSolutions ? <AdditionalEnergySolutions currentProduct="heat_pump" /> : null}
 
             <ConfiguratorJourneyActions
                 currentConfigurator="heat_pump"
         nextConfigurator={nextConfigurator}
                 onBack={onBack}
                 onContinue={onContinue}
+                onAdvance={
+                  reviewAdditionalSolutions ? onAdditionalSolutionsReviewed : undefined
+                }
             />
 
       <p className="text-foreground/60 mt-6 text-sm leading-6">

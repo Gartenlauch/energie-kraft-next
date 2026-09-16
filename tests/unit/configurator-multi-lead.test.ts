@@ -220,6 +220,7 @@ function createMultiConfiguratorState() {
                 "UPDATE_HEAT_PUMP",
 
             payload: {
+                existingHeatingSystem: "gas",
                 heatedAreaM2:
                     160,
 

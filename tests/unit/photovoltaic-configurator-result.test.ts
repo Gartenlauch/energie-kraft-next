@@ -67,9 +67,9 @@ describe("photovoltaic configurator result", () => {
       specificYieldKwhPerKwpMin: 900,
       specificYieldKwhPerKwpMax: 1100,
 
-      estimatedTotalCostEuro: 8_750,
-      estimatedMinimumCostEuro: 6_800,
-      estimatedMaximumCostEuro: 10_925,
+      estimatedTotalCostEuro: 7_400,
+      estimatedMinimumCostEuro: 5_780,
+      estimatedMaximumCostEuro: 9_200,
 
       batteryStorageRequested: false,
       technicalReviewRecommended: false,

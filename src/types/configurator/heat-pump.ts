@@ -5,13 +5,30 @@ import type {
 import type { ConfiguratorStepDefinition } from "./wizard";
 
 export type HeatPumpStepId =
-  "heated_area" | "heating_demand" | "occupancy" | "flow_temperature" | "efficiency";
+  | "existing_heating"
+  | "heated_area"
+  | "heating_demand"
+  | "occupancy"
+  | "flow_temperature"
+  | "efficiency";
+
+export type ExistingHeatingSystem = "gas" | "oil" | "new_build" | "other_unknown";
+
+export type HeatingComparisonKind = "existing_system" | "reference_scenario" | "unavailable";
+
+export type HeatingComparisonBasis = "user_consumption" | "modeled_heat_demand" | "unavailable";
 
 export type HeatPumpStepDefinition = Omit<ConfiguratorStepDefinition, "id"> & {
   id: HeatPumpStepId;
 };
 
 export interface HeatPumpConfiguratorState {
+  existingHeatingSystem?: ExistingHeatingSystem;
+
+  annualGasConsumptionKwh?: number;
+
+  annualOilConsumptionLitres?: number;
+
   heatedAreaM2?: number;
 
   specificSpaceHeatingDemandKwhPerM2Year?: number;
@@ -38,9 +55,23 @@ export interface HeatPumpConfiguratorResult {
 
   annualHeatPumpOperatingCostEuro: number;
 
-  currentHeatingOperatingCostEuro: number;
+  currentHeatingOperatingCostEuro: number | null;
 
-  annualOperatingCostDifferenceEuro: number;
+  annualOperatingCostDifferenceEuro: number | null;
+
+  heatingComparisonKind: HeatingComparisonKind;
+
+  heatingComparisonBasis: HeatingComparisonBasis;
+
+  heatingComparisonLabel: string;
+
+  comparisonFuelPriceEuroPerUnit: number | null;
+
+  comparisonFuelUnit: "kWh" | "litre" | null;
+
+  comparisonEfficiencyPercent: number | null;
+
+  oilEnergyContentKwhPerLitre: number | null;
 
   estimatedTotalCostEuro: number;
 

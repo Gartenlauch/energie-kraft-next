@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { configuratorProducts } from "@/content/configurators";
+import { ProjectAnalysisPreview } from "@/components/configurator/project-analysis-preview";
 import type { ConfiguratorType } from "@/types/configurator";
 
 interface ConfiguratorJourneyActionsProps {
@@ -12,6 +13,8 @@ interface ConfiguratorJourneyActionsProps {
 
     onBack: () => void;
     onContinue: () => void;
+
+    onAdvance?: () => void;
 
     secondaryActions?: ReactNode;
 }
@@ -37,6 +40,7 @@ export function ConfiguratorJourneyActions({
     nextConfigurator,
     onBack,
     onContinue,
+    onAdvance,
     secondaryActions,
 }: ConfiguratorJourneyActionsProps) {
   const currentProduct = configuratorProducts[currentConfigurator];
@@ -53,25 +57,7 @@ export function ConfiguratorJourneyActions({
           erhalten.
                 </p>
             ) : (
-        <>
-          <p className="text-brand-navy mt-2 text-xl font-semibold">
-            Deine persönliche Projektanalyse ist vorbereitet.
-                </p>
-          <p className="text-foreground/70 mt-2 leading-7">
-            Ergänze jetzt einmal deine Kontaktdaten. Danach erstellen wir deine PDF mit
-            Systemempfehlungen, Kostenkorridoren, Energie- und Wirtschaftlichkeitsanalyse,
-            Diagrammen, Annahmen und nächsten Schritten.
-          </p>
-          <ul
-            className="text-foreground/70 mt-4 grid gap-2 text-sm sm:grid-cols-2"
-            aria-label="Inhalt der Projektanalyse"
-          >
-            <li>✓ Dein konfiguriertes Energiesystem</li>
-            <li>✓ Modellierte Projektkosten</li>
-            <li>✓ Transparente Wirtschaftlichkeit</li>
-            <li>✓ Annahmen und Prüfpunkte</li>
-          </ul>
-        </>
+        <ProjectAnalysisPreview />
             )}
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -86,6 +72,7 @@ export function ConfiguratorJourneyActions({
                 {nextConfigurator ? (
                     <Link
             href={configuratorProducts[nextConfigurator].href}
+            onClick={onAdvance}
             className="bg-brand-primary inline-flex min-h-12 items-center justify-center rounded-xl px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
                     >
             {NEXT_BUTTON_LABELS[nextConfigurator]}
@@ -93,10 +80,13 @@ export function ConfiguratorJourneyActions({
                 ) : (
                     <button
                         type="button"
-                        onClick={onContinue}
+                        onClick={() => {
+                          onAdvance?.();
+                          onContinue();
+                        }}
             className="bg-brand-primary inline-flex min-h-12 items-center justify-center rounded-xl px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
                     >
-                        Weiter zu den Kontaktdaten
+                        Persönliche Projektanalyse erhalten
                     </button>
                 )}
 

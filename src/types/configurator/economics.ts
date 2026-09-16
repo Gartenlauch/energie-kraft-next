@@ -4,13 +4,14 @@ export type EconomicScenarioId = "conservative" | "base" | "favorable";
 export type EconomicValueSource = "user_input" | "modeled" | "default_assumption";
 
 export interface ProjectCostSummary {
-  investmentMinEuro: number;
-  investmentBaseEuro: number;
-  investmentMaxEuro: number;
+  investmentMinEuro: number | null;
+  investmentBaseEuro: number | null;
+  investmentMaxEuro: number | null;
 }
 
 export interface ComponentEconomics extends ProjectCostSummary {
   component: ConfiguratorType;
+  pricingMode: "modeled" | "individual_quote_required";
   analysisKind: "economic_effect" | "operating_cost" | "investment_only";
   firstYearEconomicEffectEuro: number;
   economicLifetimeYears: number;
@@ -27,7 +28,7 @@ export interface ProjectEconomicScenario extends ProjectCostSummary {
   id: EconomicScenarioId;
   firstYearQuantifiedEffectEuro: number;
   paybackYears: number | null;
-  finalCumulativeCashFlowEuro: number;
+  finalCumulativeCashFlowEuro: number | null;
 }
 
 export interface EconomicAssumption {
@@ -38,10 +39,14 @@ export interface EconomicAssumption {
 }
 
 export interface ProjectEconomicsResult extends ProjectCostSummary {
+  pricingMode: "modeled" | "individual_quote_required";
+  modeledComponentsInvestmentMinEuro: number;
+  modeledComponentsInvestmentBaseEuro: number;
+  modeledComponentsInvestmentMaxEuro: number;
   horizonYears: number;
   firstYearQuantifiedEffectEuro: number;
   paybackYears: number | null;
-  finalCumulativeCashFlowEuro: number;
+  finalCumulativeCashFlowEuro: number | null;
   components: ComponentEconomics[];
   projections: ProjectYearProjection[];
   scenarios: ProjectEconomicScenario[];

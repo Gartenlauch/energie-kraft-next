@@ -62,11 +62,13 @@ const photovoltaicResultSchema = z
 
     specificYieldKwhPerKwpMax: z.number().int().positive(),
 
-    estimatedTotalCostEuro: z.number().nonnegative(),
+    pricingMode: z.enum(["modeled", "individual_quote_required"]),
 
-    estimatedMinimumCostEuro: z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative().nullable(),
 
-    estimatedMaximumCostEuro: z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative().nullable(),
+
+    estimatedMaximumCostEuro: z.number().nonnegative().nullable(),
 
     batteryStorageRequested: z.boolean(),
 
@@ -118,7 +120,7 @@ const photovoltaicAnswersSchema = z
       .object({
         hasNotes: z.boolean(),
 
-        text: z.string().trim().max(2_000).optional(),
+        text: z.string().trim().max(1_000).optional(),
       })
       .strict()
       .superRefine((values, context) => {
@@ -165,11 +167,13 @@ const batteryStorageResultSchema = z
 
     recommendedUsableCapacityKwhMax: z.number().nonnegative(),
 
-    estimatedTotalCostEuro: z.number().nonnegative(),
+    pricingMode: z.enum(["modeled", "individual_quote_required"]),
 
-    estimatedMinimumCostEuro: z.number().nonnegative(),
+    estimatedTotalCostEuro: z.number().nonnegative().nullable(),
 
-    estimatedMaximumCostEuro: z.number().nonnegative(),
+    estimatedMinimumCostEuro: z.number().nonnegative().nullable(),
+
+    estimatedMaximumCostEuro: z.number().nonnegative().nullable(),
 
     technicalUpperBoundUsableCapacityKwh: z.number().nonnegative(),
 
@@ -245,6 +249,12 @@ const wallboxResultSchema = z
 
 const heatPumpAnswersSchema = z
   .object({
+    existingHeatingSystem: z.enum(["gas", "oil", "new_build", "other_unknown"]),
+
+    annualGasConsumptionKwh: z.number().min(500).max(200_000).optional(),
+
+    annualOilConsumptionLitres: z.number().min(50).max(20_000).optional(),
+
     heatedAreaM2: z.number().min(20).max(5_000),
 
     specificSpaceHeatingDemandKwhPerM2Year: z.number().min(10).max(400),
@@ -271,9 +281,23 @@ const heatPumpResultSchema = z
 
     annualHeatPumpOperatingCostEuro: z.number().nonnegative(),
 
-    currentHeatingOperatingCostEuro: z.number().nonnegative(),
+    currentHeatingOperatingCostEuro: z.number().nonnegative().nullable(),
 
-    annualOperatingCostDifferenceEuro: z.number(),
+    annualOperatingCostDifferenceEuro: z.number().nullable(),
+
+    heatingComparisonKind: z.enum(["existing_system", "reference_scenario", "unavailable"]),
+
+    heatingComparisonBasis: z.enum(["user_consumption", "modeled_heat_demand", "unavailable"]),
+
+    heatingComparisonLabel: z.string().min(1).max(120),
+
+    comparisonFuelPriceEuroPerUnit: z.number().positive().nullable(),
+
+    comparisonFuelUnit: z.enum(["kWh", "litre"]).nullable(),
+
+    comparisonEfficiencyPercent: z.number().positive().max(100).nullable(),
+
+    oilEnergyContentKwhPerLitre: z.number().positive().nullable(),
 
     estimatedTotalCostEuro: z.number().nonnegative(),
 
@@ -390,24 +414,29 @@ const configuratorTypeSchema = z.enum([
 
 const economicMoneySchema = z.number().finite();
 const economicCostShape = {
-  investmentMinEuro: economicMoneySchema.nonnegative(),
-  investmentBaseEuro: economicMoneySchema.nonnegative(),
-  investmentMaxEuro: economicMoneySchema.nonnegative(),
+  investmentMinEuro: economicMoneySchema.nonnegative().nullable(),
+  investmentBaseEuro: economicMoneySchema.nonnegative().nullable(),
+  investmentMaxEuro: economicMoneySchema.nonnegative().nullable(),
 };
 
 const projectEconomicsSchema = z
   .object({
     horizonYears: z.number().int().min(1).max(50),
+    pricingMode: z.enum(["modeled", "individual_quote_required"]),
+    modeledComponentsInvestmentMinEuro: economicMoneySchema.nonnegative(),
+    modeledComponentsInvestmentBaseEuro: economicMoneySchema.nonnegative(),
+    modeledComponentsInvestmentMaxEuro: economicMoneySchema.nonnegative(),
     ...economicCostShape,
     firstYearQuantifiedEffectEuro: economicMoneySchema,
     paybackYears: z.number().nonnegative().max(50).nullable(),
-    finalCumulativeCashFlowEuro: economicMoneySchema,
+    finalCumulativeCashFlowEuro: economicMoneySchema.nullable(),
     components: z
       .array(
         z
           .object({
             component: configuratorTypeSchema,
             analysisKind: z.enum(["economic_effect", "operating_cost", "investment_only"]),
+            pricingMode: z.enum(["modeled", "individual_quote_required"]),
             ...economicCostShape,
             firstYearEconomicEffectEuro: economicMoneySchema,
             economicLifetimeYears: z.number().int().min(1).max(50),
@@ -427,7 +456,7 @@ const projectEconomicsSchema = z
           })
           .strict(),
       )
-      .min(2)
+      .min(0)
       .max(51),
     scenarios: z
       .array(
@@ -437,7 +466,7 @@ const projectEconomicsSchema = z
             ...economicCostShape,
             firstYearQuantifiedEffectEuro: economicMoneySchema,
             paybackYears: z.number().nonnegative().max(50).nullable(),
-            finalCumulativeCashFlowEuro: economicMoneySchema,
+            finalCumulativeCashFlowEuro: economicMoneySchema.nullable(),
           })
           .strict(),
       )
@@ -484,6 +513,7 @@ export const configuratorLeadPayloadSchema = z
       type: z.literal("configurator"),
 
     products: z.array(configuratorTypeSchema).min(1).max(5),
+    settingsVersion: z.number().int().nonnegative(),
 
       journey: z
         .object({

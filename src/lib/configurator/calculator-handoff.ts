@@ -1,10 +1,15 @@
 import { z } from "zod";
 import { normalizeConfiguratorState } from "@/lib/configurator/state";
+import { configuratorSettingsSchema } from "@/lib/configurator/settings-model";
 import type { CalculatorHandoff, ConfiguratorState, ConfiguratorType } from "@/types/configurator";
 
 export const CALCULATOR_HANDOFF_STORAGE_KEY = "energie-kraft:calculator-handoff:v1";
 
-const common = { version: z.literal(1), createdAt: z.number().int().positive() };
+const common = {
+  version: z.literal(1),
+  createdAt: z.number().int().positive(),
+  settings: configuratorSettingsSchema,
+};
 const handoffSchema = z.discriminatedUnion("source", [
   z
     .object({
@@ -115,6 +120,8 @@ export function applyCalculatorHandoff(
 ): ConfiguratorState {
   const state: ConfiguratorState = {
     ...current,
+    settingsVersion: handoff.settings.version,
+    settings: handoff.settings,
     activeConfigurator: sourceProduct(handoff.source),
     journey: {
       ...current.journey,

@@ -68,6 +68,7 @@ export function buildConfiguratorJourney(
     entryPoint: ConfiguratorType | null,
     interests: ConfiguratorInterests,
     results: ConfiguratorResults,
+    additionalSolutionsReviewed = false,
 ): ConfiguratorJourneyState {
   const remainingProducts = sortProducts(getInterestProducts(interests)).filter(
     (product) => product !== entryPoint,
@@ -82,7 +83,18 @@ export function buildConfiguratorJourney(
         entryPoint,
         selectedProducts,
         completedProducts,
+        additionalSolutionsReviewed,
     };
+}
+
+export function shouldReviewAdditionalEnergySolutions(
+  journey: ConfiguratorJourneyState,
+  currentProduct: ConfiguratorType,
+): boolean {
+  return (
+    !journey.additionalSolutionsReviewed &&
+    (currentProduct === "heat_pump" || currentProduct === "climate")
+  );
 }
 
 export function getNextConfiguratorProduct(

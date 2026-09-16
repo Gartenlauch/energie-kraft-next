@@ -12,6 +12,8 @@ interface ClimateResultProps {
   nextConfigurator: ConfiguratorType | null;
   onBack: () => void;
   onContinue: () => void;
+  reviewAdditionalSolutions: boolean;
+  onAdditionalSolutionsReviewed: () => void;
 }
 const numberFormatter = new Intl.NumberFormat("de-DE", {
     maximumFractionDigits: 1,
@@ -34,6 +36,8 @@ export function ClimateResult({
   onBack,
   onContinue,
   nextConfigurator,
+  reviewAdditionalSolutions,
+  onAdditionalSolutionsReviewed,
 }: ClimateResultProps) {
   return (
     <section aria-labelledby="climate-result-heading">
@@ -162,13 +166,14 @@ export function ClimateResult({
         </div>
       ) : null}
 
-      <AdditionalEnergySolutions currentProduct="climate" />
+      {reviewAdditionalSolutions ? <AdditionalEnergySolutions currentProduct="climate" /> : null}
 
       <ConfiguratorJourneyActions
         currentConfigurator="climate"
         nextConfigurator={nextConfigurator}
         onBack={onBack}
         onContinue={onContinue}
+        onAdvance={reviewAdditionalSolutions ? onAdditionalSolutionsReviewed : undefined}
       />
 
       <p className="text-foreground/60 mt-6 text-sm leading-6">

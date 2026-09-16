@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const profile = await mkdtemp(join(tmpdir(), "ek-sprint9-browser-"));
+const baseUrl = process.env.SPRINT9_BROWSER_BASE_URL ?? "http://localhost:3020";
 const chrome = spawn(
   "C:/Program Files/Google/Chrome/Application/chrome.exe",
   [
@@ -70,7 +71,7 @@ try {
     throw new Error(`Timeout: ${message}`);
   }
   async function navigate(route) {
-    await send("Page.navigate", { url: `http://localhost:3020${route}` });
+    await send("Page.navigate", { url: `${baseUrl}${route}` });
     await waitFor(
       `location.pathname === ${JSON.stringify(route)} && document.readyState === 'complete' && !!document.querySelector('main')`,
       route,
@@ -98,8 +99,13 @@ try {
   }
   async function assertLayout(width, label) {
     const info = await js(
-      `({overflow:document.documentElement.scrollWidth > document.documentElement.clientWidth,h1:document.querySelectorAll('main h1').length,crash:document.body.innerText.includes('Ein technischer Fehler')})`,
+      `({overflow:document.documentElement.scrollWidth > document.documentElement.clientWidth,viewportWidth:window.innerWidth,documentWidth:document.documentElement.clientWidth,bodyWidth:document.body.clientWidth,h1:document.querySelectorAll('main h1').length,crash:document.body.innerText.includes('Ein technischer Fehler')})`,
     );
+    assert.equal(info.viewportWidth, width, `${label} viewport width`);
+    if (width === 390) {
+      assert.equal(info.documentWidth, width, `${label} document width`);
+      assert.equal(info.bodyWidth, width, `${label} body width`);
+    }
     assert.equal(info.h1, 1, `${label} h1 at ${width}`);
     assert.equal(info.overflow, false, `${label} overflow at ${width}`);
     assert.equal(info.crash, false, `${label} crash at ${width}`);
@@ -129,6 +135,7 @@ try {
     await navigate("/konfigurator/photovoltaik");
     await clearProject();
     await navigate("/konfigurator/photovoltaik");
+    await waitFor("document.body.innerText.includes('Energiesystem konfigurieren')", "PV project phase");
     await clickMain("3 Personen");
     await clickMain("Weiter", true);
     await clickMain("Eigentümer");
@@ -177,13 +184,16 @@ try {
       "document.querySelector('main h1')?.textContent.includes('Stromspeicher-Empfehlung')",
       "storage result",
     );
-    await clickMain("Weiter zu den Kontaktdaten");
+    await waitFor("document.body.innerText.toLowerCase().includes('deine analyse ist vorbereitet')", "pre-contact preview");
+    await clickMain("Persönliche Projektanalyse erhalten");
     await waitFor("document.activeElement?.id === 'configurator-first-name'", "first-name focus");
     await assertLayout(width, "PV/storage contact");
     await screenshot(`contact-${width}`);
 
     await clearProject();
     await navigate("/konfigurator/waermepumpe");
+    await clickMain("Gasheizung");
+    await clickMain("Weiter", true);
     await setInput("#heat-pump-heated-area", 160);
     await clickMain("Weiter", true);
     await clickMain("Ca. 90");
@@ -206,6 +216,7 @@ try {
     );
     await clickMain("Weiter zur Klimaanlage");
     await waitFor("location.pathname === '/konfigurator/klimaanlage'", "climate route");
+    await waitFor("document.querySelector('#climate-conditioned-area')?.value === '160'", "heat-pump area prefill");
     await setInput("#climate-room-count", 4);
     await clickMain("Weiter", true);
     await clickMain("Durchschnittlich");
@@ -223,7 +234,7 @@ try {
     await js("document.querySelector('main figure')?.scrollIntoView({block:'center'})");
     await pause(150);
     await screenshot(`climate-chart-${width}`);
-    await clickMain("Weiter zu den Kontaktdaten");
+    await clickMain("Persönliche Projektanalyse erhalten");
     await waitFor(
       "document.activeElement?.id === 'configurator-first-name'",
       "heat/climate first-name focus",
@@ -248,14 +259,15 @@ try {
     assert(calculatorHandoff, "calculator CTA did not persist its handoff");
     await waitFor("location.pathname === '/konfigurator/photovoltaik'", "calculator handoff route");
     await waitFor(
-      `sessionStorage.getItem('energie-kraft:configurator:state:v8') !== null`,
+      `sessionStorage.getItem('energie-kraft:configurator:state:v10') !== null`,
       "calculator handoff state",
     );
     const handoff = await js(
-      `(() => { const value=sessionStorage.getItem('energie-kraft:configurator:state:v8'); return value ? JSON.parse(value) : null; })()`,
+      `(() => { const value=sessionStorage.getItem('energie-kraft:configurator:state:v10'); return value ? JSON.parse(value) : null; })()`,
     );
     assert.equal(handoff.household.annualConsumptionKwh, 4500);
     assert.equal(handoff.roof.orientation, "south");
+    assert.equal(handoff.settingsVersion, handoff.settings.version);
     console.log(`PASS Sprint 9 representative flows at ${width}px`);
   }
 

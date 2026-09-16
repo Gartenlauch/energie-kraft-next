@@ -18,6 +18,7 @@ import type {
   ClimateSystemRecommendation,
 } from "@/types/climate-calculator";
 import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 import { ComparisonBars } from "@/components/charts/energy-charts";
 
 type ClimateFormValues = {
@@ -162,9 +163,9 @@ function ResultCard({ label, value, description }: ResultCardProps) {
   );
 }
 
-export function ClimateCostCalculator() {
+export function ClimateCostCalculator({ initialInput = defaultClimateCalculatorInput, settings }: { initialInput?: ClimateCalculatorInput; settings: ConfiguratorSettings }) {
   const [formValues, setFormValues] = useState<ClimateFormValues>(() =>
-    createFormValues(defaultClimateCalculatorInput),
+    createFormValues(initialInput),
   );
 
   const [fieldErrors, setFieldErrors] = useState<ClimateFieldErrors>({});
@@ -172,7 +173,7 @@ export function ClimateCostCalculator() {
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const [result, setResult] = useState<ClimateCalculatorResult>(() =>
-    calculateClimateCost(defaultClimateCalculatorInput),
+    calculateClimateCost(initialInput),
   );
 
   function clearFieldError(name: keyof ClimateCalculatorInput) {
@@ -232,12 +233,12 @@ export function ClimateCostCalculator() {
   }
 
   function handleReset() {
-    setFormValues(createFormValues(defaultClimateCalculatorInput));
+    setFormValues(createFormValues(initialInput));
 
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(calculateClimateCost(defaultClimateCalculatorInput));
+    setResult(calculateClimateCost(initialInput));
   }
 
   return (
@@ -531,6 +532,7 @@ export function ClimateCostCalculator() {
             <CalculatorProjectCta
               handoff={{
                 version: 1,
+                settings,
                 source: "climate",
                 values: {
                   conditionedAreaM2: result.input.conditionedAreaM2,

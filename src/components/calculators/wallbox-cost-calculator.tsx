@@ -15,6 +15,7 @@ import type {
   WallboxNumericInputKey,
 } from "@/types/wallbox-calculator";
 import { CalculatorProjectCta } from "@/components/calculators/calculator-project-cta";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 import { ComparisonBars, SegmentedEnergyBar } from "@/components/charts/energy-charts";
 
 type WallboxFormValues = {
@@ -137,9 +138,9 @@ function ResultCard({ label, value, description }: ResultCardProps) {
   );
 }
 
-export function WallboxCostCalculator() {
+export function WallboxCostCalculator({ initialInput = defaultWallboxCalculatorInput, settings }: { initialInput?: WallboxCalculatorInput; settings: ConfiguratorSettings }) {
   const [formValues, setFormValues] = useState<WallboxFormValues>(() =>
-      createFormValues(defaultWallboxCalculatorInput),
+      createFormValues(initialInput),
     );
 
   const [fieldErrors, setFieldErrors] = useState<WallboxFieldErrors>({});
@@ -147,7 +148,7 @@ export function WallboxCostCalculator() {
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const [result, setResult] = useState<WallboxCalculatorResult>(() =>
-    calculateWallboxCost(defaultWallboxCalculatorInput),
+    calculateWallboxCost(initialInput),
     );
 
   function clearFieldError(name: keyof WallboxCalculatorInput) {
@@ -206,12 +207,12 @@ export function WallboxCostCalculator() {
   }
 
   function handleReset() {
-    setFormValues(createFormValues(defaultWallboxCalculatorInput));
+    setFormValues(createFormValues(initialInput));
 
     setFieldErrors({});
     setGeneralError(null);
 
-    setResult(calculateWallboxCost(defaultWallboxCalculatorInput));
+    setResult(calculateWallboxCost(initialInput));
   }
 
   const recommendation =
@@ -507,6 +508,7 @@ export function WallboxCostCalculator() {
             <CalculatorProjectCta
               handoff={{
                 version: 1,
+                settings,
                 source: "wallbox",
                 values: {
                   annualDrivingKm: result.input.annualDrivingKm,

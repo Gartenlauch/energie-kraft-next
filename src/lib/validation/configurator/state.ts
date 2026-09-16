@@ -20,6 +20,10 @@ import { WALLBOX_CHARGING_POWER_OPTIONS } from "@/types/configurator";
 import { heatPumpCalculatorInputSchema } from "@/lib/validation/heat-pump-calculator";
 import { climateCalculatorInputSchema } from "@/lib/validation/climate-calculator";
 import { CLIMATE_INSULATION_LEVELS, CLIMATE_SOLAR_LOADS } from "@/types/climate-calculator";
+import {
+  DEFAULT_CONFIGURATOR_SETTINGS,
+  configuratorSettingsSchema,
+} from "@/lib/configurator/settings-model";
 
 export const householdPersonsSchema = z.union([
   z.literal(1),
@@ -136,9 +140,10 @@ export const photovoltaicResultSchema = z.object({
   specificYieldKwhPerKwpMin: z.number().int().positive(),
   specificYieldKwhPerKwpMax: z.number().int().positive(),
 
-  estimatedTotalCostEuro: z.number().nonnegative(),
-  estimatedMinimumCostEuro: z.number().nonnegative(),
-  estimatedMaximumCostEuro: z.number().nonnegative(),
+  pricingMode: z.enum(["modeled", "individual_quote_required"]),
+  estimatedTotalCostEuro: z.number().nonnegative().nullable(),
+  estimatedMinimumCostEuro: z.number().nonnegative().nullable(),
+  estimatedMaximumCostEuro: z.number().nonnegative().nullable(),
 
   batteryStorageRequested: z.boolean(),
   technicalReviewRecommended: z.boolean(),
@@ -157,9 +162,10 @@ export const batteryStorageResultSchema = z.object({
 
   recommendedUsableCapacityKwhMax: z.number().positive(),
 
-  estimatedTotalCostEuro: z.number().nonnegative(),
-  estimatedMinimumCostEuro: z.number().nonnegative(),
-  estimatedMaximumCostEuro: z.number().nonnegative(),
+  pricingMode: z.enum(["modeled", "individual_quote_required"]),
+  estimatedTotalCostEuro: z.number().nonnegative().nullable(),
+  estimatedMinimumCostEuro: z.number().nonnegative().nullable(),
+  estimatedMaximumCostEuro: z.number().nonnegative().nullable(),
 
   technicalUpperBoundUsableCapacityKwh: z.number().positive(),
 
@@ -231,6 +237,12 @@ export const wallboxConfiguratorResultSchema = z.object({
 
 export const heatPumpHeatedAreaSchema = z.number().finite().min(20).max(5_000);
 
+export const existingHeatingSystemSchema = z.enum(["gas", "oil", "new_build", "other_unknown"]);
+
+export const annualGasConsumptionKwhSchema = z.number().finite().min(500).max(200_000);
+
+export const annualOilConsumptionLitresSchema = z.number().finite().min(50).max(20_000);
+
 export const heatPumpSpecificHeatingDemandSchema = z.number().finite().min(10).max(400);
 
 export const heatPumpOccupancyPersonsSchema = z.number().int().min(1).max(100);
@@ -254,9 +266,23 @@ export const heatPumpConfiguratorResultSchema = z.object({
 
   annualHeatPumpOperatingCostEuro: z.number().nonnegative(),
 
-  currentHeatingOperatingCostEuro: z.number().nonnegative(),
+  currentHeatingOperatingCostEuro: z.number().nonnegative().nullable(),
 
-  annualOperatingCostDifferenceEuro: z.number(),
+  annualOperatingCostDifferenceEuro: z.number().nullable(),
+
+  heatingComparisonKind: z.enum(["existing_system", "reference_scenario", "unavailable"]),
+
+  heatingComparisonBasis: z.enum(["user_consumption", "modeled_heat_demand", "unavailable"]),
+
+  heatingComparisonLabel: z.string().min(1).max(120),
+
+  comparisonFuelPriceEuroPerUnit: z.number().positive().nullable(),
+
+  comparisonFuelUnit: z.enum(["kWh", "litre"]).nullable(),
+
+  comparisonEfficiencyPercent: z.number().positive().max(100).nullable(),
+
+  oilEnergyContentKwhPerLitre: z.number().positive().nullable(),
 
   estimatedTotalCostEuro: z.number().nonnegative(),
 
@@ -299,6 +325,8 @@ export const climateConfiguratorResultSchema = z.object({
 
 export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
     version: z.literal(CONFIGURATOR_STATE_VERSION),
+    settingsVersion: z.number().int().nonnegative(),
+    settings: configuratorSettingsSchema,
 
     activeConfigurator: configuratorTypeSchema.nullable(),
     journey: z.object({
@@ -307,6 +335,8 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
     selectedProducts: z.array(configuratorTypeSchema),
 
     completedProducts: z.array(configuratorTypeSchema),
+
+    additionalSolutionsReviewed: z.boolean(),
     }),
 
     household: z.object({
@@ -360,6 +390,12 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
     }),
 
     heatPump: z.object({
+    existingHeatingSystem: existingHeatingSystemSchema.optional(),
+
+    annualGasConsumptionKwh: annualGasConsumptionKwhSchema.optional(),
+
+    annualOilConsumptionLitres: annualOilConsumptionLitresSchema.optional(),
+
     heatedAreaM2: heatPumpHeatedAreaSchema.optional(),
 
     specificSpaceHeatingDemandKwhPerM2Year: heatPumpSpecificHeatingDemandSchema.optional(),
@@ -393,7 +429,7 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
 
     notes: z.object({
       hasNotes: z.boolean().optional(),
-      text: z.string().max(2_000).optional(),
+      text: z.string().max(1_000).optional(),
     }),
 
     results: z.object({
@@ -410,7 +446,38 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
   });
 
 export function parseConfiguratorState(input: unknown): ConfiguratorState | null {
-  const result = configuratorStateSchema.safeParse(input);
+  let candidate = input;
+
+  if (
+    typeof input === "object" &&
+    input !== null &&
+    "version" in input &&
+    (input.version === 8 || input.version === 9)
+  ) {
+    const legacy = input as Record<string, unknown>;
+    const legacyJourney =
+      typeof legacy.journey === "object" && legacy.journey !== null
+        ? (legacy.journey as Record<string, unknown>)
+        : {};
+    const legacyResults =
+      typeof legacy.results === "object" && legacy.results !== null
+        ? (legacy.results as Record<string, unknown>)
+        : {};
+
+    candidate = {
+      ...legacy,
+      version: CONFIGURATOR_STATE_VERSION,
+      settingsVersion: 0,
+      settings: DEFAULT_CONFIGURATOR_SETTINGS,
+      journey: {
+        ...legacyJourney,
+        additionalSolutionsReviewed:
+          legacyJourney.entryPoint === "photovoltaic" && legacyResults.photovoltaic !== undefined,
+      },
+    };
+  }
+
+  const result = configuratorStateSchema.safeParse(candidate);
 
   if (!result.success) {
     return null;

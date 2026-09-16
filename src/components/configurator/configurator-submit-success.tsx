@@ -1,48 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 
 interface ConfiguratorSubmitSuccessProps {
-  leadId: string;
+  publicReference: string;
 
   reportStatus?: "generated" | "failed";
 
   customerMailStatus?: "accepted" | "failed";
-
-  onRestart: () => void;
 }
 
 export function ConfiguratorSubmitSuccess({
-  leadId,
+  publicReference,
   reportStatus,
   customerMailStatus,
-  onRestart,
 }: ConfiguratorSubmitSuccessProps) {
-  const router = useRouter();
-
   const projectOverviewSent = reportStatus === "generated" && customerMailStatus === "accepted";
 
   function handleRestart() {
-    /*
-     * Lokalen Wizard-Zustand ebenfalls
-     * zurücksetzen. Das ist insbesondere
-     * wichtig, wenn wir uns bereits auf der
-     * PV-Route befinden.
-     */
-    onRestart();
-
-    /*
-     * Ein neues Energieprojekt beginnt
-     * standardmäßig beim PV-Konfigurator.
-     *
-     * replace verhindert außerdem, dass
-     * "Zurück" wieder auf der alten
-     * Success-Ansicht landet.
-     */
-    router.replace("/konfigurator/photovoltaik");
+    // Der Seitenwechsel lädt die aktuelle Modellversion für das neue Projekt.
+    window.location.replace("/konfigurator/photovoltaik");
   }
 
   return (
@@ -80,7 +59,7 @@ export function ConfiguratorSubmitSuccess({
           <p className="text-foreground/60 text-sm">Referenz</p>
 
           <p className="text-brand-primary mt-1 font-mono text-sm font-semibold break-all">
-            {leadId}
+            {publicReference}
           </p>
         </div>
 

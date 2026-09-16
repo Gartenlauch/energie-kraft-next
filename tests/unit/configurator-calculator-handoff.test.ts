@@ -7,6 +7,7 @@ import {
   writeCalculatorHandoff,
 } from "@/lib/configurator/calculator-handoff";
 import { createInitialConfiguratorState } from "@/lib/configurator/state";
+import { DEFAULT_CONFIGURATOR_SETTINGS } from "@/lib/configurator/settings-model";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -37,6 +38,7 @@ describe("calculator to configurator handoff", () => {
       version: 1,
       source: "pv_roi",
       createdAt: Date.now(),
+      settings: DEFAULT_CONFIGURATOR_SETTINGS,
       values: { annualConsumptionKwh: 5_200 },
     });
     expect(readCalculatorHandoff(storage)?.source).toBe("pv_roi");
@@ -47,10 +49,12 @@ describe("calculator to configurator handoff", () => {
 
   it("prefills compatible values without overwriting existing configurator input", () => {
     const state = { ...createInitialConfiguratorState(), heatPump: { heatedAreaM2: 175 } };
+    const settings = { ...DEFAULT_CONFIGURATOR_SETTINGS, version: 17 };
     const next = applyCalculatorHandoff(state, {
       version: 1,
       source: "heat_pump",
       createdAt: Date.now(),
+      settings,
       values: {
         heatedAreaM2: 120,
         specificSpaceHeatingDemandKwhPerM2Year: 75,
@@ -62,6 +66,8 @@ describe("calculator to configurator handoff", () => {
     expect(next.heatPump.heatedAreaM2).toBe(175);
     expect(next.heatPump.occupancyPersons).toBe(3);
     expect(next.journey.entryPoint).toBe("heat_pump");
+    expect(next.settingsVersion).toBe(17);
+    expect(next.settings).toBe(settings);
   });
 
   it("maps only semantically equivalent PV sizing values", () => {
@@ -69,6 +75,7 @@ describe("calculator to configurator handoff", () => {
       version: 1,
       source: "pv_sizing",
       createdAt: Date.now(),
+      settings: DEFAULT_CONFIGURATOR_SETTINGS,
       values: { annualConsumptionKwh: 4_800, roofOrientation: "eastWest" },
     });
     expect(next.household.annualConsumptionKwh).toBe(4_800);

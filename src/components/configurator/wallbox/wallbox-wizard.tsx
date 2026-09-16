@@ -118,11 +118,6 @@ export function WallboxWizard({ hasPhotovoltaicContext }: WallboxWizardProps) {
             />
           );
         }}
-        onRestart={() => {
-          setShowResult(false);
-
-          setCurrentStepId("vehicle_data");
-        }}
       />
     );
   }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ConfiguratorLeadFlow } from "@/components/configurator/configurator-lead-flow";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { HeatPumpEfficiencyStep } from "@/components/configurator/heat-pump/heat-pump-efficiency-step";
+import { HeatPumpExistingHeatingStep } from "@/components/configurator/heat-pump/heat-pump-existing-heating-step";
 import { HeatPumpFlowTemperatureStep } from "@/components/configurator/heat-pump/heat-pump-flow-temperature-step";
 import { HeatPumpHeatedAreaStep } from "@/components/configurator/heat-pump/heat-pump-heated-area-step";
 import { HeatPumpHeatingDemandStep } from "@/components/configurator/heat-pump/heat-pump-heating-demand-step";
@@ -13,14 +14,17 @@ import { heatPumpWizardSteps } from "@/content/configurators";
 import { buildHeatPumpConfiguratorResult } from "@/lib/configurator/heat-pump";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isHeatPumpStepComplete } from "@/lib/validation/configurator/heat-pump";
-import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
+import {
+  getNextConfiguratorProduct,
+  shouldReviewAdditionalEnergySolutions,
+} from "@/lib/configurator/journey";
 import type { HeatPumpStepId } from "@/types/configurator";
 import { ProjectAnalysisPromise } from "@/components/configurator/project-analysis-promise";
 
 export function HeatPumpWizard() {
   const { state, dispatch } = useConfigurator();
 
-  const [currentStepId, setCurrentStepId] = useState<HeatPumpStepId>("heated_area");
+  const [currentStepId, setCurrentStepId] = useState<HeatPumpStepId>("existing_heating");
 
   const [showResult, setShowResult] = useState(() => state.results.heatPump !== undefined);
 
@@ -107,6 +111,10 @@ export function HeatPumpWizard() {
             );
           }
           const nextConfigurator = getNextConfiguratorProduct(state.journey, "heat_pump");
+          const reviewAdditionalSolutions = shouldReviewAdditionalEnergySolutions(
+            state.journey,
+            "heat_pump",
+          );
 
           return (
             <HeatPumpResult
@@ -114,13 +122,12 @@ export function HeatPumpWizard() {
               nextConfigurator={nextConfigurator}
               onBack={() => setShowResult(false)}
               onContinue={onContinue}
+              reviewAdditionalSolutions={reviewAdditionalSolutions}
+              onAdditionalSolutionsReviewed={() =>
+                dispatch({ type: "MARK_ADDITIONAL_SOLUTIONS_REVIEWED" })
+              }
             />
           );
-        }}
-        onRestart={() => {
-          setShowResult(false);
-
-          setCurrentStepId("heated_area");
         }}
       />
     );
@@ -157,6 +164,30 @@ export function HeatPumpWizard() {
         ) : null}
 
         <div className="mt-8">
+          {currentStep.id === "existing_heating" ? (
+            <HeatPumpExistingHeatingStep
+              selected={state.heatPump.existingHeatingSystem}
+              annualGasConsumptionKwh={state.heatPump.annualGasConsumptionKwh}
+              annualOilConsumptionLitres={state.heatPump.annualOilConsumptionLitres}
+              onSelect={(value) =>
+                dispatch({
+                  type: "UPDATE_HEAT_PUMP",
+                  payload: {
+                    existingHeatingSystem: value,
+                    ...(value === "gas" ? { annualOilConsumptionLitres: undefined } : {}),
+                    ...(value === "oil" ? { annualGasConsumptionKwh: undefined } : {}),
+                  },
+                })
+              }
+              onGasConsumptionChange={(value) =>
+                dispatch({ type: "UPDATE_HEAT_PUMP", payload: { annualGasConsumptionKwh: value } })
+              }
+              onOilConsumptionChange={(value) =>
+                dispatch({ type: "UPDATE_HEAT_PUMP", payload: { annualOilConsumptionLitres: value } })
+              }
+            />
+          ) : null}
+
           {currentStep.id === "heated_area" ? (
             <HeatPumpHeatedAreaStep
               value={state.heatPump.heatedAreaM2}

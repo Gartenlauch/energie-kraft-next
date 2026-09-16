@@ -353,7 +353,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
 
   return sendMailgunMail({
     to: lead.contact.email,
-    subject: "Deine persönliche Energieprojekt-Analyse",
+    subject: `Deine persönliche Energieprojekt-Analyse · ${leadId}`,
     text,
     html,
     /*

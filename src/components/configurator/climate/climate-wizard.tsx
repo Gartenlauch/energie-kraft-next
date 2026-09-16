@@ -12,7 +12,10 @@ import { climateWizardSteps } from "@/content/configurators";
 import { buildClimateConfiguratorResult } from "@/lib/configurator/climate";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { isClimateStepComplete } from "@/lib/validation/configurator/climate";
-import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
+import {
+  getNextConfiguratorProduct,
+  shouldReviewAdditionalEnergySolutions,
+} from "@/lib/configurator/journey";
 import type { ClimateStepId } from "@/types/configurator";
 import { ProjectAnalysisPromise } from "@/components/configurator/project-analysis-promise";
 
@@ -106,20 +109,23 @@ export function ClimateWizard() {
                         );
                     }
           const nextConfigurator = getNextConfiguratorProduct(state.journey, "climate");
+          const reviewAdditionalSolutions = shouldReviewAdditionalEnergySolutions(
+            state.journey,
+            "climate",
+          );
 
                     return (
                         <ClimateResult
                             result={result}
               nextConfigurator={nextConfigurator}
               onBack={() => setShowResult(false)}
-                            onContinue={onContinue}
+              onContinue={onContinue}
+              reviewAdditionalSolutions={reviewAdditionalSolutions}
+              onAdditionalSolutionsReviewed={() =>
+                dispatch({ type: "MARK_ADDITIONAL_SOLUTIONS_REVIEWED" })
+              }
                         />
                     );
-                }}
-                onRestart={() => {
-                    setShowResult(false);
-
-          setCurrentStepId("rooms");
                 }}
             />
         );
@@ -157,9 +163,13 @@ export function ClimateWizard() {
 
                 <div className="mt-8">
                     {currentStep.id === "rooms" ? (
-                        <ClimateRoomsStep
+            <ClimateRoomsStep
               conditionedAreaM2={state.climate.conditionedAreaM2}
               roomCount={state.climate.roomCount}
+              areaPrefilledFromHeatPump={
+                state.results.heatPump !== undefined &&
+                state.climate.conditionedAreaM2 === state.heatPump.heatedAreaM2
+              }
               onConditionedAreaChange={(value) =>
                                 dispatch({
                                     type: "UPDATE_CLIMATE",
@@ -208,8 +218,12 @@ export function ClimateWizard() {
                     ) : null}
 
           {currentStep.id === "occupancy" ? (
-                        <ClimateOccupancyStep
+            <ClimateOccupancyStep
               value={state.climate.occupancyPersons}
+              prefilledFromHeatPump={
+                state.results.heatPump !== undefined &&
+                state.climate.occupancyPersons === state.heatPump.occupancyPersons
+              }
                             onChange={(value) =>
                                 dispatch({
                                     type: "UPDATE_CLIMATE",

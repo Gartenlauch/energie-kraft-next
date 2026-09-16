@@ -1,4 +1,9 @@
 import type { PvRoofOrientation, PvShadingLevel } from "@/types/pv-sizing-calculator";
+import {
+  DEFAULT_CONFIGURATOR_SETTINGS,
+  calculateTieredCostCorridor,
+  type ConfiguratorSettings,
+} from "@/lib/configurator/settings-model";
 
 export const PV_ORIENTATION_FACTORS = {
   south: 1,
@@ -20,62 +25,50 @@ export const PV_DEFAULT_TARGET_GENERATION_COVERAGE_PERCENT = 110;
 
 /** Gemeinsame, sichtbare Kostenannahmen fuer PV und Speicher. */
 export const PV_PROJECT_COST_ASSUMPTIONS = {
-  pvCostEuroPerKwp: 1_500,
-  batteryCostEuroPerKwh: 700,
-  fixedAdditionalCostEuro: 2_000,
-  costUncertaintyPercent: 15,
+  pvCostEuroPerKwp: 1_200,
+  batteryCostEuroPerKwh: 1_000,
+  fixedAdditionalCostEuro: DEFAULT_CONFIGURATOR_SETTINGS.photovoltaic.fixedAdditionalCostEuro,
+  costUncertaintyPercent: DEFAULT_CONFIGURATOR_SETTINGS.general.costUncertaintyPercent,
 } as const;
 
 export const PV_ECONOMIC_ASSUMPTIONS = {
-  specificYieldKwhPerKwpFallback: 1_000,
-  selfConsumptionRatePercent: 35,
-  electricityPriceEuroPerKwh: 0.32,
-  feedInTariffEuroPerKwh: 0.08,
-  annualOperatingCostEuro: 200,
-  annualDegradationPercent: 0.5,
-  electricityPriceIncreasePercent: 2,
-  calculationYears: 20,
+  specificYieldKwhPerKwpFallback:
+    DEFAULT_CONFIGURATOR_SETTINGS.photovoltaic.specificYieldKwhPerKwpFallback,
+  selfConsumptionRatePercent:
+    DEFAULT_CONFIGURATOR_SETTINGS.photovoltaic.defaultSelfConsumptionPercent,
+  electricityPriceEuroPerKwh:
+    DEFAULT_CONFIGURATOR_SETTINGS.economics.gridElectricityPriceEuroPerKwh,
+  feedInTariffEuroPerKwh: DEFAULT_CONFIGURATOR_SETTINGS.economics.feedInValueEuroPerKwh,
+  annualOperatingCostEuro: DEFAULT_CONFIGURATOR_SETTINGS.photovoltaic.annualOperatingCostEuro,
+  annualDegradationPercent: DEFAULT_CONFIGURATOR_SETTINGS.photovoltaic.annualDegradationPercent,
+  electricityPriceIncreasePercent:
+    DEFAULT_CONFIGURATOR_SETTINGS.economics.electricityPriceDevelopmentPercent,
+  calculationYears: DEFAULT_CONFIGURATOR_SETTINGS.economics.projectHorizonYears,
 } as const;
 
-function roundEuro(value: number): number {
-  return Math.round(value);
-}
-
-export function calculatePvProjectCostCorridor(powerKwpMin: number, powerKwpMax: number) {
-  const assumptions = PV_PROJECT_COST_ASSUMPTIONS;
-  const uncertainty = assumptions.costUncertaintyPercent / 100;
-  const basePowerKwp = (powerKwpMin + powerKwpMax) / 2;
-
-  return {
-    estimatedTotalCostEuro: roundEuro(
-      basePowerKwp * assumptions.pvCostEuroPerKwp + assumptions.fixedAdditionalCostEuro,
-    ),
-    estimatedMinimumCostEuro: roundEuro(
-      (powerKwpMin * assumptions.pvCostEuroPerKwp + assumptions.fixedAdditionalCostEuro) *
-        (1 - uncertainty),
-    ),
-    estimatedMaximumCostEuro: roundEuro(
-      (powerKwpMax * assumptions.pvCostEuroPerKwp + assumptions.fixedAdditionalCostEuro) *
-        (1 + uncertainty),
-    ),
-  };
+export function calculatePvProjectCostCorridor(
+  powerKwpMin: number,
+  powerKwpMax: number,
+  settings: ConfiguratorSettings = DEFAULT_CONFIGURATOR_SETTINGS,
+) {
+  return calculateTieredCostCorridor({
+    sizeMin: powerKwpMin,
+    sizeMax: powerKwpMax,
+    pricing: settings.photovoltaic.pricing,
+    fixedAdditionalCostEuro: settings.photovoltaic.fixedAdditionalCostEuro,
+    costUncertaintyPercent: settings.general.costUncertaintyPercent,
+  });
 }
 
 export function calculateBatteryProjectCostCorridor(
   capacityKwhMin: number,
   capacityKwhMax: number,
+  settings: ConfiguratorSettings = DEFAULT_CONFIGURATOR_SETTINGS,
 ) {
-  const assumptions = PV_PROJECT_COST_ASSUMPTIONS;
-  const uncertainty = assumptions.costUncertaintyPercent / 100;
-  const baseCapacityKwh = (capacityKwhMin + capacityKwhMax) / 2;
-
-  return {
-    estimatedTotalCostEuro: roundEuro(baseCapacityKwh * assumptions.batteryCostEuroPerKwh),
-    estimatedMinimumCostEuro: roundEuro(
-      capacityKwhMin * assumptions.batteryCostEuroPerKwh * (1 - uncertainty),
-    ),
-    estimatedMaximumCostEuro: roundEuro(
-      capacityKwhMax * assumptions.batteryCostEuroPerKwh * (1 + uncertainty),
-    ),
-  };
+  return calculateTieredCostCorridor({
+    sizeMin: capacityKwhMin,
+    sizeMax: capacityKwhMax,
+    pricing: settings.batteryStorage.pricing,
+    costUncertaintyPercent: settings.general.costUncertaintyPercent,
+  });
 }

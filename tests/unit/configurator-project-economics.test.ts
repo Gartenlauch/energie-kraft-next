@@ -45,6 +45,7 @@ function withHeatPump(state = createInitialConfiguratorState()): ConfiguratorSta
   const configured: ConfiguratorState = {
     ...state,
     heatPump: {
+      existingHeatingSystem: "gas",
       heatedAreaM2: 160,
       specificSpaceHeatingDemandKwhPerM2Year: 90,
       occupancyPersons: 4,
@@ -133,7 +134,7 @@ describe("canonical configurator project economics", () => {
     const state = withWallbox(withClimate(withHeatPump(withStorage(withPv()))));
     const economics = calculateProjectEconomics(state);
     const componentSum = economics.components.reduce(
-      (sum, component) => sum + component.investmentBaseEuro,
+      (sum, component) => sum + (component.investmentBaseEuro ?? 0),
       0,
     );
     expect(economics.components).toHaveLength(5);

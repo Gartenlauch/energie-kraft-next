@@ -1,5 +1,4 @@
 import { calculatePvRoi } from "@/lib/calculators/pv-roi";
-import { PV_ECONOMIC_ASSUMPTIONS } from "@/lib/calculators/pv-model";
 import type {
   ComponentEconomics,
   ConfiguratorState,
@@ -8,34 +7,29 @@ import type {
   ProjectEconomicsResult,
 } from "@/types/configurator";
 
-const PROJECT_HORIZON_YEARS = 20;
-const STORAGE_ROUND_TRIP_EFFICIENCY = 0.9;
-const STORAGE_EQUIVALENT_FULL_CYCLES_PER_YEAR = 220;
-const STORAGE_ECONOMIC_LIFETIME_YEARS = 15;
-
 function round(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
 function getPaybackYears(investmentEuro: number, annualEffects: readonly number[]): number | null {
   let cumulative = -investmentEuro;
-
   for (let index = 0; index < annualEffects.length; index += 1) {
     const effect = annualEffects[index] ?? 0;
     const previous = cumulative;
     cumulative += effect;
-
     if (previous < 0 && cumulative >= 0 && effect > 0) {
       return round(index + Math.abs(previous) / effect);
     }
   }
-
   return null;
 }
 
 function buildPvEffects(state: ConfiguratorState, scenario: EconomicScenarioId): number[] {
+  const settings = state.settings;
   const result = state.results.photovoltaic;
-  if (!result) return Array(PROJECT_HORIZON_YEARS).fill(0) as number[];
+  if (!result || result.pricingMode !== "modeled") {
+    return Array(settings.economics.projectHorizonYears).fill(0) as number[];
+  }
 
   const isConservative = scenario === "conservative";
   const isFavorable = scenario === "favorable";
@@ -54,36 +48,35 @@ function buildPvEffects(state: ConfiguratorState, scenario: EconomicScenarioId):
     : isFavorable
       ? result.estimatedMinimumCostEuro
       : result.estimatedTotalCostEuro;
-  const selfConsumptionRatePercent =
-    PV_ECONOMIC_ASSUMPTIONS.selfConsumptionRatePercent +
-    (isConservative ? -5 : isFavorable ? 5 : 0);
+  if (investment === null) return Array(settings.economics.projectHorizonYears).fill(0) as number[];
 
   return calculatePvRoi({
     annualConsumptionKwh: result.projectedAnnualConsumptionKwh,
     systemSizeKwp,
     specificYieldKwhPerKwp,
-    selfConsumptionRatePercent,
-    electricityPriceEuroPerKwh: PV_ECONOMIC_ASSUMPTIONS.electricityPriceEuroPerKwh,
-    feedInTariffEuroPerKwh: PV_ECONOMIC_ASSUMPTIONS.feedInTariffEuroPerKwh,
+    selfConsumptionRatePercent:
+      settings.photovoltaic.defaultSelfConsumptionPercent +
+      (isConservative ? -5 : isFavorable ? 5 : 0),
+    electricityPriceEuroPerKwh: settings.economics.gridElectricityPriceEuroPerKwh,
+    feedInTariffEuroPerKwh: settings.economics.feedInValueEuroPerKwh,
     netInvestmentCostEuro: investment,
-    annualOperatingCostEuro: PV_ECONOMIC_ASSUMPTIONS.annualOperatingCostEuro,
-    annualDegradationPercent: PV_ECONOMIC_ASSUMPTIONS.annualDegradationPercent,
-    electricityPriceIncreasePercent: PV_ECONOMIC_ASSUMPTIONS.electricityPriceIncreasePercent,
-    calculationYears: PROJECT_HORIZON_YEARS,
+    annualOperatingCostEuro: settings.photovoltaic.annualOperatingCostEuro,
+    annualDegradationPercent: settings.photovoltaic.annualDegradationPercent,
+    electricityPriceIncreasePercent: settings.economics.electricityPriceDevelopmentPercent,
+    calculationYears: settings.economics.projectHorizonYears,
   }).projections.map((projection) => projection.netCashFlowEuro);
 }
 
 function getStorageFirstYearEffect(state: ConfiguratorState): number {
   const storage = state.results.batteryStorage;
   if (!storage) return 0;
-
   const pv = state.results.photovoltaic;
   const generationKwh = pv
     ? (pv.estimatedAnnualYieldKwhMin + pv.estimatedAnnualYieldKwhMax) / 2
     : ((storage.pvPowerKwpMin + storage.pvPowerKwpMax) / 2) *
-      PV_ECONOMIC_ASSUMPTIONS.specificYieldKwhPerKwpFallback;
+      state.settings.photovoltaic.specificYieldKwhPerKwpFallback;
   const directUseKwh = Math.min(
-    generationKwh * (PV_ECONOMIC_ASSUMPTIONS.selfConsumptionRatePercent / 100),
+    generationKwh * (state.settings.photovoltaic.defaultSelfConsumptionPercent / 100),
     storage.annualConsumptionKwh,
   );
   const availableSurplusKwh = Math.max(generationKwh - directUseKwh, 0);
@@ -91,93 +84,93 @@ function getStorageFirstYearEffect(state: ConfiguratorState): number {
     (storage.recommendedUsableCapacityKwhMin + storage.recommendedUsableCapacityKwhMax) / 2;
   const chargedEnergyKwh = Math.min(
     availableSurplusKwh,
-    usableCapacityKwh * STORAGE_EQUIVALENT_FULL_CYCLES_PER_YEAR,
+    usableCapacityKwh * state.settings.batteryStorage.equivalentFullCyclesPerYear,
   );
-  const deliveredEnergyKwh = chargedEnergyKwh * STORAGE_ROUND_TRIP_EFFICIENCY;
-
+  const deliveredEnergyKwh =
+    chargedEnergyKwh * (state.settings.batteryStorage.roundTripEfficiencyPercent / 100);
   return round(
-    deliveredEnergyKwh * PV_ECONOMIC_ASSUMPTIONS.electricityPriceEuroPerKwh -
-      chargedEnergyKwh * PV_ECONOMIC_ASSUMPTIONS.feedInTariffEuroPerKwh,
+    deliveredEnergyKwh * state.settings.economics.gridElectricityPriceEuroPerKwh -
+      chargedEnergyKwh * state.settings.economics.feedInValueEuroPerKwh,
   );
 }
 
 function buildComponentEconomics(state: ConfiguratorState): ComponentEconomics[] {
   const components: ComponentEconomics[] = [];
+  const horizon = state.settings.economics.projectHorizonYears;
   const pv = state.results.photovoltaic;
   if (pv) {
-    const firstYear = buildPvEffects(state, "base")[0] ?? 0;
     components.push({
       component: "photovoltaic",
+      pricingMode: pv.pricingMode,
       analysisKind: "economic_effect",
       investmentMinEuro: pv.estimatedMinimumCostEuro,
       investmentBaseEuro: pv.estimatedTotalCostEuro,
       investmentMaxEuro: pv.estimatedMaximumCostEuro,
-      firstYearEconomicEffectEuro: firstYear,
-      economicLifetimeYears: PROJECT_HORIZON_YEARS,
-      explanation:
-        "Direkt genutzter Solarstrom plus Einspeisung, abzüglich modellierter Betriebskosten.",
+      firstYearEconomicEffectEuro: buildPvEffects(state, "base")[0] ?? 0,
+      economicLifetimeYears: horizon,
+      explanation: "Direkt genutzter Solarstrom plus Einspeisung, abzüglich modellierter Betriebskosten.",
     });
   }
-
   const storage = state.results.batteryStorage;
   if (storage) {
     components.push({
       component: "battery_storage",
+      pricingMode: storage.pricingMode,
       analysisKind: "economic_effect",
       investmentMinEuro: storage.estimatedMinimumCostEuro,
       investmentBaseEuro: storage.estimatedTotalCostEuro,
       investmentMaxEuro: storage.estimatedMaximumCostEuro,
       firstYearEconomicEffectEuro: getStorageFirstYearEffect(state),
-      economicLifetimeYears: STORAGE_ECONOMIC_LIFETIME_YEARS,
-      explanation:
-        "Nur der zusätzliche Wert verschobener PV-Überschüsse nach Speicherverlusten und entgangener Einspeisung.",
+      economicLifetimeYears: state.settings.batteryStorage.economicLifetimeYears,
+      explanation: "Nur der zusätzliche Wert verschobener PV-Überschüsse nach Speicherverlusten und entgangener Einspeisung.",
     });
   }
-
   const heatPump = state.results.heatPump;
   if (heatPump) {
+    const hasComparison = heatPump.annualOperatingCostDifferenceEuro !== null;
     components.push({
       component: "heat_pump",
-      analysisKind: "economic_effect",
+      pricingMode: "modeled",
+      analysisKind: hasComparison ? "economic_effect" : "operating_cost",
       investmentMinEuro: heatPump.estimatedMinimumCostEuro,
       investmentBaseEuro: heatPump.estimatedTotalCostEuro,
       investmentMaxEuro: heatPump.estimatedMaximumCostEuro,
-      firstYearEconomicEffectEuro: heatPump.annualOperatingCostDifferenceEuro,
-      economicLifetimeYears: PROJECT_HORIZON_YEARS,
-      explanation:
-        "Differenz aus modellierten Energiekosten des bisherigen Heizsystems und der Wärmepumpe; Förderung nicht eingerechnet.",
+      firstYearEconomicEffectEuro:
+        heatPump.annualOperatingCostDifferenceEuro ?? -heatPump.annualHeatPumpOperatingCostEuro,
+      economicLifetimeYears: horizon,
+      explanation: hasComparison
+        ? `Differenz zwischen ${heatPump.heatingComparisonLabel} und Wärmepumpenmodell; Förderung nicht eingerechnet.`
+        : "Wärmepumpen-Betriebskosten ohne erfundenen Vergleich zum unbekannten Heizsystem; Förderung nicht eingerechnet.",
     });
   }
-
   const climate = state.results.climate;
   if (climate) {
     components.push({
       component: "climate",
+      pricingMode: "modeled",
       analysisKind: "operating_cost",
       investmentMinEuro: climate.estimatedMinimumCostEuro,
       investmentBaseEuro: climate.estimatedTotalCostEuro,
       investmentMaxEuro: climate.estimatedMaximumCostEuro,
       firstYearEconomicEffectEuro: -climate.annualOperatingCostEuro,
-      economicLifetimeYears: PROJECT_HORIZON_YEARS,
+      economicLifetimeYears: horizon,
       explanation: "Betriebskostenanalyse ohne erfundene Einsparung oder Amortisation.",
     });
   }
-
   const wallbox = state.results.wallbox;
   if (wallbox) {
     components.push({
       component: "wallbox",
+      pricingMode: "modeled",
       analysisKind: "investment_only",
       investmentMinEuro: wallbox.estimatedMinimumCostEuro,
       investmentBaseEuro: wallbox.estimatedTotalCostEuro,
       investmentMaxEuro: wallbox.estimatedMaximumCostEuro,
       firstYearEconomicEffectEuro: 0,
-      economicLifetimeYears: PROJECT_HORIZON_YEARS,
-      explanation:
-        "Investition und Ladebetrieb werden gezeigt; ein Wallbox-ROI wird nicht unterstellt.",
+      economicLifetimeYears: horizon,
+      explanation: "Investition und Ladebetrieb werden gezeigt; ein Wallbox-ROI wird nicht unterstellt.",
     });
   }
-
   return components;
 }
 
@@ -188,9 +181,8 @@ function buildAnnualEffects(
 ): number[] {
   const pvEffects = buildPvEffects(state, scenario);
   const factor = scenario === "conservative" ? 0.9 : scenario === "favorable" ? 1.1 : 1;
-  const growth = 1 + PV_ECONOMIC_ASSUMPTIONS.electricityPriceIncreasePercent / 100;
-
-  return Array.from({ length: PROJECT_HORIZON_YEARS }, (_, index) => {
+  const growth = 1 + state.settings.economics.electricityPriceDevelopmentPercent / 100;
+  return Array.from({ length: state.settings.economics.projectHorizonYears }, (_, index) => {
     let effect = pvEffects[index] ?? 0;
     for (const component of components) {
       if (component.component === "photovoltaic" || component.component === "wallbox") continue;
@@ -202,11 +194,19 @@ function buildAnnualEffects(
   });
 }
 
-function sumInvestment(
+type InvestmentKey = "investmentMinEuro" | "investmentBaseEuro" | "investmentMaxEuro";
+
+function sumKnownInvestment(components: readonly ComponentEconomics[], key: InvestmentKey): number {
+  return round(components.reduce((sum, component) => sum + (component[key] ?? 0), 0));
+}
+
+function sumCompleteInvestment(
   components: readonly ComponentEconomics[],
-  key: "investmentMinEuro" | "investmentBaseEuro" | "investmentMaxEuro",
-): number {
-  return round(components.reduce((sum, component) => sum + component[key], 0));
+  key: InvestmentKey,
+): number | null {
+  return components.some((component) => component[key] === null)
+    ? null
+    : sumKnownInvestment(components, key);
 }
 
 function buildScenario(
@@ -214,93 +214,72 @@ function buildScenario(
   state: ConfiguratorState,
   components: readonly ComponentEconomics[],
 ): ProjectEconomicScenario {
-  const investmentMinEuro = sumInvestment(components, "investmentMinEuro");
-  const investmentBaseEuro = sumInvestment(components, "investmentBaseEuro");
-  const investmentMaxEuro = sumInvestment(components, "investmentMaxEuro");
-  const investment =
-    id === "conservative"
-      ? investmentMaxEuro
-      : id === "favorable"
-        ? investmentMinEuro
-        : investmentBaseEuro;
+  const investmentMinEuro = sumCompleteInvestment(components, "investmentMinEuro");
+  const investmentBaseEuro = sumCompleteInvestment(components, "investmentBaseEuro");
+  const investmentMaxEuro = sumCompleteInvestment(components, "investmentMaxEuro");
+  const investment = id === "conservative" ? investmentMaxEuro : id === "favorable" ? investmentMinEuro : investmentBaseEuro;
   const effects = buildAnnualEffects(state, components, id);
-
   return {
     id,
     investmentMinEuro,
     investmentBaseEuro,
     investmentMaxEuro,
     firstYearQuantifiedEffectEuro: effects[0] ?? 0,
-    paybackYears: getPaybackYears(investment, effects),
-    finalCumulativeCashFlowEuro: round(effects.reduce((sum, effect) => sum + effect, -investment)),
+    paybackYears: investment === null ? null : getPaybackYears(investment, effects),
+    finalCumulativeCashFlowEuro:
+      investment === null ? null : round(effects.reduce((sum, effect) => sum + effect, -investment)),
   };
 }
 
 export function calculateProjectEconomics(state: ConfiguratorState): ProjectEconomicsResult {
   const components = buildComponentEconomics(state);
-  const investmentMinEuro = sumInvestment(components, "investmentMinEuro");
-  const investmentBaseEuro = sumInvestment(components, "investmentBaseEuro");
-  const investmentMaxEuro = sumInvestment(components, "investmentMaxEuro");
+  const investmentMinEuro = sumCompleteInvestment(components, "investmentMinEuro");
+  const investmentBaseEuro = sumCompleteInvestment(components, "investmentBaseEuro");
+  const investmentMaxEuro = sumCompleteInvestment(components, "investmentMaxEuro");
   const annualEffects = buildAnnualEffects(state, components, "base");
-  let cumulative = -investmentBaseEuro;
-  const projections = [
+  let cumulative = -(investmentBaseEuro ?? 0);
+  const projections = investmentBaseEuro === null ? [] : [
     { year: 0, quantifiedEconomicEffectEuro: 0, cumulativeCashFlowEuro: cumulative },
     ...annualEffects.map((effect, index) => {
       cumulative += effect;
-      return {
-        year: index + 1,
-        quantifiedEconomicEffectEuro: effect,
-        cumulativeCashFlowEuro: round(cumulative),
-      };
+      return { year: index + 1, quantifiedEconomicEffectEuro: effect, cumulativeCashFlowEuro: round(cumulative) };
     }),
   ];
+  const heatPump = state.results.heatPump;
+  const heatPumpAssumptions = heatPump
+    ? [
+        { key: "heating_comparison", label: "Heizungsvergleich", value: heatPump.heatingComparisonLabel, source: "user_input" as const },
+        ...(heatPump.comparisonFuelPriceEuroPerUnit === null ? [] : [{ key: "heating_fuel_price", label: heatPump.comparisonFuelUnit === "litre" ? "Heizölpreis im Modell" : "Gaspreis im Modell", value: `${heatPump.comparisonFuelPriceEuroPerUnit.toLocaleString("de-DE")} €/${heatPump.comparisonFuelUnit === "litre" ? "Liter" : "kWh"}`, source: "default_assumption" as const }]),
+        ...(heatPump.comparisonEfficiencyPercent === null ? [] : [{ key: "heating_efficiency", label: "Wirkungsgrad Vergleichsheizung", value: `${heatPump.comparisonEfficiencyPercent} %`, source: "default_assumption" as const }]),
+        ...(heatPump.oilEnergyContentKwhPerLitre === null ? [] : [{ key: "oil_energy_content", label: "Heizöl-Umrechnung", value: `${heatPump.oilEnergyContentKwhPerLitre} kWh/Liter`, source: "default_assumption" as const }]),
+      ]
+    : [];
 
   return {
-    horizonYears: PROJECT_HORIZON_YEARS,
+    horizonYears: state.settings.economics.projectHorizonYears,
+    pricingMode: investmentBaseEuro === null ? "individual_quote_required" : "modeled",
+    modeledComponentsInvestmentMinEuro: sumKnownInvestment(components, "investmentMinEuro"),
+    modeledComponentsInvestmentBaseEuro: sumKnownInvestment(components, "investmentBaseEuro"),
+    modeledComponentsInvestmentMaxEuro: sumKnownInvestment(components, "investmentMaxEuro"),
     investmentMinEuro,
     investmentBaseEuro,
     investmentMaxEuro,
     firstYearQuantifiedEffectEuro: annualEffects[0] ?? 0,
-    paybackYears: getPaybackYears(investmentBaseEuro, annualEffects),
-    finalCumulativeCashFlowEuro: projections.at(-1)?.cumulativeCashFlowEuro ?? -investmentBaseEuro,
+    paybackYears: investmentBaseEuro === null ? null : getPaybackYears(investmentBaseEuro, annualEffects),
+    finalCumulativeCashFlowEuro:
+      investmentBaseEuro === null ? null : (projections.at(-1)?.cumulativeCashFlowEuro ?? -investmentBaseEuro),
     components,
     projections,
-    scenarios: (["conservative", "base", "favorable"] as const).map((id) =>
-      buildScenario(id, state, components),
-    ),
+    scenarios: (["conservative", "base", "favorable"] as const).map((id) => buildScenario(id, state, components)),
     assumptions: [
-      {
-        key: "electricity_price",
-        label: "Netzstrompreis",
-        value: "0,32 €/kWh",
-        source: "default_assumption",
-      },
-      { key: "feed_in", label: "Einspeisewert", value: "0,08 €/kWh", source: "default_assumption" },
-      {
-        key: "price_growth",
-        label: "Strompreisentwicklung",
-        value: "2 %/Jahr",
-        source: "default_assumption",
-      },
-      {
-        key: "pv_degradation",
-        label: "PV-Degradation",
-        value: "0,5 %/Jahr",
-        source: "default_assumption",
-      },
-      {
-        key: "storage_efficiency",
-        label: "Speicherwirkungsgrad",
-        value: "90 %",
-        source: "default_assumption",
-      },
-      {
-        key: "storage_lifetime",
-        label: "Speicherhorizont",
-        value: "15 Jahre",
-        source: "default_assumption",
-      },
-      { key: "project_horizon", label: "Projektbetrachtung", value: "20 Jahre", source: "modeled" },
+      { key: "electricity_price", label: "Netzstrompreis", value: `${state.settings.economics.gridElectricityPriceEuroPerKwh.toLocaleString("de-DE")} €/kWh`, source: "default_assumption" },
+      { key: "feed_in", label: "Einspeisewert", value: `${state.settings.economics.feedInValueEuroPerKwh.toLocaleString("de-DE")} €/kWh`, source: "default_assumption" },
+      { key: "price_growth", label: "Strompreisentwicklung", value: `${state.settings.economics.electricityPriceDevelopmentPercent.toLocaleString("de-DE")} %/Jahr`, source: "default_assumption" },
+      { key: "pv_degradation", label: "PV-Degradation", value: `${state.settings.photovoltaic.annualDegradationPercent.toLocaleString("de-DE")} %/Jahr`, source: "default_assumption" },
+      { key: "storage_efficiency", label: "Speicherwirkungsgrad", value: `${state.settings.batteryStorage.roundTripEfficiencyPercent.toLocaleString("de-DE")} %`, source: "default_assumption" },
+      { key: "storage_lifetime", label: "Speicherhorizont", value: `${state.settings.batteryStorage.economicLifetimeYears} Jahre`, source: "default_assumption" },
+      { key: "project_horizon", label: "Projektbetrachtung", value: `${state.settings.economics.projectHorizonYears} Jahre`, source: "modeled" },
+      ...heatPumpAssumptions,
     ],
     limitations: [
       "Jahresmodell ohne stündliche Lastgangsimulation.",

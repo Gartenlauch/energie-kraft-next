@@ -1,19 +1,22 @@
 import type { ClimateInsulationLevel, ClimateSolarLoad } from "@/types/climate-calculator";
 import type { PvRoofOrientation } from "@/types/pv-sizing-calculator";
 import type { WallboxChargingPowerKw } from "./wallbox";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
+
+type CalculatorHandoffBase = {
+  version: 1;
+  createdAt: number;
+  settings: ConfiguratorSettings;
+};
 
 export type CalculatorHandoff =
-  | {
-      version: 1;
+  | (CalculatorHandoffBase & {
       source: "pv_sizing";
-      createdAt: number;
       values: { annualConsumptionKwh: number; roofOrientation: PvRoofOrientation };
-    }
-  | { version: 1; source: "pv_roi"; createdAt: number; values: { annualConsumptionKwh: number } }
-  | {
-      version: 1;
+    })
+  | (CalculatorHandoffBase & { source: "pv_roi"; values: { annualConsumptionKwh: number } })
+  | (CalculatorHandoffBase & {
       source: "heat_pump";
-      createdAt: number;
       values: {
         heatedAreaM2: number;
         specificSpaceHeatingDemandKwhPerM2Year: number;
@@ -21,11 +24,9 @@ export type CalculatorHandoff =
         requiredFlowTemperatureC: number;
         annualPerformanceFactor: number;
       };
-    }
-  | {
-      version: 1;
+    })
+  | (CalculatorHandoffBase & {
       source: "climate";
-      createdAt: number;
       values: {
         conditionedAreaM2: number;
         roomCount: number;
@@ -33,11 +34,9 @@ export type CalculatorHandoff =
         solarLoad: ClimateSolarLoad;
         occupancyPersons: number;
       };
-    }
-  | {
-      version: 1;
+    })
+  | (CalculatorHandoffBase & {
       source: "wallbox";
-      createdAt: number;
       values: {
         annualDrivingKm: number;
         vehicleConsumptionKwhPer100Km: number;
@@ -46,4 +45,4 @@ export type CalculatorHandoff =
         chargingPowerKw: WallboxChargingPowerKw;
         pvChargingSharePercent: number;
       };
-    };
+    });

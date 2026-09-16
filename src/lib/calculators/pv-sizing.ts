@@ -7,6 +7,10 @@ import type {
   PvSizingCalculatorInput,
   PvSizingCalculatorResult,
 } from "@/types/pv-sizing-calculator";
+import {
+  resolveTierPrice,
+  type ConfiguratorSettings,
+} from "@/lib/configurator/settings-model";
 
 
 
@@ -39,7 +43,10 @@ function roundToStep(value: number, step: number): number {
  * - Alle Kostenwerte beruhen auf den eingegebenen
  *   Modellannahmen.
  */
-export function calculatePvSizing(input: PvSizingCalculatorInput): PvSizingCalculatorResult {
+export function calculatePvSizing(
+  input: PvSizingCalculatorInput,
+  settings?: ConfiguratorSettings,
+): PvSizingCalculatorResult {
   const values = parsePvSizingCalculatorInput(input);
 
   const orientationFactor = PV_ORIENTATION_FACTORS[values.roofOrientation];
@@ -95,18 +102,30 @@ export function calculatePvSizing(input: PvSizingCalculatorInput): PvSizingCalcu
     ? Math.max(0.5, roundToStep(rawBatteryCapacityKwh, 0.5))
     : 0;
 
-  const pvSystemCostEuro = recommendedSystemSizeKwp * values.pvCostEuroPerKwp;
-
-  const batteryCostEuro = recommendedBatteryCapacityKwh * values.batteryCostEuroPerKwh;
-
-  const estimatedTotalCostEuro =
-    pvSystemCostEuro + batteryCostEuro + values.fixedAdditionalCostEuro;
-
-  const uncertaintyFactor = values.costUncertaintyPercent / 100;
-
-  const estimatedMinimumCostEuro = estimatedTotalCostEuro * (1 - uncertaintyFactor);
-
-  const estimatedMaximumCostEuro = estimatedTotalCostEuro * (1 + uncertaintyFactor);
+  const pvTier = settings
+    ? resolveTierPrice(recommendedSystemSizeKwp, settings.photovoltaic.pricing)
+    : { pricingMode: "modeled" as const, unitPriceEuro: values.pvCostEuroPerKwp };
+  const storageTier = settings && recommendedBatteryCapacityKwh > 0
+    ? resolveTierPrice(recommendedBatteryCapacityKwh, settings.batteryStorage.pricing)
+    : { pricingMode: "modeled" as const, unitPriceEuro: values.batteryCostEuroPerKwh };
+  const pricingMode = pvTier.pricingMode === "modeled" && storageTier.pricingMode === "modeled"
+    ? "modeled" as const
+    : "individual_quote_required" as const;
+  const pvSystemCostEuro = pvTier.unitPriceEuro === null
+    ? null
+    : recommendedSystemSizeKwp * pvTier.unitPriceEuro;
+  const batteryCostEuro = recommendedBatteryCapacityKwh === 0
+    ? 0
+    : storageTier.unitPriceEuro === null
+      ? null
+      : recommendedBatteryCapacityKwh * storageTier.unitPriceEuro;
+  const fixedAdditionalCostEuro = settings?.photovoltaic.fixedAdditionalCostEuro ?? values.fixedAdditionalCostEuro;
+  const estimatedTotalCostEuro = pricingMode === "modeled" && pvSystemCostEuro !== null && batteryCostEuro !== null
+    ? pvSystemCostEuro + batteryCostEuro + fixedAdditionalCostEuro
+    : null;
+  const uncertaintyFactor = (settings?.general.costUncertaintyPercent ?? values.costUncertaintyPercent) / 100;
+  const estimatedMinimumCostEuro = estimatedTotalCostEuro === null ? null : estimatedTotalCostEuro * (1 - uncertaintyFactor);
+  const estimatedMaximumCostEuro = estimatedTotalCostEuro === null ? null : estimatedTotalCostEuro * (1 + uncertaintyFactor);
 
   return {
     input: values,
@@ -135,16 +154,17 @@ export function calculatePvSizing(input: PvSizingCalculatorInput): PvSizingCalcu
 
     recommendedBatteryCapacityKwh: round(recommendedBatteryCapacityKwh),
 
-    pvSystemCostEuro: round(pvSystemCostEuro),
-    batteryCostEuro: round(batteryCostEuro),
+    pricingMode,
+    pvSystemCostEuro: pvSystemCostEuro === null ? null : round(pvSystemCostEuro),
+    batteryCostEuro: batteryCostEuro === null ? null : round(batteryCostEuro),
 
-    fixedAdditionalCostEuro: round(values.fixedAdditionalCostEuro),
+    fixedAdditionalCostEuro: round(fixedAdditionalCostEuro),
 
-    estimatedTotalCostEuro: round(estimatedTotalCostEuro),
+    estimatedTotalCostEuro: estimatedTotalCostEuro === null ? null : round(estimatedTotalCostEuro),
 
-    estimatedMinimumCostEuro: round(estimatedMinimumCostEuro),
+    estimatedMinimumCostEuro: estimatedMinimumCostEuro === null ? null : round(estimatedMinimumCostEuro),
 
-    estimatedMaximumCostEuro: round(estimatedMaximumCostEuro),
+    estimatedMaximumCostEuro: estimatedMaximumCostEuro === null ? null : round(estimatedMaximumCostEuro),
 
     roofLimited: requiredModuleCount > maximumModuleCount,
   };

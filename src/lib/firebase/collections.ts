@@ -7,6 +7,9 @@ export const FIRESTORE_COLLECTIONS = {
   applications: "applications",
   referrals: "referrals",
   adminRealtime: "adminRealtime",
+  configuratorSettings: "configuratorSettings",
+  configuratorSettingsVersions: "configuratorSettingsVersions",
+  systemCounters: "systemCounters",
 } as const;
 
 export type FirestoreCollectionName =

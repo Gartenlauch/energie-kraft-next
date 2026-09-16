@@ -7,10 +7,16 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { pvSizingCalculatorContent } from "@/content/pages/pv-kostenrechner";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
+import { buildCurrentCalculatorInputs } from "@/lib/calculators/settings-inputs";
+import { getCurrentConfiguratorSettings } from "@/lib/configurator/settings-repository";
 
 export const metadata: Metadata = buildMetadata(pvSizingCalculatorContent.seo);
 
-export default function PvSizingCalculatorPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PvSizingCalculatorPage() {
+  const settings = await getCurrentConfiguratorSettings();
+  const inputs = buildCurrentCalculatorInputs(settings);
   return (
     <>
       <JsonLdScript data={buildWebPageJsonLd(pvSizingCalculatorContent.seo)} />
@@ -65,7 +71,7 @@ export default function PvSizingCalculatorPage() {
           </div>
         </section>
 
-        <PvSizingCalculator />
+        <PvSizingCalculator initialInput={inputs.pvSizing} settings={settings} />
 
         <section className="section-space bg-surface">
           <div className="section-shell">

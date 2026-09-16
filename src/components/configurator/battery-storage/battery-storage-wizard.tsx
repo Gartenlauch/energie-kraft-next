@@ -134,11 +134,6 @@ export function BatteryStorageWizard({ photovoltaicHandoff }: BatteryStorageWiza
             />
           );
         }}
-        onRestart={() => {
-          setShowResult(false);
-
-          setCurrentStepId(initialStepId);
-        }}
       />
     );
   }

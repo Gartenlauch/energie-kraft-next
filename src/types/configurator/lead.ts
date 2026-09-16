@@ -7,6 +7,11 @@ import type {
 import type { ClimateInsulationLevel, ClimateSolarLoad } from "@/types/climate-calculator";
 import type { HeatPumpFlowTemperatureAssessment } from "@/types/heat-pump-calculator";
 import type {
+  ExistingHeatingSystem,
+  HeatingComparisonBasis,
+  HeatingComparisonKind,
+} from "./heat-pump";
+import type {
   BuildingConfiguratorState,
   BuildingType,
   ConfiguratorInterests,
@@ -22,6 +27,7 @@ import type {
   RoofRenovationPeriod,
 } from "./state";
 import type { ProjectEconomicsResult } from "./economics";
+import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
 
 import type { FirestoreTimestamp } from "@/types/firestore";
 import type { LeadMailInfo, LeadStatus } from "@/types/lead";
@@ -175,6 +181,9 @@ export interface SubmitWallboxConfiguratorLeadInput extends SubmitConfiguratorLe
  */
 
 export interface HeatPumpConfiguratorLeadAnswers {
+  existingHeatingSystem: ExistingHeatingSystem;
+  annualGasConsumptionKwh?: number;
+  annualOilConsumptionLitres?: number;
   heatedAreaM2: number;
   specificSpaceHeatingDemandKwhPerM2Year: number;
   occupancyPersons: number;
@@ -192,9 +201,17 @@ export interface HeatPumpConfiguratorLeadResult {
   annualHeatPumpElectricityConsumptionKwh: number;
   annualHeatPumpOperatingCostEuro: number;
 
-  currentHeatingOperatingCostEuro: number;
+  currentHeatingOperatingCostEuro: number | null;
 
-  annualOperatingCostDifferenceEuro: number;
+  annualOperatingCostDifferenceEuro: number | null;
+
+  heatingComparisonKind: HeatingComparisonKind;
+  heatingComparisonBasis: HeatingComparisonBasis;
+  heatingComparisonLabel: string;
+  comparisonFuelPriceEuroPerUnit: number | null;
+  comparisonFuelUnit: "kWh" | "litre" | null;
+  comparisonEfficiencyPercent: number | null;
+  oilEnergyContentKwhPerLitre: number | null;
 
   estimatedTotalCostEuro: number;
   estimatedMinimumCostEuro: number;
@@ -266,6 +283,7 @@ export type ConfiguratorLeadPayload =
   | SubmitClimateConfiguratorLeadInput["configurator"];
 
 export interface SubmitConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
+  settingsVersion: number;
   /**
    * Alle vom Benutzer ausgewählten Produkte.
    * Die Reihenfolge entspricht der zentralen
@@ -294,6 +312,7 @@ export interface SubmitConfiguratorLeadResult {
   ok: true;
 
   leadId: string;
+  publicReference: string;
 
   /**
    * Bestehender Status der internen
@@ -390,6 +409,9 @@ export interface ConfiguratorLeadDocument {
   type: "configurator";
 
   status: LeadStatus;
+  publicReference?: string;
+  settingsVersion?: number;
+  settings?: ConfiguratorSettings;
 
   products: ConfiguratorLeadType[];
 
@@ -427,7 +449,7 @@ export interface ConfiguratorLeadDocument {
   meta: {
     source: ConfiguratorLeadSource;
 
-    schemaVersion: 4;
+    schemaVersion: 3 | 4;
   };
 
   mail?: LeadMailInfo;

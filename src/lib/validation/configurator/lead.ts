@@ -128,7 +128,7 @@ const photovoltaicAnswersSchema = z
     notes: z
       .object({
         hasNotes: z.boolean(),
-        text: z.string().trim().max(2_000).optional(),
+        text: z.string().trim().max(1_000).optional(),
       })
       .superRefine((values, context) => {
         if (values.hasNotes && !values.text?.trim()) {
@@ -232,9 +232,10 @@ const batteryStorageLeadResultSchema = z
 
     recommendedUsableCapacityKwhMax: z.number().nonnegative(),
 
-    estimatedTotalCostEuro: z.number().nonnegative(),
-    estimatedMinimumCostEuro: z.number().nonnegative(),
-    estimatedMaximumCostEuro: z.number().nonnegative(),
+    pricingMode: z.enum(["modeled", "individual_quote_required"]),
+    estimatedTotalCostEuro: z.number().nonnegative().nullable(),
+    estimatedMinimumCostEuro: z.number().nonnegative().nullable(),
+    estimatedMaximumCostEuro: z.number().nonnegative().nullable(),
 
     technicalUpperBoundUsableCapacityKwh: z.number().nonnegative(),
 
@@ -357,9 +358,23 @@ const heatPumpLeadResultSchema = z
 
     annualHeatPumpOperatingCostEuro: z.number().nonnegative(),
 
-    currentHeatingOperatingCostEuro: z.number().nonnegative(),
+    currentHeatingOperatingCostEuro: z.number().nonnegative().nullable(),
 
-    annualOperatingCostDifferenceEuro: z.number(),
+    annualOperatingCostDifferenceEuro: z.number().nullable(),
+
+    heatingComparisonKind: z.enum(["existing_system", "reference_scenario", "unavailable"]),
+
+    heatingComparisonBasis: z.enum(["user_consumption", "modeled_heat_demand", "unavailable"]),
+
+    heatingComparisonLabel: z.string().min(1).max(120),
+
+    comparisonFuelPriceEuroPerUnit: z.number().positive().nullable(),
+
+    comparisonFuelUnit: z.enum(["kWh", "litre"]).nullable(),
+
+    comparisonEfficiencyPercent: z.number().positive().max(100).nullable(),
+
+    oilEnergyContentKwhPerLitre: z.number().positive().nullable(),
 
     estimatedTotalCostEuro: z.number().nonnegative(),
 
@@ -385,6 +400,12 @@ export const heatPumpConfiguratorLeadInputSchema: z.ZodType<SubmitHeatPumpConfig
 
           answers: z
             .object({
+            existingHeatingSystem: z.enum(["gas", "oil", "new_build", "other_unknown"]),
+
+            annualGasConsumptionKwh: z.number().min(500).max(200_000).optional(),
+
+            annualOilConsumptionLitres: z.number().min(50).max(20_000).optional(),
+
             heatedAreaM2: z.number().min(20).max(5_000),
 
             specificSpaceHeatingDemandKwhPerM2Year: z.number().min(10).max(400),
@@ -510,6 +531,7 @@ export const configuratorLeadInputSchema = z
       ...commonConfiguratorLeadShape,
 
     products: z.array(configuratorLeadTypeSchema).min(1).max(5),
+    settingsVersion: z.number().int().nonnegative(),
 
       journey: z
         .object({

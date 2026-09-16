@@ -945,8 +945,12 @@ export function ConfiguratorLeadCard({
                             )}
                         </p>
 
+                        <p className="mt-2 font-mono text-sm font-semibold text-emerald-800">
+                            {lead.publicReference ?? "Altbestand ohne Projektreferenz"}
+                        </p>
+
                         <p className="mt-1 font-mono text-xs text-slate-400">
-                            {lead.id}
+                            Interne ID: {lead.id}
                         </p>
                     </div>
 
@@ -1085,6 +1089,10 @@ export function ConfiguratorLeadCard({
                             <DetailRow
                                 label="Schema"
                                 value={`Version ${lead.meta.schemaVersion}`}
+                            />
+                            <DetailRow
+                                label="Modellversion"
+                                value={lead.settingsVersion === undefined ? "Altbestand" : `Version ${lead.settingsVersion}`}
                             />
                         </dl>
                     </section>

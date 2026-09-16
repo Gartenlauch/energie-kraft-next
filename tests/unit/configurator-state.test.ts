@@ -10,7 +10,8 @@ describe("configurator state", () => {
   it("creates the expected initial state", () => {
     const state = createInitialConfiguratorState();
 
-    expect(state.version).toBe(8);
+    expect(state.version).toBe(10);
+    expect(state.settingsVersion).toBe(0);
 
     expect(state.wallbox).toEqual({});
     expect(state.activeConfigurator).toBeNull();
@@ -139,7 +140,7 @@ describe("configurator state", () => {
   it("prefills equivalent heat-pump and climate values without overwriting input", () => {
     const initial = {
       ...createInitialConfiguratorState(),
-      heatPump: { heatedAreaM2: 145, occupancyPersons: 3 },
+      heatPump: { existingHeatingSystem: "gas" as const, heatedAreaM2: 145, occupancyPersons: 3 },
       climate: { conditionedAreaM2: 90, occupancyPersons: 2 },
     };
 
@@ -159,5 +160,19 @@ describe("configurator state", () => {
   );
     expect(heatPump.heatPump.heatedAreaM2).toBe(90);
     expect(heatPump.heatPump.occupancyPersons).toBe(2);
+  });
+
+  it("hands heat-pump area and people to climate without inventing rooms", () => {
+    const climate = configuratorReducer(
+      {
+        ...createInitialConfiguratorState(),
+        heatPump: { existingHeatingSystem: "gas", heatedAreaM2: 145, occupancyPersons: 3 },
+      },
+      { type: "SET_ACTIVE_CONFIGURATOR", payload: "climate" },
+    );
+
+    expect(climate.climate.conditionedAreaM2).toBe(145);
+    expect(climate.climate.occupancyPersons).toBe(3);
+    expect(climate.climate.roomCount).toBeUndefined();
   });
 });

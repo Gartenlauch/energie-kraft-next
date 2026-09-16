@@ -7,10 +7,16 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { pvCalculatorContent } from "@/content/pages/pv-rechner";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
+import { buildCurrentCalculatorInputs } from "@/lib/calculators/settings-inputs";
+import { getCurrentConfiguratorSettings } from "@/lib/configurator/settings-repository";
 
 export const metadata: Metadata = buildMetadata(pvCalculatorContent.seo);
 
-export default function PvCalculatorPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PvCalculatorPage() {
+  const settings = await getCurrentConfiguratorSettings();
+  const inputs = buildCurrentCalculatorInputs(settings);
   return (
     <>
       <JsonLdScript data={buildWebPageJsonLd(pvCalculatorContent.seo)} />
@@ -63,7 +69,7 @@ export default function PvCalculatorPage() {
           </div>
         </section>
 
-        <PvRoiCalculator />
+        <PvRoiCalculator initialInput={inputs.pvRoi} settings={settings} />
 
         <section className="section-space bg-surface">
           <div className="section-shell">
