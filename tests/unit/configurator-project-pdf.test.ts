@@ -2,7 +2,11 @@ import { writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { generateConfiguratorProjectPdf } from "../../functions/src/configurator-project-pdf";
+import {
+  generateConfiguratorProjectPdf,
+  getConfiguratorReportSections,
+  getSolarReturnDisplay,
+} from "../../functions/src/configurator-project-pdf";
 import { configuratorLeadPayloadSchema } from "../../functions/src/configurator-lead-validation";
 import { applyAuthoritativeConfiguratorModel } from "../../functions/src/configurator-server-model";
 import { DEFAULT_CONFIGURATOR_SETTINGS } from "@/lib/configurator/settings-model";
@@ -145,6 +149,46 @@ function createCompleteProject(): ConfiguratorState {
   return normalizeConfiguratorState(state);
 }
 
+function createUnpricedPvProject(): ConfiguratorState {
+  const state = createPvOnlyProject();
+  const photovoltaic = state.results.photovoltaic!;
+  return {
+    ...state,
+    results: {
+      ...state.results,
+      photovoltaic: {
+        ...photovoltaic,
+        pricingMode: "individual_quote_required",
+        estimatedTotalCostEuro: null,
+        estimatedMinimumCostEuro: null,
+        estimatedMaximumCostEuro: null,
+      },
+    },
+  };
+}
+
+function createComfortOnlyProject(): ConfiguratorState {
+  const full = createCompleteProject();
+  return normalizeConfiguratorState({
+    ...full,
+    activeConfigurator: "climate",
+    interests: {
+      photovoltaic: false,
+      batteryStorage: false,
+      wallbox: true,
+      heatPump: false,
+      climate: true,
+    },
+    journey: {
+      entryPoint: "climate",
+      selectedProducts: ["climate", "wallbox"],
+      completedProducts: ["climate", "wallbox"],
+      additionalSolutionsReviewed: true,
+    },
+    results: { climate: full.results.climate, wallbox: full.results.wallbox },
+  });
+}
+
 function buildPdfLead(state: ConfiguratorState) {
   const input = buildConfiguratorLeadInput(
     state,
@@ -248,15 +292,32 @@ describe("premium configurator project PDF", () => {
   });
 
   it("renders a valid complete-project dossier and creates the visual-QA file", async () => {
+    const lead = buildPdfLead(createCompleteProject());
+    expect(getConfiguratorReportSections(lead)).toEqual([
+      "cover", "project", "flow", "solar_system", "solar_economics", "cashflow",
+      "storage", "heating", "comfort", "investment", "assumptions", "closing",
+    ]);
+    expect(lead.economics.components.map((item) => item.investmentBaseEuro)).toEqual([
+      9_200, 6_500, 27_600, 15_800, 3_000,
+    ]);
+    expect(lead.economics.solar?.investmentEuro).toBe(15_700);
+    expect(lead.economics.investmentBaseEuro).toBe(62_100);
+    expect(lead.economics.solar?.firstYearNetBenefitEuro).toBe(1_081.44);
+    expect(lead.economics.solar?.paybackYears).toBe(13.18);
+    expect(lead.economics.solar?.annualizedReturnPercent).toBe(3.95);
+    expect(lead.economics.solar?.netSurplus20YearsEuro).toBe(7_182.24);
     const pdf = await generateConfiguratorProjectPdf({
       leadId: "PV-BS-WP-KA-WB-00005",
-      lead: buildPdfLead(createCompleteProject()),
+      lead,
+      settings: DEFAULT_CONFIGURATOR_SETTINGS,
     });
-    writeFileSync(path.join(tmpdir(), "energie-kraft-sprint9-project-analysis-review.pdf"), pdf);
+    const output = path.join(tmpdir(), `energie-kraft-recovery2-${process.pid}.pdf`);
+    writeFileSync(output, pdf);
+    console.info("RECOVERY2_REPRESENTATIVE_PDF", output);
 
     expect(pdf.length).toBeGreaterThan(30_000);
     expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
-    expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0).toBeGreaterThan(8);
+    expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0).toBe(12);
   });
 
   it.each([
@@ -264,11 +325,59 @@ describe("premium configurator project PDF", () => {
     ["PV and storage", createPvStorageProject],
     ["heat pump only", createHeatPumpOnlyProject],
   ])("renders a valid %s dossier", async (_label, createProject) => {
+    const lead = buildPdfLead(createProject());
+    const sections = getConfiguratorReportSections(lead);
+    if (_label === "PV only") {
+      expect(sections).not.toContain("storage");
+      expect(sections).toContain("solar_economics");
+    }
+    if (_label === "PV and storage") {
+      expect(sections).toContain("solar_system");
+      expect(sections).toContain("storage");
+    }
+    if (_label === "heat pump only") {
+      expect(sections).not.toContain("solar_economics");
+      expect(sections).not.toContain("cashflow");
+      expect(lead.economics.heating?.annualSavingEuro).not.toBeNull();
+      expect(lead.economics.paybackStatus).toBe("not_applicable");
+    }
     const pdf = await generateConfiguratorProjectPdf({
       leadId: "must-not-be-visible",
-      lead: buildPdfLead(createProject()),
+      lead,
+      settings: DEFAULT_CONFIGURATOR_SETTINGS,
     });
     expect(pdf.length).toBeGreaterThan(25_000);
+    expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
+  });
+
+  it("explains missing solar price without a false return conclusion or cashflow page", async () => {
+    const lead = buildPdfLead(createUnpricedPvProject());
+    const display = getSolarReturnDisplay(lead.economics);
+    expect(lead.economics.missingInvestmentSources).toContain("photovoltaic.pricing");
+    expect(display?.investment).toBe("Nach technischer Prüfung");
+    expect(display?.payback).toBeNull();
+    expect(display?.irr).toBeNull();
+    expect(display?.horizonResult).toBeNull();
+    expect(getConfiguratorReportSections(lead)).not.toContain("cashflow");
+    const pdf = await generateConfiguratorProjectPdf({
+      leadId: "unpriced-pv", lead, settings: DEFAULT_CONFIGURATOR_SETTINGS,
+    });
+    expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
+  });
+
+  it("treats climate and wallbox as comfort investments without a return section", async () => {
+    const lead = buildPdfLead(createComfortOnlyProject());
+    const sections = getConfiguratorReportSections(lead);
+    expect(sections).toContain("comfort");
+    expect(sections).not.toContain("solar_economics");
+    expect(sections).not.toContain("cashflow");
+    expect(lead.economics.investmentBaseEuro).toBe(
+      lead.economics.components.reduce((sum, item) => sum + item.investmentBaseEuro!, 0),
+    );
+    expect(lead.economics.components.every((item) => item.analysisKind === "investment_only")).toBe(true);
+    const pdf = await generateConfiguratorProjectPdf({
+      leadId: "comfort-only", lead, settings: DEFAULT_CONFIGURATOR_SETTINGS,
+    });
     expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
   });
 });

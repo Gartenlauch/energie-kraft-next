@@ -12,6 +12,7 @@ import {
   configuratorLeadPayloadSchema,
 } from "./configurator-lead-validation";
 import {
+  type ConfiguratorSettings,
   DEFAULT_CONFIGURATOR_SETTINGS,
   buildConfiguratorPublicReference,
   configuratorSettingsSchema,
@@ -182,6 +183,7 @@ export const submitConfiguratorLead = onCall(
     const counterReference = firestore.collection("systemCounters").doc("configuratorLead");
     let publicReference = "";
     let authoritativeInput: ConfiguratorLeadPayload = input;
+    let settingsForPdf: ConfiguratorSettings = DEFAULT_CONFIGURATOR_SETTINGS;
 
     await firestore.runTransaction(async (transaction) => {
       let authoritativeSettings =
@@ -204,6 +206,7 @@ export const submitConfiguratorLead = onCall(
       const sequence = nextConfiguratorReferenceSequence(previousValue);
       publicReference = buildConfiguratorPublicReference(input.products, sequence);
       authoritativeInput = applyAuthoritativeConfiguratorModel(input, authoritativeSettings);
+      settingsForPdf = authoritativeSettings;
       const timestamp = FieldValue.serverTimestamp();
 
       transaction.set(counterReference, { lastValue: sequence, updatedAt: timestamp }, { merge: true });
@@ -373,6 +376,7 @@ export const submitConfiguratorLead = onCall(
         leadId: publicReference,
 
         lead: authoritativeInput,
+        settings: settingsForPdf,
       });
 
       reportStatus = "generated";

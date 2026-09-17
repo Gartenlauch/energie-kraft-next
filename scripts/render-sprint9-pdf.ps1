@@ -1,6 +1,7 @@
 param(
   [Parameter(Mandatory = $true)][string]$PdfPath,
-  [Parameter(Mandatory = $true)][string]$OutputDirectory
+  [Parameter(Mandatory = $true)][string]$OutputDirectory,
+  [ValidateRange(72, 300)][int]$Dpi = 190
 )
 
 $ErrorActionPreference = 'Stop'
@@ -20,6 +21,7 @@ function Get-WinRtResult($operation, [type]$resultType) {
 
 $storageType = [Windows.Storage.StorageFile, Windows.Storage, ContentType = WindowsRuntime]
 $pdfType = [Windows.Data.Pdf.PdfDocument, Windows.Data.Pdf, ContentType = WindowsRuntime]
+$renderOptionsType = [Windows.Data.Pdf.PdfPageRenderOptions, Windows.Data.Pdf, ContentType = WindowsRuntime]
 $streamType = [Windows.Storage.Streams.InMemoryRandomAccessStream, Windows.Storage.Streams, ContentType = WindowsRuntime]
 $file = Get-WinRtResult ($storageType::GetFileFromPathAsync((Resolve-Path -LiteralPath $PdfPath).Path)) $storageType
 $pdf = Get-WinRtResult ($pdfType::LoadFromFileAsync($file)) $pdfType
@@ -28,8 +30,11 @@ New-Item -ItemType Directory -Force -Path $OutputDirectory | Out-Null
 for ($index = 0; $index -lt $pdf.PageCount; $index++) {
   $page = $pdf.GetPage($index)
   $stream = [Activator]::CreateInstance($streamType)
+  $options = [Activator]::CreateInstance($renderOptionsType)
+  $options.DestinationWidth = [uint32][math]::Round($page.Size.Width * $Dpi / 96)
+  $options.DestinationHeight = [uint32][math]::Round($page.Size.Height * $Dpi / 96)
   try {
-    $render = $asActionTask.Invoke($null, @($page.RenderToStreamAsync($stream)))
+    $render = $asActionTask.Invoke($null, @($page.RenderToStreamAsync($stream, $options)))
     $null = $render.GetAwaiter().GetResult()
     $inputStream = [System.IO.WindowsRuntimeStreamExtensions]::AsStreamForRead($stream.GetInputStreamAt(0))
     try {
