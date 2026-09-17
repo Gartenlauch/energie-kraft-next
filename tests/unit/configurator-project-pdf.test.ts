@@ -311,9 +311,9 @@ describe("premium configurator project PDF", () => {
       lead,
       settings: DEFAULT_CONFIGURATOR_SETTINGS,
     });
-    const output = path.join(tmpdir(), `energie-kraft-recovery2-${process.pid}.pdf`);
+    const output = path.join(tmpdir(), `energie-kraft-recovery3-${process.pid}.pdf`);
     writeFileSync(output, pdf);
-    console.info("RECOVERY2_REPRESENTATIVE_PDF", output);
+    console.info("RECOVERY3_REPRESENTATIVE_PDF", output);
 
     expect(pdf.length).toBeGreaterThan(30_000);
     expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");

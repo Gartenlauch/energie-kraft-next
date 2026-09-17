@@ -151,9 +151,15 @@ function rect(doc: PDFKit.PDFDocument, x: number, y: number, width: number, heig
   doc.save().roundedRect(x, y, width, height, 9).fill(fill).restore();
 }
 
-function imageCover(doc: PDFKit.PDFDocument, filename: string, x: number, y: number, width: number, height: number): void {
+function imageCover(doc: PDFKit.PDFDocument, filename: string, x: number, y: number,
+  width: number, height: number, align?: "center" | "right",
+  valign?: "center" | "bottom"): void {
   doc.save().rect(x, y, width, height).clip();
-  doc.image(path.join(IMAGE, filename), x, y, { cover: [width, height] });
+  doc.image(path.join(IMAGE, filename), x, y, {
+    cover: [width, height],
+    ...(align ? { align } : {}),
+    ...(valign ? { valign } : {}),
+  });
   doc.restore();
 }
 
@@ -196,6 +202,67 @@ function valueLine(doc: PDFKit.PDFDocument, label: string, value: string, y: num
   return bottom;
 }
 
+function systemSymbol(doc: PDFKit.PDFDocument, type: ProductType | "home" | "grid",
+  cx: number, cy: number, size: number, color: string): void {
+  const half = size / 2;
+  doc.save().strokeColor(color).fillColor(color).lineWidth(Math.max(1.5, size / 25))
+    .lineCap("round").lineJoin("round");
+  switch (type) {
+    case "photovoltaic":
+      doc.rect(cx - half * 0.76, cy - half * 0.38, size * 0.76, size * 0.48).stroke();
+      doc.moveTo(cx - half * 0.38, cy - half * 0.38).lineTo(cx - half * 0.38, cy + half * 0.58).stroke();
+      doc.moveTo(cx - half * 0.76, cy + half * 0.1).lineTo(cx + half * 0.76, cy + half * 0.1).stroke();
+      doc.circle(cx + half * 0.68, cy - half * 0.65, size * 0.085).stroke();
+      break;
+    case "battery_storage":
+      doc.roundedRect(cx - half * 0.53, cy - half * 0.69, size * 0.53, size * 0.68, size * 0.07).stroke();
+      doc.moveTo(cx - half * 0.2, cy - half * 0.82).lineTo(cx + half * 0.2, cy - half * 0.82).stroke();
+      doc.moveTo(cx - half * 0.25, cy - half * 0.16).lineTo(cx + half * 0.25, cy - half * 0.16).stroke();
+      doc.moveTo(cx - half * 0.25, cy + half * 0.12).lineTo(cx + half * 0.25, cy + half * 0.12).stroke();
+      break;
+    case "heat_pump":
+      doc.roundedRect(cx - half * 0.72, cy - half * 0.72, size * 0.72, size * 0.72, size * 0.08).stroke();
+      doc.circle(cx, cy, size * 0.19).stroke();
+      for (let index = 0; index < 3; index += 1) {
+        const angle = index * Math.PI * 2 / 3;
+        doc.moveTo(cx + Math.cos(angle) * size * 0.09, cy + Math.sin(angle) * size * 0.09)
+          .lineTo(cx + Math.cos(angle + 0.55) * size * 0.2, cy + Math.sin(angle + 0.55) * size * 0.2).stroke();
+      }
+      break;
+    case "climate":
+      for (let index = 0; index < 3; index += 1) {
+        const angle = index * Math.PI / 3;
+        const dx = Math.cos(angle) * half * 0.72;
+        const dy = Math.sin(angle) * half * 0.72;
+        doc.moveTo(cx - dx, cy - dy).lineTo(cx + dx, cy + dy).stroke();
+      }
+      doc.circle(cx, cy, size * 0.07).fill(color);
+      break;
+    case "wallbox":
+      doc.roundedRect(cx - half * 0.39, cy - half * 0.78, size * 0.39, size * 0.65, size * 0.07).stroke();
+      doc.circle(cx, cy - half * 0.37, size * 0.07).stroke();
+      doc.moveTo(cx + half * 0.39, cy + half * 0.18)
+        .bezierCurveTo(cx + half * 0.78, cy + half * 0.18, cx + half * 0.72, cy + half * 0.64,
+          cx + half * 0.48, cy + half * 0.64).stroke();
+      break;
+    case "home":
+      doc.moveTo(cx - half * 0.88, cy - half * 0.05).lineTo(cx, cy - half * 0.77)
+        .lineTo(cx + half * 0.88, cy - half * 0.05).stroke();
+      doc.rect(cx - half * 0.67, cy - half * 0.03, size * 0.67, size * 0.49).stroke();
+      doc.rect(cx - half * 0.16, cy + half * 0.47, size * 0.16, size * 0.21).stroke();
+      doc.rect(cx - half * 0.46, cy + half * 0.16, size * 0.15, size * 0.14).stroke();
+      break;
+    case "grid":
+      doc.moveTo(cx, cy - half * 0.83).lineTo(cx - half * 0.54, cy + half * 0.78)
+        .moveTo(cx, cy - half * 0.83).lineTo(cx + half * 0.54, cy + half * 0.78).stroke();
+      doc.moveTo(cx - half * 0.68, cy - half * 0.4).lineTo(cx + half * 0.68, cy - half * 0.4)
+        .moveTo(cx - half * 0.53, cy - half * 0.02).lineTo(cx + half * 0.53, cy - half * 0.02)
+        .moveTo(cx - half * 0.35, cy + half * 0.42).lineTo(cx + half * 0.35, cy + half * 0.42).stroke();
+      break;
+  }
+  doc.restore();
+}
+
 function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
   photoWithTint(doc, "cover-home.jpg", 450);
   text(doc, "Deine persönliche\nEnergieprojekt-Analyse", 48, 147, 485, 31, "bold", COLOR.white, 5);
@@ -207,36 +274,43 @@ function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void
     "regular", "#DDECF7");
   text(doc, date.format(new Date()), 50, 397, 280, 9, "regular", "#DDECF7");
   eyebrow(doc, "Dein Energiesystem", LEFT, 480);
-  const tags = lead.products.map((item) => LABEL[item]);
-  const perRow = tags.length > 3 ? 3 : tags.length;
-  const gap = 10;
-  const tagWidth = (WIDTH - gap * (perRow - 1)) / perRow;
-  tags.forEach((tag, index) => {
-    const x = LEFT + (index % perRow) * (tagWidth + gap);
-    const y = 507 + Math.floor(index / perRow) * 60;
-    rect(doc, x, y, tagWidth, 48, COLOR.soft);
-    text(doc, tag, x + 10, y + 14, tagWidth - 20, 9, "semibold", COLOR.navy);
+  const order: ProductType[] = ["photovoltaic", "battery_storage", "heat_pump", "climate", "wallbox"];
+  const selected = order.filter((item) => lead.products.includes(item));
+  const step = WIDTH / selected.length;
+  const first = LEFT + step / 2;
+  const last = LEFT + WIDTH - step / 2;
+  if (selected.length > 1) rule(doc, 576, first, last - first, COLOR.line);
+  selected.forEach((item, index) => {
+    const center = first + index * step;
+    systemSymbol(doc, item, center, 535, 35, PRODUCT_COLOR[item]);
+    doc.save().circle(center, 576, 3).fill(PRODUCT_COLOR[item]).restore();
+    text(doc, LABEL[item], center - step / 2 + 2, 593, step - 4, 8.5,
+      "semibold", COLOR.navy, 1);
   });
+  text(doc, "Gemeinsam gedacht. Individuell geplant.", LEFT, 658, WIDTH, 10,
+    "semibold", COLOR.blue);
   text(doc,
     "Diese Analyse ist eine unverbindliche Projekt- und Kostenorientierung. Die technische Auslegung und das konkrete Angebot folgen nach fachlicher Prüfung vor Ort.",
     LEFT, 716, WIDTH, 8, "regular", COLOR.muted, 3);
 }
 
 function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
-  const y = page(doc, "Überblick", "Dein Energieprojekt",
+  page(doc, "Überblick", "Dein Energieprojekt",
     "Die ausgewählten Lösungen bilden ein gemeinsames Projekt – mit unterschiedlichen Aufgaben und Kosten.");
   const eco = lead.economics;
   const totalText = eco.investmentBaseEuro === null
     ? "Noch nicht vollständig bezifferbar" : euro(eco.investmentBaseEuro);
-  eyebrow(doc, "Gesamtinvestition", LEFT, y);
-  text(doc, totalText, LEFT, y + 24, WIDTH, eco.investmentBaseEuro === null ? 24 : 34,
-    "bold", COLOR.navy);
+  imageCover(doc, "project-home.jpg", LEFT, 183, WIDTH, 172, undefined, "bottom");
+  doc.save().rect(LEFT, 183, WIDTH, 172).fillOpacity(0.73).fill(COLOR.navy).restore();
+  doc.save().rect(LEFT, 183, 4, 172).fill(COLOR.cyan).restore();
+  text(doc, "GESAMTINVESTITION", LEFT + 23, 214, 400, 8, "semibold", "#C7E8F7");
+  text(doc, totalText, LEFT + 22, 241, WIDTH - 46, eco.investmentBaseEuro === null ? 20 : 35,
+    "bold", COLOR.white);
   if (eco.investmentBaseEuro === null) {
-    text(doc, "Für einzelne Komponenten ist eine technische Preisprüfung nötig.", LEFT, y + 68,
-      WIDTH, 9, "regular", COLOR.muted);
+    text(doc, "Für einzelne Komponenten ist eine technische Preisprüfung nötig.", LEFT + 23, 303,
+      WIDTH - 46, 9, "regular", COLOR.white);
   }
-  rule(doc, y + 105);
-  const groupY = y + 130;
+  const groupY = 388;
   const allGroups: { label: string; detail: string; types: ComponentId[]; value: number | null }[] = [
     {
       label: "Solarinvestition", detail: "Photovoltaik + Stromspeicher",
@@ -256,14 +330,15 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   ];
   const groups = allGroups.filter((group) => group.types.some((type) => component(lead, type)));
   groups.forEach((group, index) => {
-    const rowY = groupY + index * 77;
-    eyebrow(doc, group.label, LEFT, rowY, 292);
-    text(doc, group.detail, LEFT, rowY + 19, 292, 9, "regular", COLOR.muted);
+    const rowY = groupY + index * 69;
+    doc.save().rect(LEFT, rowY + 4, 3, 38).fill(index === 0 ? COLOR.blue : index === 1 ? COLOR.green : COLOR.cyan).restore();
+    eyebrow(doc, group.label, LEFT + 12, rowY, 280);
+    text(doc, group.detail, LEFT + 12, rowY + 19, 280, 9, "regular", COLOR.muted);
     text(doc, euro(group.value), 343, rowY + 7, 210, group.value === null ? 11 : 18,
       "semibold", COLOR.navy);
-    rule(doc, rowY + 62);
+    rule(doc, rowY + 55);
   });
-  const highlightY = groupY + groups.length * 77 + 20;
+  const highlightY = groupY + groups.length * 69 + 18;
   eyebrow(doc, "Auf einen Blick", LEFT, highlightY);
   const pv = product(lead, "photovoltaic");
   const highlights = [
@@ -272,7 +347,7 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
     ...(eco.heating?.annualSavingEuro !== null && eco.heating ? [{ label: "Heizkostenersparnis pro Jahr", value: euro(eco.heating.annualSavingEuro, true) }] : []),
   ];
   highlights.slice(0, 3).forEach((item, index) => {
-    const rowY = highlightY + 28 + index * 43;
+    const rowY = highlightY + 27 + index * 33;
     text(doc, item.label, LEFT, rowY, 270, 9, "regular", COLOR.muted);
     text(doc, item.value, 317, rowY - 1, 236, 13, "semibold", COLOR.blue);
   });
@@ -281,48 +356,31 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
 function arrow(doc: PDFKit.PDFDocument, x1: number, y1: number, x2: number, y2: number,
   color: string, dashed = false): void {
   const angle = Math.atan2(y2 - y1, x2 - x1);
-  doc.save().strokeColor(color).fillColor(color).lineWidth(3);
+  doc.save().strokeColor(color).fillColor(color).lineWidth(3.2).lineCap("round");
   if (dashed) doc.dash(6, { space: 5 });
-  doc.moveTo(x1, y1).lineTo(x2, y2).stroke().undash();
-  const wing = 9;
+  doc.moveTo(x1, y1).lineTo(x2, y2).stroke();
+  doc.undash();
+  const wing = 9.5;
   doc.moveTo(x2, y2)
     .lineTo(x2 - wing * Math.cos(angle - Math.PI / 6), y2 - wing * Math.sin(angle - Math.PI / 6))
     .lineTo(x2 - wing * Math.cos(angle + Math.PI / 6), y2 - wing * Math.sin(angle + Math.PI / 6))
     .closePath().fill().restore();
 }
 
-function flowNode(doc: PDFKit.PDFDocument, x: number, y: number, width: number, height: number,
-  title: string, value: string, color: string, icon: "solar" | "home" | "battery" | "grid"): void {
-  rect(doc, x, y, width, height, COLOR.white);
-  doc.save().roundedRect(x, y, width, height, 9).strokeColor(COLOR.line).lineWidth(0.8).stroke().restore();
-  doc.save().strokeColor(color).lineWidth(2.4);
-  const cx = x + width / 2;
-  if (icon === "solar") {
-    doc.rect(cx - 17, y + 12, 34, 17).stroke();
-    doc.moveTo(cx - 17, y + 20).lineTo(cx + 17, y + 20).stroke();
-    doc.moveTo(cx, y + 12).lineTo(cx, y + 29).stroke();
-  } else if (icon === "home") {
-    doc.moveTo(cx - 20, y + 27).lineTo(cx, y + 10).lineTo(cx + 20, y + 27).stroke();
-    doc.rect(cx - 15, y + 27, 30, 18).stroke();
-  } else if (icon === "battery") {
-    doc.roundedRect(cx - 12, y + 10, 24, 31, 3).stroke();
-    doc.moveTo(cx - 5, y + 7).lineTo(cx + 5, y + 7).stroke();
-    doc.moveTo(cx - 5, y + 25).lineTo(cx + 5, y + 25).stroke();
-  } else {
-    doc.moveTo(cx, y + 9).lineTo(cx, y + 44).stroke();
-    doc.moveTo(cx - 16, y + 23).lineTo(cx + 16, y + 23).stroke();
-    doc.moveTo(cx - 11, y + 33).lineTo(cx + 11, y + 33).stroke();
-  }
-  doc.restore();
-  text(doc, title, x + 7, y + 48, width - 14, 9, "semibold", COLOR.navy);
-  text(doc, value, x + 7, y + 67, width - 14, 9, "regular", color);
+function flowNode(doc: PDFKit.PDFDocument, cx: number, cy: number, radius: number,
+  title: string, value: string, color: string, icon: ProductType | "home" | "grid",
+  labelY: number, labelWidth: number): void {
+  doc.save().circle(cx, cy, radius).fill(icon === "home" ? "#E9F4FA" : "#F1F6FA").restore();
+  systemSymbol(doc, icon, cx, cy, radius * (icon === "home" ? 1.1 : 1.18), color);
+  const labelX = cx - labelWidth / 2;
+  text(doc, title, labelX, labelY, labelWidth, 9.5, "semibold", COLOR.navy, 1);
+  text(doc, value, labelX, labelY + 19, labelWidth, 8.5, "regular", color, 1);
 }
 
 function flowValue(doc: PDFKit.PDFDocument, label: string, value: number, x: number, y: number,
   width: number, color: string): void {
-  rect(doc, x, y, width, 39, COLOR.white);
-  text(doc, label, x + 5, y + 4, width - 10, 7, "semibold", COLOR.muted, 0);
-  text(doc, `${format(value)} kWh/a`, x + 5, y + 18, width - 10, 9, "bold", color, 0);
+  text(doc, label, x, y, width, 7.5, "semibold", COLOR.muted, 0);
+  text(doc, `${format(value)} kWh/a`, x, y + 16, width, 9.5, "bold", color, 0);
 }
 
 function drawEnergyFlow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
@@ -332,32 +390,38 @@ function drawEnergyFlow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
     "Die Wege der Energie in einem modellierten Jahr – direkt im Haus, über den Speicher und im Austausch mit dem Netz.");
   const flow = solar.withStorage;
   const storage = Boolean(product(lead, "battery_storage"));
-  flowNode(doc, 226, 195, 143, 94, "Solaranlage", `${format(flow.generationKwh)} kWh/a`, COLOR.blue, "solar");
-  flowNode(doc, 226, 449, 143, 94, "Dein Zuhause", `${format(flow.demandKwh)} kWh/a`, COLOR.navy, "home");
-  if (storage) flowNode(doc, 42, 449, 133, 94, "Stromspeicher",
-    `${format(solar.storageUsableCapacityKwh)} kWh`, COLOR.cyan, "battery");
-  flowNode(doc, 420, 449, 133, 94, "Stromnetz", "Bezug & Einspeisung", COLOR.muted, "grid");
-  arrow(doc, 297, 289, 297, 440, COLOR.blue);
-  flowValue(doc, "Direktverbrauch", flow.directUseKwh, 309, 340, 121, COLOR.blue);
+  // Paths are drawn first and each is a single vector segment with an attached arrowhead.
+  arrow(doc, 297, 314, 297, 405, COLOR.blue);
   if (storage) {
-    arrow(doc, 248, 284, 111, 440, COLOR.cyan);
-    flowValue(doc, "Speicherladung", flow.storageChargeKwh, 43, 341, 126, COLOR.cyan);
-    arrow(doc, 175, 493, 217, 493, COLOR.cyan);
-    flowValue(doc, "Aus Speicher", flow.storageDeliveredKwh, 169, 550, 126, COLOR.cyan);
+    arrow(doc, 255, 314, 137, 434, COLOR.cyan);
+    arrow(doc, 158, 475, 229, 475, COLOR.cyan);
   }
-  arrow(doc, 347, 284, 483, 440, COLOR.green);
-  flowValue(doc, "Einspeisung", flow.feedInKwh, 427, 341, 126, COLOR.green);
-  arrow(doc, 419, 493, 378, 493, COLOR.muted, true);
-  flowValue(doc, "Netzbezug", flow.gridPurchaseKwh, 366, 550, 126, COLOR.muted);
-  if (storage) text(doc, `Speicherverluste: ${format(flow.storageLossesKwh)} kWh/a`, 42, 603,
-    215, 8, "regular", COLOR.muted);
-  rule(doc, 630);
-  valueLine(doc, "Eigenverbrauch", format(flow.selfConsumptionPercent, " %"), 646,
+  arrow(doc, 339, 314, 458, 433, COLOR.green);
+  arrow(doc, 437, 475, 366, 475, COLOR.muted, true);
+  flowNode(doc, 297, 235, 41, "Solaranlage", `${format(flow.generationKwh)} kWh/a`,
+    COLOR.blue, "photovoltaic", 278, 154);
+  flowNode(doc, 297, 475, 65, "Dein Zuhause", `${format(flow.demandKwh)} kWh/a`,
+    COLOR.navy, "home", 545, 155);
+  if (storage) flowNode(doc, 112, 475, 43, "Stromspeicher",
+    `${format(solar.storageUsableCapacityKwh)} kWh`, COLOR.cyan, "battery_storage", 521, 132);
+  flowNode(doc, 483, 475, 43, "Stromnetz", "Bezug & Einspeisung", COLOR.muted,
+    "grid", 521, 139);
+  flowValue(doc, "Direktverbrauch", flow.directUseKwh, 311, 350, 126, COLOR.blue);
+  if (storage) {
+    flowValue(doc, "Speicherladung", flow.storageChargeKwh, 44, 350, 130, COLOR.cyan);
+    flowValue(doc, "Aus Speicher", flow.storageDeliveredKwh, 43, 571, 153, COLOR.cyan);
+  }
+  flowValue(doc, "Einspeisung", flow.feedInKwh, 426, 350, 127, COLOR.green);
+  flowValue(doc, "Netzbezug", flow.gridPurchaseKwh, 399, 571, 154, COLOR.muted);
+  if (storage) text(doc, `Speicherverluste: ${format(flow.storageLossesKwh)} kWh/a`, 42, 611,
+    215, 7.5, "regular", COLOR.muted);
+  rule(doc, 642);
+  valueLine(doc, "Eigenverbrauch", format(flow.selfConsumptionPercent, " %"), 657,
     { x: LEFT, width: 225, color: COLOR.blue, valueSize: 23 });
-  valueLine(doc, "Autarkie", format(flow.autarkyPercent, " %"), 646,
+  valueLine(doc, "Autarkie", format(flow.autarkyPercent, " %"), 657,
     { x: 327, width: 226, color: COLOR.navy, valueSize: 23 });
   text(doc, "Modellierte Jahresbetrachtung – keine stündliche Lastgangsimulation.",
-    LEFT, 728, WIDTH, 8, "regular", COLOR.muted);
+    LEFT, 737, WIDTH, 8, "regular", COLOR.muted);
 }
 
 function drawSolarSystem(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
@@ -367,7 +431,7 @@ function drawSolarSystem(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload)
   page(doc, "Technik", "Dein Solarsystem",
     "Die Anlage erzeugt Strom. Der Speicher verschiebt einen Teil davon in Stunden mit höherem Bedarf.");
   if (pv) {
-    imageCover(doc, "photovoltaic.jpg", LEFT, 195, 234, storage ? 211 : 279);
+    imageCover(doc, "photovoltaic.jpg", LEFT, 195, 234, storage ? 211 : 279, "right");
     eyebrow(doc, "Photovoltaik", 297, 202, 256);
     text(doc, `${format(pv.result.recommendedPowerKwpMin)}–${format(pv.result.recommendedPowerKwpMax)} kWp`,
       297, 226, 256, 21, "bold", COLOR.navy);
@@ -445,7 +509,7 @@ function drawSolarEconomics(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPaylo
   const rows = [
     { label: "Direkt genutzter Solarstrom", value: year.electricityCostSavingsEuro },
     ...(product(lead, "battery_storage")
-      ? [{ label: "Zusätzlich aus dem Speicher", value: year.storageAdditionalBenefitEuro }] : []),
+      ? [{ label: "Stromkostenersparnis durch Speicherentladung", value: year.storageAdditionalBenefitEuro }] : []),
     { label: "Einspeisung ins Netz", value: year.feedInRevenueEuro },
     { label: "Betriebskosten", value: -year.operatingCostsEuro },
   ];
@@ -467,6 +531,13 @@ function drawSolarEconomics(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPaylo
   }
 }
 
+function niceTickStep(approximate: number): number {
+  const magnitude = 10 ** Math.floor(Math.log10(Math.max(approximate, 1)));
+  const normalized = approximate / magnitude;
+  const factor = [1, 2, 2.5, 5, 10].find((candidate) => candidate >= normalized) ?? 10;
+  return factor * magnitude;
+}
+
 function drawCashflow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
   const points = lead.economics.projections;
   const solar = lead.economics.solar;
@@ -477,22 +548,20 @@ function drawCashflow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): v
   const values = points.map((point) => point.cumulativeCashFlowEuro);
   const min = Math.min(0, ...values);
   const max = Math.max(0, ...values);
-  const spread = Math.max(1, max - min);
-  const lower = min - spread * 0.08;
-  const upper = max + spread * 0.08;
+  const step = niceTickStep((max - min) / 5);
+  const lower = Math.floor(min / step) * step - (min === max ? step : 0);
+  const upper = Math.ceil(max / step) * step + (min === max ? step : 0);
   const xAt = (year: number) => plot.x + year / lead.economics.horizonYears * plot.width;
   const yAt = (value: number) => plot.y + (upper - value) / (upper - lower) * plot.height;
   const zeroY = yAt(0);
-  for (let i = 0; i <= 4; i += 1) {
-    const value = lower + (upper - lower) * i / 4;
+  for (let value = lower; value <= upper; value += step) {
     const y = yAt(value);
-    doc.save().strokeColor(i === 0 ? COLOR.line : "#E8EDF4")
-      .lineWidth(0.7).moveTo(plot.x, y).lineTo(plot.x + plot.width, y).stroke().restore();
-    text(doc, euro(value), 10, y - 6, 71, 7, "regular", COLOR.muted, 0);
+    doc.save().strokeColor(value === 0 ? COLOR.navy : "#E8EDF4")
+      .lineWidth(value === 0 ? 1.4 : 0.7)
+      .moveTo(plot.x, y).lineTo(plot.x + plot.width, y).stroke().restore();
+    text(doc, euro(value), 8, y - 6, 73, 7,
+      value === 0 ? "semibold" : "regular", value === 0 ? COLOR.navy : COLOR.muted, 0);
   }
-  doc.save().strokeColor(COLOR.navy).lineWidth(1.4)
-    .moveTo(plot.x, zeroY).lineTo(plot.x + plot.width, zeroY).stroke().restore();
-  text(doc, "0 €", plot.x + 5, zeroY - 17, 55, 7.5, "semibold", COLOR.navy, 0);
   for (let year = 0; year <= lead.economics.horizonYears; year += 5) {
     const x = xAt(year);
     doc.save().strokeColor(COLOR.line).lineWidth(0.8)
@@ -500,7 +569,7 @@ function drawCashflow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): v
     text(doc, `${year}`, x - 12, plot.y + plot.height + 11, 26, 8,
       "regular", COLOR.muted, 0);
   }
-  doc.save().fillColor(COLOR.pale).fillOpacity(0.45).moveTo(xAt(points[0]!.year), zeroY);
+  doc.save().fillColor(COLOR.pale).fillOpacity(0.38).moveTo(xAt(points[0]!.year), zeroY);
   points.forEach((point) => doc.lineTo(xAt(point.year), yAt(point.cumulativeCashFlowEuro)));
   doc.lineTo(xAt(points[points.length - 1]!.year), zeroY).closePath().fill().restore();
   doc.save().strokeColor(COLOR.blue).lineWidth(3).moveTo(xAt(points[0]!.year), yAt(values[0]!));
@@ -509,7 +578,7 @@ function drawCashflow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): v
   const start = points[0]!;
   const end = points[points.length - 1]!;
   doc.save().circle(xAt(start.year), yAt(start.cumulativeCashFlowEuro), 5).fill(COLOR.blue).restore();
-  doc.save().circle(xAt(end.year), yAt(end.cumulativeCashFlowEuro), 5).fill(COLOR.blue).restore();
+  doc.save().circle(xAt(end.year), yAt(end.cumulativeCashFlowEuro), 6).fill(COLOR.blue).restore();
   text(doc, `Start: ${euro(start.cumulativeCashFlowEuro)}`, plot.x + 3, plot.y + plot.height + 40,
     212, 9, "semibold", COLOR.navy);
   text(doc, `Jahr ${end.year}: ${euro(end.cumulativeCashFlowEuro)}`, plot.x + 218,
@@ -518,11 +587,12 @@ function drawCashflow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): v
     const crossingX = xAt(solar.paybackYears);
     doc.save().strokeColor(COLOR.green).dash(3, { space: 4 }).lineWidth(1.2)
       .moveTo(crossingX, zeroY).lineTo(crossingX, plot.y + plot.height).stroke().undash().restore();
-    doc.save().circle(crossingX, zeroY, 6).fill(COLOR.green).restore();
+    doc.save().circle(crossingX, zeroY, 7).lineWidth(2.7)
+      .fillAndStroke(COLOR.white, COLOR.green).restore();
     text(doc, `Amortisation nach ${format(solar.paybackYears)} Jahren`, LEFT, 661,
       WIDTH, 14, "semibold", COLOR.navy);
     text(doc,
-      "Ab diesem Punkt liegt der kumulierte Solarwert im Modell über der Anfangsinvestition.",
+      "Ab diesem Zeitpunkt ist die Anfangsinvestition im Modell rechnerisch zurückverdient.",
       LEFT, 689, WIDTH, 9, "regular", COLOR.muted);
   } else {
     text(doc, "Die Amortisation liegt außerhalb des betrachteten Zeitraums.", LEFT, 663,
@@ -576,8 +646,10 @@ function drawStorageComparison(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPa
   comparisonBar(doc, "Einspeisung", before.feedInKwh,
     after.feedInKwh, " kWh/a", before.feedInKwh, 614, false);
   rule(doc, 722);
-  text(doc, `Zusätzlicher finanzieller Speichervorteil: ${euro(solar.storageAdditionalAnnualBenefitEuro, true)} im ersten Jahr.`,
-    LEFT, 737, WIDTH, 8.5, "regular", COLOR.muted);
+  text(doc, "Zusätzlicher finanzieller Speichervorteil", LEFT, 735, 370,
+    8.5, "semibold", COLOR.ink);
+  text(doc, `${euro(solar.storageAdditionalAnnualBenefitEuro, true)} im ersten Jahr`,
+    398, 734, 155, 9.5, "semibold", COLOR.blue);
 }
 
 function drawHeating(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
@@ -622,6 +694,7 @@ function drawHeating(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
     text(doc, "Bei unveränderten jährlichen Kosten; ohne Förderung und Finanzierung.",
       57, 583, 480, 8, "regular", COLOR.muted);
   }
+  rule(doc, 634);
   eyebrow(doc, "Förderung nicht berücksichtigt", LEFT, 653);
   text(doc,
     "Mögliche Fördermittel können die tatsächliche Investition reduzieren. Ob und in welcher Höhe sie in Frage kommen, prüfen wir im weiteren Beratungsprozess.",
@@ -665,7 +738,7 @@ function drawComfort(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
       297, y + 193, 256, 8.5, "regular", COLOR.muted);
   }
   rule(doc, 727);
-  text(doc, "Klimaanlage und Wallbox stehen hier für Komfort und Infrastruktur. Ein finanzieller Ertrag wird dafür nicht behauptet.",
+  text(doc, "Klimaanlage und Wallbox ergänzen dein Energieprojekt um Komfort, bequemes Laden und moderne Infrastruktur.",
     LEFT, 740, WIDTH, 8, "regular", COLOR.muted, 1);
 }
 
@@ -689,7 +762,7 @@ function drawInvestment(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
       doc.save().rect(segmentX, 304, segmentWidth, 28).fill(PRODUCT_COLOR[row.component]).restore();
       segmentX += segmentWidth;
     });
-    text(doc, "Anteile am Gesamtprojekt", LEFT, 344, WIDTH, 8, "regular", COLOR.muted);
+    text(doc, "So verteilt sich die Investition", LEFT, 344, WIDTH, 8, "regular", COLOR.muted);
   } else {
     rule(doc, 310);
   }
@@ -746,32 +819,41 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
     price_growth: "Strompreisentwicklung", pv_degradation: "PV-Degradation",
     storage_efficiency: "Speicherwirkungsgrad", project_horizon: "Betrachtungszeitraum",
   };
-  const items = solarKeys.map((key) => ({ label: solarLabels[key]!, value: assumption(lead, key) }))
+  const solarItems = solarKeys.map((key) => ({ label: solarLabels[key]!, value: assumption(lead, key) }))
     .filter((item) => item.value !== null);
-  if (lead.economics.solar) items.push({
+  if (lead.economics.solar) solarItems.push({
     label: "PV-Betriebskosten",
     value: `${num.format(lead.economics.solar.firstYearOperatingCostsEuro)} €/Jahr`,
   });
+  const heatingItems: { label: string; value: string }[] = [];
   if (lead.economics.heating) {
-    items.push({ label: "Heizungsvergleich", value: lead.economics.heating.referenceSource });
+    heatingItems.push({ label: "Heizungsvergleich", value: lead.economics.heating.referenceSource });
     const fuel = assumption(lead, "heating_fuel_price");
-    if (fuel) items.push({ label: "Preis Vergleichsheizung", value: fuel });
+    if (fuel) heatingItems.push({ label: "Preis Vergleichsheizung", value: fuel });
     const efficiency = assumption(lead, "heating_efficiency");
-    if (efficiency) items.push({ label: "Wirkungsgrad Vergleich", value: efficiency });
+    if (efficiency) heatingItems.push({ label: "Wirkungsgrad Vergleich", value: efficiency });
     const heat = product(lead, "heat_pump");
     if (heat) {
-      items.push({ label: "Wärmepumpen-JAZ", value: format(heat.answers.annualPerformanceFactor) });
-      if (settings) items.push({ label: "Wärmepumpen-Strompreis",
+      heatingItems.push({ label: "Wärmepumpen-JAZ", value: format(heat.answers.annualPerformanceFactor) });
+      if (settings) heatingItems.push({ label: "Wärmepumpen-Strompreis",
         value: `${num.format(settings.heatPump.electricityPriceEuroPerKwh)} €/kWh` });
     }
   }
-  let rowY = 228;
-  for (const item of items) {
-    const labelEnd = text(doc, item.label, LEFT, rowY, columnWidth, 7.5, "regular", COLOR.muted, 1);
-    const valueEnd = text(doc, item.value!, LEFT, labelEnd + 3, columnWidth, 9,
-      "semibold", COLOR.navy, 1);
-    rowY = valueEnd + 12;
-    if (rowY > 655) break;
+  let rowY = 224;
+  for (const group of [
+    { title: "Solar", items: solarItems },
+    { title: "Heizung", items: heatingItems },
+  ]) {
+    if (!group.items.length) continue;
+    text(doc, group.title, LEFT, rowY, columnWidth, 8, "semibold", COLOR.blue, 1);
+    rowY += 18;
+    for (const item of group.items) {
+      const labelEnd = text(doc, item.label, LEFT, rowY, columnWidth, 7.5, "regular", COLOR.muted, 1);
+      const valueEnd = text(doc, item.value!, LEFT, labelEnd + 3, columnWidth, 9,
+        "semibold", COLOR.navy, 1);
+      rowY = valueEnd + 8;
+    }
+    rowY += 7;
   }
   eyebrow(doc, "Vor Ort prüfen wir", rightX, 195, columnWidth);
   const checks: { label: string; value: string }[] = [
