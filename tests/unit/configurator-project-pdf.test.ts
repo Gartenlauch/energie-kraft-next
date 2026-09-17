@@ -306,14 +306,19 @@ describe("premium configurator project PDF", () => {
     expect(lead.economics.solar?.paybackYears).toBe(13.18);
     expect(lead.economics.solar?.annualizedReturnPercent).toBe(3.95);
     expect(lead.economics.solar?.netSurplus20YearsEuro).toBe(7_182.24);
+    expect(getSolarReturnDisplay(lead.economics)).toMatchObject({
+      investment: "15.700 €",
+      irr: "3,95 %",
+      horizonResult: "7.182 €",
+    });
     const pdf = await generateConfiguratorProjectPdf({
       leadId: "PV-BS-WP-KA-WB-00005",
       lead,
       settings: DEFAULT_CONFIGURATOR_SETTINGS,
     });
-    const output = path.join(tmpdir(), `energie-kraft-recovery3-${process.pid}.pdf`);
+    const output = path.join(tmpdir(), `energie-kraft-recovery5-${process.pid}.pdf`);
     writeFileSync(output, pdf);
-    console.info("RECOVERY3_REPRESENTATIVE_PDF", output);
+    console.info("RECOVERY5_REPRESENTATIVE_PDF", output);
 
     expect(pdf.length).toBeGreaterThan(30_000);
     expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
