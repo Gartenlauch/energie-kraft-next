@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  heatingSavingsSchema, investmentSourceSchema, projectIrrStatusSchema,
+  projectPaybackStatusSchema, solarEconomicsSchema,
+} from "./configurator-economic-details-schema.js";
 
 /*
  * Photovoltaik
@@ -426,15 +430,23 @@ const projectEconomicsSchema = z
     modeledComponentsInvestmentMinEuro: economicMoneySchema.nonnegative(),
     modeledComponentsInvestmentBaseEuro: economicMoneySchema.nonnegative(),
     modeledComponentsInvestmentMaxEuro: economicMoneySchema.nonnegative(),
+    missingInvestmentComponents: z.array(configuratorTypeSchema).max(5),
+    missingInvestmentSources: z.array(investmentSourceSchema).max(5),
     ...economicCostShape,
     firstYearQuantifiedEffectEuro: economicMoneySchema,
     paybackYears: z.number().nonnegative().max(50).nullable(),
+    paybackStatus: projectPaybackStatusSchema,
+    annualizedReturnPercent: economicMoneySchema.nullable(),
+    irrStatus: projectIrrStatusSchema,
     finalCumulativeCashFlowEuro: economicMoneySchema.nullable(),
+    solar: solarEconomicsSchema.nullable(),
+    heating: heatingSavingsSchema.nullable(),
     components: z
       .array(
         z
           .object({
             component: configuratorTypeSchema,
+            investmentSource: investmentSourceSchema,
             analysisKind: z.enum(["economic_effect", "operating_cost", "investment_only"]),
             pricingMode: z.enum(["modeled", "individual_quote_required"]),
             ...economicCostShape,
@@ -466,6 +478,9 @@ const projectEconomicsSchema = z
             ...economicCostShape,
             firstYearQuantifiedEffectEuro: economicMoneySchema,
             paybackYears: z.number().nonnegative().max(50).nullable(),
+            paybackStatus: projectPaybackStatusSchema,
+            annualizedReturnPercent: economicMoneySchema.nullable(),
+            irrStatus: projectIrrStatusSchema,
             finalCumulativeCashFlowEuro: economicMoneySchema.nullable(),
           })
           .strict(),

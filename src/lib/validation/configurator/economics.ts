@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  heatingSavingsSchema, investmentSourceSchema, projectIrrStatusSchema,
+  projectPaybackStatusSchema, solarEconomicsSchema,
+} from "../../../../functions/src/configurator-economic-details-schema";
 
 const moneySchema = z.number().finite();
 const costShape = {
@@ -14,10 +18,19 @@ export const projectEconomicsSchema = z
     modeledComponentsInvestmentMinEuro: moneySchema.nonnegative(),
     modeledComponentsInvestmentBaseEuro: moneySchema.nonnegative(),
     modeledComponentsInvestmentMaxEuro: moneySchema.nonnegative(),
+    missingInvestmentComponents: z.array(z.enum([
+      "photovoltaic", "battery_storage", "heat_pump", "climate", "wallbox",
+    ])).max(5),
+    missingInvestmentSources: z.array(investmentSourceSchema).max(5),
     ...costShape,
     firstYearQuantifiedEffectEuro: moneySchema,
     paybackYears: z.number().nonnegative().max(50).nullable(),
+    paybackStatus: projectPaybackStatusSchema,
+    annualizedReturnPercent: moneySchema.nullable(),
+    irrStatus: projectIrrStatusSchema,
     finalCumulativeCashFlowEuro: moneySchema.nullable(),
+    solar: solarEconomicsSchema.nullable(),
+    heating: heatingSavingsSchema.nullable(),
     components: z
       .array(
         z
@@ -29,6 +42,7 @@ export const projectEconomicsSchema = z
               "heat_pump",
               "climate",
             ]),
+            investmentSource: investmentSourceSchema,
             analysisKind: z.enum(["economic_effect", "operating_cost", "investment_only"]),
             pricingMode: z.enum(["modeled", "individual_quote_required"]),
             ...costShape,
@@ -60,6 +74,9 @@ export const projectEconomicsSchema = z
             ...costShape,
             firstYearQuantifiedEffectEuro: moneySchema,
             paybackYears: z.number().nonnegative().max(50).nullable(),
+            paybackStatus: projectPaybackStatusSchema,
+            annualizedReturnPercent: moneySchema.nullable(),
+            irrStatus: projectIrrStatusSchema,
             finalCumulativeCashFlowEuro: moneySchema.nullable(),
           })
           .strict(),
