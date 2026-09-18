@@ -1,202 +1,171 @@
 "use client";
 
-import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
-import { AdditionalEnergySolutions } from "@/components/configurator/additional-energy-solutions";
 import { ComparisonBars } from "@/components/charts/energy-charts";
+import { AdditionalEnergySolutions } from "@/components/configurator/additional-energy-solutions";
+import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
+import {
+  ResultIntro,
+  ResultMetric,
+  euro,
+  investment,
+  number,
+  percent,
+} from "@/components/configurator/result-presentation";
 import { heatPumpCalculatorContent } from "@/content/pages/waermepumpen-rechner";
+import { useConfigurator } from "@/lib/configurator/configurator-context";
+import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
 import type { ConfiguratorType, HeatPumpConfiguratorResult } from "@/types/configurator";
 
 interface HeatPumpResultProps {
-    result: HeatPumpConfiguratorResult;
+  result: HeatPumpConfiguratorResult;
   nextConfigurator: ConfiguratorType | null;
-    onBack: () => void;
-    onContinue: () => void;
-    reviewAdditionalSolutions: boolean;
-    onAdditionalSolutionsReviewed: () => void;
+  onBack: () => void;
+  onContinue: () => void;
+  reviewAdditionalSolutions: boolean;
+  onAdditionalSolutionsReviewed: () => void;
 }
 
-const numberFormatter = new Intl.NumberFormat("de-DE", {
-        maximumFractionDigits: 1,
-    });
-
-const currencyFormatter = new Intl.NumberFormat("de-DE", {
-        style: "currency",
-        currency: "EUR",
-        maximumFractionDigits: 0,
-    });
-
 export function HeatPumpResult({
-    result,
-    onBack,
-    onContinue,
-    nextConfigurator,
-    reviewAdditionalSolutions,
-    onAdditionalSolutionsReviewed,
+  result,
+  onBack,
+  onContinue,
+  nextConfigurator,
+  reviewAdditionalSolutions,
+  onAdditionalSolutionsReviewed,
 }: HeatPumpResultProps) {
+  const { state } = useConfigurator();
+  const economics = calculateProjectEconomics(state);
+  const heating = economics.heating;
+  const heatPumpInvestment = investment(economics, "heat_pump");
   const assessment = heatPumpCalculatorContent.assessmentContent[result.flowTemperatureAssessment];
 
-    return (
-        <section aria-labelledby="heat-pump-result-heading">
-      <ConfiguratorPhaseIndicator currentPhase="configuration" />
+  return (
+    <section aria-labelledby="heat-pump-result-heading">
+      <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
+      <ResultIntro
+        id="heat-pump-result-heading"
+        eyebrow="Deine erste Orientierung"
+        title="Deine Wärmepumpen-Orientierung"
+        description="Eine erste Einordnung von Leistung, Investition und laufenden Heizkosten. Die endgültige Auslegung erfordert eine Heizlastberechnung und Prüfung vor Ort."
+      />
 
-      <p className="text-brand-secondary text-sm font-semibold tracking-widest uppercase">
-                Deine erste Orientierung
-            </p>
+      <div className="bg-brand-navy mt-8 overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
+        <p className="text-sm font-semibold tracking-[0.14em] text-cyan-200 uppercase">
+          Empfohlene Wärmepumpenleistung
+        </p>
+        <p className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+          {number(result.recommendedHeatPumpCapacityKw)} kW
+        </p>
+        <div className="mt-7 border-t border-white/20 pt-5">
+          <p className="text-sm text-white/70">Modellierte Investition</p>
+          <p className="mt-1 text-2xl font-semibold break-words sm:text-3xl">
+            {heatPumpInvestment === null ? "Nach technischer Prüfung" : euro(heatPumpInvestment)}
+          </p>
+        </div>
+      </div>
 
-            <h1
-                id="heat-pump-result-heading"
-        className="text-brand-primary mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
-            >
-                Deine Wärmepumpen-Orientierung
-            </h1>
-
-      <div className="border-brand-accent-strong bg-surface mt-8 rounded-xl border p-6">
-        <p className="text-brand-secondary text-sm font-medium">Empfohlene Wärmepumpenleistung</p>
-
-        <p className="text-brand-primary mt-2 text-4xl font-semibold">
-          {numberFormatter.format(result.recommendedHeatPumpCapacityKw)} kW
-                </p>
-
-        <p className="text-foreground/70 mt-3 leading-7">
-          Überschlägige Modellleistung einschließlich der bestehenden Leistungsreserve. Eine
-          belastbare Heizlastberechnung kann hiervon abweichen.
-                </p>
+      {heating ? (
+        <section className="mt-9" aria-labelledby="heating-cost-heading">
+          <h2
+            id="heating-cost-heading"
+            className="text-brand-navy text-xl font-semibold sm:text-2xl"
+          >
+            Was ändert sich bei den Heizkosten?
+          </h2>
+          {heating.currentAnnualEuro !== null ? (
+            <>
+              <dl className="mt-6 grid gap-6 sm:grid-cols-2">
+                <ResultMetric
+                  label="Bisherige / Referenz-Heizkosten"
+                  value={`${euro(heating.currentAnnualEuro)} / Jahr`}
+                  note={result.heatingComparisonLabel}
+                />
+                <ResultMetric
+                  label="Mit Wärmepumpe"
+                  value={`${euro(heating.heatPumpAnnualEuro)} / Jahr`}
+                />
+              </dl>
+              <ComparisonBars
+                prominent
+                items={[
+                  {
+                    label: result.heatingComparisonLabel,
+                    value: heating.currentAnnualEuro,
+                    color: "#91A4C4",
+                  },
+                  { label: "Wärmepumpe", value: heating.heatPumpAnnualEuro, color: "#0DA1D1" },
+                ]}
+                unit="€/Jahr"
+              />
+              {heating.annualSavingEuro !== null ? (
+                <div className="bg-surface mt-7 border-l-4 border-cyan-500 px-5 py-5 sm:px-7">
+                  <p className="text-brand-secondary text-xs font-semibold tracking-[0.12em] uppercase">
+                    {heating.annualSavingEuro > 0
+                      ? "Modellierte Heizkostenersparnis"
+                      : "Modellierte Heizkostendifferenz"}
+                  </p>
+                  <p className="text-brand-navy mt-2 text-3xl font-semibold tracking-tight break-words sm:text-4xl">
+                    {euro(heating.annualSavingEuro)}{" "}
+                    <span className="text-lg font-medium">pro Jahr</span>
+                  </p>
+                  {heating.savingPercent !== null ? (
+                    <p className="text-brand-primary mt-1 font-semibold">
+                      {percent(heating.savingPercent)} gegenüber der Referenz
+                    </p>
+                  ) : null}
+                  {heating.annualSavingEuro < 0 ? (
+                    <p className="text-foreground/70 mt-2 text-sm">
+                      Die modellierten Wärmepumpen-Betriebskosten liegen über den
+                      Referenz-Heizkosten.
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <div className="border-brand-secondary mt-5 border-l-4 pl-5">
+              <p className="text-brand-navy font-semibold">
+                Vergleich nach Klärung des bisherigen Heizsystems
+              </p>
+              <p className="text-foreground/70 mt-2 leading-7">
+                Modellierte Wärmepumpen-Betriebskosten: {euro(heating.heatPumpAnnualEuro)} pro Jahr.
+                Ohne belastbare bisherige Heizkosten zeigen wir keine Ersparnis.
+              </p>
             </div>
+          )}
+        </section>
+      ) : null}
 
-      <div className="border-border-default mt-6 rounded-2xl border p-6">
-        <p className="text-brand-secondary text-sm font-semibold">Einschätzung Heizsystem</p>
-
-        <p className="text-brand-primary mt-2 text-xl font-semibold">{assessment.label}</p>
-
-        <p className="text-foreground/70 mt-2 leading-7">{assessment.description}</p>
-            </div>
-
-            <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Jährlicher Wärmebedarf</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.totalAnnualHeatDemandKwh)} kWh
-                    </p>
-                </article>
-
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Davon Raumwärme</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.spaceHeatingDemandKwh)} kWh
-                    </p>
-                </article>
-
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Warmwasser</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.hotWaterDemandKwh)} kWh/Jahr
-                    </p>
-                </article>
-
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Wärmepumpen-Stromverbrauch</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.annualHeatPumpElectricityConsumptionKwh)} kWh/Jahr
-                    </p>
-                </article>
-
-        <article className="border-border-default rounded-2xl border p-6 sm:col-span-2">
-          <p className="text-brand-secondary text-sm">Modellierte Stromkosten</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {currencyFormatter.format(result.annualHeatPumpOperatingCostEuro)}
-                        /Jahr
-                    </p>
-                </article>
-
-        <article className="border-border-default bg-surface rounded-2xl border p-6 sm:col-span-2">
-          <p className="text-brand-secondary text-sm">Modellierter Projektkosten-Korridor</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {currencyFormatter.format(result.estimatedMinimumCostEuro)}
-                        {" – "}
-            {currencyFormatter.format(result.estimatedMaximumCostEuro)}
-                    </p>
-
-          <p className="text-foreground/65 mt-3 text-sm leading-6">
-            Der Korridor basiert auf den bisherigen Kostenannahmen des detaillierten
-            Wärmepumpen-Rechners und stellt kein verbindliches Angebot dar.
-                    </p>
-                </article>
-            </div>
-
-      <div className="border-border-default bg-surface mt-6 rounded-2xl border p-6">
-        <p className="text-brand-primary text-sm font-semibold">Betriebskostenvergleich</p>
-        {result.currentHeatingOperatingCostEuro === null ? (
-          <div className="mt-4 border-l-4 border-cyan-500 pl-4">
-            <p className="text-brand-navy font-semibold">Vergleich nicht verfügbar</p>
-            <p className="text-foreground/70 mt-2 text-sm leading-6">
-              Für „Andere / weiß nicht“ zeigen wir bewusst nur die modellierten
-              Wärmepumpen-Betriebskosten von{" "}
-              {currencyFormatter.format(result.annualHeatPumpOperatingCostEuro)} pro Jahr. Ein
-              genauer Altanlagenvergleich hängt vom tatsächlichen Energieträger und Verbrauch ab.
-            </p>
-          </div>
-        ) : (
-          <ComparisonBars
-            items={[
-              {
-                label: result.heatingComparisonLabel,
-                value: result.currentHeatingOperatingCostEuro,
-                color: "#91A4C4",
-              },
-              {
-                label: "Wärmepumpenmodell",
-                value: result.annualHeatPumpOperatingCostEuro,
-                color: "#0DA1D1",
-              },
-            ]}
-            unit="€/Jahr"
-          />
-        )}
-        <p className="text-foreground/65 mt-4 text-sm">
-          Förderung nicht eingerechnet.{" "}
-          {result.heatingComparisonBasis === "user_consumption"
-            ? "Der Vergleich basiert auf deiner Verbrauchsangabe."
-            : result.heatingComparisonKind === "unavailable"
-              ? "Der Altanlagenvergleich bleibt modellabhängig."
-              : "Der Vergleich basiert auf den ausgewiesenen Modellannahmen."}
+      <div className="border-brand-primary/15 text-foreground/70 mt-8 border-t pt-5 text-sm leading-6">
+        <p className="text-brand-navy font-semibold">Förderung nicht berücksichtigt</p>
+        <p className="mt-1">
+          Mögliche Fördermittel können die tatsächliche Investition reduzieren. Die konkrete
+          Förderfähigkeit prüfen wir im weiteren Beratungsprozess.
+        </p>
+        <p className="mt-3">
+          {assessment.label}: {assessment.description}
         </p>
       </div>
 
-            {result.technicalReviewRecommended ? (
-        <div className="border-border-default bg-surface mt-6 rounded-2xl border p-6">
-          <h2 className="text-brand-primary font-semibold">Technische Prüfung besonders wichtig</h2>
-
-          <p className="text-foreground/70 mt-2 leading-7">
-            Die gewählte Vorlauftemperatur liegt außerhalb unseres Niedertemperatur- Modellbereichs.
-            Heizflächen, hydraulische Bedingungen und mögliche Maßnahmen am Gebäude sollten vor
-            einer Entscheidung genauer geprüft werden.
-                    </p>
-                </div>
-            ) : null}
-
+      {result.technicalReviewRecommended ? (
+        <p className="border-brand-secondary text-foreground/70 mt-6 border-l-4 pl-5 leading-7">
+          Heizflächen, Vorlauftemperatur und hydraulische Bedingungen sollten vor der Entscheidung
+          besonders sorgfältig geprüft werden.
+        </p>
+      ) : null}
       {reviewAdditionalSolutions ? <AdditionalEnergySolutions currentProduct="heat_pump" /> : null}
-
-            <ConfiguratorJourneyActions
-                currentConfigurator="heat_pump"
+      <ConfiguratorJourneyActions
+        currentConfigurator="heat_pump"
         nextConfigurator={nextConfigurator}
-                onBack={onBack}
-                onContinue={onContinue}
-                onAdvance={
-                  reviewAdditionalSolutions ? onAdditionalSolutionsReviewed : undefined
-                }
-            />
-
+        onBack={onBack}
+        onContinue={onContinue}
+        onAdvance={reviewAdditionalSolutions ? onAdditionalSolutionsReviewed : undefined}
+      />
       <p className="text-foreground/60 mt-6 text-sm leading-6">
-        Diese Berechnung ist eine unverbindliche Modellorientierung. Sie ersetzt keine
-        Heizlastberechnung, technische Vor-Ort-Prüfung oder verbindliche Planung.
-            </p>
-        </section>
-    );
+        Unverbindliche Modellorientierung; keine Heizlastberechnung, technische Planung oder
+        verbindliches Angebot.
+      </p>
+    </section>
+  );
 }

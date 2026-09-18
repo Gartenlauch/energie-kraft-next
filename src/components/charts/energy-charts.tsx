@@ -56,25 +56,42 @@ export function SegmentedEnergyBar({
   );
 }
 
-export function ComparisonBars({ items, unit }: { items: readonly Segment[]; unit: string }) {
+export function ComparisonBars({
+  items,
+  unit,
+  prominent = false,
+}: {
+  items: readonly Segment[];
+  unit: string;
+  prominent?: boolean;
+}) {
   const max = Math.max(...items.map((item) => Math.abs(item.value)), 1);
   return (
     <figure
-      className="mt-5 space-y-3"
+      className={prominent ? "mt-6 space-y-5" : "mt-5 space-y-3"}
       aria-label={items
         .map((item) => `${item.label}: ${Math.round(item.value)} ${unit}`)
         .join(", ")}
     >
       {items.map((item, index) => (
         <div key={item.label}>
-          <div className="mb-1 flex items-baseline justify-between gap-3 text-sm">
+          <div
+            className={
+              prominent
+                ? "mb-2 flex items-baseline justify-between gap-3 text-sm"
+                : "mb-1 flex items-baseline justify-between gap-3 text-sm"
+            }
+          >
             <span className="text-foreground/70">{item.label}</span>
             <strong className="text-brand-navy">
               {new Intl.NumberFormat("de-DE", { maximumFractionDigits: 0 }).format(item.value)}{" "}
               {unit}
             </strong>
           </div>
-          <div className="bg-surface h-3 overflow-hidden rounded-full" aria-hidden="true">
+          <div
+            className={`bg-surface overflow-hidden rounded-full ${prominent ? "h-4" : "h-3"}`}
+            aria-hidden="true"
+          >
             <div
               className="h-full rounded-full"
               style={{

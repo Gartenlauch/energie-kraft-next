@@ -236,7 +236,7 @@ export function ClimateWizard() {
                     ) : null}
                 </div>
 
-                <div className="mt-10 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+                <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
                     <button
                         type="button"
                         onClick={goBack}

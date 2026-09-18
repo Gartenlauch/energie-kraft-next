@@ -8,15 +8,15 @@ import { ProjectAnalysisPreview } from "@/components/configurator/project-analys
 import type { ConfiguratorType } from "@/types/configurator";
 
 interface ConfiguratorJourneyActionsProps {
-    currentConfigurator: ConfiguratorType;
-    nextConfigurator: ConfiguratorType | null;
+  currentConfigurator: ConfiguratorType;
+  nextConfigurator: ConfiguratorType | null;
 
-    onBack: () => void;
-    onContinue: () => void;
+  onBack: () => void;
+  onContinue: () => void;
 
-    onAdvance?: () => void;
+  onAdvance?: () => void;
 
-    secondaryActions?: ReactNode;
+  secondaryActions?: ReactNode;
 }
 
 const NEXT_BUTTON_LABELS: Record<ConfiguratorType, string> = {
@@ -36,69 +36,65 @@ const NEXT_CONFIGURATOR_LABELS: Record<ConfiguratorType, string> = {
 };
 
 export function ConfiguratorJourneyActions({
-    currentConfigurator,
-    nextConfigurator,
-    onBack,
-    onContinue,
-    onAdvance,
-    secondaryActions,
+  currentConfigurator,
+  nextConfigurator,
+  onBack,
+  onContinue,
+  onAdvance,
+  secondaryActions,
 }: ConfiguratorJourneyActionsProps) {
   const currentProduct = configuratorProducts[currentConfigurator];
 
-    return (
-    <div className="border-border-default bg-background mt-8 rounded-2xl border p-6">
-      <h2 className="text-brand-primary text-lg font-semibold">Wie geht es weiter?</h2>
+  return (
+    <>
+      {nextConfigurator ? null : <ProjectAnalysisPreview />}
+      <div className="border-brand-primary/15 mt-7 border-t pt-5">
+        <h2 className="text-brand-primary text-sm font-semibold">Wie geht es weiter?</h2>
+        <p className="text-foreground/70 mt-1 text-sm leading-6">
+          {nextConfigurator
+            ? `${currentProduct.title} ist abgeschlossen. Weiter mit dem ${NEXT_CONFIGURATOR_LABELS[nextConfigurator]}; deine Angaben bleiben erhalten.`
+            : "Deine Konfiguration ist bereit für die persönliche Projektanalyse."}
+        </p>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <button
+            type="button"
+            onClick={onBack}
+            className="border-border-default text-brand-primary hover:bg-surface min-h-11 rounded-xl border px-5 py-2.5 font-medium transition"
+          >
+            Angaben ändern
+          </button>
 
-            {nextConfigurator ? (
-        <p className="text-foreground/70 mt-2 leading-7">
-          Deine {currentProduct.title}
-          -Konfiguration ist abgeschlossen. Als Nächstes geht es mit dem{" "}
-          {NEXT_CONFIGURATOR_LABELS[nextConfigurator]} weiter. Deine bisherigen Angaben bleiben
-          erhalten.
-                </p>
-            ) : (
-        <ProjectAnalysisPreview />
-            )}
+          {nextConfigurator ? (
+            <Link
+              href={configuratorProducts[nextConfigurator].href}
+              onClick={onAdvance}
+              className="bg-brand-primary inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-center font-semibold text-white transition hover:opacity-90"
+            >
+              {NEXT_BUTTON_LABELS[nextConfigurator]}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                onAdvance?.();
+                onContinue();
+              }}
+              className="bg-brand-primary inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-center font-semibold text-white transition hover:opacity-90"
+            >
+              Persönliche Projektanalyse erhalten
+            </button>
+          )}
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <button
-                    type="button"
-                    onClick={onBack}
-          className="border-border-default text-brand-primary hover:bg-surface min-h-12 rounded-xl border px-6 py-3 font-medium transition"
-                >
-                    Angaben ändern
-                </button>
+          {secondaryActions}
 
-                {nextConfigurator ? (
-                    <Link
-            href={configuratorProducts[nextConfigurator].href}
-            onClick={onAdvance}
-            className="bg-brand-primary inline-flex min-h-12 items-center justify-center rounded-xl px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
-                    >
-            {NEXT_BUTTON_LABELS[nextConfigurator]}
-                    </Link>
-                ) : (
-                    <button
-                        type="button"
-                        onClick={() => {
-                          onAdvance?.();
-                          onContinue();
-                        }}
-            className="bg-brand-primary inline-flex min-h-12 items-center justify-center rounded-xl px-6 py-3 text-center font-semibold text-white transition hover:opacity-90"
-                    >
-                        Persönliche Projektanalyse erhalten
-                    </button>
-                )}
-
-                {secondaryActions}
-
-                <Link
-                    href="/konfigurator"
-          className="border-border-default text-brand-primary hover:bg-surface inline-flex min-h-12 items-center justify-center rounded-xl border px-6 py-3 text-center font-semibold transition"
-                >
-                    Zur Übersicht
-                </Link>
-            </div>
+          <Link
+            href="/konfigurator"
+            className="border-border-default text-brand-primary hover:bg-surface inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-2.5 text-center font-semibold transition"
+          >
+            Zur Übersicht
+          </Link>
         </div>
-    );
+      </div>
+    </>
+  );
 }

@@ -1,9 +1,17 @@
 "use client";
 
-import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
 import { AdditionalEnergySolutions } from "@/components/configurator/additional-energy-solutions";
-import { ComparisonBars } from "@/components/charts/energy-charts";
+import { ConfiguratorJourneyActions } from "@/components/configurator/configurator-journey-actions";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
+import {
+  ResultIntro,
+  ResultMetric,
+  euro,
+  investment,
+  number,
+} from "@/components/configurator/result-presentation";
+import { useConfigurator } from "@/lib/configurator/configurator-context";
+import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
 import type { ClimateConfiguratorResult, ConfiguratorType } from "@/types/configurator";
 import type { ClimateSystemRecommendation } from "@/types/climate-calculator";
 
@@ -15,15 +23,6 @@ interface ClimateResultProps {
   reviewAdditionalSolutions: boolean;
   onAdditionalSolutionsReviewed: () => void;
 }
-const numberFormatter = new Intl.NumberFormat("de-DE", {
-    maximumFractionDigits: 1,
-  });
-
-const currencyFormatter = new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  });
 
 const SYSTEM_LABELS: Record<ClimateSystemRecommendation, string> = {
   singleSplit: "Single-Split-System",
@@ -39,135 +38,59 @@ export function ClimateResult({
   reviewAdditionalSolutions,
   onAdditionalSolutionsReviewed,
 }: ClimateResultProps) {
+  const { state } = useConfigurator();
+  const cost = investment(calculateProjectEconomics(state), "climate");
+
   return (
     <section aria-labelledby="climate-result-heading">
-      <ConfiguratorPhaseIndicator currentPhase="configuration" />
+      <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
+      <ResultIntro
+        id="climate-result-heading"
+        eyebrow="Deine erste Orientierung"
+        title="Deine Klimaanlagen-Orientierung"
+        description="Angenehme Temperaturen dort, wo du sie brauchst. Die empfohlene Lösung kühlt gezielt und wird passend zu deinen Räumen und deinem Energiesystem geplant."
+      />
 
-      <p className="text-brand-secondary text-sm font-semibold tracking-widest uppercase">
-        Deine erste Orientierung
+      <div className="bg-brand-navy mt-8 overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
+        <p className="text-sm font-semibold tracking-[0.14em] text-cyan-200 uppercase">
+          Empfohlene Kühlleistung
+        </p>
+        <p className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+          {number(result.recommendedCoolingCapacityKw)} kW
+        </p>
+        <p className="mt-3 text-sm leading-6 text-white/70">
+          Überschlägige Leistung einschließlich Reserve; die raumweise Kühllast kann abweichen.
+        </p>
+      </div>
+
+      <dl className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ResultMetric
+          label="Passende Systemart"
+          value={SYSTEM_LABELS[result.systemRecommendation]}
+        />
+        <ResultMetric
+          label="Separat regelbare Inneneinheiten"
+          value={number(result.recommendedIndoorUnitCount, 0)}
+          note="Für gezielte Kühlung in den vorgesehenen Räumen."
+        />
+        <ResultMetric
+          label="Modellierte Investition"
+          value={cost === null ? "Nach technischer Prüfung" : euro(cost)}
+          className="sm:col-span-2 lg:col-span-1"
+        />
+      </dl>
+
+      <p className="bg-surface text-foreground/70 mt-8 border-l-4 border-cyan-500 px-5 py-5 leading-7 sm:px-7">
+        Die genaue Platzierung der Innen- und Außengeräte, Leitungswege und Raumlasten klären wir in
+        der persönlichen Planung.
       </p>
 
-      <h1
-        id="climate-result-heading"
-        className="text-brand-primary mt-3 text-3xl font-semibold tracking-tight sm:text-4xl"
-      >
-        Deine Klimaanlagen-Orientierung
-      </h1>
-
-      <div className="border-brand-accent-strong bg-surface mt-8 rounded-xl border p-6">
-        <p className="text-brand-secondary text-sm font-medium">Empfohlene Kühlleistung</p>
-
-        <p className="text-brand-primary mt-2 text-4xl font-semibold">
-          {numberFormatter.format(result.recommendedCoolingCapacityKw)} kW
-        </p>
-
-        <p className="text-foreground/70 mt-3 leading-7">
-          Überschlägige Modellleistung einschließlich Reserve. Eine technische Kühllastberechnung
-          und die raumweise Planung können davon abweichen.
-        </p>
-      </div>
-
-      <div className="border-border-default bg-surface mt-6 rounded-2xl border p-6">
-        <p className="text-brand-primary text-sm font-semibold">Betriebskostenanalyse</p>
-        <ComparisonBars
-          items={[
-            {
-              label: "Modellierter Stromverbrauch",
-              value: result.annualElectricityConsumptionKwh,
-              color: "#0DA1D1",
-            },
-          ]}
-          unit="kWh/Jahr"
-        />
-        <p className="text-foreground/65 mt-4 text-sm">
-          Für reine Komfortkühlung wird bewusst keine Amortisation oder Einsparung behauptet.
-        </p>
-      </div>
-
-      <div className="border-border-default mt-6 rounded-2xl border p-6">
-        <p className="text-brand-secondary text-sm">Systemorientierung</p>
-
-        <p className="text-brand-primary mt-2 text-2xl font-semibold">
-          {SYSTEM_LABELS[result.systemRecommendation]}
-        </p>
-
-        <p className="text-foreground/70 mt-3 leading-7">
-          Vorgesehen sind zunächst {result.recommendedIndoorUnitCount} separat regelbare
-          {result.recommendedIndoorUnitCount === 1 ? " Inneneinheit" : " Inneneinheiten"}.
-        </p>
-      </div>
-
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Berechnete Kühllast</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.calculatedCoolingLoadKw)} kW
-          </p>
-        </article>
-
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Leistung je Raum</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.averageCapacityPerRoomKw)} kW
-          </p>
-
-          <p className="text-foreground/60 mt-2 text-sm leading-6">
-            Rechnerischer Durchschnitt. Die tatsächliche Leistung muss je Raum separat betrachtet
-            werden.
-          </p>
-        </article>
-
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Jährlicher Stromverbrauch</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {numberFormatter.format(result.annualElectricityConsumptionKwh)} kWh
-          </p>
-        </article>
-
-        <article className="border-border-default rounded-2xl border p-6">
-          <p className="text-brand-secondary text-sm">Modellierte Stromkosten</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {currencyFormatter.format(result.annualOperatingCostEuro)}
-            /Jahr
-          </p>
-        </article>
-
-        <article className="border-border-default bg-surface rounded-2xl border p-6 sm:col-span-2">
-          <p className="text-brand-secondary text-sm">Modellierter Projektkosten-Korridor</p>
-
-          <p className="text-brand-primary mt-2 text-2xl font-semibold">
-            {currencyFormatter.format(result.estimatedMinimumCostEuro)}
-            {" – "}
-            {currencyFormatter.format(result.estimatedMaximumCostEuro)}
-          </p>
-
-          <p className="text-foreground/65 mt-3 text-sm leading-6">
-            Der Korridor basiert auf den bestehenden Modellannahmen des detaillierten
-            Klimaanlagen-Rechners und stellt kein verbindliches Angebot dar.
-          </p>
-        </article>
-      </div>
-
       {result.individualPlanningRecommended ? (
-        <div className="border-border-default bg-surface mt-6 rounded-2xl border p-6">
-          <h2 className="text-brand-primary font-semibold">
-            Individuelle Mehrzonenplanung empfohlen
-          </h2>
-
-          <p className="text-foreground/70 mt-2 leading-7">
-            Bei mehr als fünf getrennten Räumen oder Zonen sollte die Anlage nicht mehr nur über
-            eine einfache Standardkonfiguration dimensioniert werden. Raumlasten, Leitungswege,
-            Außengeräte und Anlagenaufteilung müssen individuell betrachtet werden.
-          </p>
-        </div>
+        <p className="border-brand-secondary text-foreground/70 mt-6 border-l-4 pl-5 leading-7">
+          Für deine Raumaufteilung empfehlen wir eine individuelle Mehrzonenplanung.
+        </p>
       ) : null}
-
       {reviewAdditionalSolutions ? <AdditionalEnergySolutions currentProduct="climate" /> : null}
-
       <ConfiguratorJourneyActions
         currentConfigurator="climate"
         nextConfigurator={nextConfigurator}
@@ -175,11 +98,9 @@ export function ClimateResult({
         onContinue={onContinue}
         onAdvance={reviewAdditionalSolutions ? onAdditionalSolutionsReviewed : undefined}
       />
-
       <p className="text-foreground/60 mt-6 text-sm leading-6">
-        Die Ergebnisse sind eine unverbindliche Modellorientierung und keine technische
-        Kühllastberechnung. Für die endgültige Auslegung müssen unter anderem Raumaufteilung,
-        Fensterflächen, Sonneneinstrahlung, Leitungswege und konkrete Geräte geprüft werden.
+        Unverbindliche Modellorientierung; die endgültige Auslegung erfordert eine technische
+        Prüfung der Räume und Installation.
       </p>
     </section>
   );

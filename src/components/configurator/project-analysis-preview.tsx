@@ -1,118 +1,190 @@
 "use client";
 
-import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
+import { euro, number, percent } from "@/components/configurator/result-presentation";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
+import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
 
-const currency = new Intl.NumberFormat("de-DE", {
-  style: "currency",
-  currency: "EUR",
-  maximumFractionDigits: 0,
-});
-
-function getSystemRecommendation(state: ReturnType<typeof useConfigurator>["state"]) {
-  const pv = state.results.photovoltaic;
-  if (pv) {
-    return {
-      value: `${pv.recommendedPowerKwpMin.toLocaleString("de-DE")}–${pv.recommendedPowerKwpMax.toLocaleString("de-DE")} kWp`,
-      label: "Empfohlene PV-Anlagenklasse",
-    };
-  }
-  const heatPump = state.results.heatPump;
-  if (heatPump) {
-    return {
-      value: `${heatPump.recommendedHeatPumpCapacityKw.toLocaleString("de-DE")} kW`,
-      label: "Empfohlene Wärmepumpenleistung",
-    };
-  }
-  const climate = state.results.climate;
-  if (climate) {
-    return {
-      value: `${climate.recommendedCoolingCapacityKw.toLocaleString("de-DE")} kW`,
-      label: "Empfohlene Kühlleistung",
-    };
-  }
-  const storage = state.results.batteryStorage;
-  if (storage) {
-    return {
-      value: `${storage.recommendedUsableCapacityKwhMin.toLocaleString("de-DE")}–${storage.recommendedUsableCapacityKwhMax.toLocaleString("de-DE")} kWh`,
-      label: "Empfohlene Speicherkapazität",
-    };
-  }
-  const wallbox = state.results.wallbox;
-  return wallbox
-    ? {
-        value: `${wallbox.calculationInput.chargingPowerKw.toLocaleString("de-DE")} kW`,
-        label: "Gewählte Ladeleistung",
-      }
-    : null;
-}
-
-const MODULES = [
-  "Investitionsübersicht",
-  "Wirtschaftlichkeitsanalyse",
-  "Energiefluss",
-  "Betriebskostenvergleich",
-  "Technische nächste Schritte",
-] as const;
+const PRODUCT_LABELS = {
+  photovoltaic: "Photovoltaik",
+  battery_storage: "Stromspeicher",
+  heat_pump: "Wärmepumpe",
+  climate: "Klimaanlage",
+  wallbox: "Wallbox",
+} as const;
 
 export function ProjectAnalysisPreview() {
   const { state } = useConfigurator();
   const economics = calculateProjectEconomics(state);
-  const recommendation = getSystemRecommendation(state);
-  const modules = [
-    MODULES[0],
-    `${state.settings.economics.projectHorizonYears}-Jahres-Projektion`,
-    ...MODULES.slice(1),
-  ];
+  const solar = economics.solar;
+  const heating = economics.heating;
+  const hasClimate = Boolean(state.results.climate);
+  const hasWallbox = Boolean(state.results.wallbox);
+  const hasStorage = Boolean(state.results.batteryStorage);
 
   return (
-    <section
-      aria-labelledby="project-analysis-preview-heading"
-      className="bg-brand-navy relative mt-2 overflow-hidden rounded-[1.75rem] px-6 py-7 text-white sm:px-8 sm:py-9"
-    >
-      <div aria-hidden="true" className="absolute -top-20 -right-16 h-56 w-56 rounded-full bg-cyan-400/15 blur-3xl" />
-      <div className="relative">
-        <p className="text-sm font-semibold tracking-[0.16em] text-cyan-200 uppercase">
-          Deine Analyse ist vorbereitet
+    <section aria-labelledby="project-analysis-preview-heading" className="mt-7">
+      <div className="bg-brand-navy overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
+        <p className="text-sm font-semibold tracking-[0.15em] text-cyan-200 uppercase">
+          Dein Energieprojekt
         </p>
-        <h2 id="project-analysis-preview-heading" className="mt-3 max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-          Dein Energieprojekt – verständlich ausgewertet und als persönliche PDF aufbereitet.
+        <h2
+          id="project-analysis-preview-heading"
+          className="mt-2 max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl"
+        >
+          Deine Lösungen im Zusammenhang
         </h2>
-
-        <div className="mt-7 grid gap-px overflow-hidden rounded-2xl bg-white/15 sm:grid-cols-2">
-          {recommendation ? (
-            <div className="bg-white/[0.07] p-5 sm:p-6">
-              <p className="text-2xl font-semibold text-white sm:text-3xl">{recommendation.value}</p>
-              <p className="mt-2 text-sm leading-6 text-white/65">{recommendation.label}</p>
-            </div>
-          ) : null}
-          <div className="bg-white/[0.07] p-5 sm:p-6">
-            <p className="text-2xl font-semibold text-white sm:text-3xl">
-              {economics.investmentMinEuro === null || economics.investmentMaxEuro === null
-                ? "Individuelle Kalkulation"
-                : `${currency.format(economics.investmentMinEuro)}–${currency.format(economics.investmentMaxEuro)}`}
+        <div className="mt-6 border-t border-white/20 pt-5">
+          <p className="text-xs font-semibold tracking-[0.14em] text-cyan-200 uppercase">
+            Gesamtinvestition
+          </p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight break-words sm:text-4xl">
+            {economics.investmentBaseEuro === null
+              ? "Noch nicht vollständig bezifferbar"
+              : euro(economics.investmentBaseEuro)}
+          </p>
+          {economics.missingInvestmentComponents.length ? (
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75">
+              Die Investition für{" "}
+              {economics.missingInvestmentComponents
+                .map((component) => PRODUCT_LABELS[component])
+                .join(", ")}{" "}
+              wird nach technischer Prüfung ergänzt. Ein vollständiger Gesamtbetrag ist deshalb noch
+              nicht möglich.
             </p>
-            <p className="mt-2 text-sm leading-6 text-white/65">Modellierter Projektkosten-Korridor</p>
-          </div>
+          ) : (
+            <p className="mt-3 text-sm text-white/65">
+              Modellierter Gesamtbetrag für alle ausgewählten Lösungen; kein verbindliches Angebot.
+            </p>
+          )}
         </div>
-
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          {modules.map((module) => (
-            <div key={module} className="flex min-h-11 items-center gap-3 border-b border-white/10 py-2 text-sm text-white/80">
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 shrink-0 text-cyan-300" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M6 3.75h9l3 3V20.25H6z" />
-                <path d="M15 3.75v3h3M9 11h6M9 15h6" />
-              </svg>
-              <span>{module}</span>
-              <span className="ml-auto text-xs text-cyan-200">In deiner PDF</span>
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-6 text-sm leading-6 text-white/60">
-          Auf Basis deiner Angaben. Unverbindliche Modellorientierung, keine technische Planung und kein Angebot.
-        </p>
       </div>
+
+      <div className="border-brand-primary/15 mt-8 border-t">
+        {solar ? (
+          <div className="border-brand-primary/15 grid gap-3 border-b py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
+            <h3 className="text-brand-secondary text-xs font-semibold tracking-[0.13em] uppercase">
+              Solarinvestition
+            </h3>
+            <div className="min-w-0">
+              <p className="text-brand-navy text-lg font-semibold">
+                Photovoltaik{hasStorage ? " + Stromspeicher" : ""}
+              </p>
+              <p className="text-brand-primary mt-1 text-2xl font-semibold break-words">
+                {solar.investmentEuro === null
+                  ? "Nach technischer Prüfung"
+                  : euro(solar.investmentEuro)}
+              </p>
+              <p className="text-foreground/70 mt-3 text-sm leading-6">
+                Finanzieller Vorteil im ersten Jahr:{" "}
+                <strong className="text-brand-navy">{euro(solar.firstYearNetBenefitEuro)}</strong>
+              </p>
+              {(solar.paybackStatus === "reached" && solar.paybackYears !== null) ||
+              (solar.irrStatus === "valid" && solar.annualizedReturnPercent !== null) ? (
+                <p className="text-foreground/70 mt-1 text-sm leading-6">
+                  {solar.paybackStatus === "reached" && solar.paybackYears !== null
+                    ? `Amortisation: ${number(solar.paybackYears)} Jahre`
+                    : ""}
+                  {solar.paybackStatus === "reached" &&
+                  solar.paybackYears !== null &&
+                  solar.irrStatus === "valid" &&
+                  solar.annualizedReturnPercent !== null
+                    ? " · "
+                    : ""}
+                  {solar.irrStatus === "valid" && solar.annualizedReturnPercent !== null
+                    ? `Modellierte Rendite p. a.: ${percent(solar.annualizedReturnPercent, 2)}`
+                    : ""}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        {heating ? (
+          <div className="border-brand-primary/15 grid gap-3 border-b py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
+            <h3 className="text-brand-secondary text-xs font-semibold tracking-[0.13em] uppercase">
+              Wärmepumpe
+            </h3>
+            <div className="min-w-0">
+              <p className="text-brand-navy text-lg font-semibold">Heizkosten im Vergleich</p>
+              <p className="text-brand-primary mt-1 text-2xl font-semibold break-words">
+                {heating.annualSavingEuro === null
+                  ? "Vergleich nach Klärung des Heizsystems"
+                  : heating.annualSavingEuro > 0
+                    ? `${euro(heating.annualSavingEuro)} weniger pro Jahr`
+                    : heating.annualSavingEuro < 0
+                      ? `${euro(-heating.annualSavingEuro)} mehr pro Jahr`
+                      : "Gleiche modellierte Heizkosten"}
+              </p>
+              {heating.savingPercent !== null ? (
+                <p className="text-foreground/70 mt-2 text-sm">
+                  {percent(heating.savingPercent)} gegenüber der bisherigen Heizung
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        {hasClimate || hasWallbox ? (
+          <div className="border-brand-primary/15 grid gap-3 border-b py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
+            <h3 className="text-brand-secondary text-xs font-semibold tracking-[0.13em] uppercase">
+              Komfort &amp; Lebensqualität
+            </h3>
+            <div className="min-w-0">
+              <p className="text-brand-navy text-lg font-semibold">
+                {[hasClimate ? "Klimaanlage" : null, hasWallbox ? "Wallbox" : null]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+              <p className="text-foreground/70 mt-2 text-sm leading-6">
+                {hasClimate && hasWallbox
+                  ? "Gezielte Kühlung und bequemes Laden zu Hause – abgestimmt auf dein Energiesystem."
+                  : hasClimate
+                    ? "Gezielte Kühlung, abgestimmt auf deine Räume und dein Energiesystem."
+                    : "Bequemes Laden zu Hause, passend zu deinem Fahrzeug und deiner Installation."}
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        {!solar && hasStorage ? (
+          <div className="border-brand-primary/15 grid gap-3 border-b py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8">
+            <h3 className="text-brand-secondary text-xs font-semibold tracking-[0.13em] uppercase">
+              Stromspeicher
+            </h3>
+            <div className="min-w-0">
+              <p className="text-brand-navy text-lg font-semibold">Solarenergie später nutzen</p>
+              <p className="text-foreground/70 mt-2 text-sm leading-6">
+                Die konkrete Wirkung im Zusammenspiel mit Photovoltaik wird in der weiteren Planung
+                geprüft.
+              </p>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <aside
+        aria-labelledby="project-analysis-pdf-heading"
+        className="bg-surface mt-8 border-l-4 border-cyan-500 px-5 py-5 sm:px-7 sm:py-6"
+      >
+        <h3
+          id="project-analysis-pdf-heading"
+          className="text-brand-navy text-sm font-semibold tracking-[0.1em] uppercase"
+        >
+          KOSTENLOSE PERSÖNLICHE PROJEKTANALYSE
+        </h3>
+        <p className="text-foreground/70 mt-3 text-sm leading-6">
+          Hier im Browser erhältst du bereits eine kompakte Auswertung deiner Konfiguration mit den
+          wichtigsten Empfehlungen, Kosten und Einsparpotenzialen.
+        </p>
+        <p className="text-foreground/70 mt-2 text-sm leading-6">
+          Nach Eingabe deiner Kontaktdaten erstellen wir zusätzlich deine persönliche
+          PDF-Projektanalyse mit detaillierter Wirtschaftlichkeitsberechnung, Energiefluss, Annahmen
+          und den nächsten Planungsschritten.
+        </p>
+        <p className="text-foreground/60 mt-3 text-xs leading-5">
+          Unverbindliche Orientierung – keine technische Planung und kein Angebot.
+        </p>
+      </aside>
     </section>
   );
 }
