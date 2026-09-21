@@ -6,6 +6,7 @@ import { ConfiguratorContactForm } from "@/components/configurator/configurator-
 import { ConfiguratorSubmitReview } from "@/components/configurator/configurator-submit-review";
 import { ConfiguratorSubmitSuccess } from "@/components/configurator/configurator-submit-success";
 import { buildConfiguratorLeadInput } from "@/lib/configurator/lead";
+import { ensureConfiguratorSubmissionId } from "@/lib/configurator/submission-id";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
 import { configuratorLeadInputSchema } from "@/lib/validation/configurator/lead";
@@ -56,13 +57,13 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
         submitInFlight.current = true;
         setSubmissionError(null);
         setIsSubmitting(true);
-        dispatch({ type: "SET_SUBMISSION", payload: { status: "submitting" } });
+        dispatch({ type: "SET_SUBMISSION", payload: { id: leadInput.submissionId, status: "submitting" } });
 
         let result: SubmitConfiguratorLeadResult;
         try {
             result = await submitConfiguratorLead(leadInput);
         } catch {
-            dispatch({ type: "SET_SUBMISSION", payload: { status: "failed" } });
+            dispatch({ type: "SET_SUBMISSION", payload: { id: leadInput.submissionId, status: "failed" } });
             setSubmissionError(
                 "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
             );
@@ -71,6 +72,7 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
             return;
         }
         dispatch({ type: "SET_SUBMISSION", payload: {
+            id: leadInput.submissionId,
             status: "submitted",
             publicReference: result.publicReference,
             reportStatus: result.reportStatus,
@@ -100,6 +102,8 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
         initialFormStartedAt={contactFormStartedAt ?? undefined}
         onBack={() => setStage("result")}
         onContinue={(values, formStartedAt) => {
+          const id = ensureConfiguratorSubmissionId(state, window.sessionStorage);
+          dispatch({ type: "SET_SUBMISSION", payload: { ...state.submission, id } });
           setContactDraft(values);
 
           setContactFormStartedAt(formStartedAt);

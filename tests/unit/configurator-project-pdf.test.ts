@@ -193,7 +193,9 @@ function createComfortOnlyProject(): ConfiguratorState {
 
 function buildPdfLead(state: ConfiguratorState) {
   const input = buildConfiguratorLeadInput(
-    state,
+    { ...state, submission: {
+      ...state.submission, id: "ec36c0e2-166f-4ea0-8738-cbe44e695bc5",
+    } },
     {
       firstName: "Max",
       lastName: "Mustermann",

@@ -521,6 +521,7 @@ function sameProductOrder(
 export const configuratorLeadPayloadSchema = z
     .object({
       type: z.literal("configurator"),
+    submissionId: z.string().uuid(),
 
     products: z.array(configuratorTypeSchema).min(1).max(5),
     settingsVersion: z.number().int().nonnegative(),

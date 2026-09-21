@@ -89,7 +89,7 @@ function createCompleteState() {
     );
   }
 
-  return configuratorReducer(
+  const complete = configuratorReducer(
     state,
     {
       type:
@@ -97,6 +97,10 @@ function createCompleteState() {
       payload: result,
     },
   );
+  return configuratorReducer(complete, {
+    type: "SET_SUBMISSION",
+    payload: { status: "idle", id: "ec36c0e2-166f-4ea0-8738-cbe44e695bc5" },
+  });
 }
 
 describe("configurator lead", () => {

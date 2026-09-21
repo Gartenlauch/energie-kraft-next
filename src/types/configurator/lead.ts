@@ -283,6 +283,7 @@ export type ConfiguratorLeadPayload =
   | SubmitClimateConfiguratorLeadInput["configurator"];
 
 export interface SubmitConfiguratorLeadInput extends SubmitConfiguratorLeadCommonInput {
+  submissionId: string;
   settingsVersion: number;
   /**
    * Alle vom Benutzer ausgewählten Produkte.
@@ -407,6 +408,7 @@ export interface ConfiguratorLeadReportInfo {
 
 export interface ConfiguratorLeadDocument {
   type: "configurator";
+  submissionId?: string;
 
   status: LeadStatus;
   publicReference?: string;

@@ -389,7 +389,7 @@ export function buildConfiguratorLeadInput(
 
   const completedProducts = [...state.journey.completedProducts];
 
-  if (!common || !entryPoint || selectedProducts.length === 0) {
+  if (!common || !entryPoint || !state.submission.id || selectedProducts.length === 0) {
     return null;
   }
 
@@ -416,6 +416,7 @@ export function buildConfiguratorLeadInput(
 
   return {
     ...common,
+    submissionId: state.submission.id,
     settingsVersion: state.settingsVersion,
 
     products: selectedProducts,

@@ -31,6 +31,7 @@ import { ConfiguratorSubmitSuccess } from "@/components/configurator/configurato
 import { ConfiguratorSubmitReview } from "@/components/configurator/configurator-submit-review";
 import { buildConfiguratorLeadInput } from "@/lib/configurator/lead";
 import { submitConfiguratorLead } from "@/lib/leads/submit-configurator-lead";
+import { ensureConfiguratorSubmissionId } from "@/lib/configurator/submission-id";
 import { configuratorLeadInputSchema } from "@/lib/validation/configurator/lead";
 import { getNextConfiguratorProduct } from "@/lib/configurator/journey";
 import { ProjectAnalysisPromise } from "@/components/configurator/project-analysis-promise";
@@ -313,13 +314,13 @@ export function PhotovoltaicWizard() {
     setSubmissionError(null);
     submitInFlight.current = true;
     setIsSubmitting(true);
-    dispatch({ type: "SET_SUBMISSION", payload: { status: "submitting" } });
+    dispatch({ type: "SET_SUBMISSION", payload: { id: input.submissionId, status: "submitting" } });
 
     let result: SubmitConfiguratorLeadResult;
     try {
       result = await submitConfiguratorLead(input);
     } catch {
-      dispatch({ type: "SET_SUBMISSION", payload: { status: "failed" } });
+      dispatch({ type: "SET_SUBMISSION", payload: { id: input.submissionId, status: "failed" } });
       setSubmissionError(
         "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
       );
@@ -328,6 +329,7 @@ export function PhotovoltaicWizard() {
       return;
     }
     dispatch({ type: "SET_SUBMISSION", payload: {
+      id: input.submissionId,
       status: "submitted",
       publicReference: result.publicReference,
       reportStatus: result.reportStatus,
@@ -360,6 +362,8 @@ export function PhotovoltaicWizard() {
         initialFormStartedAt={contactFormStartedAt ?? undefined}
         onBack={() => setPostWizardStage("result")}
         onContinue={(values, formStartedAt) => {
+          const id = ensureConfiguratorSubmissionId(state, window.sessionStorage);
+          dispatch({ type: "SET_SUBMISSION", payload: { ...state.submission, id } });
           setContactDraft(values);
           setContactFormStartedAt(formStartedAt);
           setSubmissionError(null);

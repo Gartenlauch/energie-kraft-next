@@ -34,6 +34,10 @@ import {
 function createMultiConfiguratorState() {
     let state =
         createInitialConfiguratorState();
+    state = configuratorReducer(state, {
+        type: "SET_SUBMISSION",
+        payload: { status: "idle", id: "ec36c0e2-166f-4ea0-8738-cbe44e695bc5" },
+    });
 
     state = configuratorReducer(
         state,

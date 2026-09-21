@@ -27,7 +27,7 @@ export function readConfiguratorState(storage: Storage): ConfiguratorState | nul
       const state = parseConfiguratorState(JSON.parse(serialized));
 
       if (state) return state.submission.status === "submitting"
-        ? { ...state, submission: { status: "failed" } }
+        ? { ...state, submission: { ...state.submission, status: "failed" } }
         : state;
     }
 

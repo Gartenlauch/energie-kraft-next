@@ -131,6 +131,7 @@ export interface ConfiguratorState {
   notes: ConfiguratorNotes;
   results: ConfiguratorResults;
   submission: {
+    id?: string;
     status: "idle" | "submitting" | "submitted" | "failed";
     publicReference?: string;
     reportStatus?: "generated" | "failed";

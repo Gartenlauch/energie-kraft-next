@@ -23,6 +23,10 @@ function completeProduct(
   let state = startingState.journey.entryPoint ? startingState : configuratorReducer(startingState, {
     type: "SET_ACTIVE_CONFIGURATOR", payload: product,
   });
+  if (!state.submission.id) state = configuratorReducer(state, {
+    type: "SET_SUBMISSION",
+    payload: { status: "idle", id: "ec36c0e2-166f-4ea0-8738-cbe44e695bc5" },
+  });
   switch (product) {
     case "photovoltaic": {
       state = configuratorReducer(state, { type: "UPDATE_HOUSEHOLD", payload: {

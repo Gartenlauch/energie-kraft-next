@@ -529,6 +529,7 @@ function getSingleConfiguratorSchema(type: ConfiguratorLeadType) {
 export const configuratorLeadInputSchema = z
     .object({
       ...commonConfiguratorLeadShape,
+    submissionId: z.string().uuid(),
 
     products: z.array(configuratorLeadTypeSchema).min(1).max(5),
     settingsVersion: z.number().int().nonnegative(),

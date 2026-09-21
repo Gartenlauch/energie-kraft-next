@@ -8,6 +8,7 @@ import {
 } from "@/lib/configurator/storage";
 import { writeCalculatorHandoff } from "@/lib/configurator/calculator-handoff";
 import { clearSubmittedConfiguratorProject } from "@/lib/configurator/project-reset";
+import { ensureConfiguratorSubmissionId } from "@/lib/configurator/submission-id";
 import { DEFAULT_CONFIGURATOR_SETTINGS } from "@/lib/configurator/settings-model";
 import {
   configuratorReducer,
@@ -43,6 +44,40 @@ class MemoryStorage implements Storage {
 }
 
 describe("configurator storage", () => {
+  it("creates one submission ID, keeps it through failure and replay, then resets it", () => {
+    const storage = new MemoryStorage();
+    let state = configuratorReducer(createInitialConfiguratorState(), {
+      type: "SET_ACTIVE_CONFIGURATOR", payload: "climate",
+    });
+    const firstId = ensureConfiguratorSubmissionId(state, storage);
+    expect(firstId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    expect(readConfiguratorState(storage)?.submission.id).toBe(firstId);
+
+    state = configuratorReducer(state, {
+      type: "SET_SUBMISSION", payload: { id: firstId, status: "failed" },
+    });
+    expect(ensureConfiguratorSubmissionId(state, storage)).toBe(firstId);
+    writeConfiguratorState(storage, state);
+    expect(readConfiguratorState(storage)?.submission).toEqual({ id: firstId, status: "failed" });
+
+    const replayed = configuratorReducer(state, {
+      type: "SET_SUBMISSION", payload: {
+        id: firstId, status: "submitted", publicReference: "KL-00001",
+        reportStatus: "generated", customerMailStatus: "accepted",
+      },
+    });
+    expect(replayed.submission.publicReference).toBe("KL-00001");
+    clearSubmittedConfiguratorProject(storage);
+    const reset = configuratorReducer(replayed, { type: "RESET" });
+    expect(reset.submission.id).toBeUndefined();
+    expect(readConfiguratorState(storage)).toBeNull();
+
+    const next = configuratorReducer(reset, {
+      type: "SET_ACTIVE_CONFIGURATOR", payload: "wallbox",
+    });
+    expect(ensureConfiguratorSubmissionId(next, storage)).not.toBe(firstId);
+  });
+
   it("restores an interrupted request as failed and keeps a submitted reference", () => {
     const storage = new MemoryStorage();
     const pending = configuratorReducer(createInitialConfiguratorState(), {

@@ -444,6 +444,7 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
     climate: climateConfiguratorResultSchema.optional(),
     }),
     submission: z.object({
+      id: z.string().uuid().optional(),
       status: z.enum(["idle", "submitting", "submitted", "failed"]),
       publicReference: z.string().optional(),
       reportStatus: z.enum(["generated", "failed"]).optional(),

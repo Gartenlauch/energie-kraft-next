@@ -1,4 +1,4 @@
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { FieldValue, getFirestore, type DocumentReference, type Firestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { mailgunSendingKey } from "./mailgun";
 import { sendConfiguratorCustomerMail } from "./configurator-customer-mail";
@@ -19,8 +19,15 @@ import {
   nextConfiguratorReferenceSequence,
 } from "./configurator-settings-model.js";
 import { applyAuthoritativeConfiguratorModel } from "./configurator-server-model.js";
+import {
+  fingerprintConfiguratorSubmission,
+  type ConfiguratorSubmissionRecord,
+  type ConfiguratorSubmissionResult,
+  type MailAttemptStatus,
+} from "./configurator-submission-idempotency.js";
 
 const LEADS_COLLECTION = "leads";
+const SUBMISSIONS_COLLECTION = "configuratorSubmissions";
 
 const ADMIN_REALTIME_COLLECTION = "adminRealtime";
 
@@ -135,15 +142,130 @@ function buildStoredConfigurator(configurator: ConfiguratorPayload) {
   }
 }
 
-export const submitConfiguratorLead = onCall(
-    {
-      maxInstances: 10,
+function processingError(): HttpsError {
+  return new HttpsError("unavailable", "Die Anfrage wird noch verarbeitet. Bitte versuche es erneut.");
+}
 
-    secrets: [mailgunSendingKey],
-    },
+async function claimMailAttempt(
+  firestore: Firestore,
+  submissionReference: DocumentReference,
+  kind: "internal" | "customer",
+): Promise<boolean> {
+  return firestore.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(submissionReference);
+    const record = snapshot.data() as ConfiguratorSubmissionRecord | undefined;
+    if (record?.mail[kind].status !== "pending") return false;
+    transaction.update(submissionReference, {
+      [`mail.${kind}.status`]: "processing",
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return true;
+  });
+}
 
-    async (request) => {
-    const parsed = configuratorLeadPayloadSchema.safeParse(request.data);
+async function finishMailAttempt(
+  firestore: Firestore,
+  submissionReference: DocumentReference,
+  leadReference: DocumentReference,
+  kind: "internal" | "customer",
+  status: "accepted" | "failed",
+  messageId: string | null,
+): Promise<void> {
+  await firestore.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(submissionReference);
+    const record = snapshot.data() as ConfiguratorSubmissionRecord | undefined;
+    if (record?.mail[kind].status !== "processing") throw processingError();
+    const timestamp = FieldValue.serverTimestamp();
+    transaction.update(submissionReference, {
+      [`mail.${kind}.status`]: status,
+      updatedAt: timestamp,
+    });
+    transaction.update(leadReference, {
+      [`mail.${kind}.status`]: status,
+      [`mail.${kind}.provider`]: "mailgun",
+      [`mail.${kind}.messageId`]: messageId,
+      [`mail.${kind}.updatedAt`]: timestamp,
+    });
+  });
+}
+
+async function finishReport(
+  firestore: Firestore,
+  submissionReference: DocumentReference,
+  leadReference: DocumentReference,
+  status: "generated" | "failed",
+  filename: string | null,
+  sizeBytes: number | null,
+): Promise<void> {
+  await firestore.runTransaction(async (transaction) => {
+    const timestamp = FieldValue.serverTimestamp();
+    transaction.update(submissionReference, {
+      "report.status": status,
+      updatedAt: timestamp,
+    });
+    transaction.update(leadReference, {
+      "report.status": status,
+      "report.filename": filename,
+      "report.sizeBytes": sizeBytes,
+      "report.generatedAt": status === "generated" ? timestamp : null,
+      "report.updatedAt": timestamp,
+    });
+  });
+}
+
+async function finalizeSubmission(
+  firestore: Firestore,
+  submissionReference: DocumentReference,
+): Promise<ConfiguratorSubmissionResult> {
+  return firestore.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(submissionReference);
+    const record = snapshot.data() as ConfiguratorSubmissionRecord | undefined;
+    if (!record) throw processingError();
+    if (record.status === "completed" && record.result) return record.result;
+    const internal = record.mail.internal.status;
+    const customer = record.mail.customer.status;
+    const report = record.report.status;
+    const terminalMail = (status: MailAttemptStatus): status is "accepted" | "failed" =>
+      status === "accepted" || status === "failed";
+    if (!terminalMail(internal) || !terminalMail(customer) ||
+      (report !== "generated" && report !== "failed")) throw processingError();
+    const result: ConfiguratorSubmissionResult = {
+      ok: true,
+      leadId: record.leadId,
+      publicReference: record.publicReference,
+      mailStatus: internal,
+      customerMailStatus: customer,
+      reportStatus: report,
+    };
+    transaction.update(submissionReference, {
+      status: "completed",
+      result,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return result;
+  });
+}
+
+interface ConfiguratorSubmissionDependencies {
+  firestore: Firestore;
+  sendInternalMail: typeof sendConfiguratorLeadMail;
+  sendCustomerMail: typeof sendConfiguratorCustomerMail;
+  generatePdf: typeof generateConfiguratorProjectPdf;
+  log: Pick<typeof logger, "info" | "warn" | "error">;
+}
+
+export async function handleConfiguratorLeadRequest(
+  data: unknown,
+  dependencies: ConfiguratorSubmissionDependencies = {
+    firestore: getFirestore(),
+    sendInternalMail: sendConfiguratorLeadMail,
+    sendCustomerMail: sendConfiguratorCustomerMail,
+    generatePdf: generateConfiguratorProjectPdf,
+    log: logger,
+  },
+): Promise<ConfiguratorSubmissionResult> {
+    const logger = dependencies.log;
+    const parsed = configuratorLeadPayloadSchema.safeParse(data);
 
       if (!parsed.success) {
       logger.warn("Invalid configurator lead payload", {
@@ -164,15 +286,9 @@ export const submitConfiguratorLead = onCall(
       throw new HttpsError("invalid-argument", "Die Anfrage konnte nicht verarbeitet werden.");
       }
 
-    if (Date.now() - input.formStartedAt < MINIMUM_FORM_DURATION_MS) {
-      logger.warn("Configurator lead submitted too quickly");
-
-      throw new HttpsError("invalid-argument", "Die Anfrage konnte nicht verarbeitet werden.");
-      }
-
     const source = CONFIGURATOR_SOURCE[input.journey.entryPoint];
 
-    const firestore = getFirestore();
+    const firestore = dependencies.firestore;
 
     const leadReference = firestore.collection(LEADS_COLLECTION).doc();
 
@@ -181,11 +297,28 @@ export const submitConfiguratorLead = onCall(
       .doc(LEADS_REALTIME_DOCUMENT);
 
     const counterReference = firestore.collection("systemCounters").doc("configuratorLead");
+    const submissionReference = firestore.collection(SUBMISSIONS_COLLECTION).doc(input.submissionId);
+    const payloadFingerprint = fingerprintConfiguratorSubmission(input);
     let publicReference = "";
     let authoritativeInput: ConfiguratorLeadPayload = input;
     let settingsForPdf: ConfiguratorSettings = DEFAULT_CONFIGURATOR_SETTINGS;
 
-    await firestore.runTransaction(async (transaction) => {
+    let existingSubmission: ConfiguratorSubmissionRecord | null;
+    try {
+      existingSubmission = await firestore.runTransaction(async (transaction) => {
+      const submissionDocument = await transaction.get(submissionReference);
+      if (submissionDocument.exists) {
+        const existing = submissionDocument.data() as ConfiguratorSubmissionRecord;
+        if (existing.payloadFingerprint !== payloadFingerprint) {
+          logger.warn("Configurator submission payload mismatch", { submissionId: input.submissionId });
+          throw new HttpsError("already-exists", "Diese Anfrage stimmt nicht mit der ursprünglichen Konfiguration überein.");
+        }
+        return existing;
+      }
+      if (Date.now() - input.formStartedAt < MINIMUM_FORM_DURATION_MS) {
+        logger.warn("Configurator lead submitted too quickly", { submissionId: input.submissionId });
+        throw new HttpsError("invalid-argument", "Die Anfrage konnte nicht verarbeitet werden.");
+      }
       let authoritativeSettings =
         input.settingsVersion === 0 ? DEFAULT_CONFIGURATOR_SETTINGS : undefined;
       if (!authoritativeSettings) {
@@ -212,6 +345,7 @@ export const submitConfiguratorLead = onCall(
       transaction.set(counterReference, { lastValue: sequence, updatedAt: timestamp }, { merge: true });
       transaction.set(leadReference, {
           type: "configurator",
+          submissionId: input.submissionId,
 
           status: "new",
           publicReference,
@@ -280,294 +414,159 @@ export const submitConfiguratorLead = onCall(
           merge: true,
         },
       );
+      transaction.create(submissionReference, {
+        submissionId: input.submissionId,
+        payloadFingerprint,
+        leadId: leadReference.id,
+        publicReference,
+        status: "processing",
+        mail: {
+          internal: { status: "pending" },
+          customer: { status: "pending" },
+        },
+        report: { status: "pending" },
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+      return null;
+      });
+    } catch (error) {
+      if (error instanceof HttpsError) throw error;
+      // A competing transaction may have won the create precondition. Read its mapping
+      // before treating this as a new attempt; no side effect runs from this branch.
+      const committed = await submissionReference.get();
+      if (!committed.exists) throw error;
+      const record = committed.data() as ConfiguratorSubmissionRecord;
+      if (record.payloadFingerprint !== payloadFingerprint) {
+        logger.warn("Configurator submission payload mismatch", { submissionId: input.submissionId });
+        throw new HttpsError("already-exists", "Diese Anfrage stimmt nicht mit der ursprünglichen Konfiguration überein.");
+      }
+      existingSubmission = record;
+    }
+
+    if (existingSubmission) {
+      if (existingSubmission.status === "completed") {
+        logger.info("Configurator submission replay", {
+          submissionId: input.submissionId,
+          leadId: existingSubmission.leadId,
+          publicReference: existingSubmission.publicReference,
+          status: "completed",
+        });
+      } else {
+        logger.info("Configurator submission already processing", {
+          submissionId: input.submissionId,
+          leadId: existingSubmission.leadId,
+          status: existingSubmission.status,
+        });
+      }
+      // A crash after the last status write can be finalized without another external action.
+      return finalizeSubmission(firestore, submissionReference);
+    }
+
+    logger.info("Configurator submission created", {
+      submissionId: input.submissionId,
+      leadId: leadReference.id,
+      publicReference,
+      products: input.products,
+      status: "processing",
     });
 
-    const projectPdfFilename = `energie-kraft-${publicReference}.pdf`;
+    const projectPdfFilename = "energie-kraft-" + publicReference + ".pdf";
 
-      /*
-       * Lead und Realtime-Signal werden
-       * vollständig gespeichert, bevor
-       * Mailgun aufgerufen wird.
-       */
-    let mailStatus: "accepted" | "failed" = "accepted";
-
-    let mailMessageId: string | null = null;
-
-      try {
-      const mailResult = await sendConfiguratorLeadMail({
+    // Claim before Mailgun. A crash after acceptance leaves "processing" and is never resent
+    // automatically, because Firestore cannot know whether the provider accepted the message.
+    if (!await claimMailAttempt(firestore, submissionReference, "internal")) throw processingError();
+    let internalStatus: "accepted" | "failed" = "failed";
+    let internalMessageId: string | null = null;
+    try {
+      const mailResult = await dependencies.sendInternalMail({
         leadId: publicReference,
-
-              lead: authoritativeInput,
+        lead: authoritativeInput,
       });
-
-      mailMessageId = mailResult.id;
-
-      await leadReference.update({
-        "mail.internal.status": "accepted",
-
-        "mail.internal.provider": "mailgun",
-
-        "mail.internal.messageId": mailMessageId,
-
-        "mail.internal.updatedAt": FieldValue.serverTimestamp(),
-      });
-
+      internalStatus = "accepted";
+      internalMessageId = mailResult.id;
       logger.info("Configurator lead notification accepted", {
+        submissionId: input.submissionId,
         leadId: leadReference.id,
-
-        products: authoritativeInput.products,
-
-        productCount: authoritativeInput.products.length,
-
-        provider: "mailgun",
-
-        messageId: mailMessageId,
+        products: input.products,
       });
-      } catch (error) {
-      mailStatus = "failed";
-
-        await leadReference
-          .update({
-          "mail.internal.status": "failed",
-
-          "mail.internal.provider": "mailgun",
-
-          "mail.internal.messageId": null,
-
-          "mail.internal.updatedAt": FieldValue.serverTimestamp(),
-          })
-        .catch(() => undefined);
-
+    } catch (error) {
       logger.error("Configurator lead notification failed", {
+        submissionId: input.submissionId,
         leadId: leadReference.id,
-
-        products: authoritativeInput.products,
-
-        productCount: authoritativeInput.products.length,
-
-        provider: "mailgun",
-
-            error:
-              error instanceof Error
-                ? {
-                name: error.name,
-
-                message: error.message,
-                }
-                : "Unknown mail error",
+        errorName: error instanceof Error ? error.name : "Unknown",
       });
-      }
-    let reportStatus: "generated" | "failed" = "failed";
+    }
+    await finishMailAttempt(
+      firestore, submissionReference, leadReference, "internal", internalStatus, internalMessageId,
+    );
 
-    let customerMailStatus: "accepted" | "failed" = "failed";
-
+    // Report generation is in memory. Its failure never removes the saved lead.
     let projectPdf: Buffer | null = null;
-
-      /*
-       * PDF-Erzeugung ist bewusst von der
-       * Lead-Speicherung und der internen
-       * Benachrichtigung getrennt.
-       *
-       * Ein PDF-Fehler darf den bereits
-       * gespeicherten Lead niemals gefährden.
-       */
-      try {
-      projectPdf = await generateConfiguratorProjectPdf({
+    try {
+      projectPdf = await dependencies.generatePdf({
         leadId: publicReference,
-
         lead: authoritativeInput,
         settings: settingsForPdf,
       });
-
-      reportStatus = "generated";
-
-        await leadReference
-          .update({
-          "report.status": "generated",
-
-          "report.filename": projectPdfFilename,
-
-          "report.sizeBytes": projectPdf.length,
-
-          "report.generatedAt": FieldValue.serverTimestamp(),
-
-          "report.updatedAt": FieldValue.serverTimestamp(),
-          })
-        .catch((error) => {
-          logger.error("Configurator report metadata update failed", {
-            leadId: leadReference.id,
-
-                  error:
-                    error instanceof Error
-                      ? {
-                    name: error.name,
-
-                    message: error.message,
-                      }
-                      : "Unknown Firestore error",
-          });
-        });
-
       logger.info("Configurator project report generated", {
+        submissionId: input.submissionId,
         leadId: leadReference.id,
-
-        filename: projectPdfFilename,
-
         sizeBytes: projectPdf.length,
-
-        productCount: authoritativeInput.products.length,
       });
-      } catch (error) {
-      reportStatus = "failed";
-
-        await leadReference
-          .update({
-          "report.status": "failed",
-
-          "report.filename": null,
-
-          "report.sizeBytes": null,
-
-          "report.generatedAt": null,
-
-          "report.updatedAt": FieldValue.serverTimestamp(),
-          })
-        .catch(() => undefined);
-
+    } catch (error) {
       logger.error("Configurator project report generation failed", {
+        submissionId: input.submissionId,
         leadId: leadReference.id,
-
-        products: authoritativeInput.products,
-
-            error:
-              error instanceof Error
-                ? {
-                name: error.name,
-
-                message: error.message,
-                }
-                : "Unknown PDF error",
+        errorName: error instanceof Error ? error.name : "Unknown",
       });
-      }
+    }
+    await finishReport(
+      firestore, submissionReference, leadReference,
+      projectPdf ? "generated" : "failed",
+      projectPdf ? projectPdfFilename : null,
+      projectPdf?.length ?? null,
+    );
 
-      /*
-       * Kundenmail nur senden, wenn das PDF
-       * tatsächlich erfolgreich erzeugt wurde.
-       *
-       * Auch ein Mailgun-Fehler bleibt vollständig
-       * vom gespeicherten Lead getrennt.
-       */
-      if (projectPdf) {
-        try {
-        const customerMailResult = await sendConfiguratorCustomerMail({
+    if (!await claimMailAttempt(firestore, submissionReference, "customer")) throw processingError();
+    let customerStatus: "accepted" | "failed" = "failed";
+    let customerMessageId: string | null = null;
+    if (projectPdf) {
+      try {
+        const customerMailResult = await dependencies.sendCustomerMail({
           leadId: publicReference,
-
           lead: authoritativeInput,
-
           pdf: projectPdf,
-
           filename: projectPdfFilename,
         });
-
-        customerMailStatus = "accepted";
-
-        await leadReference.update({
-          "mail.customer.status": "accepted",
-
-          "mail.customer.provider": "mailgun",
-
-          "mail.customer.messageId": customerMailResult.id,
-
-          "mail.customer.updatedAt": FieldValue.serverTimestamp(),
-        });
-
+        customerStatus = "accepted";
+        customerMessageId = customerMailResult.id;
         logger.info("Configurator customer mail accepted", {
+          submissionId: input.submissionId,
           leadId: leadReference.id,
-
-          recipient: authoritativeInput.contact.email,
-
-          provider: "mailgun",
-
-          messageId: customerMailResult.id,
-
-          attachment: projectPdfFilename,
-
-          attachmentSizeBytes: projectPdf.length,
         });
-        } catch (error) {
-        customerMailStatus = "failed";
-
-          await leadReference
-            .update({
-            "mail.customer.status": "failed",
-
-            "mail.customer.provider": "mailgun",
-
-            "mail.customer.messageId": null,
-
-            "mail.customer.updatedAt": FieldValue.serverTimestamp(),
-            })
-          .catch(() => undefined);
-
+      } catch (error) {
         logger.error("Configurator customer mail failed", {
+          submissionId: input.submissionId,
           leadId: leadReference.id,
-
-          recipient: authoritativeInput.contact.email,
-
-          provider: "mailgun",
-
-              error:
-                error instanceof Error
-                  ? {
-                  name: error.name,
-
-                  message: error.message,
-                  }
-                  : "Unknown customer mail error",
+          errorName: error instanceof Error ? error.name : "Unknown",
         });
-        }
-      } else {
-        /*
-         * Ohne PDF wird bewusst keine
-         * unvollständige Kundenmail verschickt.
-         */
-        await leadReference
-          .update({
-          "mail.customer.status": "failed",
-
-          "mail.customer.provider": "mailgun",
-
-          "mail.customer.messageId": null,
-
-          "mail.customer.updatedAt": FieldValue.serverTimestamp(),
-          })
-        .catch(() => undefined);
       }
+    }
+    await finishMailAttempt(
+      firestore, submissionReference, leadReference, "customer", customerStatus, customerMessageId,
+    );
 
     logger.info("Configurator lead created", {
+      submissionId: input.submissionId,
       leadId: leadReference.id,
-
-      products: authoritativeInput.products,
-
-      productCount: authoritativeInput.products.length,
-
-      entryPoint: input.journey.entryPoint,
-
-          source,
-    });
-
-      return {
-        ok: true,
-
-      leadId: leadReference.id,
-
       publicReference,
+      products: input.products,
+    });
+    return finalizeSubmission(firestore, submissionReference);
+}
 
-        mailStatus,
-
-        customerMailStatus,
-
-        reportStatus,
-      };
-    },
-  );
+export const submitConfiguratorLead = onCall(
+  { maxInstances: 10, secrets: [mailgunSendingKey] },
+  async (request) => handleConfiguratorLeadRequest(request.data),
+);

@@ -52,6 +52,7 @@ function asProjectLead(configurator: ConfiguratorLeadPayload) {
 
   return {
     ...common,
+    submissionId: "ec36c0e2-166f-4ea0-8738-cbe44e695bc5",
     settingsVersion: 0,
 
     products: [configurator.type],
