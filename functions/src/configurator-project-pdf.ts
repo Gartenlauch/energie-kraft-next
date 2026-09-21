@@ -1,5 +1,6 @@
 import PDFDocument from "pdfkit";
 import path from "node:path";
+import { CONFIGURATOR_PRODUCT_ORDER } from "./configurator-product-order.ts";
 
 import type { ConfiguratorLeadPayload, ConfiguratorPayload } from "./configurator-lead-validation.js";
 import type { ComponentId } from "./configurator-project-economics.js";
@@ -12,6 +13,19 @@ interface GenerateConfiguratorProjectPdfInput {
 }
 
 type ProductType = ConfiguratorPayload["type"];
+export function getSolarPdfCopy(hasStorage: boolean) {
+  return {
+    investmentDetail: hasStorage ? "Photovoltaik + Stromspeicher" : "Photovoltaik",
+    technicalIntro: hasStorage
+      ? "Die Anlage erzeugt Strom. Der Speicher verschiebt einen Teil davon in Stunden mit höherem Bedarf."
+      : "Die Photovoltaikanlage erzeugt Strom für dein Zuhause und die Einspeisung ins Netz.",
+    flowIntro: hasStorage
+      ? "Die Wege der Energie in einem modellierten Jahr – direkt im Haus, über den Speicher und im Austausch mit dem Netz."
+      : "Die Wege der Energie in einem modellierten Jahr – direkt im Haus und im Austausch mit dem Netz.",
+    assumptionKeys: ["electricity_price", "feed_in", "price_growth", "pv_degradation",
+      ...(hasStorage ? ["storage_efficiency"] : []), "project_horizon"],
+  };
+}
 type Section = "cover" | "project" | "flow" | "solar_system" | "solar_economics" |
   "cashflow" | "storage" | "heating" | "comfort" | "investment" | "assumptions" | "closing";
 
@@ -64,6 +78,12 @@ function euro(value: number | null): string {
   return value === null ? "Nach technischer Prüfung" : money0.format(value);
 }
 
+function componentInvestment(lead: ConfiguratorLeadPayload, type: ComponentId): string {
+  const item = component(lead, type);
+  return item?.pricingMode === "individual_quote_required"
+    ? "Individuelles Angebot erforderlich" : euro(item?.investmentBaseEuro ?? null);
+}
+
 function format(value: number, unit = ""): string {
   return `${num.format(value)}${unit}`;
 }
@@ -92,12 +112,12 @@ export function getConfiguratorReportSections(lead: ConfiguratorLeadPayload): Se
   const hasComfort = Boolean(product(lead, "climate") || product(lead, "wallbox"));
   return [
     "cover", "project",
-    ...(hasPv ? ["flow"] as const : []),
+    ...(hasPv && lead.economics.solar ? ["flow"] as const : []),
     ...(hasPv || hasStorage ? ["solar_system"] as const : []),
-    ...(hasPv ? ["solar_economics"] as const : []),
+    ...(hasPv && lead.economics.solar ? ["solar_economics"] as const : []),
     ...(hasPv && lead.economics.solar?.investmentEuro !== null && lead.economics.projections.length > 1
       ? ["cashflow"] as const : []),
-    ...(hasPv && hasStorage ? ["storage"] as const : []),
+    ...(hasPv && hasStorage && lead.economics.solar ? ["storage"] as const : []),
     ...(hasHeating ? ["heating"] as const : []),
     ...(hasComfort ? ["comfort"] as const : []),
     "investment", "assumptions", "closing",
@@ -278,7 +298,7 @@ function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void
     "regular", "#DDECF7");
   text(doc, date.format(new Date()), 50, 397, 280, 9, "regular", "#DDECF7");
   eyebrow(doc, "Dein Energiesystem", LEFT, 480);
-  const order: ProductType[] = ["photovoltaic", "battery_storage", "heat_pump", "climate", "wallbox"];
+  const order: readonly ProductType[] = CONFIGURATOR_PRODUCT_ORDER;
   const selected = order.filter((item) => lead.products.includes(item));
   const step = WIDTH / selected.length;
   const first = LEFT + step / 2;
@@ -311,13 +331,15 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   text(doc, totalText, LEFT + 22, 241, WIDTH - 46, eco.investmentBaseEuro === null ? 20 : 35,
     "bold", COLOR.white);
   if (eco.investmentBaseEuro === null) {
-    text(doc, "Für einzelne Komponenten ist eine technische Preisprüfung nötig.", LEFT + 23, 303,
+    text(doc, eco.pricingMode === "individual_quote_required"
+      ? "Für einzelne Komponenten ist ein individuelles Angebot erforderlich."
+      : "Für einzelne Komponenten ist eine technische Preisprüfung nötig.", LEFT + 23, 303,
       WIDTH - 46, 9, "regular", COLOR.white);
   }
   const groupY = 388;
   const allGroups: { label: string; detail: string; types: ComponentId[]; value: number | null }[] = [
     {
-      label: "Solarinvestition", detail: "Photovoltaik + Stromspeicher",
+      label: "Solarinvestition", detail: getSolarPdfCopy(Boolean(product(lead, "battery_storage"))).investmentDetail,
       types: ["photovoltaic", "battery_storage"],
       value: product(lead, "photovoltaic")
         ? (eco.solar?.investmentEuro ?? null)
@@ -328,7 +350,8 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
       types: ["heat_pump"], value: selectedCost(lead, ["heat_pump"]),
     },
     {
-      label: "Komfort & Lebensqualität", detail: "Klimaanlage + Wallbox",
+      label: "Komfort & Lebensqualität", detail: getComfortPdfCopy(
+        Boolean(product(lead, "climate")), Boolean(product(lead, "wallbox"))).overviewLabel,
       types: ["climate", "wallbox"], value: selectedCost(lead, ["climate", "wallbox"]),
     },
   ];
@@ -338,7 +361,9 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
     doc.save().rect(LEFT, rowY + 4, 3, 38).fill(index === 0 ? COLOR.blue : index === 1 ? COLOR.green : COLOR.cyan).restore();
     eyebrow(doc, group.label, LEFT + 12, rowY, 280);
     text(doc, group.detail, LEFT + 12, rowY + 19, 280, 9, "regular", COLOR.muted);
-    text(doc, euro(group.value), 343, rowY + 7, 210, group.value === null ? 11 : 18,
+    text(doc, group.value === null && eco.pricingMode === "individual_quote_required"
+      ? "Individuelles Angebot erforderlich" : euro(group.value),
+      343, rowY + 7, 210, group.value === null ? 11 : 18,
       "semibold", COLOR.navy);
     rule(doc, rowY + 55);
   });
@@ -346,7 +371,8 @@ function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   eyebrow(doc, "Auf einen Blick", LEFT, highlightY);
   const pv = product(lead, "photovoltaic");
   const highlights = [
-    ...(pv ? [{ label: "PV-Jahresertrag", value: `${format(pv.result.estimatedAnnualYieldKwhMin)}–${format(pv.result.estimatedAnnualYieldKwhMax)} kWh` }] : []),
+    ...(pv && pv.result.pricingMode === "modeled"
+      ? [{ label: "PV-Jahresertrag", value: `${format(pv.result.estimatedAnnualYieldKwhMin)}–${format(pv.result.estimatedAnnualYieldKwhMax)} kWh` }] : []),
     ...(eco.solar ? [{ label: "Solarvorteil im ersten Jahr", value: euro(eco.solar.firstYearNetBenefitEuro) }] : []),
     ...(eco.heating?.annualSavingEuro !== null && eco.heating ? [{ label: "Heizkostenersparnis pro Jahr", value: euro(eco.heating.annualSavingEuro) }] : []),
   ];
@@ -405,10 +431,9 @@ function flowValue(doc: PDFKit.PDFDocument, label: string, value: number, x: num
 function drawEnergyFlow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
   const solar = lead.economics.solar;
   if (!solar) return;
-  page(doc, "Energiefluss", "So nutzt du deinen Solarstrom",
-    "Die Wege der Energie in einem modellierten Jahr – direkt im Haus, über den Speicher und im Austausch mit dem Netz.");
-  const flow = solar.withStorage;
   const storage = Boolean(product(lead, "battery_storage"));
+  page(doc, "Energiefluss", "So nutzt du deinen Solarstrom", getSolarPdfCopy(storage).flowIntro);
+  const flow = solar.withStorage;
   // Paths are drawn first and each is a single vector segment with an attached arrowhead.
   arrow(doc, 297, 314, 297, 405, COLOR.blue);
   if (storage) {
@@ -443,22 +468,26 @@ function drawEnergyFlow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
     LEFT, 737, WIDTH, 8, "regular", COLOR.muted);
 }
 
-function drawSolarSystem(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
+function drawSolarSystem(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
+  settings?: ConfiguratorSettings): void {
   const pv = product(lead, "photovoltaic");
   const storage = product(lead, "battery_storage");
   const solar = lead.economics.solar;
-  page(doc, "Technik", "Dein Solarsystem",
-    "Die Anlage erzeugt Strom. Der Speicher verschiebt einen Teil davon in Stunden mit höherem Bedarf.");
+  page(doc, "Technik", "Dein Solarsystem", getSolarPdfCopy(Boolean(storage)).technicalIntro);
   if (pv) {
     imageCover(doc, "photovoltaic.jpg", LEFT, 195, 234, storage ? 211 : 279, "right");
     eyebrow(doc, "Photovoltaik", 297, 202, 256);
-    text(doc, `${format(pv.result.recommendedPowerKwpMin)}–${format(pv.result.recommendedPowerKwpMax)} kWp`,
+    text(doc, pv.result.pricingMode === "individual_quote_required" && settings
+      ? `Größer als ${format(settings.photovoltaic.pricing.maxModeledSize)} kWp`
+      : `${format(pv.result.recommendedPowerKwpMin)}${pv.result.recommendedPowerKwpMin === pv.result.recommendedPowerKwpMax ? "" : `–${format(pv.result.recommendedPowerKwpMax)}`} kWp`,
       297, 226, 256, 21, "bold", COLOR.navy);
     text(doc, "Empfohlene Anlagenleistung", 297, 258, 256, 8.5, "regular", COLOR.muted);
     valueLine(doc, "PV-Jahresertrag",
-      `${format(pv.result.estimatedAnnualYieldKwhMin)}–${format(pv.result.estimatedAnnualYieldKwhMax)} kWh`,
+      pv.result.pricingMode === "individual_quote_required"
+        ? "Nach individueller Auslegung"
+        : `${format(pv.result.estimatedAnnualYieldKwhMin)}–${format(pv.result.estimatedAnnualYieldKwhMax)} kWh`,
       291, { x: 297, width: 256, valueSize: 13 });
-    valueLine(doc, "PV-Investition", euro(component(lead, "photovoltaic")?.investmentBaseEuro ?? null),
+    valueLine(doc, "PV-Investition", componentInvestment(lead, "photovoltaic"),
       349, { x: 297, width: 256, valueSize: 13 });
   }
   if (storage) {
@@ -466,10 +495,12 @@ function drawSolarSystem(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload)
     imageCover(doc, "battery-storage.jpg", LEFT, rowY, 234, pv ? 203 : 279);
     eyebrow(doc, "Stromspeicher", 297, rowY + 7, 256);
     text(doc,
-      `${format(storage.result.recommendedUsableCapacityKwhMin)}–${format(storage.result.recommendedUsableCapacityKwhMax)} kWh`,
+      storage.result.pricingMode === "individual_quote_required" && settings
+        ? `Größer als ${format(settings.batteryStorage.pricing.maxModeledSize)} kWh`
+        : `${format(storage.result.recommendedUsableCapacityKwhMin)}${storage.result.recommendedUsableCapacityKwhMin === storage.result.recommendedUsableCapacityKwhMax ? "" : `–${format(storage.result.recommendedUsableCapacityKwhMax)}`} kWh`,
       297, rowY + 31, 256, 21, "bold", COLOR.navy);
     text(doc, "Nutzbare Speicherkapazität", 297, rowY + 63, 256, 8.5, "regular", COLOR.muted);
-    valueLine(doc, "Speicherinvestition", euro(component(lead, "battery_storage")?.investmentBaseEuro ?? null),
+    valueLine(doc, "Speicherinvestition", componentInvestment(lead, "battery_storage"),
       rowY + 92, { x: 297, width: 256, valueSize: 13 });
     if (solar) {
       text(doc, `Eigenverbrauch ${format(solar.withStorage.selfConsumptionPercent, " %")}  ·  Autarkie ${format(solar.withStorage.autarkyPercent, " %")}`,
@@ -733,15 +764,36 @@ function drawHeating(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
     LEFT, 737, WIDTH, 8, "regular", COLOR.muted);
 }
 
+export function getComfortPdfCopy(hasClimate: boolean, hasWallbox: boolean) {
+  return {
+    overviewLabel: hasClimate && hasWallbox ? "Klimaanlage + Wallbox"
+      : hasClimate ? "Klimaanlage" : "Wallbox",
+    intro: hasClimate && hasWallbox
+      ? "Diese Komponenten ergänzen das Energieprojekt im Alltag. Ihre Investition ist Teil der Gesamtkosten."
+      : hasClimate
+        ? "Die Klimaanlage ergänzt das Energieprojekt im Alltag. Ihre Investition ist Teil der Gesamtkosten."
+        : "Die Wallbox ergänzt das Energieprojekt im Alltag. Ihre Investition ist Teil der Gesamtkosten.",
+    closing: hasClimate && hasWallbox
+      ? "Klimaanlage und Wallbox ergänzen dein Energieprojekt um Komfort, bequemes Laden und moderne Infrastruktur."
+      : hasClimate
+        ? "Die Klimaanlage ergänzt dein Energieprojekt um angenehme Raumtemperaturen und moderne Gebäudetechnik."
+        : "Die Wallbox ergänzt dein Energieprojekt um bequemes Laden zu Hause und passende Ladeinfrastruktur.",
+  };
+}
+
 function drawComfort(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
   const climate = product(lead, "climate");
   const wallbox = product(lead, "wallbox");
+  const copy = getComfortPdfCopy(Boolean(climate), Boolean(wallbox));
   page(doc, "Komfort", "Mehr Komfort und Lebensqualität",
-    "Diese Komponenten ergänzen das Energieprojekt im Alltag. Ihre Investition ist Teil der Gesamtkosten.");
+    copy.intro);
   const both = Boolean(climate && wallbox);
   if (climate) {
-    const height = both ? 240 : 345;
-    imageCover(doc, "climate.jpg", LEFT, 195, 235, height);
+    // The tall single-product crop otherwise covers only the left side of this landscape photo.
+    // A centered, shorter cover keeps the full outdoor unit in view.
+    const height = both ? 240 : 320;
+    imageCover(doc, "climate.jpg", LEFT, 195, 235, height,
+      both ? undefined : "center");
     eyebrow(doc, "Klimaanlage", 297, 202, 256);
     const titleBottom = text(doc, "Angenehme Raumtemperaturen", 297, 227, 256, 16,
       "bold", COLOR.navy);
@@ -755,7 +807,7 @@ function drawComfort(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   }
   if (wallbox) {
     const y = climate ? 461 : 195;
-    const height = climate ? 230 : 345;
+    const height = climate ? 230 : 485;
     imageCover(doc, "wallbox.jpg", LEFT, y, 235, height);
     eyebrow(doc, "Wallbox", 297, y + 7, 256);
     text(doc, "Bequem zuhause laden", 297, y + 32, 256, 16,
@@ -768,7 +820,7 @@ function drawComfort(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
       297, y + 193, 256, 8.5, "regular", COLOR.muted);
   }
   rule(doc, 727);
-  text(doc, "Klimaanlage und Wallbox ergänzen dein Energieprojekt um Komfort, bequemes Laden und moderne Infrastruktur.",
+  text(doc, copy.closing,
     LEFT, 740, WIDTH, 8, "regular", COLOR.muted, 1);
 }
 
@@ -781,7 +833,9 @@ function drawInvestment(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
   text(doc, complete ? euro(eco.investmentBaseEuro) : "Noch nicht vollständig bezifferbar",
     LEFT, 221, WIDTH, complete ? 31 : 22, "bold", COLOR.navy);
   if (!complete) text(doc,
-    "Für die markierten Komponenten ist eine technische Preisprüfung nötig. Ein unvollständiger Gesamtwert wird nicht als Summe ausgegeben.",
+    eco.pricingMode === "individual_quote_required"
+      ? "Für die markierten Komponenten ist wegen der Projektgröße ein individuelles Angebot erforderlich. Ein unvollständiger Gesamtwert wird nicht als Summe ausgegeben."
+      : "Für die markierten Komponenten ist eine technische Preisprüfung nötig. Ein unvollständiger Gesamtwert wird nicht als Summe ausgegeben.",
     LEFT, 269, WIDTH, 9, "regular", COLOR.muted);
   const rows = eco.components;
   if (complete && eco.investmentBaseEuro! > 0) {
@@ -804,7 +858,7 @@ function drawInvestment(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
     const meaning = row.component === "photovoltaic" || row.component === "battery_storage"
       ? "Solarinvestition" : row.component === "heat_pump" ? "Wärmeversorgung" : "Komfort & Infrastruktur";
     text(doc, meaning, LEFT + 17, rowY + 24, 245, 8, "regular", COLOR.muted);
-    text(doc, euro(row.investmentBaseEuro), 331, rowY + 4, 222,
+    text(doc, componentInvestment(lead, row.component), 331, rowY + 4, 222,
       row.investmentBaseEuro === null ? 11 : 16, "semibold", COLOR.navy);
     rule(doc, rowY + 53);
   });
@@ -841,9 +895,8 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
   const columnWidth = 238;
   const rightX = 315;
   eyebrow(doc, "So haben wir gerechnet", LEFT, 195, columnWidth);
-  const solarKeys = product(lead, "photovoltaic")
-    ? ["electricity_price", "feed_in", "price_growth", "pv_degradation", "storage_efficiency", "project_horizon"]
-    : [];
+  const solarKeys = lead.economics.solar
+    ? getSolarPdfCopy(Boolean(product(lead, "battery_storage"))).assumptionKeys : [];
   const solarLabels: Record<string, string> = {
     electricity_price: "Netzstrompreis", feed_in: "Einspeisewert",
     price_growth: "Strompreisentwicklung", pv_degradation: "PV-Degradation",
@@ -851,6 +904,9 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
   };
   const solarItems = solarKeys.map((key) => ({ label: solarLabels[key]!, value: assumption(lead, key) }))
     .filter((item) => item.value !== null);
+  if (!lead.economics.solar && product(lead, "photovoltaic")) solarItems.push({
+    label: "Solarwirtschaftlichkeit", value: "Individuelles Angebot erforderlich",
+  });
   if (lead.economics.solar) solarItems.push({
     label: "PV-Betriebskosten",
     value: `${num.format(lead.economics.solar.firstYearOperatingCostsEuro)} €/Jahr`,
@@ -974,7 +1030,7 @@ export async function generateConfiguratorProjectPdf(input: GenerateConfigurator
         case "cover": drawCover(doc, input.lead); break;
         case "project": drawProject(doc, input.lead); break;
         case "flow": drawEnergyFlow(doc, input.lead); break;
-        case "solar_system": drawSolarSystem(doc, input.lead); break;
+        case "solar_system": drawSolarSystem(doc, input.lead, input.settings); break;
         case "solar_economics": drawSolarEconomics(doc, input.lead); break;
         case "cashflow": drawCashflow(doc, input.lead); break;
         case "storage": drawStorageComparison(doc, input.lead); break;

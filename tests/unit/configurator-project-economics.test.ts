@@ -206,12 +206,12 @@ describe("canonical configurator project economics", () => {
         product === "photovoltaic" ? "photovoltaic.pricing" : "batteryStorage.pricing",
       );
       expect(economics.investmentBaseEuro).toBeNull();
-      expect(economics.solar?.investmentEuro).toBeNull();
-      expect(economics.solar?.annualCashflows[0]?.netAnnualBenefitEuro).toBeNull();
+      expect(economics.pricingMode).toBe("individual_quote_required");
+      expect(economics.solar).toBeNull();
       expect(economics.paybackYears).toBeNull();
-      expect(economics.paybackStatus).toBe("unavailable_missing_investment");
+      expect(economics.paybackStatus).toBe("not_applicable");
       expect(economics.annualizedReturnPercent).toBeNull();
-      expect(economics.irrStatus).toBe("unavailable_missing_investment");
+      expect(economics.irrStatus).toBe("not_applicable");
       expect(economics.finalCumulativeCashFlowEuro).toBeNull();
       expect(economics.projections).toEqual([]);
     }

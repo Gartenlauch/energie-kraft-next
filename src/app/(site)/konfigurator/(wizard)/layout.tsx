@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { ConfiguratorProvider } from "@/lib/configurator/configurator-context";
+import { ConfiguratorSubmissionGate } from "@/components/configurator/configurator-submission-gate";
 import { DEFAULT_CONFIGURATOR_SETTINGS } from "@/lib/configurator/settings-model";
 import { getCurrentConfiguratorSettings } from "@/lib/configurator/settings-repository";
 
@@ -17,7 +18,7 @@ export default async function ConfiguratorWizardLayout({
 
   return (
     <ConfiguratorProvider settings={settings}>
-      {children}
+      <ConfiguratorSubmissionGate>{children}</ConfiguratorSubmissionGate>
     </ConfiguratorProvider>
   );
 }

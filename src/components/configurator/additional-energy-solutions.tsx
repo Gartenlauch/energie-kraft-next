@@ -3,6 +3,7 @@
 import { SelectionCard } from "@/components/configurator/selection-card";
 import { SelectionGrid } from "@/components/configurator/selection-grid";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
+import { CONFIGURATOR_JOURNEY_ORDER } from "@/lib/configurator/journey";
 import type { ConfiguratorInterests, ConfiguratorType } from "@/types/configurator";
 
 const OPTIONS = [
@@ -50,7 +51,9 @@ export function AdditionalEnergySolutions({
   currentProduct: ConfiguratorType;
 }) {
   const { state, dispatch } = useConfigurator();
-  const options = OPTIONS.filter((option) => option.type !== currentProduct);
+  const options = CONFIGURATOR_JOURNEY_ORDER.flatMap((type) =>
+    OPTIONS.filter((option) => option.type === type && type !== currentProduct),
+  );
 
   return (
     <section

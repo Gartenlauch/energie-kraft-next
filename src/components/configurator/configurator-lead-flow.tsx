@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 
 import { ConfiguratorContactForm } from "@/components/configurator/configurator-contact-form";
 import { ConfiguratorSubmitReview } from "@/components/configurator/configurator-submit-review";
@@ -12,6 +12,7 @@ import { configuratorLeadInputSchema } from "@/lib/validation/configurator/lead"
 import type {
     ConfiguratorContactFormValues,
     SubmitConfiguratorLeadInput,
+    SubmitConfiguratorLeadResult,
 } from "@/types/configurator";
 
 type LeadFlowStage = "result" | "contact" | "submit" | "success";
@@ -19,16 +20,8 @@ type LeadFlowStage = "result" | "contact" | "submit" | "success";
 interface ConfiguratorLeadFlowProps {
   renderResult: (onContinue: () => void) => ReactNode;
 }
-interface SubmissionOutcome {
-    publicReference: string;
-
-  reportStatus?: "generated" | "failed";
-
-  customerMailStatus?: "accepted" | "failed";
-}
-
 export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps) {
-  const { state, reset } = useConfigurator();
+  const { state, dispatch } = useConfigurator();
 
   const [stage, setStage] = useState<LeadFlowStage>("result");
 
@@ -36,7 +29,7 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
 
   const [contactFormStartedAt, setContactFormStartedAt] = useState<number | null>(null);
 
-  const [submissionOutcome, setSubmissionOutcome] = useState<SubmissionOutcome | null>(null);
+  const submitInFlight = useRef(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -48,7 +41,7 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
             : null;
 
   async function handleSubmit(leadInput: SubmitConfiguratorLeadInput) {
-        if (isSubmitting) {
+        if (submitInFlight.current || state.submission.status === "submitted") {
             return;
         }
 
@@ -60,44 +53,41 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
             return;
         }
 
+        submitInFlight.current = true;
         setSubmissionError(null);
         setIsSubmitting(true);
+        dispatch({ type: "SET_SUBMISSION", payload: { status: "submitting" } });
 
+        let result: SubmitConfiguratorLeadResult;
         try {
-            const result = await submitConfiguratorLead(leadInput);
-
-            setSubmissionOutcome({
-                publicReference: result.publicReference,
-                reportStatus: result.reportStatus,
-                customerMailStatus: result.customerMailStatus,
-            });
-
-            /*
-             * Technische Konfigurator-Daten
-             * erst nach erfolgreicher
-             * Speicherung löschen.
-             */
-            reset();
-
-            setContactDraft(null);
-            setContactFormStartedAt(null);
-
-            setStage("success");
+            result = await submitConfiguratorLead(leadInput);
         } catch {
+            dispatch({ type: "SET_SUBMISSION", payload: { status: "failed" } });
             setSubmissionError(
                 "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
             );
-        } finally {
+            submitInFlight.current = false;
             setIsSubmitting(false);
+            return;
         }
+        dispatch({ type: "SET_SUBMISSION", payload: {
+            status: "submitted",
+            publicReference: result.publicReference,
+            reportStatus: result.reportStatus,
+            customerMailStatus: result.customerMailStatus,
+        } });
+        setContactDraft(null);
+        setContactFormStartedAt(null);
+        setStage("success");
+        setIsSubmitting(false);
     }
 
-  if (stage === "success" && submissionOutcome) {
+  if (state.submission.status === "submitted" && state.submission.publicReference) {
     return (
         <ConfiguratorSubmitSuccess
-        publicReference={submissionOutcome.publicReference}
-        reportStatus={submissionOutcome.reportStatus}
-        customerMailStatus={submissionOutcome.customerMailStatus}
+        publicReference={state.submission.publicReference}
+        reportStatus={state.submission.reportStatus}
+        customerMailStatus={state.submission.customerMailStatus}
         />
     );
 }

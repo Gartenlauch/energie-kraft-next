@@ -7,6 +7,12 @@ import {
   shouldReviewAdditionalEnergySolutions,
 } from "@/lib/configurator/journey";
 import { configuratorReducer, createInitialConfiguratorState } from "@/lib/configurator/state";
+import {
+  buildBatteryStorageConfiguratorResult,
+  buildBatteryStoragePhotovoltaicHandoff,
+} from "@/lib/configurator/battery-storage";
+import { buildPhotovoltaicConfiguratorResult } from "@/lib/configurator/photovoltaic";
+import { parseConfiguratorState } from "@/lib/validation/configurator/state";
 
 describe("configurator journey", () => {
   it("builds the selected products in the canonical order", () => {
@@ -97,18 +103,18 @@ describe("configurator journey", () => {
     expect(journey.selectedProducts).toEqual([
       "photovoltaic",
       "battery_storage",
-      "wallbox",
       "heat_pump",
       "climate",
+      "wallbox",
     ]);
   });
   it("moves through a complete multi-configurator journey in order", () => {
     const selectedProducts = [
       "photovoltaic",
       "battery_storage",
-      "wallbox",
       "heat_pump",
       "climate",
+      "wallbox",
     ] as const;
 
     expect(
@@ -133,18 +139,6 @@ describe("configurator journey", () => {
         },
         "battery_storage",
       ),
-    ).toBe("wallbox");
-
-    expect(
-      getNextConfiguratorProduct(
-        {
-          entryPoint: "photovoltaic",
-          selectedProducts: [...selectedProducts],
-          completedProducts: ["photovoltaic", "battery_storage", "wallbox"],
-          additionalSolutionsReviewed: true,
-        },
-        "wallbox",
-      ),
     ).toBe("heat_pump");
 
     expect(
@@ -152,7 +146,7 @@ describe("configurator journey", () => {
         {
           entryPoint: "photovoltaic",
           selectedProducts: [...selectedProducts],
-          completedProducts: ["photovoltaic", "battery_storage", "wallbox", "heat_pump"],
+          completedProducts: ["photovoltaic", "battery_storage", "heat_pump"],
           additionalSolutionsReviewed: true,
         },
         "heat_pump",
@@ -164,25 +158,78 @@ describe("configurator journey", () => {
         {
           entryPoint: "photovoltaic",
           selectedProducts: [...selectedProducts],
-          completedProducts: [...selectedProducts],
+          completedProducts: ["photovoltaic", "battery_storage", "heat_pump", "climate"],
           additionalSolutionsReviewed: true,
         },
         "climate",
       ),
+    ).toBe("wallbox");
+
+    expect(
+      getNextConfiguratorProduct(
+        {
+          entryPoint: "photovoltaic",
+          selectedProducts: [...selectedProducts],
+          completedProducts: [...selectedProducts],
+          additionalSolutionsReviewed: true,
+        },
+        "wallbox",
+      ),
     ).toBeNull();
   });
 
-  it("keeps a standalone entry product first and never loops", () => {
+  it("skips the completed entry product after a climate-first scope decision", () => {
     const journey = buildConfiguratorJourney(
-      "heat_pump",
-      { photovoltaic: true, batteryStorage: false, wallbox: false, heatPump: false, climate: true },
+      "climate",
+      { photovoltaic: true, batteryStorage: true, wallbox: false, heatPump: true, climate: false },
       {},
+      true,
     );
 
-    expect(journey.selectedProducts).toEqual(["heat_pump", "photovoltaic", "climate"]);
-    expect(getNextConfiguratorProduct(journey, "heat_pump")).toBe("photovoltaic");
-    expect(getNextConfiguratorProduct(journey, "photovoltaic")).toBe("climate");
-    expect(getNextConfiguratorProduct(journey, "climate")).toBeNull();
+    journey.completedProducts = ["climate"];
+    expect(journey.selectedProducts).toEqual(["photovoltaic", "battery_storage", "heat_pump", "climate"]);
+    expect(getNextConfiguratorProduct(journey, "climate")).toBe("photovoltaic");
+    journey.completedProducts.push("photovoltaic");
+    expect(getNextConfiguratorProduct(journey, "photovoltaic")).toBe("battery_storage");
+    journey.completedProducts.push("battery_storage");
+    expect(getNextConfiguratorProduct(journey, "battery_storage")).toBe("heat_pump");
+    journey.completedProducts.push("heat_pump");
+    expect(getNextConfiguratorProduct(journey, "heat_pump")).toBeNull();
+    expect(shouldReviewAdditionalEnergySolutions(journey, "climate")).toBe(false);
+  });
+
+  it("preserves PV context and submission after entering Storage", () => {
+    let state = createInitialConfiguratorState();
+    state = configuratorReducer(state, { type: "SET_ACTIVE_CONFIGURATOR", payload: "photovoltaic" });
+    state = configuratorReducer(state, { type: "UPDATE_INTERESTS", payload: { batteryStorage: true } });
+    state = configuratorReducer(state, { type: "MARK_ADDITIONAL_SOLUTIONS_REVIEWED" });
+    state = configuratorReducer(state, { type: "UPDATE_HOUSEHOLD", payload: { persons: 3, annualConsumptionKwh: 4_500 } });
+    state = configuratorReducer(state, { type: "UPDATE_BUILDING", payload: { ownership: "owner", type: "detached_house" } });
+    state = configuratorReducer(state, { type: "UPDATE_ROOF", payload: {
+      pitch: 30, material: "roof_tile", orientation: "south", renovationPeriod: "after_1990",
+    } });
+    const pv = buildPhotovoltaicConfiguratorResult(state);
+    expect(pv).not.toBeNull();
+    state = configuratorReducer(state, { type: "SET_PHOTOVOLTAIC_RESULT", payload: pv! });
+    state = configuratorReducer(state, { type: "SET_ACTIVE_CONFIGURATOR", payload: "battery_storage" });
+    expect(buildBatteryStoragePhotovoltaicHandoff(state)?.recommendedPvPowerKwpMin)
+      .toBe(pv?.recommendedPowerKwpMin);
+    expect(getNextConfiguratorProduct(state.journey, "photovoltaic")).toBe("battery_storage");
+    state = configuratorReducer(state, { type: "UPDATE_BATTERY_STORAGE", payload: {
+      consumptionPattern: "mixed", backupPreference: "none", goal: "balanced",
+    } });
+    const storage = buildBatteryStorageConfiguratorResult(state);
+    expect(storage).not.toBeNull();
+    state = configuratorReducer(state, { type: "SET_BATTERY_STORAGE_RESULT", payload: storage! });
+    expect(state.journey.completedProducts).toEqual(["photovoltaic", "battery_storage"]);
+    expect(getNextConfiguratorProduct(state.journey, "battery_storage")).toBeNull();
+    state = configuratorReducer(state, { type: "SET_SUBMISSION", payload: {
+      status: "submitted", publicReference: "PV-BS-00001",
+    } });
+    state = configuratorReducer(state, { type: "SET_ACTIVE_CONFIGURATOR", payload: "battery_storage" });
+    expect(state.results.photovoltaic).toEqual(pv);
+    expect(state.submission).toEqual({ status: "submitted", publicReference: "PV-BS-00001" });
+    expect(parseConfiguratorState(state)?.submission.status).toBe("submitted");
   });
 
   it("asks standalone heat-pump and climate journeys only while the decision is open", () => {

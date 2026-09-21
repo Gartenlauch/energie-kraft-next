@@ -4,8 +4,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   generateConfiguratorProjectPdf,
+  getComfortPdfCopy,
   getConfiguratorReportSections,
   getSolarReturnDisplay,
+  getSolarPdfCopy,
 } from "../../functions/src/configurator-project-pdf";
 import { configuratorLeadPayloadSchema } from "../../functions/src/configurator-lead-validation";
 import { applyAuthoritativeConfiguratorModel } from "../../functions/src/configurator-server-model";
@@ -211,6 +213,18 @@ function buildPdfLead(state: ConfiguratorState) {
 }
 
 describe("premium configurator project PDF", () => {
+  it("keeps storage copy and assumptions out of PV-only pages", () => {
+    const pvOnly = getSolarPdfCopy(false);
+    const combined = getSolarPdfCopy(true);
+    expect(pvOnly.investmentDetail).toBe("Photovoltaik");
+    expect(pvOnly.technicalIntro).not.toContain("Speicher");
+    expect(pvOnly.flowIntro).not.toContain("Speicher");
+    expect(pvOnly.assumptionKeys).not.toContain("storage_efficiency");
+    expect(combined.investmentDetail).toBe("Photovoltaik + Stromspeicher");
+    expect(combined.technicalIntro).toContain("Speicher");
+    expect(combined.flowIntro).toContain("Speicher");
+    expect(combined.assumptionKeys).toContain("storage_efficiency");
+  });
   it("keeps the submitted and authoritative project economics aligned", () => {
     const lead = buildPdfLead(createCompleteProject());
     const authoritative = applyAuthoritativeConfiguratorModel(lead, DEFAULT_CONFIGURATOR_SETTINGS);
@@ -325,6 +339,44 @@ describe("premium configurator project PDF", () => {
     expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0).toBe(12);
   });
 
+  it("recomputes changed minimums and oversized quotes for persisted server results", () => {
+    const settings = structuredClone(DEFAULT_CONFIGURATOR_SETTINGS);
+    settings.photovoltaic.pricing.tiers[0]!.from = 5;
+    settings.batteryStorage.pricing.tiers[0]!.from = 6;
+    const lowLead = buildPdfLead(createPvStorageProject());
+    const lowPv = lowLead.configurators.find((item) => item.type === "photovoltaic");
+    if (!lowPv) throw new Error("PV fixture missing");
+    lowPv.answers.household.annualConsumptionKwh = 500;
+    const low = applyAuthoritativeConfiguratorModel(lowLead, settings);
+    const lowResult = low.configurators.find((item) => item.type === "photovoltaic");
+    const lowStorage = low.configurators.find((item) => item.type === "battery_storage");
+    expect(lowResult?.result.recommendedPowerKwpMin).toBe(5);
+    expect(lowStorage?.result.recommendedUsableCapacityKwhMin).toBe(6);
+    expect(low.economics.pricingMode).toBe("modeled");
+    expect(low.economics.solar?.investmentEuro).toBeGreaterThan(0);
+
+    settings.photovoltaic.pricing.maxModeledSize = 40;
+    settings.batteryStorage.pricing.maxModeledSize = 40;
+    const largeLead = buildPdfLead(createPvStorageProject());
+    const largePv = largeLead.configurators.find((item) => item.type === "photovoltaic");
+    if (!largePv) throw new Error("PV fixture missing");
+    largePv.answers.household.annualConsumptionKwh = 60_000;
+    const large = applyAuthoritativeConfiguratorModel(largeLead, settings);
+    const largeResult = large.configurators.find((item) => item.type === "photovoltaic");
+    const largeStorage = large.configurators.find((item) => item.type === "battery_storage");
+    expect(largeResult?.result.recommendedPowerKwpMax).toBeGreaterThan(40);
+    expect(largeResult?.result.pricingMode).toBe("individual_quote_required");
+    expect(largeStorage?.result.pricingMode).toBe("individual_quote_required");
+    expect(large.economics.pricingMode).toBe("individual_quote_required");
+    expect(large.economics.investmentBaseEuro).toBeNull();
+    expect(large.economics.solar).toBeNull();
+    expect(large.economics.paybackYears).toBeNull();
+    expect(large.economics.annualizedReturnPercent).toBeNull();
+    expect(large.economics.finalCumulativeCashFlowEuro).toBeNull();
+    expect(getConfiguratorReportSections(large)).not.toContain("solar_economics");
+    expect(getConfiguratorReportSections(large)).not.toContain("cashflow");
+  });
+
   it.each([
     ["PV only", createPvOnlyProject],
     ["PV and storage", createPvStorageProject],
@@ -359,11 +411,10 @@ describe("premium configurator project PDF", () => {
     const lead = buildPdfLead(createUnpricedPvProject());
     const display = getSolarReturnDisplay(lead.economics);
     expect(lead.economics.missingInvestmentSources).toContain("photovoltaic.pricing");
-    expect(display?.investment).toBe("Nach technischer Prüfung");
-    expect(display?.payback).toBeNull();
-    expect(display?.irr).toBeNull();
-    expect(display?.horizonResult).toBeNull();
+    expect(lead.economics.pricingMode).toBe("individual_quote_required");
+    expect(display).toBeNull();
     expect(getConfiguratorReportSections(lead)).not.toContain("cashflow");
+    expect(getConfiguratorReportSections(lead)).not.toContain("solar_economics");
     const pdf = await generateConfiguratorProjectPdf({
       leadId: "unpriced-pv", lead, settings: DEFAULT_CONFIGURATOR_SETTINGS,
     });
@@ -384,5 +435,51 @@ describe("premium configurator project PDF", () => {
       leadId: "comfort-only", lead, settings: DEFAULT_CONFIGURATOR_SETTINGS,
     });
     expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
+    const output = path.join(tmpdir(), `energie-kraft-comfort-combined-${process.pid}.pdf`);
+    writeFileSync(output, pdf);
+    console.info("COMFORT_COMBINED_PDF", output);
+  });
+
+  it("uses only the selected comfort products in overview and closing copy", () => {
+    const climate = getComfortPdfCopy(true, false);
+    expect(climate.overviewLabel).toBe("Klimaanlage");
+    expect(climate.closing).toContain("Klimaanlage");
+    expect(climate.intro).toContain("Klimaanlage");
+    expect(JSON.stringify(climate)).not.toContain("Wallbox");
+    const wallbox = getComfortPdfCopy(false, true);
+    expect(wallbox.overviewLabel).toBe("Wallbox");
+    expect(wallbox.closing).toContain("Wallbox");
+    expect(wallbox.intro).toContain("Wallbox");
+    expect(JSON.stringify(wallbox)).not.toContain("Klimaanlage");
+    const combined = getComfortPdfCopy(true, true);
+    expect(combined.overviewLabel).toBe("Klimaanlage + Wallbox");
+    expect(combined.closing).toContain("Klimaanlage und Wallbox ergänzen dein Energieprojekt");
+  });
+
+  it.each(["climate", "wallbox"] as const)("renders the %s-only comfort PDF", async (type) => {
+    const full = createComfortOnlyProject();
+    const state = normalizeConfiguratorState({
+      ...full,
+      activeConfigurator: type,
+      interests: { ...full.interests, climate: type === "climate", wallbox: type === "wallbox" },
+      journey: {
+        ...full.journey, entryPoint: type,
+        selectedProducts: [type], completedProducts: [type],
+      },
+      results: type === "climate"
+        ? { climate: full.results.climate }
+        : { wallbox: full.results.wallbox },
+    });
+    const lead = buildPdfLead(state);
+    expect(getConfiguratorReportSections(lead)).toContain("comfort");
+    expect(lead.configurators.map((item) => item.type)).toEqual([type]);
+    const pdf = await generateConfiguratorProjectPdf({
+      leadId: `${type}-only`, lead, settings: DEFAULT_CONFIGURATOR_SETTINGS,
+    });
+    expect(pdf.subarray(0, 4).toString("ascii")).toBe("%PDF");
+    expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0).toBe(6);
+    const output = path.join(tmpdir(), `energie-kraft-comfort-${type}-${process.pid}.pdf`);
+    writeFileSync(output, pdf);
+    console.info("COMFORT_SINGLE_PDF", output);
   });
 });

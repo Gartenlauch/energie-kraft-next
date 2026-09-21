@@ -130,6 +130,12 @@ export interface ConfiguratorState {
   interests: ConfiguratorInterests;
   notes: ConfiguratorNotes;
   results: ConfiguratorResults;
+  submission: {
+    status: "idle" | "submitting" | "submitted" | "failed";
+    publicReference?: string;
+    reportStatus?: "generated" | "failed";
+    customerMailStatus?: "accepted" | "failed";
+  };
 }
 
 export type ConfiguratorAction =
@@ -199,6 +205,10 @@ export type ConfiguratorAction =
   }
   | {
     type: "MARK_ADDITIONAL_SOLUTIONS_REVIEWED";
+  }
+  | {
+    type: "SET_SUBMISSION";
+    payload: ConfiguratorState["submission"];
   }
   | {
     type: "RESET";

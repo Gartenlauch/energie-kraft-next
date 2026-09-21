@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { ConfiguratorProgress } from "@/components/configurator/configurator-progress";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
@@ -47,13 +47,18 @@ import type {
   PhotovoltaicEnergySolution,
   ConfiguratorContactFormValues,
   SubmitConfiguratorLeadInput,
+  SubmitConfiguratorLeadResult,
 } from "@/types/configurator";
 
 export function PhotovoltaicWizard() {
-  const { state, dispatch, reset, isHydrated } = useConfigurator();
+  const { state, dispatch, isHydrated } = useConfigurator();
+
+  const steps = state.journey.additionalSolutionsReviewed
+    ? photovoltaicWizardSteps.filter((step) => step.id !== "energy_solutions")
+    : photovoltaicWizardSteps;
 
   const { currentStepId, isFirstStep, isLastStep, goNext, goBack } =
-    useConfiguratorWizard<PhotovoltaicStepId>(photovoltaicWizardSteps, "household_persons");
+    useConfiguratorWizard<PhotovoltaicStepId>(steps, "household_persons");
 
   const [showTenantStop, setShowTenantStop] = useState(false);
   type PostWizardStage = "result" | "contact" | "submit" | "success";
@@ -64,7 +69,7 @@ export function PhotovoltaicWizard() {
 
   const [contactFormStartedAt, setContactFormStartedAt] = useState<number | null>(null);
 
-  const [submittedLeadId, setSubmittedLeadId] = useState<string | null>(null);
+  const submitInFlight = useRef(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -294,7 +299,7 @@ export function PhotovoltaicWizard() {
   }
 
   async function handleSubmitConfiguratorLead(input: SubmitConfiguratorLeadInput) {
-    if (isSubmitting) {
+    if (submitInFlight.current || state.submission.status === "submitted") {
       return;
     }
 
@@ -306,39 +311,43 @@ export function PhotovoltaicWizard() {
     }
 
     setSubmissionError(null);
+    submitInFlight.current = true;
     setIsSubmitting(true);
+    dispatch({ type: "SET_SUBMISSION", payload: { status: "submitting" } });
 
+    let result: SubmitConfiguratorLeadResult;
     try {
-      const result = await submitConfiguratorLead(input);
-
-      setSubmittedLeadId(result.publicReference);
-
-      /*
-       * Technische Wizard-Daten erst nach
-       * erfolgreicher Speicherung löschen.
-       */
-      reset();
-
-      setContactDraft(null);
-      setContactFormStartedAt(null);
-
-      setPostWizardStage("success");
+      result = await submitConfiguratorLead(input);
     } catch {
+      dispatch({ type: "SET_SUBMISSION", payload: { status: "failed" } });
       setSubmissionError(
         "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
       );
-    } finally {
+      submitInFlight.current = false;
       setIsSubmitting(false);
+      return;
     }
+    dispatch({ type: "SET_SUBMISSION", payload: {
+      status: "submitted",
+      publicReference: result.publicReference,
+      reportStatus: result.reportStatus,
+      customerMailStatus: result.customerMailStatus,
+    } });
+    setContactDraft(null);
+    setContactFormStartedAt(null);
+    setPostWizardStage("success");
+    setIsSubmitting(false);
   }
 
   if (showTenantStop) {
     return <TenantStop onBack={() => setShowTenantStop(false)} />;
   }
-  if (postWizardStage === "success" && submittedLeadId) {
+  if (state.submission.status === "submitted" && state.submission.publicReference) {
     return (
       <ConfiguratorSubmitSuccess
-        publicReference={submittedLeadId}
+        publicReference={state.submission.publicReference}
+        reportStatus={state.submission.reportStatus}
+        customerMailStatus={state.submission.customerMailStatus}
       />
     );
   }
@@ -401,7 +410,7 @@ export function PhotovoltaicWizard() {
     <>
       {currentStepId === "household_persons" ? <ProjectAnalysisPromise /> : null}
       <ConfiguratorPhaseIndicator currentPhase="configuration" />
-      <ConfiguratorProgress steps={photovoltaicWizardSteps} currentStepId={currentStepId} />
+      <ConfiguratorProgress steps={steps} currentStepId={currentStepId} />
 
       {currentStepId === "household_persons" ? (
         <HouseholdPersonsStep selected={state.household.persons} onSelect={handlePersonsSelect} />

@@ -133,7 +133,9 @@ export function calculateCanonicalProjectEconomics(
   products: EconomicProducts,
   settings: ConfiguratorSettings,
 ): ProjectEconomicsResult {
-  const solar = products.photovoltaic
+  const solar = products.photovoltaic &&
+    products.photovoltaic.pricingMode !== "individual_quote_required" &&
+    products.batteryStorage?.pricingMode !== "individual_quote_required"
     ? calculateSolarEconomics(products.photovoltaic, products.batteryStorage, settings)
     : null;
   const heating = products.heatPump ? calculateHeatingSavings({
@@ -166,7 +168,10 @@ export function calculateCanonicalProjectEconomics(
   );
   if (products.batteryStorage) add(
     "battery_storage", products.batteryStorage, "economic_effect",
-    solar?.storageAdditionalAnnualBenefitEuro ?? standaloneStorageEffect(products.batteryStorage, settings),
+    solar?.storageAdditionalAnnualBenefitEuro ??
+      (products.batteryStorage.pricingMode === "individual_quote_required" ||
+      products.photovoltaic?.pricingMode === "individual_quote_required"
+        ? 0 : standaloneStorageEffect(products.batteryStorage, settings)),
     "Nur der zusätzliche Wert verschobener PV-Überschüsse nach Speicherverlusten und entgangener Einspeisung.",
   );
   if (products.heatPump) add(
@@ -202,7 +207,7 @@ export function calculateCanonicalProjectEconomics(
     }));
   const scenarios: ProjectEconomicScenario[] = (["conservative", "base", "favorable"] as const)
     .map((id) => {
-      const scenarioSolar = products.photovoltaic
+      const scenarioSolar = solar && products.photovoltaic
         ? id === "base" ? solar : calculateSolarEconomics(
           products.photovoltaic, products.batteryStorage, settings, id,
         ) : null;

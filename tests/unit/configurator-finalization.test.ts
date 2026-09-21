@@ -13,6 +13,11 @@ import {
 import { normalizeAdminLeadDocument } from "@/lib/leads/normalize-admin-lead";
 import { createInitialConfiguratorState } from "@/lib/configurator/state";
 import { configuratorStateSchema } from "@/lib/validation/configurator/state";
+import {
+  deriveBatteryStorageResult,
+  derivePhotovoltaicResult,
+  normalizeModeledSizeCorridor,
+} from "../../functions/src/configurator-technical-model";
 
 describe("configurator public reference", () => {
   it("uses canonical product order and minimum five digit padding", () => {
@@ -37,6 +42,19 @@ describe("configurator public reference", () => {
 });
 
 describe("approved tier pricing", () => {
+  it("distinguishes missing low tiers from a boundary error", () => {
+    for (const [pricing, below] of [
+      [DEFAULT_CONFIGURATOR_SETTINGS.photovoltaic.pricing, 3],
+      [DEFAULT_CONFIGURATOR_SETTINGS.batteryStorage.pricing, 2],
+    ] as const) {
+      expect(pricing.tiers[0]?.from).toBe(4);
+      expect(resolveTierPrice(below, pricing).pricingMode).toBe("individual_quote_required");
+      expect(resolveTierPrice(4, pricing).pricingMode).toBe("modeled");
+      expect(calculateTieredCostCorridor({
+        sizeMin: below, sizeMax: 4, pricing, costUncertaintyPercent: 15,
+      }).pricingMode).toBe("individual_quote_required");
+    }
+  });
   it.each([
     [4, 1_200], [6.9, 1_200], [7, 1_100], [9.9, 1_100], [10, 1_000],
     [14.9, 1_000], [15, 900], [19.9, 900], [20, 800], [29.9, 800],
@@ -73,6 +91,78 @@ describe("approved tier pricing", () => {
       estimatedMinimumCostEuro: null,
       estimatedMaximumCostEuro: null,
     });
+  });
+});
+
+describe("configured system-size boundaries", () => {
+  it.each([
+    [3, 4, 4, 4], [3.5, 5, 4, 5], [6, 7, 6, 7],
+    [1.5, 2, 4, 4], [3.5, 5, 4, 5], [5, 5.5, 5, 5.5],
+    [3, 4, 5, 5], [3.5, 5, 5, 5], [3.5, 5, 6, 6],
+  ])("normalizes %s–%s against minimum %s", (rawMin, rawMax, minimum, expectedMax) => {
+    expect(normalizeModeledSizeCorridor(rawMin, rawMax, minimum)).toEqual({
+      min: Math.max(rawMin, minimum), max: expectedMax,
+    });
+  });
+
+  const photovoltaicAnswers = (annualConsumptionKwh: number) => ({
+    household: { annualConsumptionKwh, futureIncreasePercent: 0 },
+    roof: { orientation: "south" as const, renovationPeriod: "after_1990" as const },
+    interests: { batteryStorage: false },
+  });
+  const storageAnswers = {
+    annualConsumptionKwh: 500,
+    pvPowerKwp: 2,
+    consumptionPattern: "mixed" as const,
+    backupPreference: "none" as const,
+    goal: "balanced" as const,
+  };
+
+  it("uses changed PV and storage tier minimums before pricing", () => {
+    const settings = structuredClone(DEFAULT_CONFIGURATOR_SETTINGS);
+    settings.photovoltaic.pricing.tiers[0]!.from = 5;
+    settings.batteryStorage.pricing.tiers[0]!.from = 6;
+    const pv = derivePhotovoltaicResult(photovoltaicAnswers(500), settings);
+    const storage = deriveBatteryStorageResult(storageAnswers, undefined, false, settings);
+    expect([pv.recommendedPowerKwpMin, pv.recommendedPowerKwpMax, pv.pricingMode])
+      .toEqual([5, 5, "modeled"]);
+    expect(pv.estimatedTotalCostEuro).toBeGreaterThan(0);
+    expect([storage.recommendedUsableCapacityKwhMin,
+      storage.recommendedUsableCapacityKwhMax, storage.pricingMode])
+      .toEqual([6, 6, "modeled"]);
+    expect(storage.estimatedTotalCostEuro).toBeGreaterThan(0);
+  });
+
+  it("prices the maximum inclusively and never caps an oversized corridor", () => {
+    const settings = structuredClone(DEFAULT_CONFIGURATOR_SETTINGS);
+    for (const [pricing, max] of [
+      [settings.photovoltaic.pricing, 50],
+      [settings.batteryStorage.pricing, 54],
+    ] as const) {
+      for (const [min, end, mode] of [
+        [max - 1, max, "modeled"], [max, max, "modeled"],
+        [max - 2, max + 5, "individual_quote_required"],
+        [max + 1, max + 5, "individual_quote_required"],
+      ] as const) {
+        const corridor = calculateTieredCostCorridor({
+          sizeMin: min, sizeMax: end, pricing, costUncertaintyPercent: 15,
+        });
+        expect(corridor.pricingMode).toBe(mode);
+        expect(corridor.estimatedTotalCostEuro === null).toBe(mode === "individual_quote_required");
+      }
+    }
+    settings.photovoltaic.pricing.maxModeledSize = 40;
+    settings.batteryStorage.pricing.maxModeledSize = 40;
+    const pv = derivePhotovoltaicResult(photovoltaicAnswers(60_000), settings);
+    const storage = deriveBatteryStorageResult({
+      ...storageAnswers, annualConsumptionKwh: 100_000, pvPowerKwp: 100,
+    }, undefined, false, settings);
+    expect(pv.recommendedPowerKwpMax).toBeGreaterThan(40);
+    expect(pv.pricingMode).toBe("individual_quote_required");
+    expect(pv.estimatedTotalCostEuro).toBeNull();
+    expect(storage.recommendedUsableCapacityKwhMax).toBeGreaterThan(40);
+    expect(storage.pricingMode).toBe("individual_quote_required");
+    expect(storage.estimatedTotalCostEuro).toBeNull();
   });
 });
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
+import { clearSubmittedConfiguratorProject } from "@/lib/configurator/project-reset";
 
 interface ConfiguratorSubmitSuccessProps {
   publicReference: string;
@@ -20,8 +21,9 @@ export function ConfiguratorSubmitSuccess({
   const projectOverviewSent = reportStatus === "generated" && customerMailStatus === "accepted";
 
   function handleRestart() {
+    clearSubmittedConfiguratorProject(window.sessionStorage);
     // Der Seitenwechsel lädt die aktuelle Modellversion für das neue Projekt.
-    window.location.replace("/konfigurator/photovoltaik");
+    window.location.replace("/konfigurator");
   }
 
   return (

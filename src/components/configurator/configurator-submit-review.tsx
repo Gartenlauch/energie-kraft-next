@@ -39,6 +39,10 @@ const currencyFormatter =
         maximumFractionDigits: 0,
     });
 
+function sizeSummary(min: number, max: number, unit: string): string {
+    return `ca. ${numberFormatter.format(min)}${min === max ? "" : `–${numberFormatter.format(max)}`} ${unit}`;
+}
+
 function buildSummary(
     configurator: ConfiguratorLeadPayload,
 ): Summary {
@@ -51,14 +55,16 @@ function buildSummary(
                 rows: [
                     {
                         label: "Anlagenklasse",
-                        value:
-                            `ca. ${configurator.result.recommendedPowerKwpMin}–` +
-                            `${configurator.result.recommendedPowerKwpMax} kWp`,
+                        value: configurator.result.pricingMode === "individual_quote_required"
+                            ? "Individuelles Angebot erforderlich"
+                            : sizeSummary(configurator.result.recommendedPowerKwpMin,
+                                configurator.result.recommendedPowerKwpMax, "kWp"),
                     },
                     {
                         label: "Jahresertrag",
-                        value:
-                            `ca. ${numberFormatter.format(
+                        value: configurator.result.pricingMode === "individual_quote_required"
+                            ? "Nach individueller Auslegung"
+                            : `ca. ${numberFormatter.format(
                                 configurator.result
                                     .estimatedAnnualYieldKwhMin,
                             )}–${numberFormatter.format(
@@ -87,14 +93,10 @@ function buildSummary(
                         label:
                             "Empfohlene Kapazität",
 
-                        value:
-                            `ca. ${numberFormatter.format(
-                                configurator.result
-                                    .recommendedUsableCapacityKwhMin,
-                            )}–${numberFormatter.format(
-                                configurator.result
-                                    .recommendedUsableCapacityKwhMax,
-                            )} kWh`,
+                        value: configurator.result.pricingMode === "individual_quote_required"
+                            ? "Individuelle technische Planung erforderlich"
+                            : sizeSummary(configurator.result.recommendedUsableCapacityKwhMin,
+                                configurator.result.recommendedUsableCapacityKwhMax, "kWh"),
                     },
                     {
                         label:

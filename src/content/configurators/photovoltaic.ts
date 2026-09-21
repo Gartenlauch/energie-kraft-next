@@ -321,12 +321,6 @@ export const photovoltaicEnergySolutionOptions = [
       "Solarstrom auch abends und nachts nutzen. Der Speicherwunsch wird bereits in deiner PV-Empfehlung berücksichtigt.",
   },
   {
-    value: "wallbox",
-    title: "Wallbox",
-    description:
-      "Ein Elektroauto komfortabel zu Hause laden und vorhandenen Solarstrom nutzen.",
-  },
-  {
     value: "heatPump",
     title: "Wärmepumpe",
     description:
@@ -337,6 +331,12 @@ export const photovoltaicEnergySolutionOptions = [
     title: "Klimaanlage",
     description:
       "Räume effizient kühlen und je nach System auch heizen.",
+  },
+  {
+    value: "wallbox",
+    title: "Wallbox",
+    description:
+      "Ein Elektroauto komfortabel zu Hause laden und vorhandenen Solarstrom nutzen.",
   },
 ] satisfies readonly ConfiguratorSelectionOption<PhotovoltaicEnergySolution>[];
 

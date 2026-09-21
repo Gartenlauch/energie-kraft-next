@@ -10,6 +10,17 @@ export interface TierPriceResolution {
   unitPriceEuro: number | null;
 }
 
+export function normalizeModeledSizeCorridor(
+  rawMin: number,
+  rawMax: number,
+  minimumModeledSize: number,
+) {
+  return {
+    min: Math.max(rawMin, minimumModeledSize),
+    max: Math.max(rawMax, minimumModeledSize),
+  };
+}
+
 export function resolveTierPrice(
   size: number,
   table: { tiers: readonly PriceTier[]; maxModeledSize: number },
@@ -100,14 +111,19 @@ export function derivePhotovoltaicResult(
     projectedAnnualConsumptionKwh *
       (settings.photovoltaic.targetGenerationCoveragePercent / 100),
   );
-  const recommendedPowerKwpMin = Math.max(
+  const rawPowerKwpMin = Math.max(
     1,
     Math.ceil(targetAnnualGenerationKwh / specificYieldMax),
   );
-  const recommendedPowerKwpMax = Math.max(
-    recommendedPowerKwpMin + 1,
+  const rawPowerKwpMax = Math.max(
+    rawPowerKwpMin + 1,
     Math.ceil(targetAnnualGenerationKwh / specificYieldMin),
   );
+  const normalizedPower = normalizeModeledSizeCorridor(
+    rawPowerKwpMin, rawPowerKwpMax, settings.photovoltaic.pricing.tiers[0]!.from,
+  );
+  const recommendedPowerKwpMin = normalizedPower.min;
+  const recommendedPowerKwpMax = normalizedPower.max;
   return {
     recommendedPowerKwpMin,
     recommendedPowerKwpMax,
@@ -178,14 +194,19 @@ export function deriveBatteryStorageResult(
       GOAL_FACTORS[answers.goal] *
       CONSUMPTION_PATTERN_FACTORS[answers.consumptionPattern],
   );
-  const recommendedUsableCapacityKwhMin = Math.max(
+  const rawCapacityKwhMin = Math.max(
     0.5,
     Math.round(targetCapacityKwh * 0.85 * 2) / 2,
   );
-  const recommendedUsableCapacityKwhMax = Math.max(
-    recommendedUsableCapacityKwhMin,
+  const rawCapacityKwhMax = Math.max(
+    rawCapacityKwhMin,
     Math.round(Math.min(technicalUpperBoundUsableCapacityKwh, targetCapacityKwh * 1.15) * 2) / 2,
   );
+  const normalizedCapacity = normalizeModeledSizeCorridor(
+    rawCapacityKwhMin, rawCapacityKwhMax, settings.batteryStorage.pricing.tiers[0]!.from,
+  );
+  const recommendedUsableCapacityKwhMin = normalizedCapacity.min;
+  const recommendedUsableCapacityKwhMax = normalizedCapacity.max;
   const pvSurplusLikely = pvPowerKwpMin >
     annualConsumptionInThousands * BATTERY_STORAGE_MIN_PV_KW_PER_1000_KWH_CONSUMPTION;
   const wholeHomeBackupRequested = answers.backupPreference === "whole_home";

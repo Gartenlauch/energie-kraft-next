@@ -4,14 +4,9 @@ import type {
     ConfiguratorResults,
     ConfiguratorType,
 } from "@/types/configurator";
+import { CONFIGURATOR_PRODUCT_ORDER } from "../../../functions/src/configurator-product-order";
 
-export const CONFIGURATOR_JOURNEY_ORDER = [
-        "photovoltaic",
-        "battery_storage",
-        "wallbox",
-        "heat_pump",
-        "climate",
-    ] as const satisfies readonly ConfiguratorType[];
+export const CONFIGURATOR_JOURNEY_ORDER: readonly ConfiguratorType[] = CONFIGURATOR_PRODUCT_ORDER;
 
 function sortProducts(products: readonly ConfiguratorType[]): ConfiguratorType[] {
   const uniqueProducts = new Set(products);
@@ -70,10 +65,10 @@ export function buildConfiguratorJourney(
     results: ConfiguratorResults,
     additionalSolutionsReviewed = false,
 ): ConfiguratorJourneyState {
-  const remainingProducts = sortProducts(getInterestProducts(interests)).filter(
-    (product) => product !== entryPoint,
-  );
-  const selectedProducts = entryPoint ? [entryPoint, ...remainingProducts] : remainingProducts;
+  const selectedProducts = sortProducts([
+    ...(entryPoint ? [entryPoint] : []),
+    ...getInterestProducts(interests),
+  ]);
 
   const completedProducts = selectedProducts.filter((product) =>
     hasConfiguratorResult(product, results),
@@ -101,27 +96,9 @@ export function getNextConfiguratorProduct(
     journey: ConfiguratorJourneyState,
     currentProduct: ConfiguratorType,
 ): ConfiguratorType | null {
-  const currentIndex = journey.selectedProducts.indexOf(currentProduct);
-
-  for (let index = currentIndex + 1; index < journey.selectedProducts.length; index += 1) {
-    const product = journey.selectedProducts[index];
-
-        if (!product) {
-            continue;
-        }
-
-    if (!journey.selectedProducts.includes(product)) {
-            continue;
-        }
-
-    if (journey.completedProducts.includes(product)) {
-            continue;
-        }
-
-        return product;
-    }
-
-    return null;
+  return journey.selectedProducts.find(
+    (product) => product !== currentProduct && !journey.completedProducts.includes(product),
+  ) ?? null;
 }
 
 export function getFirstIncompleteConfiguratorProduct(

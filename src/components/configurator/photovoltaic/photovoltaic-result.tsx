@@ -12,6 +12,8 @@ import {
 } from "@/components/configurator/result-presentation";
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
+import { siteConfig } from "@/config/site";
+import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { ConfiguratorType, PhotovoltaicConfiguratorResult } from "@/types/configurator";
 
 interface PhotovoltaicResultProps {
@@ -31,6 +33,7 @@ export function PhotovoltaicResult({
   const solar = calculateProjectEconomics(state).solar;
   const hasStorage = Boolean(state.results.batteryStorage);
   const flow = hasStorage ? solar?.withStorage : solar?.withoutStorage;
+  const individualQuoteRequired = result.pricingMode === "individual_quote_required";
 
   return (
     <section aria-labelledby="photovoltaic-result-heading">
@@ -47,7 +50,9 @@ export function PhotovoltaicResult({
           Empfohlene Anlage
         </p>
         <p className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          {number(result.recommendedPowerKwpMin)}–{number(result.recommendedPowerKwpMax)} kWp
+          {individualQuoteRequired
+            ? `Größer als ${number(state.settings.photovoltaic.pricing.maxModeledSize)} kWp`
+            : `${number(result.recommendedPowerKwpMin)}${result.recommendedPowerKwpMin === result.recommendedPowerKwpMax ? "" : `–${number(result.recommendedPowerKwpMax)}`} kWp`}
         </p>
         <div className="mt-8 grid gap-6 border-t border-white/20 pt-6 sm:grid-cols-2">
           <div>
@@ -56,18 +61,36 @@ export function PhotovoltaicResult({
             </p>
             <p className="mt-1 text-2xl font-semibold break-words sm:text-3xl">
               {solar?.investmentEuro == null
-                ? "Nach technischer Prüfung"
+                ? individualQuoteRequired ? "Individuelles Angebot erforderlich" : "Nach technischer Prüfung"
                 : euro(solar.investmentEuro)}
             </p>
           </div>
           <div>
             <p className="text-sm text-white/70">Modellierter Jahresertrag</p>
             <p className="mt-1 text-2xl font-semibold sm:text-3xl">
-              {flow ? `${number(flow.generationKwh, 0)} kWh` : "Nach technischer Prüfung"}
+              {flow ? `${number(flow.generationKwh, 0)} kWh` : "Nach individueller Auslegung"}
             </p>
           </div>
         </div>
       </div>
+
+      {individualQuoteRequired ? (
+        <div className="border-brand-secondary bg-surface mt-8 border-l-4 px-5 py-6 sm:px-7">
+          <h2 className="text-brand-navy text-xl font-semibold">Individuelles Angebot erforderlich</h2>
+          <p className="text-foreground/70 mt-3 max-w-3xl leading-7">
+            Dein Photovoltaikprojekt liegt oberhalb der Größe, die wir im Konfigurator standardisiert
+            modellieren. Für diese Anlagengröße erstellen wir dir gerne eine individuelle technische
+            und wirtschaftliche Auslegung.
+          </p>
+          <p className="text-foreground/70 mt-4 leading-7">
+            {siteConfig.name} · <a className="text-brand-primary underline underline-offset-4" href={siteConfig.contact.phoneHref}>{siteConfig.contact.phoneDisplay}</a>
+            {" · "}<a className="text-brand-primary underline underline-offset-4" href={siteConfig.contact.emailHref}>{siteConfig.contact.email}</a>
+          </p>
+          <a className="bg-brand-primary focus-visible:outline-brand-secondary mt-5 inline-flex min-h-12 items-center rounded-xl px-6 py-3 font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-2" href={CONTACT_FORM_HREF}>
+            Individuelles Angebot anfragen
+          </a>
+        </div>
+      ) : null}
 
       {solar ? (
         <dl className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-3">

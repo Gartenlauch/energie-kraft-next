@@ -3,6 +3,7 @@ import {
     expect,
     it,
 } from "vitest";
+import { configuratorLeadPayloadSchema } from "../../functions/src/configurator-lead-validation";
 
 import {
     buildBatteryStorageConfiguratorResult,
@@ -324,9 +325,9 @@ describe(
                 ).toEqual([
                     "photovoltaic",
                     "battery_storage",
-                    "wallbox",
                     "heat_pump",
                     "climate",
+                    "wallbox",
                 ]);
 
                 expect(
@@ -335,9 +336,9 @@ describe(
                 ).toEqual([
                     "photovoltaic",
                     "battery_storage",
-                    "wallbox",
                     "heat_pump",
                     "climate",
+                    "wallbox",
                 ]);
 
                 const input =
@@ -392,9 +393,9 @@ describe(
                 ).toEqual([
                     "photovoltaic",
                     "battery_storage",
-                    "wallbox",
                     "heat_pump",
                     "climate",
+                    "wallbox",
                 ]);
 
                 expect(
@@ -405,9 +406,9 @@ describe(
                 ).toEqual([
                     "photovoltaic",
                     "battery_storage",
-                    "wallbox",
                     "heat_pump",
                     "climate",
+                    "wallbox",
                 ]);
 
                 expect(
@@ -419,6 +420,14 @@ describe(
                         input,
                     ).success,
                 ).toBe(true);
+                expect(configuratorLeadInputSchema.safeParse({
+                    ...input,
+                    journey: { ...input.journey, entryPoint: "climate" },
+                }).success).toBe(true);
+                expect(configuratorLeadPayloadSchema.safeParse({
+                    ...input,
+                    journey: { ...input.journey, entryPoint: "climate" },
+                }).success).toBe(true);
             },
         );
 

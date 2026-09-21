@@ -61,6 +61,7 @@ export function createInitialConfiguratorState(
 
     notes: {},
     results: {},
+    submission: { status: "idle" },
   };
 }
 
@@ -220,6 +221,7 @@ function reduceConfiguratorState(
 ): ConfiguratorState {
   switch (action.type) {
     case "SET_ACTIVE_CONFIGURATOR":
+      if (state.submission.status === "submitted") return state;
       return applyCrossProductPrefill(
         {
         ...state,
@@ -229,20 +231,7 @@ function reduceConfiguratorState(
         journey: {
           ...state.journey,
 
-          /*
-           * Photovoltaik ist immer der erste
-           * Baustein einer PV-basierten Journey.
-           *
-           * Dadurch kann ein alter Entry-Point
-           * aus einer vorherigen Standalone-
-           * Konfiguration (z. B. Wärmepumpe)
-           * nicht in ein neues PV-Projekt
-           * hineinragen.
-           */
-          entryPoint:
-              action.payload === "photovoltaic" && !state.interests.photovoltaic
-              ? "photovoltaic"
-                : (state.journey.entryPoint ?? action.payload),
+          entryPoint: state.journey.entryPoint ?? action.payload,
         },
         },
         action.payload,
@@ -427,6 +416,9 @@ function reduceConfiguratorState(
           additionalSolutionsReviewed: true,
         },
       };
+
+    case "SET_SUBMISSION":
+      return { ...state, submission: action.payload };
 
     case "RESET":
       return createInitialConfiguratorState(state.settings);

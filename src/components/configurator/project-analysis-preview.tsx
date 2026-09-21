@@ -20,6 +20,9 @@ export function ProjectAnalysisPreview() {
   const hasClimate = Boolean(state.results.climate);
   const hasWallbox = Boolean(state.results.wallbox);
   const hasStorage = Boolean(state.results.batteryStorage);
+  const individualQuoteProducts = economics.components
+    .filter((component) => component.pricingMode === "individual_quote_required")
+    .map((component) => PRODUCT_LABELS[component.component]);
 
   return (
     <section aria-labelledby="project-analysis-preview-heading" className="mt-7">
@@ -44,12 +47,9 @@ export function ProjectAnalysisPreview() {
           </p>
           {economics.missingInvestmentComponents.length ? (
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75">
-              Die Investition für{" "}
-              {economics.missingInvestmentComponents
-                .map((component) => PRODUCT_LABELS[component])
-                .join(", ")}{" "}
-              wird nach technischer Prüfung ergänzt. Ein vollständiger Gesamtbetrag ist deshalb noch
-              nicht möglich.
+              {individualQuoteProducts.length
+                ? `Für ${individualQuoteProducts.join(", ")} ist aufgrund der Projektgröße ein individuelles Angebot erforderlich. Ein vollständiger Gesamtbetrag ist deshalb noch nicht möglich.`
+                : `Die Investition für ${economics.missingInvestmentComponents.map((component) => PRODUCT_LABELS[component]).join(", ")} wird nach technischer Prüfung ergänzt. Ein vollständiger Gesamtbetrag ist deshalb noch nicht möglich.`}
             </p>
           ) : (
             <p className="mt-3 text-sm text-white/65">
@@ -96,6 +96,14 @@ export function ProjectAnalysisPreview() {
                 </p>
               ) : null}
             </div>
+          </div>
+        ) : state.results.photovoltaic?.pricingMode === "individual_quote_required" ? (
+          <div className="border-brand-primary/15 border-b py-6">
+            <h3 className="text-brand-navy text-lg font-semibold">Individuelles Angebot erforderlich</h3>
+            <p className="text-foreground/70 mt-2 text-sm leading-6">
+              Die Photovoltaikanlage liegt oberhalb des standardisiert modellierten Größenbereichs.
+              Die Wirtschaftlichkeit wird individuell ausgelegt.
+            </p>
           </div>
         ) : null}
 
@@ -154,8 +162,9 @@ export function ProjectAnalysisPreview() {
             <div className="min-w-0">
               <p className="text-brand-navy text-lg font-semibold">Solarenergie später nutzen</p>
               <p className="text-foreground/70 mt-2 text-sm leading-6">
-                Die konkrete Wirkung im Zusammenspiel mit Photovoltaik wird in der weiteren Planung
-                geprüft.
+                {state.results.batteryStorage?.pricingMode === "individual_quote_required"
+                  ? "Für diese Speichergröße ist eine individuelle technische Planung erforderlich."
+                  : "Die konkrete Wirkung im Zusammenspiel mit Photovoltaik wird in der weiteren Planung geprüft."}
               </p>
             </div>
           </div>

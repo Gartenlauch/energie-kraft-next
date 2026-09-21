@@ -1,4 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { siteConfig } from "@/config/site";
+import { CONTACT_FORM_HREF } from "@/config/routes";
+import { ConfiguratorProvider } from "@/lib/configurator/configurator-context";
+import { PhotovoltaicResult } from "@/components/configurator/photovoltaic/photovoltaic-result";
+
+vi.mock("@/config/env/public", () => ({
+  publicEnv: { NEXT_PUBLIC_CANONICAL_BASE_URL: "http://localhost:3000" },
+}));
 
 import {
   buildPhotovoltaicConfiguratorResult,
@@ -41,6 +51,25 @@ function createCompleteResultState(orientation: RoofOrientation = "south"): Conf
 }
 
 describe("photovoltaic configurator result", () => {
+  it("shows the authoritative contact details and CTA for an oversized PV result", () => {
+    const state = createCompleteResultState();
+    state.household.annualConsumptionKwh = 60_000;
+    const result = buildPhotovoltaicConfiguratorResult(state);
+    if (!result) throw new Error("PV fixture missing");
+    expect(result.pricingMode).toBe("individual_quote_required");
+    const html = renderToStaticMarkup(createElement(ConfiguratorProvider,
+      { settings: state.settings } as Parameters<typeof ConfiguratorProvider>[0],
+      createElement(PhotovoltaicResult, {
+        result, nextConfigurator: null, onBack: () => {}, onContinue: () => {},
+      }),
+    ));
+    expect(html).toContain("Individuelles Angebot erforderlich");
+    expect(html).toContain(siteConfig.contact.phoneDisplay);
+    expect(html).toContain(siteConfig.contact.email);
+    expect(html).toContain(CONTACT_FORM_HREF);
+    expect(html).not.toContain("Amortisation");
+    expect(html).not.toContain("Modellierte Rendite");
+  });
   it("uses a documented yield uncertainty corridor", () => {
     expect(PV_CONFIGURATOR_YIELD_UNCERTAINTY_PERCENT).toBe(10);
   });

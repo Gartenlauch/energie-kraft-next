@@ -443,6 +443,12 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
 
     climate: climateConfiguratorResultSchema.optional(),
     }),
+    submission: z.object({
+      status: z.enum(["idle", "submitting", "submitted", "failed"]),
+      publicReference: z.string().optional(),
+      reportStatus: z.enum(["generated", "failed"]).optional(),
+      customerMailStatus: z.enum(["accepted", "failed"]).optional(),
+    }),
   });
 
 export function parseConfiguratorState(input: unknown): ConfiguratorState | null {
@@ -477,6 +483,9 @@ export function parseConfiguratorState(input: unknown): ConfiguratorState | null
     };
   }
 
+  if (typeof candidate === "object" && candidate !== null && !("submission" in candidate)) {
+    candidate = { ...candidate, submission: { status: "idle" } };
+  }
   const result = configuratorStateSchema.safeParse(candidate);
 
   if (!result.success) {

@@ -105,7 +105,7 @@ describe("configurator state", () => {
 
     expect(state).toEqual(createInitialConfiguratorState());
   });
-  it("starts a fresh photovoltaic journey instead of keeping an old standalone entry point", () => {
+  it("keeps an existing project until a new journey is explicitly started", () => {
     let state = createInitialConfiguratorState();
 
       /*
@@ -130,11 +130,11 @@ describe("configurator state", () => {
       payload: "photovoltaic",
     });
 
-    expect(state.journey.entryPoint).toBe("photovoltaic");
-
+    expect(state.journey.entryPoint).toBe("heat_pump");
+    expect(state.journey.selectedProducts).toEqual(["heat_pump"]);
+    state = configuratorReducer(state, { type: "RESET" });
+    state = configuratorReducer(state, { type: "SET_ACTIVE_CONFIGURATOR", payload: "photovoltaic" });
     expect(state.journey.selectedProducts).toEqual(["photovoltaic"]);
-
-    expect(state.journey.selectedProducts).not.toContain("heat_pump");
   });
 
   it("prefills equivalent heat-pump and climate values without overwriting input", () => {

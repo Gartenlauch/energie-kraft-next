@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CONFIGURATOR_PRODUCT_ORDER } from "./configurator-product-order.ts";
 import {
   heatingSavingsSchema, investmentSourceSchema, projectIrrStatusSchema,
   projectPaybackStatusSchema, solarEconomicsSchema,
@@ -502,13 +503,7 @@ const projectEconomicsSchema = z
   })
   .strict();
 
-const CONFIGURATOR_ORDER = [
-  "photovoltaic",
-  "battery_storage",
-  "wallbox",
-  "heat_pump",
-  "climate",
-] as const;
+const CONFIGURATOR_ORDER = CONFIGURATOR_PRODUCT_ORDER;
 
 type ConfiguratorType = z.infer<typeof configuratorTypeSchema>;
 
@@ -627,12 +622,7 @@ export const configuratorLeadPayloadSchema = z
           });
         }
 
-    const canonicalProducts = [
-      values.journey.entryPoint,
-      ...CONFIGURATOR_ORDER.filter(
-        (product) => product !== values.journey.entryPoint && values.products.includes(product),
-              ),
-    ];
+    const canonicalProducts = CONFIGURATOR_ORDER.filter((product) => values.products.includes(product));
 
     if (!sameProductOrder(values.products, canonicalProducts)) {
           context.addIssue({

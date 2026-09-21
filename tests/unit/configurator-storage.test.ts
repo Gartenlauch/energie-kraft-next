@@ -43,6 +43,21 @@ class MemoryStorage implements Storage {
 }
 
 describe("configurator storage", () => {
+  it("restores an interrupted request as failed and keeps a submitted reference", () => {
+    const storage = new MemoryStorage();
+    const pending = configuratorReducer(createInitialConfiguratorState(), {
+      type: "SET_SUBMISSION", payload: { status: "submitting" },
+    });
+    expect(writeConfiguratorState(storage, pending)).toBe(true);
+    expect(readConfiguratorState(storage)?.submission.status).toBe("failed");
+    const submitted = configuratorReducer(pending, { type: "SET_SUBMISSION", payload: {
+      status: "submitted", publicReference: "PV-00001",
+    } });
+    expect(writeConfiguratorState(storage, submitted)).toBe(true);
+    expect(readConfiguratorState(storage)?.submission).toEqual({
+      status: "submitted", publicReference: "PV-00001",
+    });
+  });
   it("does not overwrite persisted state with an invalid transient state", () => {
     const storage = new MemoryStorage();
 
@@ -180,5 +195,47 @@ describe("configurator storage", () => {
     const newerSettings = structuredClone(DEFAULT_CONFIGURATOR_SETTINGS);
     newerSettings.version = 1;
     expect(createInitialConfiguratorState(newerSettings).settingsVersion).toBe(1);
+  });
+
+  it.each([
+    ["PV", "photovoltaic", ["photovoltaic"]],
+    ["multi-product", "photovoltaic", ["photovoltaic", "climate", "wallbox"]],
+    ["Climate", "climate", ["climate"]],
+    ["Wallbox", "wallbox", ["wallbox"]],
+  ] as const)("starts empty after a submitted %s project", (_label, entry, products) => {
+    const storage = new MemoryStorage();
+    const selectedProducts: readonly string[] = products;
+    let state = configuratorReducer(createInitialConfiguratorState(), {
+      type: "SET_ACTIVE_CONFIGURATOR", payload: entry,
+    });
+    state = configuratorReducer(state, {
+      type: "UPDATE_INTERESTS",
+      payload: {
+        photovoltaic: selectedProducts.includes("photovoltaic"),
+        climate: selectedProducts.includes("climate"),
+        wallbox: selectedProducts.includes("wallbox"),
+      },
+    });
+    state = configuratorReducer(state, {
+      type: "UPDATE_HOUSEHOLD", payload: { annualConsumptionKwh: 4_500 },
+    });
+    state = configuratorReducer(state, {
+      type: "SET_SUBMISSION", payload: { status: "submitted", publicReference: "EK-00001" },
+    });
+    expect(writeConfiguratorState(storage, state)).toBe(true);
+
+    clearSubmittedConfiguratorProject(storage);
+    const reset = configuratorReducer(state, { type: "RESET" });
+    expect(writeConfiguratorState(storage, reset)).toBe(true);
+    expect(storage.length).toBe(0);
+    expect(reset).toEqual(createInitialConfiguratorState());
+
+    const next = configuratorReducer(reset, {
+      type: "SET_ACTIVE_CONFIGURATOR", payload: "heat_pump",
+    });
+    expect(next.journey.entryPoint).toBe("heat_pump");
+    expect(next.journey.selectedProducts).toEqual(["heat_pump"]);
+    expect(next.journey.completedProducts).toEqual([]);
+    expect(next.submission.status).toBe("idle");
   });
 });

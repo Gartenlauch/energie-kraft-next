@@ -112,7 +112,7 @@ export const projectEconomicsSchema = z
       });
     }
     if (
-      value.pricingMode === "modeled" &&
+      value.solar !== null && value.solar.investmentEuro !== null &&
       (value.projections[0]?.year !== 0 || value.projections.at(-1)?.year !== value.horizonYears)
     ) {
       context.addIssue({

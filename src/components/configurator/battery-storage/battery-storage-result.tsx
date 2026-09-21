@@ -78,6 +78,7 @@ export function BatteryStorageResult({
   const economics = calculateProjectEconomics(state);
   const solar = economics.solar;
   const storageInvestment = investment(economics, "battery_storage");
+  const individualQuoteRequired = result.pricingMode === "individual_quote_required";
 
   return (
     <section aria-labelledby="battery-result-heading">
@@ -94,16 +95,25 @@ export function BatteryStorageResult({
           Empfohlene nutzbare Kapazität
         </p>
         <p className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          {number(result.recommendedUsableCapacityKwhMin)}–
-          {number(result.recommendedUsableCapacityKwhMax)} kWh
+          {individualQuoteRequired
+            ? `Größer als ${number(state.settings.batteryStorage.pricing.maxModeledSize)} kWh`
+            : `${number(result.recommendedUsableCapacityKwhMin)}${result.recommendedUsableCapacityKwhMin === result.recommendedUsableCapacityKwhMax ? "" : `–${number(result.recommendedUsableCapacityKwhMax)}`} kWh`}
         </p>
         <div className="mt-7 border-t border-white/20 pt-5">
           <p className="text-sm text-white/70">Modellierte Speicherinvestition</p>
           <p className="mt-1 text-2xl font-semibold break-words sm:text-3xl">
-            {storageInvestment === null ? "Nach technischer Prüfung" : euro(storageInvestment)}
+            {storageInvestment === null
+              ? individualQuoteRequired ? "Individuelles Angebot erforderlich" : "Nach technischer Prüfung"
+              : euro(storageInvestment)}
           </p>
         </div>
       </div>
+
+      {individualQuoteRequired ? (
+        <p className="border-brand-secondary text-foreground/70 mt-8 border-l-4 pl-5 leading-7">
+          Für diese Speichergröße ist eine individuelle technische Planung und Preisermittlung erforderlich.
+        </p>
+      ) : null}
 
       {solar ? (
         <section className="mt-9" aria-labelledby="storage-comparison-heading">

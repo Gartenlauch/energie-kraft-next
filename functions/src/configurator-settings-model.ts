@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CONFIGURATOR_PRODUCT_ORDER } from "./configurator-product-order.ts";
 
 export const CONFIGURATOR_SETTINGS_SCHEMA_VERSION = 1 as const;
 
@@ -233,13 +234,7 @@ const PUBLIC_REFERENCE_CODES = {
   wallbox: "WB",
 } as const;
 
-const PUBLIC_REFERENCE_ORDER = [
-  "photovoltaic",
-  "battery_storage",
-  "heat_pump",
-  "climate",
-  "wallbox",
-] as const;
+const PUBLIC_REFERENCE_ORDER = CONFIGURATOR_PRODUCT_ORDER;
 
 export function buildConfiguratorPublicReference(
   products: readonly (keyof typeof PUBLIC_REFERENCE_CODES)[],
