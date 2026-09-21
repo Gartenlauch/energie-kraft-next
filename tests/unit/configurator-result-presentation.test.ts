@@ -18,6 +18,18 @@ import { createInitialConfiguratorState } from "@/lib/configurator/state";
 import { buildWallboxConfiguratorResult } from "@/lib/configurator/wallbox";
 import type { ConfiguratorState } from "@/types/configurator";
 
+const mockedSiteConfig = vi.hoisted(() => ({
+  name: "Test Energie-Kraft",
+  contact: {
+    phoneHref: "tel:+4900000000",
+    phoneDisplay: "+49 000 0000",
+    emailHref: "mailto:test@example.invalid",
+    email: "test@example.invalid",
+  },
+}));
+
+vi.mock("@/config/site", () => ({ siteConfig: mockedSiteConfig }));
+
 let activeState: ConfiguratorState;
 vi.mock("@/lib/configurator/configurator-context", () => ({
   useConfigurator: () => ({ state: activeState, dispatch: vi.fn() }),
@@ -122,6 +134,38 @@ function withWallbox(state = createInitialConfiguratorState()): ConfiguratorStat
 }
 
 describe("customer-facing configurator results", () => {
+  it("shows configured contact details for an oversized PV recommendation", () => {
+    const state = withPv();
+    const oversizedState: ConfiguratorState = {
+      ...state,
+      household: {
+        ...state.household,
+        annualConsumptionKwh: 60_000,
+        projectedConsumptionKwh: 66_000,
+      },
+    };
+    const photovoltaic = buildPhotovoltaicConfiguratorResult(oversizedState);
+    if (!photovoltaic) throw new Error("Missing oversized PV fixture");
+    expect(photovoltaic.pricingMode).toBe("individual_quote_required");
+    activeState = { ...oversizedState, results: { photovoltaic } };
+
+    const html = renderToStaticMarkup(
+      createElement(PhotovoltaicResult, {
+        result: photovoltaic,
+        nextConfigurator: null,
+        ...callbacks,
+      }),
+    );
+    expect(html).toContain(mockedSiteConfig.name);
+    expect(html).toContain(mockedSiteConfig.contact.phoneDisplay);
+    expect(html).toContain(`href="${mockedSiteConfig.contact.phoneHref}"`);
+    expect(html).toContain(mockedSiteConfig.contact.email);
+    expect(html).toContain(`href="${mockedSiteConfig.contact.emailHref}"`);
+    expect(html).toContain("Individuelles Angebot erforderlich");
+    expect(html).not.toContain("Amortisation");
+    expect(html).not.toContain("Modellierte Rendite p. a.");
+  });
+
   it("shows canonical PV investment, generation and year-one benefit with valid return values", () => {
     activeState = withPv();
     const solar = calculateProjectEconomics(activeState).solar!;

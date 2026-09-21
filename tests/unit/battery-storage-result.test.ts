@@ -157,7 +157,7 @@ import {
       });
     });
   
-    it("recommends a smaller corridor for an economic daytime profile", () => {
+    it("normalizes an economic daytime profile to the configured storage minimum", () => {
       let state =
         createPvHandoffState();
   
@@ -178,14 +178,21 @@ import {
         buildBatteryStorageConfiguratorResult(
           state,
         );
-  
-      expect(
-        result?.recommendedUsableCapacityKwhMin,
-      ).toBe(2.5);
-  
-      expect(
-        result?.recommendedUsableCapacityKwhMax,
-      ).toBe(3.5);
+
+      const configuredMinimum = state.settings.batteryStorage.pricing.tiers[0]!.from;
+      expect(result?.recommendedUsableCapacityKwhMin).toBe(configuredMinimum);
+      expect(result?.recommendedUsableCapacityKwhMax).toBe(configuredMinimum);
+      expect(result?.pricingMode).toBe("modeled");
+
+      const lowerMinimumState = structuredClone(state);
+      lowerMinimumState.settings.batteryStorage.pricing.tiers[0]!.from =
+        configuredMinimum / 2;
+      const lessConstrainedResult = buildBatteryStorageConfiguratorResult(lowerMinimumState);
+      expect(lessConstrainedResult?.recommendedUsableCapacityKwhMin).toBeLessThan(configuredMinimum);
+      expect(lessConstrainedResult?.recommendedUsableCapacityKwhMax).toBeLessThan(configuredMinimum);
+      expect(lessConstrainedResult?.recommendedUsableCapacityKwhMax).toBeGreaterThan(
+        lessConstrainedResult?.recommendedUsableCapacityKwhMin ?? Infinity,
+      );
     });
   
     it("supports a standalone storage calculation", () => {
