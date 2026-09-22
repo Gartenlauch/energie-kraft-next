@@ -490,9 +490,9 @@ footer,
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgb(9 20 51 / 12%) 7rem,
-    rgb(9 20 51 / 68%) 15rem,
-    rgb(9 20 51 / 72%) 100%
+    rgb(9 20 51 / 8%) 7rem,
+    rgb(9 20 51 / 54%) 15rem,
+    rgb(9 20 51 / 62%) 100%
   );
 }
 
@@ -959,9 +959,9 @@ footer,
   .premium-hero__scrim {
     background: linear-gradient(
       90deg,
-      rgb(9 20 51 / 72%) 0%,
-      rgb(9 20 51 / 68%) 47%,
-      rgb(9 20 51 / 18%) 64%,
+      rgb(9 20 51 / 62%) 0%,
+      rgb(9 20 51 / 56%) 47%,
+      rgb(9 20 51 / 12%) 64%,
       transparent 78%
     );
   }

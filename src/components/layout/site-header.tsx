@@ -45,7 +45,7 @@ const energyLinks: readonly NavigationLink[] = [
     label: "Stromspeicher",
     href: "/stromspeicher",
     description: "Eigene Energie flexibel und intelligent nutzen.",
-    previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
+    previewImage: "/images/navigation/residential-storage-mega.webp",
     priority: "primary",
   },
   {
@@ -73,7 +73,7 @@ const energyLinks: readonly NavigationLink[] = [
     label: "Photovoltaik für Unternehmen",
     href: "/energieloesungen/photovoltaik-fuer-unternehmen",
     description: "Eigenstrom für Gewerbe, Hallen und betriebliche Dachflächen.",
-    previewImage: "/images/references/freilassing-commercial.webp",
+    previewImage: "/images/navigation/commercial-photovoltaic-mega.webp",
     priority: "secondary",
   },
   {
@@ -87,7 +87,7 @@ const energyLinks: readonly NavigationLink[] = [
     label: "Stromtarife",
     href: "/energieloesungen/stromtarife-pv",
     description: "PV, Eigenverbrauch und ergänzenden Strombezug zusammendenken.",
-    previewImage: "/images/home-premium/hero-energy-home-desktop.webp",
+    previewImage: "/images/navigation/electricity-tariffs-mega.webp",
     priority: "supporting",
   },
 ] as const;
@@ -109,7 +109,7 @@ const serviceLinks: readonly NavigationLink[] = [
     label: "Wartung & Reinigung",
     href: "/service-und-wartung/wartung-und-reinigung",
     description: "Prüfung, Pflege und Fehlererkennung passend zur Anlage.",
-    previewImage: "/images/home-premium/service-maintenance-desktop.webp",
+    previewImage: "/images/navigation/maintenance-cleaning-mega.webp",
   },
   {
     label: "Finanzierung & Förderung",
@@ -224,7 +224,8 @@ function MegaMenu({
           <div className="border-border-default bg-background overflow-hidden rounded-[1.5rem] border shadow-[var(--shadow-float)]">
             <div className="grid grid-cols-[0.8fr_1.2fr]">
               <div
-                className="bg-brand-navy relative min-h-[25rem] overflow-hidden"
+                className={`bg-brand-navy relative overflow-hidden ${menuKey === "service" ? "min-h-[20rem]" : "min-h-[25rem]"
+                  }`}
                 aria-hidden="true"
               >
                 {scenes.map((scene) => (
@@ -240,7 +241,7 @@ function MegaMenu({
                       sizes="(max-width: 1280px) 38vw, 470px"
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(9,20,51,0.12)_30%,rgba(9,20,51,0.72)_48%,rgba(9,20,51,0.78)_100%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgba(9,20,51,0.05)_30%,rgba(9,20,51,0.42)_55%,rgba(9,20,51,0.56)_100%)]" />
                     <div className="absolute inset-x-0 bottom-0 p-8 text-white">
                       <p className="text-xs font-bold tracking-[0.16em] text-white uppercase">
                         Energie-Kraft Süd
@@ -276,9 +277,8 @@ function MegaMenu({
                       setTemporaryPreviewItem(null);
                       setOpenMenu(null);
                     }}
-                    className={`mega-menu-link group ${
-                      link.priority === "primary" ? "bg-brand-primary/[0.045]" : ""
-                    }`}
+                    className={`mega-menu-link group ${link.priority === "primary" ? "bg-brand-primary/[0.045]" : ""
+                      }`}
                   >
                     <span className="text-brand-navy group-hover:text-brand-primary flex items-center justify-between gap-3 font-semibold transition">
                       <span>

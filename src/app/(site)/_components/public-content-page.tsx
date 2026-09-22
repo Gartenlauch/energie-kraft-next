@@ -44,13 +44,13 @@ const pageVisuals: Partial<Record<PublicPageContent["faqRouteKey"], PageVisual>>
     configuratorHref: "/konfigurator/photovoltaik",
   },
   stromspeicher: {
-    desktopSrc: "/images/battery-storage/battery-storage-feature-desktop.webp",
-    mobileSrc: "/images/battery-storage/battery-storage-feature-mobile.webp",
-    alt: "Modern installierter Stromspeicher in einem hellen Hauswirtschaftsraum",
-    desktopWidth: 1600,
+    desktopSrc: "/images/battery-storage/residential-storage-hero-desktop.webp",
+    mobileSrc: "/images/battery-storage/residential-storage-hero-mobile.webp",
+    alt: "Sigenergy-Stromspeicher an der Terrasse eines Wohnhauses",
+    desktopWidth: 2000,
     desktopHeight: 1200,
-    mobileWidth: 1200,
-    mobileHeight: 1500,
+    mobileWidth: 800,
+    mobileHeight: 1000,
     configuratorHref: "/konfigurator/stromspeicher",
   },
   waermepumpen: {
@@ -93,6 +93,111 @@ const pageVisuals: Partial<Record<PublicPageContent["faqRouteKey"], PageVisual>>
     mobileHeight: 1350,
   },
 };
+
+const sectionVisuals: Partial<
+  Record<PublicPageContent["faqRouteKey"], Record<string, PageVisual>>
+> = {
+  stromspeicher: {
+    funktionsweise: {
+      desktopSrc: "/images/battery-storage/residential-storage-function-desktop.webp",
+      mobileSrc: "/images/battery-storage/residential-storage-function-mobile.webp",
+      desktopWidth: 1600,
+      desktopHeight: 1200,
+      mobileWidth: 1024,
+      mobileHeight: 1280,
+      alt: "Stromspeicher und Wallbox an der Außenwand eines Wohnhauses",
+    },
+    ersatzstrom: {
+      desktopSrc: "/images/battery-storage/residential-storage-backup-desktop.webp",
+      mobileSrc: "/images/battery-storage/residential-storage-backup-mobile.webp",
+      desktopWidth: 1600,
+      desktopHeight: 1200,
+      mobileWidth: 1200,
+      mobileHeight: 1500,
+      alt: "Stromspeicher an einer Hauswand neben einem Carport",
+    },
+  },
+  photovoltaik: {
+    eigenverbrauch: pageVisuals.stromspeicher!,
+    komponenten: {
+      desktopSrc: "/images/service/service-solar-legacy-desktop.webp",
+      mobileSrc: "/images/service/service-solar-legacy-mobile.webp",
+      desktopWidth: 1800,
+      desktopHeight: 1000,
+      mobileWidth: 1080,
+      mobileHeight: 1350,
+      alt: "Photovoltaikmodule im warmen Abendlicht",
+    },
+  },
+  wallbox: {
+    "pv-ueberschussladen": {
+      desktopSrc: "/images/wallbox/wallbox-pv-charging-desktop.webp",
+      mobileSrc: "/images/wallbox/wallbox-pv-charging-mobile.webp",
+      desktopWidth: 1600,
+      desktopHeight: 1000,
+      mobileWidth: 800,
+      mobileHeight: 1000,
+      alt: "Ladestecker vor einer Photovoltaikanlage",
+    },
+    lastmanagement: {
+      desktopSrc: "/images/wallbox/wallbox-load-management-desktop.webp",
+      mobileSrc: "/images/wallbox/wallbox-load-management-mobile.webp",
+      desktopWidth: 1200,
+      desktopHeight: 750,
+      mobileWidth: 640,
+      mobileHeight: 800,
+      alt: "Elektroauto und Wallbox an einem Gebäude bei Dämmerung",
+    },
+  },
+  waermepumpen: {
+    "photovoltaik-kombination": {
+      desktopSrc: "/images/heat-pump/heat-pump-pv-system-desktop.webp",
+      mobileSrc: "/images/heat-pump/heat-pump-pv-system-mobile.webp",
+      desktopWidth: 1440,
+      desktopHeight: 900,
+      mobileWidth: 768,
+      mobileHeight: 960,
+      alt: "Wärmepumpen-Außengerät an einem Haus mit Photovoltaikanlage",
+    },
+    energiemanagement: {
+      desktopSrc: "/images/heat-pump/heat-pump-energy-management-desktop.webp",
+      mobileSrc: "/images/heat-pump/heat-pump-energy-management-mobile.webp",
+      desktopWidth: 1440,
+      desktopHeight: 900,
+      mobileWidth: 768,
+      mobileHeight: 960,
+      alt: "Wärmepumpen-Außengerät neben einem modernen Wohnhaus",
+    },
+  },
+  klimaanlagen: {
+    "single-split": {
+      desktopSrc: "/images/climate/climate-outdoor-unit-desktop.webp",
+      mobileSrc: "/images/climate/climate-outdoor-unit-mobile.webp",
+      desktopWidth: 1440,
+      desktopHeight: 900,
+      mobileWidth: 768,
+      mobileHeight: 960,
+      alt: "Klima-Außengerät auf einer Terrasse neben einem Wohnhaus",
+    },
+    photovoltaik: {
+      desktopSrc: "/images/climate/climate-house-pv-desktop.webp",
+      mobileSrc: "/images/climate/climate-house-pv-mobile.webp",
+      desktopWidth: 1440,
+      desktopHeight: 900,
+      mobileWidth: 768,
+      mobileHeight: 960,
+      alt: "Wohnhaus mit Photovoltaik auf dem Dach und kleinem Klima-Außengerät",
+    },
+  },
+};
+
+const imageLeftSections = new Set([
+  "funktionsweise",
+  "eigenverbrauch",
+  "single-split",
+  "pv-ueberschussladen",
+  "photovoltaik-kombination",
+]);
 
 export async function PublicContentPage({ content, beforeFaq }: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
@@ -143,50 +248,38 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
 
         {content.faqRouteKey === "kontakt" && beforeFaq}
 
-        {content.sections.map((section, index) => (
-          <EditorialFeatureSection
-            key={`${section.title}-${index}`}
-            id={section.id}
-            eyebrow={section.eyebrow}
-            title={section.title}
-            paragraphs={section.text}
-            items={section.items}
-            links={section.links}
-            linkLayout={
-              content.faqRouteKey === "kontakt" && section.id === "leistungen"
-                ? "topics"
-                : "editorial"
-            }
-            cta={section.cta}
-            surface={index === 0 ? "soft" : index === 2 ? "blue" : index === 4 ? "soft" : "white"}
-            layout={
-              content.faqRouteKey === "kontakt"
-                ? "editorial"
-                : index === 1
-                  ? "image-left"
-                  : index === 3
-                    ? "image-right"
-                    : index % 2 === 0
-                      ? "statement"
-                      : "editorial"
-            }
-            image={
-              content.faqRouteKey === "photovoltaik" && index === 1
-                ? pageVisuals.stromspeicher
-                : content.faqRouteKey === "photovoltaik" && index === 3
-                  ? {
-                      desktopSrc: "/images/service/service-solar-legacy-desktop.webp",
-                      mobileSrc: "/images/service/service-solar-legacy-mobile.webp",
-                      desktopWidth: 1800,
-                      desktopHeight: 1000,
-                      mobileWidth: 1080,
-                      mobileHeight: 1350,
-                      alt: "Photovoltaikmodule im warmen Abendlicht",
-                    }
-                  : visual
-            }
-          />
-        ))}
+        {content.sections.map((section, index) => {
+          const sectionImage = section.id
+            ? sectionVisuals[content.faqRouteKey]?.[section.id]
+            : undefined;
+          let layout: "image-left" | "image-right" | "statement" | "editorial" = "editorial";
+          if (sectionImage) {
+            layout = imageLeftSections.has(section.id ?? "") ? "image-left" : "image-right";
+          } else if (content.faqRouteKey !== "kontakt" && index % 2 === 0) {
+            layout = "statement";
+          }
+
+          return (
+            <EditorialFeatureSection
+              key={`${section.title}-${index}`}
+              id={section.id}
+              eyebrow={section.eyebrow}
+              title={section.title}
+              paragraphs={section.text}
+              items={section.items}
+              links={section.links}
+              linkLayout={
+                content.faqRouteKey === "kontakt" && section.id === "leistungen"
+                  ? "topics"
+                  : "editorial"
+              }
+              cta={section.cta}
+              surface={index === 0 ? "soft" : index === 2 ? "blue" : index === 4 ? "soft" : "white"}
+              layout={layout}
+              image={sectionImage}
+            />
+          );
+        })}
 
         {content.faqRouteKey !== "kontakt" && beforeFaq}
         <PublicFaqSection

@@ -13,6 +13,15 @@ export interface Sprint8PageContent {
   mobileSrc: string;
   imageAlt: string;
   sections: readonly {
+    image?: {
+      desktopSrc: string;
+      mobileSrc: string;
+      desktopWidth: number;
+      desktopHeight: number;
+      mobileWidth: number;
+      mobileHeight: number;
+      alt: string;
+    };
     eyebrow: string;
     title: string;
     paragraphs: readonly string[];
@@ -113,9 +122,9 @@ export const sprint8Pages = {
     title: "Dachfläche in planbaren Eigenstrom übersetzen.",
     description:
       "Für Gewerbe zählt nicht nur die Größe einer Anlage, sondern wie Erzeugung, Lastprofil, Dach und betriebliche Abläufe zusammenwirken.",
-    desktopSrc: "/images/photovoltaic/photovoltaic-feature-desktop.webp",
-    mobileSrc: "/images/photovoltaic/photovoltaic-feature-mobile.webp",
-    imageAlt: "Fachkraft bei der Montage von Photovoltaikmodulen auf einem Dach",
+    desktopSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-hero-desktop.webp",
+    mobileSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-hero-mobile.webp",
+    imageAlt: "Zwei Fachkräfte auf einer großen Photovoltaikanlage auf einem Gewerbedach",
     sections: [
       {
         eyebrow: "Ausgangslage",
@@ -145,6 +154,15 @@ export const sprint8Pages = {
       {
         eyebrow: "Systemlösung",
         title: "Photovoltaik, Speicher und betriebliche Verbraucher abstimmen",
+        image: {
+          desktopSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-system-desktop.webp",
+          mobileSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-system-mobile.webp",
+          desktopWidth: 1440,
+          desktopHeight: 900,
+          mobileWidth: 768,
+          mobileHeight: 960,
+          alt: "Photovoltaikanlage auf dem Dach eines Gewerbegebäudes",
+        },
         paragraphs: [
           "Ein Gewerbespeicher, Ladeinfrastruktur oder weitere Verbraucher können die Eigenstromnutzung ergänzen. Ob das fachlich sinnvoll ist, wird projektspezifisch bewertet.",
         ],
@@ -224,9 +242,9 @@ export const sprint8Pages = {
     title: "Eigenstrom und Netzbezug sinnvoll zusammendenken.",
     description:
       "Auch mit Photovoltaik bleibt ergänzender Strombezug relevant. Ein passendes Modell berücksichtigt Erzeugung, Verbrauch und Flexibilität.",
-    desktopSrc: "/images/home-premium/hero-energy-home-desktop.webp",
-    mobileSrc: "/images/home-premium/hero-energy-home-mobile.webp",
-    imageAlt: "Wohngebäude mit Photovoltaik zur eigenen Stromerzeugung",
+    desktopSrc: "/images/electricity-tariffs/electricity-tariffs-hero-desktop.webp",
+    mobileSrc: "/images/electricity-tariffs/electricity-tariffs-hero-mobile.webp",
+    imageAlt: "Beleuchtetes Wohnhaus in der Abenddämmerung",
     sections: [
       {
         eyebrow: "Grundprinzip",
@@ -266,9 +284,9 @@ export const sprint8Pages = {
     title: "Technik prüfen. Auffälligkeiten einordnen. Betrieb begleiten.",
     description:
       "Wartung und Reinigung richten sich nach Anlage, Standort und festgestelltem Bedarf – nicht nach pauschalen Versprechen.",
-    desktopSrc: "/images/home-premium/service-maintenance-desktop.webp",
-    mobileSrc: "/images/home-premium/service-maintenance-mobile.webp",
-    imageAlt: "Fachkraft bei der Prüfung einer Energieanlage",
+    desktopSrc: "/images/service/maintenance-cleaning-hero-desktop.webp",
+    mobileSrc: "/images/service/maintenance-cleaning-hero-mobile.webp",
+    imageAlt: "Techniker prüft elektrische Komponenten an einer Photovoltaikanlage",
     sections: [
       {
         eyebrow: "Anlagenprüfung",

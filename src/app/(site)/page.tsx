@@ -37,13 +37,13 @@ const productImages = {
     alt: "Fachgerechte Montage einer Photovoltaikanlage auf einem Hausdach",
   },
   battery: {
-    desktopSrc: "/images/battery-storage/battery-storage-feature-desktop.webp",
-    mobileSrc: "/images/battery-storage/battery-storage-feature-mobile.webp",
+    desktopSrc: "/images/battery-storage/residential-storage-feature-desktop.webp",
+    mobileSrc: "/images/battery-storage/residential-storage-feature-mobile.webp",
     desktopWidth: 1600,
     desktopHeight: 1200,
     mobileWidth: 1200,
     mobileHeight: 1500,
-    alt: "Modern installierter Stromspeicher in einem hellen Hauswirtschaftsraum",
+    alt: "Sigenergy-Stromspeicher an der Terrasse eines Wohnhauses",
   },
   heatPump: {
     desktopSrc: "/images/heat-pump/heat-pump-feature-desktop.webp",

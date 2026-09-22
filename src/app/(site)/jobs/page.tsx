@@ -13,6 +13,8 @@ import { activeJobOpenings, sharedJobBenefits } from "@/content/jobs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
 
+import { JobEditorialArticle } from "./job-editorial-article";
+
 const seo = {
   title: "Jobs & Karriere | Energie-Kraft Süd",
   description:
@@ -36,8 +38,8 @@ export default function JobsPage() {
           title="Dein neuer Job wartet nicht auf der Straße, sondern auf dem Dach."
           description="Werde Teil eines regionalen Teams, das Photovoltaik, Stromspeicher und vernetzte Energietechnik mit Erfahrung und persönlicher Verantwortung umsetzt."
           image={{
-            desktopSrc: "/images/team/company-service-hero-desktop.webp",
-            mobileSrc: "/images/team/company-service-hero-mobile.webp",
+            desktopSrc: "/images/jobs/jobs-hero-desktop.webp",
+            mobileSrc: "/images/jobs/jobs-hero-mobile.webp",
             desktopWidth: 1800,
             desktopHeight: 1039,
             mobileWidth: 1080,
@@ -126,119 +128,9 @@ export default function JobsPage() {
                 </a>
               ))}
             </nav>
-            <div>
+            <div className="mt-12">
               {activeJobOpenings.map((job, index) => (
-                <article
-                  key={job.id}
-                  className="border-border-strong scroll-mt-28 border-b py-14 last:border-b-0 last:pb-0 md:py-24"
-                  id={job.id}
-                  aria-labelledby={`${job.id}-title`}
-                >
-                  <Reveal className="grid gap-8 lg:grid-cols-[0.28fr_1fr] lg:gap-16">
-                    <aside>
-                      <span
-                        aria-hidden="true"
-                        className="text-brand-primary/25 text-6xl font-semibold tracking-[-0.06em] md:text-8xl"
-                      >
-                        0{index + 1}
-                      </span>
-                      <dl className="border-border-default mt-6 grid grid-cols-2 gap-5 border-t pt-5 text-sm lg:grid-cols-1">
-                        <div>
-                          <dt className="text-xs text-[var(--text-subtle)]">Standort</dt>
-                          <dd className="mt-2 font-semibold">{job.location}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs text-[var(--text-subtle)]">Beschäftigung</dt>
-                          <dd className="mt-2 font-semibold">{job.employmentType}</dd>
-                        </div>
-                      </dl>
-                    </aside>
-                    <div className="min-w-0">
-                      <h3
-                        id={`${job.id}-title`}
-                        className="max-w-4xl text-3xl leading-tight tracking-[-0.035em] sm:text-4xl lg:text-5xl"
-                      >
-                        {job.title}
-                      </h3>
-                      <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--text-muted)] md:text-lg">
-                        {job.intro}
-                      </p>
-                      <Link href={`/bewerbung?stelle=${job.slug}`} className="button-primary mt-6">
-                        Auf diese Stelle bewerben
-                      </Link>
-                      <div className="mt-10 grid gap-10 md:mt-14 md:grid-cols-2 md:gap-12">
-                        <section aria-labelledby={`${job.id}-tasks`}>
-                          <h4
-                            id={`${job.id}-tasks`}
-                            className="border-brand-primary border-t-2 pt-5 text-lg font-semibold"
-                          >
-                            Deine Aufgaben
-                          </h4>
-                          <ul className="mt-5 space-y-4 text-sm leading-7 text-[var(--text-muted)] md:text-base">
-                            {job.tasks.map((item) => (
-                              <li key={item} className="flex gap-3">
-                                <span aria-hidden="true" className="text-brand-primary">
-                                  —
-                                </span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </section>
-                        <section aria-labelledby={`${job.id}-requirements`}>
-                          <h4
-                            id={`${job.id}-requirements`}
-                            className="border-brand-primary border-t-2 pt-5 text-lg font-semibold"
-                          >
-                            Das bringst du mit
-                          </h4>
-                          <ul className="mt-5 space-y-4 text-sm leading-7 text-[var(--text-muted)] md:text-base">
-                            {job.requirements.map((item) => (
-                              <li key={item} className="flex gap-3">
-                                <span aria-hidden="true" className="text-brand-primary">
-                                  —
-                                </span>
-                                <span>{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </section>
-                      </div>
-                      <section
-                        className="bg-surface-soft mt-10 p-6 md:mt-14 md:p-8"
-                        aria-labelledby={`${job.id}-benefits`}
-                      >
-                        <h4 id={`${job.id}-benefits`} className="text-lg font-semibold">
-                          Darauf kannst du dich freuen
-                        </h4>
-                        <ul className="mt-5 grid gap-x-8 gap-y-4 md:grid-cols-2">
-                          {job.benefits.map((item) => (
-                            <li key={item} className="flex gap-3 text-sm leading-7">
-                              <CheckIcon className="text-brand-primary mt-1 size-4 shrink-0" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                      <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="text-sm leading-6 text-[var(--text-muted)]">
-                          Das passt zu dir?
-                          <br />
-                          <span className="font-semibold text-[var(--text-primary)]">
-                            Wir freuen uns auf deine Bewerbung.
-                          </span>
-                        </p>
-                        <Link
-                          href={`/bewerbung?stelle=${job.slug}`}
-                          className="button-primary"
-                          aria-label={`Jetzt als ${job.title} bewerben`}
-                        >
-                          Jetzt bewerben <ArrowRightIcon className="ml-3 size-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </Reveal>
-                </article>
+                <JobEditorialArticle key={job.id} job={job} index={index} />
               ))}
             </div>
           </div>

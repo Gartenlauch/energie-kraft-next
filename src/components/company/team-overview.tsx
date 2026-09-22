@@ -67,7 +67,6 @@ function TeamPortrait({
 
 export function TeamOverview({ mode }: TeamOverviewProps) {
   const companyMode = mode === "company";
-  const primaryMembers = companyMode ? [...leadershipTeam, ...serviceTeamRoles] : serviceTeamRoles;
 
   return (
     <section className="section-space bg-background" aria-labelledby={`${mode}-team-title`}>
@@ -88,30 +87,42 @@ export function TeamOverview({ mode }: TeamOverviewProps) {
           </p>
         </Reveal>
 
-        <ul
-          className={`mt-14 grid ${companyMode ? "grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-5" : "grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-5"}`}
-        >
-          {primaryMembers.map((member, index) => (
-            <li key={member.id}>
-              <Reveal delay={(index % 4) * 50}>
-                <TeamPortrait member={member} compact />
-              </Reveal>
-            </li>
-          ))}
-        </ul>
-
-        {!companyMode ? (
-          <div className="border-border-strong mt-16 grid gap-6 border-y py-8 md:grid-cols-2 lg:grid-cols-4">
-            {leadershipTeam.map((member) => (
-              <div key={member.id}>
-                <p className="text-brand-primary text-xs font-bold tracking-[0.12em] uppercase">
-                  {member.role}
-                </p>
-                <p className="mt-2 font-semibold">{member.name}</p>
-              </div>
+        {companyMode ? (
+          <ul className="mt-14 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-5">
+            {[...leadershipTeam, ...serviceTeamRoles].map((member, index) => (
+              <li key={member.id}>
+                <Reveal delay={(index % 4) * 50}>
+                  <TeamPortrait member={member} compact />
+                </Reveal>
+              </li>
             ))}
-          </div>
-        ) : null}
+          </ul>
+        ) : (
+          <>
+            <ul className="mt-14 grid grid-cols-2 gap-x-4 gap-y-8 md:gap-x-6 lg:grid-cols-4">
+              {leadershipTeam.map((member, index) => (
+                <li key={member.id}>
+                  <Reveal delay={index * 50}>
+                    <TeamPortrait member={member} compact />
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+            <div className="border-border-strong mt-20 border-t pt-10">
+              <p className="eyebrow">Fachbereiche im Service</p>
+              <h3 className="mt-3 text-2xl md:text-3xl">Weitere Ansprechpartner nach Funktion</h3>
+              <ul className="mt-9 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6 xl:grid-cols-4">
+                {serviceTeamRoles.map((member, index) => (
+                  <li key={member.id}>
+                    <Reveal delay={(index % 4) * 50}>
+                      <TeamPortrait member={member} compact />
+                    </Reveal>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
