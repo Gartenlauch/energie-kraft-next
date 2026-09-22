@@ -119,12 +119,12 @@ export const photovoltaikContent = {
         {
           label: "Alle PV-Referenzen",
           description: "Projektübersicht mit privaten und gewerblichen Anlagen.",
-          href: "/pv-referenzen",
+          href: "/referenzen",
         },
         {
           label: "Referenzen in Ainring",
           description: "Lokale Projekte rund um unseren Unternehmensstandort.",
-          href: "/pv-referenzen/ainring",
+          href: "/referenzen/ainring",
         },
       ],
     },

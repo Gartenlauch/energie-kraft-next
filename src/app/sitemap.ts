@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 import { PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { publicEnv } from "@/config/env/public";
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
-import { referenceLocations } from "@/content/reference-projects";
+import { referenceGroups } from "@/content/reference-projects";
 import { getPublicFaqCatalog } from "@/lib/faq/public-repository";
 
 export const dynamic = "force-dynamic";
@@ -19,8 +19,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.sitemap.priority,
   }));
 
-  const referenceLocationRoutes: MetadataRoute.Sitemap = referenceLocations.map((location) => ({
-    url: buildCanonicalUrl(`/pv-referenzen/${location.slug}`),
+  const referenceLocationRoutes: MetadataRoute.Sitemap = referenceGroups.map((group) => ({
+    url: buildCanonicalUrl(`/referenzen/${group.groupSlug}`),
     changeFrequency: "monthly",
     priority: 0.6,
   }));

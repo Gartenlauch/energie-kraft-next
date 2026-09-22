@@ -47,7 +47,7 @@ export default function AboutPage() {
           description="Von Ainring aus verbinden wir Beratung, Planung, Installation und Service zu Lösungen, die zum Gebäude und zum tatsächlichen Energiebedarf passen."
           image={heroImage}
           primaryCta={{ label: "Projekt besprechen", href: CONTACT_FORM_HREF }}
-          secondaryCta={{ label: "Referenzen entdecken", href: "/pv-referenzen" }}
+          secondaryCta={{ label: "Referenzen entdecken", href: "/referenzen" }}
         />
 
         <EditorialFeatureSection

@@ -10,6 +10,10 @@ const responseSchema = z.object({
   attributions: z
     .array(z.object({ provider: z.string(), providerUri: z.string().optional() }))
     .default([]),
+  googleMapsLinks: z.object({
+    reviewsUri: z.string().url().optional(),
+    writeAReviewUri: z.string().url().optional(),
+  }).optional(),
 });
 const reviewSchema = z.object({
   name: z.string(),
@@ -38,7 +42,7 @@ export const googleBusinessProfileAdapter: ReviewAdapter = {
         {
           headers: {
             "X-Goog-Api-Key": config.apiKey,
-            "X-Goog-FieldMask": "rating,userRatingCount,reviews,attributions",
+            "X-Goog-FieldMask": "rating,userRatingCount,reviews,attributions,googleMapsLinks",
           },
           cache: "no-store",
           signal: AbortSignal.timeout(4000),
@@ -73,7 +77,7 @@ export const googleBusinessProfileAdapter: ReviewAdapter = {
         status: "ready",
         provider: "google",
         data: {
-          reviews: reviews.slice(0, 3),
+          reviews: reviews.slice(0, 5),
           summaries:
             data.rating && data.userRatingCount
               ? [
@@ -81,7 +85,8 @@ export const googleBusinessProfileAdapter: ReviewAdapter = {
                     provider: "google",
                     averageRating: data.rating,
                     totalReviews: data.userRatingCount,
-                    sourceUrl: config.overviewUrl,
+                    sourceUrl: data.googleMapsLinks?.reviewsUri ?? config.overviewUrl,
+                    writeReviewUrl: data.googleMapsLinks?.writeAReviewUri,
                     attributions: data.attributions,
                   },
                 ]

@@ -1,11 +1,12 @@
 import "server-only";
 
-/** Server-only activation. The address-search URL is NOT a business profile. */
+/** Server-only activation. Maps links from Places take priority over this optional fallback. */
 export function getGoogleReviewsConfig() {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY?.trim();
   const placeId = process.env.GOOGLE_PLACE_ID?.trim();
   const overviewUrl = process.env.GOOGLE_REVIEWS_URL?.trim();
-  if (!apiKey || !placeId || !overviewUrl) return null;
+  if (!apiKey || !placeId) return null;
+  if (!overviewUrl) return { apiKey, placeId, overviewUrl: undefined };
   try {
     const url = new URL(overviewUrl);
     if (
@@ -22,9 +23,9 @@ export function getGoogleReviewsConfig() {
         "g.page",
       ].includes(url.hostname)
     )
-      return null;
+      return { apiKey, placeId, overviewUrl: undefined };
     return { apiKey, placeId, overviewUrl: url.href };
   } catch {
-    return null;
+    return { apiKey, placeId, overviewUrl: undefined };
   }
 }

@@ -279,6 +279,21 @@ select:focus-visible {
   aspect-ratio: 3 / 2;
 }
 
+.reference-lightbox-caption {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.2rem;
+  left: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-shadow: 0 1px 8px #000;
+  pointer-events: none;
+}
+
 @media (min-width: 768px) {
   .reference-editorial-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1195,7 +1210,7 @@ footer,
   position: relative;
   display: inline-block;
   letter-spacing: 0.13em;
-  color: var(--text-muted);
+  color: #d1d5db;
   font-size: 1.5rem;
   white-space: nowrap;
   line-height: 1.2;
@@ -1204,7 +1219,7 @@ footer,
   position: absolute;
   inset: 0 auto 0 0;
   overflow: hidden;
-  color: var(--brand-primary);
+  color: #fbbc04;
 }
 .review-summaries {
   display: flex;

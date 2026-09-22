@@ -5,10 +5,7 @@ import Link from "next/link";
 import { ArtDirectedImage } from "@/components/media/art-directed-image";
 import { Reveal, type RevealVariant } from "@/components/marketing/reveal";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
-import {
-  getReferenceTechnicalLabel,
-  type ReferenceProject,
-} from "@/content/reference-projects";
+import type { ReferenceGroup } from "@/content/reference-projects";
 
 interface MarketingImage {
   desktopSrc: string;
@@ -535,7 +532,7 @@ export function ProcessSection({ steps }: { steps: readonly ProcessStep[] }) {
 }
 
 interface ReferenceProjectsSectionProps {
-  projects: readonly ReferenceProject[];
+  projects: readonly ReferenceGroup[];
   title?: string;
   description?: string;
   showCta?: boolean;
@@ -565,10 +562,10 @@ export function ReferenceProjectsSection({
             <p className="lead-copy">{description}</p>
             {showCta ? (
               <Link
-                href="/pv-referenzen"
+                href="/referenzen"
                 className="text-brand-primary mt-6 inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
               >
-                Referenzen ansehen
+                Alle Referenzen ansehen
                 <ArrowRightIcon className="size-4" />
               </Link>
             ) : null}
@@ -577,15 +574,15 @@ export function ReferenceProjectsSection({
 
         <div className="reference-mosaic mt-12">
           {projects.slice(0, 4).map((project, index) => (
-            <Reveal key={project.id} className={index === 0 ? "reference-mosaic__lead" : ""}>
+            <Reveal key={project.groupSlug} className={index === 0 ? "reference-mosaic__lead" : ""}>
               <Link
-                href={`/pv-referenzen/${project.locationSlug}#${project.id}`}
+                href={`/referenzen/${project.groupSlug}`}
                 className="reference-tile group"
-                aria-label={`${project.location}: ${project.category} – Projekt ansehen`}
+                aria-label={`Referenzen aus ${project.groupName} ansehen`}
               >
                 <Image
-                  src={project.image}
-                  alt={project.imageAlt}
+                  src={project.overviewImage}
+                  alt={project.projects.find((entry) => entry.image === project.overviewImage)?.alt ?? "Photovoltaikanlage"}
                   fill
                   sizes={
                     index === 0 || index === 3
@@ -597,14 +594,10 @@ export function ReferenceProjectsSection({
                 <div className="reference-tile__scrim" />
                 <div className="reference-tile__caption">
                   <span className="text-xs font-bold tracking-[0.12em] text-white uppercase">
-                    {project.location}
-                  </span>
-                  <span className="mt-1 block text-sm text-white">{project.category}</span>
-                  <span className="mt-1 block text-sm font-semibold text-white">
-                    {getReferenceTechnicalLabel(project)}
+                    {project.groupName}
                   </span>
                   <span className="mt-3 inline-flex items-center gap-2 text-sm font-semibold">
-                    Projekt ansehen <ArrowRightIcon className="size-4" />
+                    Referenzen ansehen <ArrowRightIcon className="size-4" />
                   </span>
                 </div>
               </Link>

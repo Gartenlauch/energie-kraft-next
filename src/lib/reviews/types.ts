@@ -21,6 +21,7 @@ export interface ReviewSummary {
   averageRating: number;
   totalReviews: number;
   sourceUrl?: string;
+  writeReviewUrl?: string;
 }
 
 export interface ReviewCollection {

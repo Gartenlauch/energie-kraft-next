@@ -133,7 +133,7 @@ export const sprint8Pages = {
           {
             label: "Gewerbliche Referenzen",
             description: "Reale Anlagen aus der Region ansehen.",
-            href: "/pv-referenzen",
+            href: "/referenzen",
           },
           {
             label: "Gewerbespeicher",

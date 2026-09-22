@@ -121,7 +121,7 @@ const serviceLinks: readonly NavigationLink[] = [
 
 const directLinks: readonly NavigationLink[] = [
   { label: "Unternehmen", href: "/ueber-uns" },
-  { label: "Referenzen", href: "/pv-referenzen" },
+  { label: "Referenzen", href: "/referenzen" },
   { label: "Jobs", href: "/jobs" },
   { label: "Kontakt", href: "/kontakt" },
 ] as const;

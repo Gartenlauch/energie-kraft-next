@@ -42,7 +42,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "stromtarife-pv",
   "service-und-wartung",
   "service-und-team",
-  "pv-referenzen",
+  "referenzen",
   "ueber-uns",
   "jobs",
   "bewerbung",
@@ -234,9 +234,9 @@ export const PUBLIC_ROUTES = {
     navigation: { header: true, footer: true },
     sitemap: { changeFrequency: "monthly", priority: 0.7 },
   },
-  "pv-referenzen": {
-    key: "pv-referenzen",
-    href: "/pv-referenzen",
+  "referenzen": {
+    key: "referenzen",
+    href: "/referenzen",
     label: "Referenzen",
     faqRouteKey: "home",
     navigation: {

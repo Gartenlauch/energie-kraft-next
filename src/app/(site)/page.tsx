@@ -17,7 +17,7 @@ import { PartnerLogoCarousel } from "@/components/marketing/partner-logo-carouse
 import { HomePageJsonLd } from "@/components/seo/home-page-json-ld";
 import { EnergyFlow } from "@/components/marketing/energy-flow";
 import { homeContent } from "@/content";
-import { regionalReferenceProjects } from "@/content/reference-projects";
+import { referenceGroups } from "@/content/reference-projects";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import { buildMetadata } from "@/lib/seo/metadata";
 
@@ -234,7 +234,7 @@ export default async function HomePage() {
           ]}
         />
 
-        <ReferenceProjectsSection projects={regionalReferenceProjects} />
+        <ReferenceProjectsSection projects={referenceGroups} />
         <CustomerReviewsSection {...reviews} />
         <PartnerLogoCarousel />
 

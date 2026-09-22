@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      { source: "/pv-referenzen", destination: "/referenzen", permanent: true },
+      { source: "/pv-referenzen/:location", destination: "/referenzen/:location", permanent: true },
       {
         source: "/energieloesungen/photovoltaik-kaufen",
         destination: "/photovoltaik",
