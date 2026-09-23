@@ -69,6 +69,35 @@ afterAll(async () => {
 });
 
 describe("Firestore Security Rules – deny by default", () => {
+  it("permits canonical staff/admin realtime reads but no user or lock writes", async () => {
+    for (const role of ["admin", "staff"]) {
+      const db = testEnvironment.authenticatedContext(`role-${role}`, { role }).firestore();
+      await assertSucceeds(getDoc(doc(db, "adminRealtime", "leads")));
+      await assertFails(setDoc(doc(db, "adminUsers", `role-${role}`), { role: "admin", active: true }));
+      await assertFails(updateDoc(doc(db, "adminUsers", "other"), { role: "admin" }));
+      await assertFails(getDoc(doc(db, "adminUsers", "other")));
+      await assertFails(setDoc(doc(db, "adminLocks", "userManagement"), { owner: "fake" }));
+      await assertFails(deleteDoc(doc(db, "adminUsers", "other")));
+    }
+  });
+  it("rejects inactive profiles and does not let legacy flags override explicit staff roles", async () => {
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), "adminUsers", "inactive-staff"), { role: "staff", active: false });
+    });
+    const disabled = testEnvironment.authenticatedContext("inactive-staff", { role: "staff" }).firestore();
+    await assertFails(getDoc(doc(disabled, "adminRealtime", "leads")));
+    const staff = testEnvironment.authenticatedContext("explicit-staff", { role: "staff", admin: true }).firestore();
+    await assertFails(getDoc(doc(staff, "applications", "example")));
+    const unknown = testEnvironment.authenticatedContext("unknown-role", { role: "unknown", admin: true }).firestore();
+    await assertFails(getDoc(doc(unknown, "adminRealtime", "leads")));
+  });
+  it("denies all direct profile image writes, including for admins", async () => {
+    for (const role of ["admin", "staff"]) {
+      const storage = testEnvironment.authenticatedContext(`photo-${role}`, { role }).storage();
+      await assertFails(uploadBytes(ref(storage, `adminUsers/photo-${role}/avatar.webp`), new Uint8Array([1,2,3]), { contentType: "image/webp" }));
+      await assertFails(getMetadata(ref(storage, "adminUsers/other/avatar.webp")));
+    }
+  });
   it("verweigert nicht authentifizierten Dokumentzugriff", async () => {
     const firestore =
       testEnvironment

@@ -57,7 +57,7 @@ import {
     lead: ContactLeadPayload;
   }
   
-  export async function sendContactLeadMail({
+  export function buildContactLeadMail({
     leadId,
     lead,
   }: SendContactLeadMailInput) {
@@ -200,12 +200,16 @@ import {
       </p>
     `;
   
-    return sendMailgunMail({
+    return {
       to: LEAD_MAIL_RECIPIENT,
       replyTo: lead.email,
       subject:
         "Neue Website-Anfrage – Energie-Kraft",
       text,
       html,
-    });
+    };
+  }
+
+  export async function sendContactLeadMail(input: SendContactLeadMailInput) {
+    return sendMailgunMail(buildContactLeadMail(input));
   }

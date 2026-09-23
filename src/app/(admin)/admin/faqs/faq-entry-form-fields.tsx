@@ -34,7 +34,7 @@ export function FaqEntryFormFields({
           minLength={5}
           maxLength={250}
           defaultValue={initialValue?.question ?? ""}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-blue-200"
           placeholder="Wie lange dauert die Installation?"
         />
       </div>
@@ -52,7 +52,7 @@ export function FaqEntryFormFields({
           maxLength={20000}
           rows={7}
           defaultValue={initialValue?.answer ?? ""}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-blue-200"
           placeholder="Ausführliche und fachlich korrekte Antwort …"
         />
       </div>
@@ -123,7 +123,7 @@ export function FaqEntryFormFields({
             name="categoryId"
             required
             defaultValue={initialValue?.categoryId ?? ""}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-950 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-blue-200"
           >
             <option value="" disabled>
               Kategorie auswählen

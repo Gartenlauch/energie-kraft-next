@@ -1,56 +1,319 @@
+import { requireStaffSession } from "@/lib/auth/session";
 import type { Metadata } from "next";
 import Link from "next/link";
-
+import {
+  AdminEmptyState,
+  AdminFilterChip,
+  AdminMetricCard,
+  AdminMetricGrid,
+  AdminPageHeader,
+  AdminStatusBadge,
+  AdminToolbar,
+  ADMIN_STATUS_LABELS,
+} from "@/components/admin/admin-ui";
+import { AdminRowCheckbox, AdminSelectionProvider } from "@/components/admin/admin-selection";
+import { AdminSubmissionActions } from "@/components/admin/admin-submission-actions";
+import { AdminActivityTimeline } from "@/components/admin/admin-activity-timeline";
 import { DeleteSubmissionButton } from "@/components/admin/delete-submission-button";
 import { SubmissionRealtimeRefresh } from "@/components/admin/submission-realtime-refresh";
-import { listReferrals } from "@/lib/submissions/referral-repository";
+import {
+  countStatuses,
+  isAdminSort,
+  matchesSearchTerms,
+  sortAdminItems,
+  timestampMillis,
+  type AdminSort,
+} from "@/lib/admin/admin-view";
+import { listReferralActivities, listReferrals } from "@/lib/submissions/referral-repository";
 import { LEAD_STATUS_VALUES, type LeadStatus } from "@/types/lead";
-
-import { deleteReferralAction, updateReferralStatusAction } from "./actions";
+import {
+  bulkUpdateReferralStatusAction,
+  deleteReferralAction,
+  updateReferralStatusAction,
+} from "./actions";
 
 export const metadata: Metadata = { title: "Empfehlungen" };
 export const dynamic = "force-dynamic";
-const statusLabels: Record<LeadStatus, string> = { new: "Neu", in_progress: "In Bearbeitung", completed: "Erledigt", rejected: "Abgelehnt" };
-
-function formatDate(value: { toDate(): Date }) {
-  try { return new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(value.toDate()); }
-  catch { return "Zeitpunkt nicht verfügbar"; }
+type Params = Record<string, string | string[] | undefined>;
+const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+const isStatus = (v?: string): v is LeadStatus =>
+  !!v && (LEAD_STATUS_VALUES as readonly string[]).includes(v);
+function date(value: { toDate(): Date }) {
+  try {
+    return new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(
+      value.toDate(),
+    );
+  } catch {
+    return "Nicht verfügbar";
+  }
 }
 
-export default async function ReferralsAdminPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const [referrals, parameters] = await Promise.all([listReferrals(), searchParams]);
-  const result = Array.isArray(parameters.result) ? parameters.result[0] : parameters.result;
-  const message = Array.isArray(parameters.message) ? parameters.message[0] : parameters.message;
+export default async function ReferralsAdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<Params>;
+}) {
+  const session = await requireStaffSession();
+  const [items, params] = await Promise.all([listReferrals(), searchParams]);
+  const q = first(params.q)?.trim() ?? "";
+  const status = first(params.filterStatus);
+  const sortValue = first(params.sort);
+  const sort: AdminSort = isAdminSort(sortValue) ? sortValue : "newest";
+  const open = first(params.open);
+  const filtered = sortAdminItems(
+    items.filter(
+      (item) =>
+        (!isStatus(status) || item.status === status) &&
+        matchesSearchTerms(
+          q,
+          item.referrer.firstName,
+          item.referrer.lastName,
+          item.referredCustomer.firstName,
+          item.referredCustomer.lastName,
+        ),
+    ),
+    sort,
+    (item) => `${item.referrer.lastName} ${item.referrer.firstName}`,
+    (item) => timestampMillis(item.createdAt),
+  );
+  const counts = countStatuses(items);
+  const activities = await listReferralActivities(filtered.map((item) => item.id));
+  const clearHref = (key: string) => {
+    const next = new URLSearchParams();
+    if (key !== "q" && q) next.set("q", q);
+    if (key !== "filterStatus" && isStatus(status)) next.set("filterStatus", status);
+    if (sort !== "newest") next.set("sort", sort);
+    return `/admin/empfehlungen${next.size ? `?${next}` : ""}`;
+  };
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 md:py-10">
       <SubmissionRealtimeRefresh documentId="referrals" />
-      <Link href="/admin" className="text-sm font-medium text-emerald-800 hover:underline">← Dashboard</Link>
-      <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-        <div><h1 className="text-3xl font-semibold text-slate-950">Empfehlungen</h1><p className="mt-2 text-slate-600">Empfehlungen prüfen und ihren Bearbeitungsstatus pflegen.</p></div>
-        <p className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600">{referrals.length} Eingänge</p>
-      </div>
-      {message ? <div role="status" className={`mt-7 border px-5 py-4 text-sm ${result === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-red-200 bg-red-50 text-red-900"}`}>{message}</div> : null}
-      <div className="mt-8 space-y-5">
-        {referrals.length === 0 ? <p className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-600">Noch keine Empfehlungen vorhanden.</p> : referrals.map((referral) => (
-          <details key={referral.id} className="rounded-xl border border-slate-200 bg-white shadow-sm">
-            <summary className="grid min-h-16 cursor-pointer list-none gap-3 px-5 py-4 sm:grid-cols-[1fr_1fr_auto] sm:items-center">
-              <span><span className="block font-semibold text-slate-950">{referral.referrer.firstName} {referral.referrer.lastName}</span><span className="text-sm text-slate-500">{formatDate(referral.createdAt)}</span></span>
-              <span className="text-sm text-slate-700">empfiehlt <strong>{referral.referredCustomer.firstName} {referral.referredCustomer.lastName}</strong></span>
-              <span className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700">{statusLabels[referral.status]}</span>
-            </summary>
-            <div className="border-t border-slate-200 p-5 lg:p-7">
-              <div className="grid gap-8 lg:grid-cols-2">
-                <section><h2 className="font-semibold text-slate-950">Empfehlungsgeber:in</h2><dl className="mt-4 space-y-3 text-sm"><div><dt className="text-slate-500">Name</dt><dd>{referral.referrer.firstName} {referral.referrer.lastName}</dd></div><div><dt className="text-slate-500">E-Mail</dt><dd><a className="text-emerald-800 underline" href={`mailto:${referral.referrer.email}`}>{referral.referrer.email}</a></dd></div></dl></section>
-                <section><h2 className="font-semibold text-slate-950">Empfohlene Person</h2><dl className="mt-4 space-y-3 text-sm"><div><dt className="text-slate-500">Name</dt><dd>{referral.referredCustomer.firstName} {referral.referredCustomer.lastName}</dd></div><div><dt className="text-slate-500">E-Mail</dt><dd><a className="text-emerald-800 underline" href={`mailto:${referral.referredCustomer.email}`}>{referral.referredCustomer.email}</a></dd></div><div><dt className="text-slate-500">Telefon</dt><dd>{referral.referredCustomer.phone ?? "Keine Angabe"}</dd></div><div><dt className="text-slate-500">Adresse</dt><dd>{referral.referredCustomer.street}, {referral.referredCustomer.postalCode} {referral.referredCustomer.city}</dd></div><div><dt className="text-slate-500">ID</dt><dd className="break-all font-mono text-xs">{referral.id}</dd></div></dl></section>
-              </div>
-              <div className="mt-8 grid gap-6 border-t border-slate-200 pt-6 lg:grid-cols-2">
-                <form action={updateReferralStatusAction} className="flex flex-wrap items-end gap-3"><input type="hidden" name="id" value={referral.id} /><div className="min-w-52 flex-1"><label htmlFor={`referral-status-${referral.id}`} className="block text-sm font-semibold">Status</label><select id={`referral-status-${referral.id}`} name="status" defaultValue={referral.status} className="mt-2 min-h-11 w-full rounded-lg border border-slate-300 px-3">{LEAD_STATUS_VALUES.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}</select></div><button type="submit" className="min-h-11 rounded-lg bg-emerald-800 px-5 text-sm font-semibold text-white">Speichern</button></form>
-                <div className="lg:text-right"><p className="mb-3 text-xs text-slate-500">Intern: {referral.mail?.internal?.status ?? "offen"} · Empfehlungsgeber: {referral.mail?.referrer?.status ?? "offen"} · Empfohlene Person: {referral.mail?.referredCustomer?.status ?? "offen"}</p><DeleteSubmissionButton action={deleteReferralAction} id={referral.id} label="Empfehlung löschen" subject={`Empfehlung ${referral.id}`} /></div>
-              </div>
+      <AdminPageHeader
+        eyebrow="Empfehlungsprogramm"
+        title="Empfehlungen"
+        description="Empfehlungsgeber und empfohlene Personen gemeinsam bearbeiten."
+        actions={
+          <span className="rounded-lg border border-[var(--border-default)] bg-white px-4 py-2 text-sm text-[var(--text-muted)]">
+            {items.length} Empfehlungen
+          </span>
+        }
+      />
+      {first(params.message) ? (
+        <div
+          role="status"
+          className={`mb-6 rounded-xl border px-5 py-4 text-sm ${first(params.result) === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-red-200 bg-red-50 text-red-900"}`}
+        >
+          {first(params.message)}
+        </div>
+      ) : null}
+      <AdminMetricGrid>
+        <AdminMetricCard label="Gesamt" value={counts.total} href="/admin/empfehlungen" />
+        <AdminMetricCard
+          label="Neu"
+          value={counts.new}
+          href="/admin/empfehlungen?filterStatus=new"
+          tone="new"
+        />
+        <AdminMetricCard
+          label="Offen"
+          value={counts.open}
+          href="/admin/empfehlungen?filterStatus=in_progress"
+          tone="progress"
+        />
+        <AdminMetricCard
+          label="Erledigt"
+          value={counts.completed}
+          href="/admin/empfehlungen?filterStatus=completed"
+          tone="success"
+        />
+      </AdminMetricGrid>
+      <div className="mt-6">
+        <AdminToolbar>
+          <form className="grid gap-3 md:grid-cols-[2fr_1fr_1fr_auto]">
+            <label className="text-sm font-semibold">
+              Suche
+              <input
+                type="search"
+                name="q"
+                defaultValue={q}
+                placeholder="Name in beiden Bereichen"
+                className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] px-3 font-normal"
+              />
+            </label>
+            <label className="text-sm font-semibold">
+              Status
+              <select
+                name="filterStatus"
+                defaultValue={isStatus(status) ? status : ""}
+                className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] bg-white px-3 font-normal"
+              >
+                <option value="">Alle Status</option>
+                {LEAD_STATUS_VALUES.map((item) => (
+                  <option key={item} value={item}>
+                    {ADMIN_STATUS_LABELS[item]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm font-semibold">
+              Sortierung
+              <select
+                name="sort"
+                defaultValue={sort}
+                className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] bg-white px-3 font-normal"
+              >
+                <option value="newest">Neueste zuerst</option>
+                <option value="oldest">Älteste zuerst</option>
+                <option value="name_asc">Name A–Z</option>
+                <option value="name_desc">Name Z–A</option>
+              </select>
+            </label>
+            <button className="min-h-11 self-end rounded-lg bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white">
+              Anwenden
+            </button>
+          </form>
+          {q || isStatus(status) ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {q ? <AdminFilterChip href={clearHref("q")}>Suche: {q}</AdminFilterChip> : null}
+              {isStatus(status) ? (
+                <AdminFilterChip href={clearHref("filterStatus")}>
+                  Status: {ADMIN_STATUS_LABELS[status]}
+                </AdminFilterChip>
+              ) : null}
+              <Link
+                href="/admin/empfehlungen"
+                className="inline-flex min-h-9 items-center px-2 text-xs font-semibold text-[var(--brand-primary)]"
+              >
+                Alle Filter zurücksetzen
+              </Link>
             </div>
-          </details>
-        ))}
+          ) : null}
+        </AdminToolbar>
       </div>
+      {filtered.length === 0 ? (
+        <AdminEmptyState title="Keine Empfehlungen gefunden">
+          Passen Sie Suche oder Filter an.
+        </AdminEmptyState>
+      ) : (
+        <AdminSelectionProvider
+          ids={filtered.map((item) => item.id)}
+          action={bulkUpdateReferralStatusAction}
+        >
+          <div className="space-y-3">
+            {filtered.map((item) => (
+              <details
+                key={item.id}
+                open={open === item.id ? true : undefined}
+                className="rounded-xl border border-[var(--border-default)] bg-white shadow-sm"
+              >
+                <summary className="grid min-h-20 cursor-pointer list-none gap-3 px-4 py-4 sm:grid-cols-[auto_1fr_1fr_auto_auto] sm:items-center">
+                  <AdminRowCheckbox id={item.id} label={`Empfehlung ${item.id} markieren`} />
+                  <span>
+                    <span className="block text-xs text-[var(--text-muted)]">Empfehlungsgeber</span>
+                    <strong className="text-[var(--brand-navy)]">
+                      {item.referrer.firstName} {item.referrer.lastName}
+                    </strong>
+                  </span>
+                  <span>
+                    <span className="block text-xs text-[var(--text-muted)]">
+                      Empfohlene Person
+                    </span>
+                    <strong className="text-[var(--brand-dark)]">
+                      {item.referredCustomer.firstName} {item.referredCustomer.lastName}
+                    </strong>
+                  </span>
+                  <span className="text-xs text-[var(--text-muted)]">{date(item.createdAt)}</span>
+                  <AdminStatusBadge status={item.status} />
+                </summary>
+                <div className="border-t border-[var(--border-default)] p-5">
+                  <div className="grid gap-7 lg:grid-cols-2">
+                    <section>
+                      <h2 className="font-semibold text-[var(--brand-navy)]">
+                        Empfehlungsgeber:in
+                      </h2>
+                      <p className="mt-3 text-sm">
+                        {item.referrer.firstName} {item.referrer.lastName}
+                      </p>
+                      <a
+                        className="mt-2 block text-sm text-[var(--brand-primary)] underline"
+                        href={`mailto:${item.referrer.email}`}
+                      >
+                        {item.referrer.email}
+                      </a>
+                    </section>
+                    <section>
+                      <h2 className="font-semibold text-[var(--brand-navy)]">Empfohlene Person</h2>
+                      <p className="mt-3 text-sm">
+                        {item.referredCustomer.firstName} {item.referredCustomer.lastName}
+                      </p>
+                      <a
+                        className="mt-2 block text-sm text-[var(--brand-primary)] underline"
+                        href={`mailto:${item.referredCustomer.email}`}
+                      >
+                        {item.referredCustomer.email}
+                      </a>
+                      {item.referredCustomer.phone ? (
+                        <a
+                          className="mt-2 block text-sm text-[var(--brand-primary)] underline"
+                          href={`tel:${item.referredCustomer.phone}`}
+                        >
+                          {item.referredCustomer.phone}
+                        </a>
+                      ) : null}
+                      <p className="mt-2 text-sm">
+                        {item.referredCustomer.street}, {item.referredCustomer.postalCode}{" "}
+                        {item.referredCustomer.city}
+                      </p>
+                    </section>
+                  </div>
+                  <div className="mt-7 grid gap-5 border-t border-[var(--border-default)] pt-5 lg:grid-cols-2">
+                    <form
+                      action={updateReferralStatusAction}
+                      className="flex flex-wrap items-end gap-3"
+                    >
+                      <input type="hidden" name="id" value={item.id} />
+                      <label className="text-sm font-semibold">
+                        Status
+                        <select
+                          name="status"
+                          defaultValue={item.status}
+                          className="mt-2 block min-h-11 rounded-lg border border-[var(--border-default)] px-3"
+                        >
+                          {LEAD_STATUS_VALUES.map((value) => (
+                            <option key={value} value={value}>
+                              {ADMIN_STATUS_LABELS[value]}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button className="min-h-11 rounded-lg bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white">
+                        Speichern
+                      </button>
+                    </form>
+                    <AdminSubmissionActions
+                      kind="referral"
+                      id={item.id}
+                      email={item.referrer.email}
+                    />
+                    <AdminActivityTimeline
+                      activities={activities.get(item.id) ?? []}
+                      createdAt={item.createdAt}
+                    />
+                    <div className="lg:col-span-2">
+                      {session.role === "admin" ? <DeleteSubmissionButton
+                        action={deleteReferralAction}
+                        id={item.id}
+                        label="Empfehlung löschen"
+                        subject={`Empfehlung ${item.id}`}
+                      /> : null}
+                    </div>
+                  </div>
+                </div>
+              </details>
+            ))}
+          </div>
+        </AdminSelectionProvider>
+      )}
     </main>
   );
 }

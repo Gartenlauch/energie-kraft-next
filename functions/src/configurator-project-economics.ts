@@ -1,4 +1,5 @@
 import type { ConfiguratorSettings } from "./configurator-settings-model.js";
+import { pvBenefitCopy } from "./operating-cost-presentation.ts";
 import {
   calculateHeatingSavings,
   calculateSolarEconomics,
@@ -164,7 +165,7 @@ export function calculateCanonicalProjectEconomics(
   if (products.photovoltaic) add(
     "photovoltaic", products.photovoltaic, "economic_effect",
     solar?.withoutStorageFirstYearBenefitEuro ?? 0,
-    "Direkt genutzter Solarstrom und Einspeisung abzüglich modellierter Betriebskosten.",
+    pvBenefitCopy(settings.photovoltaic.annualOperatingCostEuro),
   );
   if (products.batteryStorage) add(
     "battery_storage", products.batteryStorage, "economic_effect",

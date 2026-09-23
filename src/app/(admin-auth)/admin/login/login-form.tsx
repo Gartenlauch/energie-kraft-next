@@ -163,7 +163,7 @@ export function AdminLoginForm() {
           onChange={(event) =>
             setEmail(event.target.value)
           }
-          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-lg border border-[var(--border-default)] bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--brand-primary)_20%,transparent)] disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 
@@ -186,7 +186,7 @@ export function AdminLoginForm() {
           onChange={(event) =>
             setPassword(event.target.value)
           }
-          className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-lg border border-[var(--border-default)] bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[color:color-mix(in_srgb,var(--brand-primary)_20%,transparent)] disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 
@@ -203,7 +203,7 @@ export function AdminLoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-lg bg-emerald-900 px-4 py-3 font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-lg bg-[var(--brand-primary)] px-4 py-3 font-semibold text-white transition hover:bg-[var(--brand-accent)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting
           ? "Anmeldung wird geprüft …"

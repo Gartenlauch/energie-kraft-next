@@ -1,4 +1,5 @@
 import PDFDocument from "pdfkit";
+import { pvOperatingCostRows } from "./operating-cost-presentation.js";
 import path from "node:path";
 import { CONFIGURATOR_PRODUCT_ORDER } from "./configurator-product-order.ts";
 
@@ -10,6 +11,7 @@ interface GenerateConfiguratorProjectPdfInput {
   leadId: string;
   lead: ConfiguratorLeadPayload;
   settings?: ConfiguratorSettings;
+  reportDate?: Date;
 }
 
 type ProductType = ConfiguratorPayload["type"];
@@ -286,7 +288,7 @@ function systemSymbol(doc: PDFKit.PDFDocument, type: ProductType | "home" | "gri
   doc.restore();
 }
 
-function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
+function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload, reportDate: Date): void {
   photoWithTint(doc, "cover-home.jpg", 450);
   doc.save().rect(0, 450, doc.page.width, doc.page.height - 450).fill("#F8FAFD").restore();
   text(doc, "Deine persönliche\nEnergieprojekt-Analyse", 48, 147, 485, 31, "bold", COLOR.white, 5);
@@ -296,7 +298,7 @@ function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void
     "semibold", COLOR.white);
   text(doc, `${lead.installation.postalCode} ${lead.installation.city}`, 50, 376, 280, 9,
     "regular", "#DDECF7");
-  text(doc, date.format(new Date()), 50, 397, 280, 9, "regular", "#DDECF7");
+  text(doc, date.format(reportDate), 50, 397, 280, 9, "regular", "#DDECF7");
   eyebrow(doc, "Dein Energiesystem", LEFT, 480);
   const order: readonly ProductType[] = CONFIGURATOR_PRODUCT_ORDER;
   const selected = order.filter((item) => lead.products.includes(item));
@@ -564,7 +566,7 @@ function drawSolarEconomics(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPaylo
     ...(product(lead, "battery_storage")
       ? [{ label: "Stromkostenersparnis durch Speicherentladung", value: year.storageAdditionalBenefitEuro }] : []),
     { label: "Einspeisung ins Netz", value: year.feedInRevenueEuro },
-    { label: "Betriebskosten", value: -year.operatingCostsEuro },
+    ...pvOperatingCostRows(year.operatingCostsEuro),
   ];
   rows.forEach((row, index) => {
     const rowY = compositionY + 32 + index * 34;
@@ -907,10 +909,9 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
   if (!lead.economics.solar && product(lead, "photovoltaic")) solarItems.push({
     label: "Solarwirtschaftlichkeit", value: "Individuelles Angebot erforderlich",
   });
-  if (lead.economics.solar) solarItems.push({
-    label: "PV-Betriebskosten",
-    value: `${num.format(lead.economics.solar.firstYearOperatingCostsEuro)} €/Jahr`,
-  });
+  if (lead.economics.solar) solarItems.push(...pvOperatingCostRows(
+    lead.economics.solar.firstYearOperatingCostsEuro, true,
+  ).map((row) => ({ label: row.label, value: `${num.format(row.value)} €/Jahr` })));
   const heatingItems: { label: string; value: string }[] = [];
   if (lead.economics.heating) {
     heatingItems.push({ label: "Heizungsvergleich", value: lead.economics.heating.referenceSource });
@@ -1027,7 +1028,7 @@ export async function generateConfiguratorProjectPdf(input: GenerateConfigurator
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     for (const section of getConfiguratorReportSections(input.lead)) {
       switch (section) {
-        case "cover": drawCover(doc, input.lead); break;
+        case "cover": drawCover(doc, input.lead, input.reportDate ?? new Date()); break;
         case "project": drawProject(doc, input.lead); break;
         case "flow": drawEnergyFlow(doc, input.lead); break;
         case "solar_system": drawSolarSystem(doc, input.lead, input.settings); break;

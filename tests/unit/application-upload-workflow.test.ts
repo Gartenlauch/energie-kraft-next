@@ -11,7 +11,7 @@ const state = vi.hoisted(() => ({
 }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/session", () => ({
-  getAdminSession: async () => (state.admin ? { uid: "test-admin" } : null),
+  getStaffSession: async () => (state.admin ? { uid: "test-admin", role: "staff" } : null),
 }));
 vi.mock("../../functions/src/application-mail", () => ({
   sendApplicationInternalMail: vi.fn(async () => {

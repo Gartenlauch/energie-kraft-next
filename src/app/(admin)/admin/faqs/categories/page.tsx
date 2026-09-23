@@ -1,8 +1,11 @@
+import { requireAdminSession } from "@/lib/auth/session";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { listFaqCategories } from "@/lib/faq/category-repository";
 import type { FirestoreTimestamp } from "@/types/firestore";
+import { AdminPageHeader, AdminToolbar } from "@/components/admin/admin-ui";
+import { matchesSearchTerms } from "@/lib/admin/admin-view";
 
 import {
   createFaqCategoryAction,
@@ -20,6 +23,8 @@ interface FaqCategoriesPageProps {
   searchParams: Promise<{
     status?: string | string[];
     message?: string | string[];
+    q?: string | string[];
+    filterStatus?: string | string[];
   }>;
 }
 
@@ -50,6 +55,7 @@ function formatTimestamp(
 export default async function FaqCategoriesPage({
   searchParams,
 }: FaqCategoriesPageProps) {
+  await requireAdminSession();
   const [categories, parameters] =
     await Promise.all([
       listFaqCategories(),
@@ -63,37 +69,16 @@ export default async function FaqCategoriesPage({
   const message = getFirstSearchParameter(
     parameters.message,
   );
+  const query = getFirstSearchParameter(parameters.q)?.trim() ?? "";
+  const filterStatus = getFirstSearchParameter(parameters.filterStatus) ?? "";
+  const filteredCategories = categories.filter((category) =>
+    matchesSearchTerms(query, category.name, category.slug, category.id) &&
+    (!filterStatus || (filterStatus === "active" ? category.isActive : !category.isActive)),
+  );
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
-        <div>
-          <Link
-            href="/admin"
-            className="text-sm font-medium text-emerald-800 hover:underline"
-          >
-            ← Zurück zum Dashboard
-          </Link>
-
-          <h1 className="mt-3 text-3xl font-semibold text-slate-950">
-            FAQ-Kategorien
-          </h1>
-
-          <p className="mt-2 max-w-2xl text-slate-600">
-            Kategorien strukturieren die
-            FAQ-Einträge. Der Slug wird als
-            unveränderliche Dokument-ID
-            verwendet.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-          {categories.length}{" "}
-          {categories.length === 1
-            ? "Kategorie"
-            : "Kategorien"}
-        </div>
-      </div>
+      <AdminPageHeader eyebrow="Inhalte" title="FAQ-Kategorien" description="Kategorien strukturieren die FAQ-Einträge; der Slug bleibt die stabile Dokument-ID." actions={<a href="#neue-kategorie" className="rounded-lg bg-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-white">Neue Kategorie</a>} />
 
       {message ? (
         <div
@@ -108,7 +93,10 @@ export default async function FaqCategoriesPage({
         </div>
       ) : null}
 
-      <section className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <AdminToolbar><form className="grid gap-3 md:grid-cols-[2fr_1fr_auto]"><label className="text-sm font-semibold">Suche<input type="search" name="q" defaultValue={query} placeholder="Name oder Slug" className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] px-3 font-normal" /></label><label className="text-sm font-semibold">Status<select name="filterStatus" defaultValue={filterStatus} className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] bg-white px-3 font-normal"><option value="">Alle</option><option value="active">Aktiv</option><option value="inactive">Inaktiv</option></select></label><button className="min-h-11 self-end rounded-lg bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white">Anwenden</button></form><div className="mt-3 flex justify-between text-xs text-[var(--text-muted)]"><span>{filteredCategories.length} von {categories.length} Kategorien</span>{query || filterStatus ? <Link href="/admin/faqs/categories" className="font-semibold text-[var(--brand-primary)]">Alle Filter zurücksetzen</Link> : null}</div></AdminToolbar>
+
+      <details id="neue-kategorie" className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <summary className="cursor-pointer text-xl font-semibold text-[var(--brand-navy)]">Neue Kategorie anlegen</summary>
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-slate-950">
             Neue Kategorie
@@ -139,7 +127,7 @@ export default async function FaqCategoriesPage({
               required
               minLength={2}
               maxLength={100}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-950 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-950 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-blue-200"
               placeholder="Photovoltaik"
             />
           </div>
@@ -160,7 +148,7 @@ export default async function FaqCategoriesPage({
               minLength={2}
               maxLength={100}
               pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-mono text-sm text-slate-950 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 font-mono text-sm text-slate-950 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-blue-200"
               placeholder="photovoltaik"
             />
           </div>
@@ -182,7 +170,7 @@ export default async function FaqCategoriesPage({
               max={100000}
               step={1}
               defaultValue={10}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-950 outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-slate-950 outline-none focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
@@ -199,13 +187,13 @@ export default async function FaqCategoriesPage({
 
             <button
               type="submit"
-              className="rounded-lg bg-emerald-900 px-4 py-2.5 font-semibold text-white transition hover:bg-emerald-800"
+              className="rounded-lg bg-[var(--brand-primary)] px-4 py-2.5 font-semibold text-white transition hover:bg-[var(--brand-accent)]"
             >
               Kategorie erstellen
             </button>
           </div>
         </form>
-      </section>
+      </details>
 
       <section>
         <div className="mb-5">
@@ -221,7 +209,7 @@ export default async function FaqCategoriesPage({
           </div>
         ) : (
           <div className="space-y-5">
-            {categories.map((category) => (
+            {filteredCategories.map((category) => (
               <article
                 key={category.id}
                 className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
@@ -339,7 +327,7 @@ export default async function FaqCategoriesPage({
                         <div className="flex justify-end">
                           <button
                             type="submit"
-                            className="rounded-lg bg-emerald-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+                            className="rounded-lg bg-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--brand-accent)]"
                           >
                             Änderungen speichern
                           </button>

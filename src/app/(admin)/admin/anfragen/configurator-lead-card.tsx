@@ -945,7 +945,7 @@ export function ConfiguratorLeadCard({
                             )}
                         </p>
 
-                        <p className="mt-2 font-mono text-sm font-semibold text-emerald-800">
+                        <p className="mt-2 font-mono text-sm font-semibold text-[var(--brand-primary)]">
                             {lead.publicReference ?? "Altbestand ohne Projektreferenz"}
                         </p>
 
@@ -994,7 +994,7 @@ export function ConfiguratorLeadCard({
                                 <dd>
                                     <a
                                         href={`mailto:${lead.contact.email}`}
-                                        className="font-medium text-emerald-800 hover:underline"
+                                        className="font-medium text-[var(--brand-primary)] hover:underline"
                                     >
                                         {
                                             lead.contact
@@ -1013,7 +1013,7 @@ export function ConfiguratorLeadCard({
                                     {lead.contact.phone ? (
                                         <a
                                             href={`tel:${lead.contact.phone}`}
-                                            className="font-medium text-emerald-800 hover:underline"
+                                            className="font-medium text-[var(--brand-primary)] hover:underline"
                                         >
                                             {
                                                 lead.contact

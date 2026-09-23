@@ -23,3 +23,4 @@ export { submitContactLead } from "./contact-lead";
 export { submitConfiguratorLead } from "./configurator-lead";
 export { submitApplication } from "./application";
 export { submitReferral } from "./referral";
+export { adminGenerateLeadReport, adminForwardLead, adminForwardReferral } from "./admin-submission-actions";

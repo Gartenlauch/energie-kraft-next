@@ -19,7 +19,7 @@ function NumberField({ label, unit, value, step = 0.01, help, onChange }: Number
   return (
     <label className="block">
       <span className="text-sm font-semibold text-slate-800">{label}</span>
-      <span className="mt-2 flex min-h-11 overflow-hidden rounded-lg border border-slate-300 bg-white focus-within:border-emerald-700 focus-within:ring-2 focus-within:ring-emerald-700/20">
+      <span className="mt-2 flex min-h-11 overflow-hidden rounded-lg border border-slate-300 bg-white focus-within:border-[var(--brand-primary)] focus-within:ring-2 focus-within:ring-blue-200">
         <input
           type="number"
           required
@@ -222,7 +222,7 @@ export function ConfiguratorSettingsForm({ initialSettings }: { initialSettings:
 
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-lg sm:sticky sm:bottom-4">
         <p className="text-sm leading-6 text-amber-950">Änderungen gelten für neu gestartete Konfigurationen. Bereits gestartete Projekte verwenden weiterhin ihre gespeicherte Modellversion.</p>
-        <div className="mt-4 flex items-center justify-between gap-4"><span className="text-sm text-amber-900">Aktuelle Modellversion: {settings.version}</span><button type="submit" className="min-h-11 rounded-lg bg-emerald-900 px-5 py-3 font-semibold text-white hover:bg-emerald-800">Neue Version speichern</button></div>
+        <div className="mt-4 flex items-center justify-between gap-4"><span className="text-sm text-amber-900">Aktuelle Modellversion: {settings.version}</span><button type="submit" className="min-h-11 rounded-lg bg-[var(--brand-primary)] px-5 py-3 font-semibold text-white hover:bg-[var(--brand-accent)]">Neue Version speichern</button></div>
       </div>
     </form>
   );

@@ -1,4 +1,4 @@
-import { getAdminSession } from "@/lib/auth/session";
+import { getStaffSession } from "@/lib/auth/session";
 import { adminFirestore, adminStorage } from "@/lib/firebase/admin";
 import { FIRESTORE_COLLECTIONS } from "@/lib/firebase/collections";
 import {
@@ -15,7 +15,7 @@ export async function GET(
   { params }: { params: Promise<{ applicationId: string; documentId: string }> },
 ) {
   const headers = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" };
-  if (!(await getAdminSession()))
+  if (!(await getStaffSession()))
     return new Response("Nicht autorisiert", { status: 401, headers });
   const { applicationId, documentId } = await params;
   if (

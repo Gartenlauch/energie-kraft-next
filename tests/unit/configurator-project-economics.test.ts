@@ -10,6 +10,25 @@ import { projectEconomicsSchema } from "@/lib/validation/configurator/economics"
 import { calculateTieredCostCorridor } from "@/lib/configurator/settings-model";
 import { calculateAnnualizedReturn, calculateSolarEnergyFlow } from "../../functions/src/configurator-solar-economics";
 import type { ConfiguratorState } from "@/types/configurator";
+import { pvBenefitCopy, pvOperatingCostRows } from "../../functions/src/operating-cost-presentation";
+
+describe("PV operating-cost presentation", () => {
+  it.each([0, 180])("keeps economics correct and presentation conditional for %s euros", (cost) => {
+    const state = withPv();
+    state.settings = structuredClone(state.settings);
+    state.settings.photovoltaic.annualOperatingCostEuro = cost;
+    state.settings.photovoltaic.fixedAdditionalCostEuro = 900;
+    const result = calculateProjectEconomics(state);
+    const solar = result.solar!;
+    expect(solar.firstYearOperatingCostsEuro).toBe(cost);
+    const first = solar.annualCashflows[1]!;
+    expect(first.netAnnualBenefitEuro).toBeCloseTo(first.electricityCostSavingsEuro + first.feedInRevenueEuro + first.storageAdditionalBenefitEuro - cost, 2);
+    expect(pvBenefitCopy(cost).includes("Betriebskosten")).toBe(cost > 0);
+    expect(result.components.find((item) => item.component === "photovoltaic")!.explanation.includes("Betriebskosten")).toBe(cost > 0);
+    expect(pvOperatingCostRows(cost)).toEqual(cost ? [{ label: "Betriebskosten", value: -cost }] : []);
+    expect(pvOperatingCostRows(cost, true)).toEqual(cost ? [{ label: "PV-Betriebskosten", value: cost }] : []);
+  });
+});
 
 function withPv(state = createInitialConfiguratorState()): ConfiguratorState {
   const configured: ConfiguratorState = {

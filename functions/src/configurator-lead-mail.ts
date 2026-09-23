@@ -52,8 +52,9 @@ function formatNumber(
 }
 
 function formatCurrency(
-  value: number,
+  value: number | null | undefined,
 ): string {
+  if (value == null) return "Individuelles Angebot erforderlich";
   return new Intl.NumberFormat(
     "de-DE",
     {
@@ -756,6 +757,9 @@ function buildHeatPumpMailContent(
           "Wärmepumpen-Konfiguration",
 
         rows: [
+          ["Bisheriges Heizsystem", ({ gas: "Gasheizung", oil: "Ölheizung", new_build: "Neubau", other_unknown: "Sonstiges / unbekannt" } as Record<string, string>)[answers.existingHeatingSystem] ?? "Nicht angegeben"],
+          ["Angegebener Gasverbrauch", answers.annualGasConsumptionKwh == null ? "Nicht angegeben" : `${formatNumber(answers.annualGasConsumptionKwh)} kWh/Jahr`],
+          ["Angegebener Ölverbrauch", answers.annualOilConsumptionLitres == null ? "Nicht angegeben" : `${formatNumber(answers.annualOilConsumptionLitres)} Liter/Jahr`],
           [
             "Beheizte Fläche",
             `${formatNumber(
@@ -1106,6 +1110,7 @@ function buildProjectMailContent(
           "Energieprojekt",
 
         rows: [
+          ["Modellversion", String(lead.settingsVersion)],
           [
             "Produkte",
             productLabels.join(", "),
@@ -1121,11 +1126,7 @@ function buildProjectMailContent(
 
           [
             "Abgeschlossene Konfiguratoren",
-            String(
-              lead.journey
-                .completedProducts
-                .length,
-            ),
+            lead.journey.completedProducts.map((type) => CONFIGURATOR_LABELS[type]).join(", "),
           ],
         ],
       },
@@ -1146,10 +1147,64 @@ function buildProjectMailContent(
             },
 
             ...content.sections,
+            { heading: "Investition", rows: [
+              ["Modellierte Investition", formatCurrency(configurator.result.estimatedTotalCostEuro)],
+              ["Investitionskorridor", `${formatCurrency(configurator.result.estimatedMinimumCostEuro)} – ${formatCurrency(configurator.result.estimatedMaximumCostEuro)}`],
+            ] as const },
           ],
       ),
+      ...economicsSections(lead),
     ],
   };
+}
+
+function economicsSections(lead: ConfiguratorLeadPayload): MailSection[] {
+  const economic = lead.economics;
+  if (!economic) return [];
+  const sections: MailSection[] = [{ heading: "Projektwirtschaftlichkeit · gespeichertes Modell", rows: [
+    ["Betrachtungszeitraum", `${economic.horizonYears} Jahre`],
+    ["Gesamtinvestition", formatCurrency(economic.investmentBaseEuro)],
+    ["Investitionskorridor", `${formatCurrency(economic.investmentMinEuro)} – ${formatCurrency(economic.investmentMaxEuro)}`],
+  ] }];
+  const solar = economic.solar;
+  if (solar) {
+    const flow = lead.products.includes("battery_storage") ? solar.withStorage : solar.withoutStorage;
+    sections.push({ heading: "Photovoltaik und Speicher · Energiefluss und Wirtschaftlichkeit", rows: [
+      ["Solarinvestition", formatCurrency(solar.investmentEuro)],
+      ["Jahreserzeugung", `${formatNumber(flow.generationKwh)} kWh`],
+      ["Strombedarf", `${formatNumber(flow.demandKwh)} kWh/Jahr`],
+      ["Direktverbrauch", `${formatNumber(flow.directUseKwh)} kWh/Jahr`],
+      ["Speicherladung", `${formatNumber(flow.storageChargeKwh)} kWh/Jahr`],
+      ["Speicherentladung", `${formatNumber(flow.storageDeliveredKwh)} kWh/Jahr`],
+      ["Speicherverluste", `${formatNumber(flow.storageLossesKwh)} kWh/Jahr`],
+      ["Netzbezug", `${formatNumber(flow.gridPurchaseKwh)} kWh/Jahr`],
+      ["Einspeisung", `${formatNumber(flow.feedInKwh)} kWh/Jahr`],
+      ["Eigenverbrauchsanteil", `${formatNumber(flow.selfConsumptionPercent)} %`],
+      ["Autarkiegrad", `${formatNumber(flow.autarkyPercent)} %`],
+      ["Stromkostenersparnis im ersten Jahr", formatCurrency(solar.firstYearElectricitySavingsEuro)],
+      ["Einspeiseerlös im ersten Jahr", formatCurrency(solar.firstYearFeedInRevenueEuro)],
+      ["Finanzieller Vorteil im ersten Jahr", formatCurrency(solar.firstYearNetBenefitEuro)],
+      ["Solar-Amortisation", solar.paybackYears == null ? "Im Modell nicht erreicht / nicht verfügbar" : `${formatNumber(solar.paybackYears)} Jahre`],
+      ["Modellierte Solarrendite p. a.", solar.annualizedReturnPercent == null ? "Nicht verfügbar" : `${formatNumber(solar.annualizedReturnPercent)} %`],
+      ["Ergebnis am Ende des Betrachtungszeitraums", solar.netSurplus20YearsEuro == null ? "Nicht verfügbar" : formatCurrency(solar.netSurplus20YearsEuro)],
+      ...(lead.products.includes("battery_storage") ? [
+        ["Speicherinvestition", formatCurrency(solar.storageInvestmentEuro)],
+        ["Nutzbare Speicherkapazität", `${formatNumber(solar.storageUsableCapacityKwh)} kWh`],
+        ["Zusätzlicher jährlicher Speichervorteil", formatCurrency(solar.storageAdditionalAnnualBenefitEuro)],
+        ["Durch Speicher vermiedener Netzbezug", `${formatNumber(solar.storageAvoidedGridPurchaseKwh)} kWh/Jahr`],
+        ["Durch Speicher verringerte Einspeisung", `${formatNumber(solar.storageReducedFeedInKwh)} kWh/Jahr`],
+      ] as [string, string][] : []),
+    ] });
+  }
+  if (economic.heating) sections.push({ heading: "Heizkostenvergleich", rows: [
+    ["Vergleichsgrundlage", economic.heating.referenceSource],
+    ["Bisherige jährliche Heizkosten", economic.heating.currentAnnualEuro == null ? "Nicht verfügbar" : formatCurrency(economic.heating.currentAnnualEuro)],
+    ["Wärmepumpenkosten pro Jahr", formatCurrency(economic.heating.heatPumpAnnualEuro)],
+    ["Jährliche Ersparnis / Mehrkosten bei negativem Wert", economic.heating.annualSavingEuro == null ? "Nicht verfügbar" : formatCurrency(economic.heating.annualSavingEuro)],
+  ] });
+  sections.push({ heading: "Modellannahmen", rows: economic.assumptions.map((item) => [item.label, item.value]) });
+  sections.push({ heading: "Einordnung und Grenzen", paragraph: economic.limitations.join("\n") });
+  return sections;
 }
 
 function renderTextSection(
@@ -1216,7 +1271,7 @@ interface SendConfiguratorLeadMailInput {
   lead: ConfiguratorLeadPayload;
 }
 
-export async function sendConfiguratorLeadMail({
+export function buildConfiguratorLeadMail({
   leadId,
   lead,
 }: SendConfiguratorLeadMailInput) {
@@ -1343,7 +1398,7 @@ ${leadId}
     </p>
   `;
 
-  return sendMailgunMail({
+  return {
     to: LEAD_MAIL_RECIPIENT,
 
     replyTo:
@@ -1355,5 +1410,9 @@ ${leadId}
     text,
 
     html,
-  });
+  };
+}
+
+export async function sendConfiguratorLeadMail(input: SendConfiguratorLeadMailInput) {
+  return sendMailgunMail(buildConfiguratorLeadMail(input));
 }

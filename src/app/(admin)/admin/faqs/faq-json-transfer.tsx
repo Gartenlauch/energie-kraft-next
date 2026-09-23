@@ -224,7 +224,7 @@ export function FaqJsonTransfer() {
                 type="button"
                 onClick={handleImport}
                 disabled={!confirmed || busy !== null}
-                className="min-h-11 rounded-lg bg-emerald-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="min-h-11 rounded-lg bg-[var(--brand-primary)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--brand-accent)] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {busy === "import" ? "Import läuft …" : "Import verbindlich ausführen"}
               </button>

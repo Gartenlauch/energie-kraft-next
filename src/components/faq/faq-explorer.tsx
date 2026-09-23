@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import type { FaqCatalogEntry } from "@/types/faq";
+import { matchesSearchTerms } from "@/lib/admin/admin-view";
 
 interface Props {
   entries: FaqCatalogEntry[];
@@ -15,15 +16,10 @@ export function FaqExplorer({ entries, categories, categoryPage = false, childre
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [visibleCount, setVisibleCount] = useState(12);
-  const terms = search.toLocaleLowerCase("de").trim().split(/\s+/).filter(Boolean);
   const filtered = entries.filter(
     (faq) =>
       (!category || faq.categoryId === category) &&
-      terms.every((term) =>
-        `${faq.question} ${faq.shortAnswer} ${faq.answer} ${faq.categoryName}`
-          .toLocaleLowerCase("de")
-          .includes(term),
-      ),
+      matchesSearchTerms(search, faq.question, faq.shortAnswer, faq.answer, faq.categoryName),
   );
   return (
     <div>

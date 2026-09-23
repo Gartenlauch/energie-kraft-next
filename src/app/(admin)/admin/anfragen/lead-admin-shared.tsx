@@ -1,3 +1,4 @@
+import { requireStaffSession } from "@/lib/auth/session";
 import { DeleteLeadButton } from "./delete-lead-button";
 import { updateLeadStatusAction } from "./actions";
 
@@ -52,11 +53,12 @@ interface LeadWorkflowPanelProps {
   lead: AdminLead;
 }
 
-export function LeadWorkflowPanel({
+export async function LeadWorkflowPanel({
   lead,
 }: LeadWorkflowPanelProps) {
   const mail = lead.mail?.internal;
 
+  const session = await requireStaffSession();
   return (
     <section className="rounded-xl border border-slate-200 p-5">
       <h3 className="font-semibold text-slate-950">
@@ -107,7 +109,7 @@ export function LeadWorkflowPanel({
 
         <button
           type="submit"
-          className="min-h-11 rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+          className="min-h-11 rounded-lg bg-[var(--brand-primary)] px-5 py-2 text-sm font-semibold text-white hover:bg-[var(--brand-accent)]"
         >
           Status speichern
         </button>
@@ -164,7 +166,7 @@ export function LeadWorkflowPanel({
         )}
       </div>
 
-      <div className="mt-6 border-t border-slate-200 pt-5">
+      {session.role === "admin" ? <div className="mt-6 border-t border-slate-200 pt-5">
         <p className="text-sm font-semibold text-red-800">
           Anfrage endgültig löschen
         </p>
@@ -182,7 +184,7 @@ export function LeadWorkflowPanel({
             leadName={`${lead.contact.firstName} ${lead.contact.lastName}`}
           />
         </div>
-      </div>
+      </div> : null}
     </section>
   );
 }

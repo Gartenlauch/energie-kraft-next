@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
-import { requireAdminSession } from "@/lib/auth/session";
+import { requireStaffSession } from "@/lib/auth/session";
 
 import { AdminLogoutButton } from "./admin-logout-button";
+import { AdminNavigation } from "@/components/admin/admin-navigation";
+import { AdminAvatar } from "@/components/admin/admin-avatar";
 
 export const metadata: Metadata = {
   title: {
@@ -28,30 +31,26 @@ export default async function AdminLayout({
   children,
 }: AdminLayoutProps) {
   const session =
-    await requireAdminSession();
+    await requireStaffSession();
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="border-b border-slate-200 bg-white">
+    <div className="min-h-screen bg-[var(--surface-soft)]">
+      <header className="bg-[var(--brand-navy)] text-white shadow-[0_8px_30px_rgba(9,20,51,0.16)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
-          <div>
-            <p className="text-sm font-semibold text-emerald-800">
-              Energie-Kraft Süd
-            </p>
-
-            <p className="text-lg font-semibold text-slate-950">
-              Administration
-            </p>
-          </div>
+          <Link href="/admin" className="flex min-w-0 items-center gap-4 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <span className="rounded-lg bg-white px-3 py-2"><Image src="/brand/energie-kraft/eksued-logo-kompakt-website.svg" alt="Energie-Kraft Süd" width={132} height={38} priority /></span>
+            <span className="hidden border-l border-white/20 pl-4 text-sm font-semibold tracking-wide sm:block">Administration</span>
+          </Link>
 
           <div className="flex items-center gap-5">
+            <AdminAvatar uid={session.uid} name={session.displayName ?? session.email ?? "Benutzer"} photo={session.photo} />
             <div className="hidden text-right sm:block">
-              <p className="text-xs text-slate-500">
-                Angemeldet als
+              <p className="text-xs text-white/60">
+                {session.role === "admin" ? "Administrator" : "Mitarbeiter"}
               </p>
 
-              <p className="text-sm font-medium text-slate-800">
-                {session.email ??
+              <p className="max-w-56 truncate text-sm font-medium text-white">
+                {session.displayName ?? session.email ??
                   session.uid}
               </p>
             </div>
@@ -59,13 +58,7 @@ export default async function AdminLayout({
             <AdminLogoutButton />
           </div>
         </div>
-        <nav aria-label="Adminnavigation" className="mx-auto flex max-w-7xl flex-wrap gap-1 border-t border-slate-100 px-6 py-2 text-sm font-semibold text-slate-700">
-          <Link href="/admin/anfragen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Anfragen</Link>
-          <Link href="/admin/bewerbungen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Bewerbungen</Link>
-          <Link href="/admin/empfehlungen" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Empfehlungen</Link>
-          <Link href="/admin/faqs" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">FAQs</Link>
-          <Link href="/admin/einstellungen/konfiguratoren" className="min-h-11 rounded-lg px-4 py-3 hover:bg-slate-100">Einstellungen</Link>
-        </nav>
+        <AdminNavigation role={session.role} />
       </header>
 
       {children}

@@ -13,6 +13,7 @@ import {
 import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { calculateProjectEconomics } from "@/lib/configurator/project-economics";
 import { siteConfig } from "@/config/site";
+import { pvBenefitCopy } from "../../../../functions/src/operating-cost-presentation.ts";
 import { CONTACT_FORM_HREF } from "@/config/routes";
 import type { ConfiguratorType, PhotovoltaicConfiguratorResult } from "@/types/configurator";
 
@@ -97,7 +98,7 @@ export function PhotovoltaicResult({
           <ResultMetric
             label="Finanzieller Vorteil im ersten Jahr"
             value={euro(solar.firstYearNetBenefitEuro)}
-            note="Ersparnis und Einspeisung abzüglich modellierter Betriebskosten."
+            note={pvBenefitCopy(state.settings.photovoltaic.annualOperatingCostEuro)}
           />
           {solar.paybackStatus === "reached" && solar.paybackYears !== null ? (
             <ResultMetric label="Amortisation" value={`${number(solar.paybackYears)} Jahre`} />

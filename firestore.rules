@@ -8,19 +8,35 @@ rules_version = '2';
 // referrals/{submissionId}: private referrer/referred-person PII, consent,
 // campaign snapshot, mail state, status, meta and server timestamps. Server-only writes.
 // adminRealtime/{leads|applications|referrals}: numeric revision and server timestamp.
-// Only users carrying the trusted Firebase Auth custom claim admin == true may read
-// these private records/signals. Firebase Admin SDK performs every mutation.
+// Private records remain administrator-only. Both staff roles may read realtime signals.
+// adminUsers and adminLocks are server-only; private avatars are served by authorized routes.
 // ===============================================================
 
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.admin == true;
+        && (request.auth.token.get('role', '') == 'admin'
+          || (!('role' in request.auth.token) && request.auth.token.get('admin', false) == true))
+        && profileAllowsAccess()
+        && (!exists(/databases/$(database)/documents/adminUsers/$(request.auth.uid))
+          || get(/databases/$(database)/documents/adminUsers/$(request.auth.uid)).data.get('role', 'admin') == 'admin');
+    }
+
+    function profileAllowsAccess() {
+      let path = /databases/$(database)/documents/adminUsers/$(request.auth.uid);
+      return !exists(path) || (get(path).data.get('active', true) == true
+        && get(path).data.get('archived', false) == false
+        && get(path).data.get('pending', false) == false);
+    }
+
+    function isStaff() {
+      return request.auth != null && profileAllowsAccess()
+        && (isAdmin() || request.auth.token.get('role', '') == 'staff');
     }
 
     match /adminRealtime/{signalId} {
-      allow read: if isAdmin()
+      allow read: if isStaff()
         && signalId in ['leads', 'applications', 'referrals'];
       allow write: if false;
     }
@@ -33,6 +49,13 @@ service cloud.firestore {
     match /referrals/{referralId} {
       allow read: if isAdmin();
       allow create, update, delete: if false;
+    }
+
+    match /adminUsers/{uid} {
+      allow read, write: if false;
+    }
+    match /adminLocks/{lockId} {
+      allow read, write: if false;
     }
 
     match /{document=**} {

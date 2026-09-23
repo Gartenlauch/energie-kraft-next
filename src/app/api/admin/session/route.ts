@@ -11,6 +11,7 @@ import {
 } from "@/config/auth";
 import { publicEnv } from "@/config/env/public";
 import { adminAuth } from "@/lib/firebase/admin";
+import { getLiveAdminIdentity } from "@/lib/auth/live-role";
 import { isTrustedSameOriginRequest } from "@/lib/http/same-origin";
 import { adminSessionRequestSchema } from "@/lib/validation/auth";
 
@@ -122,9 +123,9 @@ export async function POST(
       );
     }
 
-    if (decodedToken.admin !== true) {
+    if (!await getLiveAdminIdentity(decodedToken)) {
       return createErrorResponse(
-        "Dieses Benutzerkonto besitzt keine Administratorberechtigung.",
+        "Dieses Benutzerkonto besitzt keinen aktiven Admin-Zugang.",
         403,
       );
     }

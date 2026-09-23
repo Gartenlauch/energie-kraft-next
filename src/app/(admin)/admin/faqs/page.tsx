@@ -1,3 +1,4 @@
+import { requireAdminSession } from "@/lib/auth/session";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -5,6 +6,8 @@ import { FAQ_ROUTE_LABELS } from "@/config/routes";
 import { listFaqCategories } from "@/lib/faq/category-repository";
 import { listFaqEntries } from "@/lib/faq/entry-repository";
 import type { FirestoreTimestamp } from "@/types/firestore";
+import { AdminPageHeader, AdminToolbar } from "@/components/admin/admin-ui";
+import { matchesSearchTerms } from "@/lib/admin/admin-view";
 
 import { createFaqEntryAction, deleteFaqEntryAction, updateFaqEntryAction } from "./actions";
 import { FaqEntryFormFields } from "./faq-entry-form-fields";
@@ -20,6 +23,9 @@ interface FaqAdminPageProps {
   searchParams: Promise<{
     status?: string | string[];
     message?: string | string[];
+    q?: string | string[];
+    filterStatus?: string | string[];
+    filterCategory?: string | string[];
   }>;
 }
 
@@ -39,6 +45,7 @@ function formatTimestamp(timestamp: FirestoreTimestamp): string {
 }
 
 export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) {
+  await requireAdminSession();
   const [categories, entries, parameters] = await Promise.all([
     listFaqCategories(),
     listFaqEntries(),
@@ -50,35 +57,29 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
   const message = getFirstSearchParameter(parameters.message);
 
   const categoriesById = new Map(categories.map((category) => [category.id, category]));
+  const query = getFirstSearchParameter(parameters.q)?.trim() ?? "";
+  const filterStatus = getFirstSearchParameter(parameters.filterStatus) ?? "";
+  const filterCategory = getFirstSearchParameter(parameters.filterCategory) ?? "";
+  const filteredEntries = entries.filter((entry) => {
+    const category = categoriesById.get(entry.categoryId);
+    return (!filterCategory || entry.categoryId === filterCategory) &&
+      (!filterStatus || (filterStatus === "published" ? entry.isPublished : !entry.isPublished)) &&
+      matchesSearchTerms(query, entry.question, entry.answer, entry.shortAnswer, category?.name);
+  });
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
-        <div>
-          <Link href="/admin" className="text-sm font-medium text-emerald-800 hover:underline">
-            ← Zurück zum Dashboard
-          </Link>
-
-          <h1 className="mt-3 text-3xl font-semibold text-slate-950">FAQ-Verwaltung</h1>
-
-          <p className="mt-2 max-w-3xl text-slate-600">
-            Fragen, Antworten, Veröffentlichungsstatus und Seitenausspielungen zentral verwalten.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
+      <AdminPageHeader eyebrow="Inhalte" title="FAQ-Verwaltung" description="Fragen, Antworten, Veröffentlichungsstatus und Seitenausspielungen zentral verwalten." actions={
+        <>
+          <a href="#neue-faq" className="rounded-lg bg-[var(--brand-primary)] px-4 py-2.5 text-sm font-semibold text-white">+ FAQ anlegen</a>
           <Link
             href="/admin/faqs/categories"
             className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
           >
             Kategorien verwalten
           </Link>
-
-          <div className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-600 shadow-sm">
-            {entries.length} {entries.length === 1 ? "FAQ" : "FAQs"}
-          </div>
-        </div>
-      </div>
+        </>
+      } />
 
       {message ? (
         <div
@@ -93,7 +94,9 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
         </div>
       ) : null}
 
-      <FaqJsonTransfer />
+      <AdminToolbar><form method="get" className="grid gap-3 md:grid-cols-[2fr_1fr_1fr_auto]"><label className="text-sm font-semibold">Suche<input type="search" name="q" defaultValue={query} placeholder="Frage, Antwort oder Kategorie" className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] px-3 font-normal" /></label><label className="text-sm font-semibold">Status<select name="filterStatus" defaultValue={filterStatus} className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] bg-white px-3 font-normal"><option value="">Alle</option><option value="published">Veröffentlicht</option><option value="draft">Entwurf</option></select></label><label className="text-sm font-semibold">Kategorie<select name="filterCategory" defaultValue={filterCategory} className="mt-2 min-h-11 w-full rounded-lg border border-[var(--border-default)] bg-white px-3 font-normal"><option value="">Alle Kategorien</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label><button className="min-h-11 self-end rounded-lg bg-[var(--brand-primary)] px-5 text-sm font-semibold text-white">Anwenden</button></form><div className="mt-3 flex justify-between text-xs text-[var(--text-muted)]"><span>{filteredEntries.length} von {entries.length} FAQs</span>{query || filterStatus || filterCategory ? <Link href="/admin/faqs" className="font-semibold text-[var(--brand-primary)]">Alle Filter zurücksetzen</Link> : null}</div></AdminToolbar>
+
+      <details className="mb-6 rounded-xl border border-[var(--border-default)] bg-white"><summary className="min-h-11 cursor-pointer px-5 py-4 font-semibold text-[var(--brand-primary)]">Tools · JSON importieren / exportieren</summary><div className="border-t border-[var(--border-default)] p-3"><FaqJsonTransfer /></div></details>
 
       {categories.length === 0 ? (
         <section className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950">
@@ -109,10 +112,9 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
           </Link>
         </section>
       ) : (
-        <section className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <details id="neue-faq" className="mb-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <summary className="cursor-pointer text-xl font-semibold text-[var(--brand-navy)]">Neue FAQ anlegen</summary>
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-slate-950">Neue FAQ</h2>
-
             <p className="mt-1 text-sm text-slate-600">
               Eine FAQ muss mindestens einer öffentlichen Route zugeordnet werden.
             </p>
@@ -124,13 +126,13 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-lg bg-emerald-900 px-5 py-3 font-semibold text-white transition hover:bg-emerald-800"
+                className="rounded-lg bg-[var(--brand-primary)] px-5 py-3 font-semibold text-white transition hover:bg-[var(--brand-accent)]"
               >
                 FAQ erstellen
               </button>
             </div>
           </form>
-        </section>
+        </details>
       )}
 
       <section>
@@ -144,7 +146,7 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
           </div>
         ) : (
           <div className="space-y-6">
-            {entries.map((entry) => {
+            {filteredEntries.map((entry) => {
               const category = categoriesById.get(entry.categoryId);
 
               return (
@@ -217,7 +219,7 @@ export default async function FaqAdminPage({ searchParams }: FaqAdminPageProps) 
                           <div className="flex justify-end">
                             <button
                               type="submit"
-                              className="rounded-lg bg-emerald-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+                              className="rounded-lg bg-[var(--brand-primary)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--brand-accent)]"
                             >
                               Änderungen speichern
                             </button>

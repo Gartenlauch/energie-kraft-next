@@ -23,6 +23,8 @@ import {
 } from "@/lib/configurator/state";
 import { buildWallboxConfiguratorResult } from "@/lib/configurator/wallbox";
 import type { ConfiguratorState } from "@/types/configurator";
+import { buildForwardedLeadMail } from "../../functions/src/admin-submission-actions";
+import { pvOperatingCostRows } from "../../functions/src/operating-cost-presentation";
 
 function baseJourney(entryPoint: "photovoltaic" | "heat_pump") {
   return {
@@ -215,6 +217,25 @@ function buildPdfLead(state: ConfiguratorState) {
 }
 
 describe("premium configurator project PDF", () => {
+  it.each([0, 240])("filters financial and assumption PDF rows for %s operating costs", (cost) => {
+    expect(pvOperatingCostRows(cost).some((row) => row.label === "Betriebskosten")).toBe(cost > 0);
+    expect(pvOperatingCostRows(cost, true).some((row) => row.label === "PV-Betriebskosten")).toBe(cost > 0);
+  });
+
+  it("forwards all five configured products with readable answers and persisted economics, not internals", () => {
+    const lead = buildPdfLead(createCompleteProject());
+    const mail = buildForwardedLeadMail({ ...lead, publicReference: "PV-12345", fingerprint: "DO-NOT-INCLUDE", mail: { messageId: "SECRET-MAIL-ID" }, createdAt: { toDate: () => new Date("2026-09-20T12:00:00Z") } }, "internal-id");
+    for (const label of ["Max", "Mustermann", "Musterstraße 1", "Freilassing", "Modellversion", "Abgeschlossene Konfiguratoren", "Dachmaterial", "Verbrauchsprofil", "Bisheriges Heizsystem", "Angegebener Gasverbrauch", "Zu klimatisierende Fläche", "Jährliche Fahrleistung", "Solar-Amortisation", "Modellierte Solarrendite", "Heizkostenvergleich", "PV-12345"]) {
+      expect(mail.text).toContain(label); expect(mail.html).toContain(label);
+    }
+    for (const secret of ["DO-NOT-INCLUDE", "SECRET-MAIL-ID", "internal-id", "submissionId", "schemaVersion"]) { expect(mail.text).not.toContain(secret); expect(mail.html).not.toContain(secret); }
+  });
+
+  it("forwards contact fields with escaped HTML and no implementation metadata", () => {
+    const mail = buildForwardedLeadMail({ type: "contact", contact: { firstName: "Max", lastName: "Muster", company: "Firma <b>", email: "max@example.test", phone: "12345" }, location: { postalCode: "83395", city: "Freilassing" }, project: { interests: ["photovoltaik"], buildingType: "einfamilienhaus", ownership: "eigentuemer" }, preferredContact: "telefon", message: "Rückruf <script>alert(1)</script>" }, "kontakt-1");
+    for (const label of ["Firma", "12345", "Freilassing", "Photovoltaik", "Einfamilienhaus", "Eigentümer", "Telefon", "Rückruf", "Eingegangen"]) expect(mail.text).toContain(label);
+    expect(mail.html).toContain("&lt;script&gt;"); expect(mail.html).not.toContain("<script>");
+  });
   it("keeps storage copy and assumptions out of PV-only pages", () => {
     const pvOnly = getSolarPdfCopy(false);
     const combined = getSolarPdfCopy(true);

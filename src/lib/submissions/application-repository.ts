@@ -65,6 +65,23 @@ export async function updateApplicationStatus(id: string, status: LeadStatus, ac
   });
 }
 
+export async function updateApplicationStatuses(ids: readonly string[], status: LeadStatus, actorUid: string) {
+  const uniqueIds = [...new Set(ids)].slice(0, 100);
+  return adminFirestore.runTransaction(async (transaction) => {
+    const references = uniqueIds.map((id) => collection.doc(id));
+    const snapshots = await Promise.all(references.map((reference) => transaction.get(reference)));
+    let changed = 0;
+    snapshots.forEach((snapshot, index) => {
+      if (!snapshot.exists || snapshot.data()?.meta?.source !== "bewerbung") throw new ApplicationNotFoundError(uniqueIds[index]!);
+      if (snapshot.data()?.status === status) return;
+      transaction.update(references[index]!, { status, updatedAt: FieldValue.serverTimestamp(), updatedBy: actorUid });
+      changed += 1;
+    });
+    if (changed > 0) transaction.set(realtime, { revision: FieldValue.increment(1), updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    return changed;
+  });
+}
+
 export async function deleteApplication(id: string) {
   const reference = collection.doc(id);
   const documents = await adminFirestore.runTransaction(async (transaction) => {
