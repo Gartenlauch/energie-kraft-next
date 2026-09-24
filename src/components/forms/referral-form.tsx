@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 
 import { ErrorSummary, FieldError, formInputClassName } from "@/components/forms/form-control";
 import { submitReferral } from "@/lib/submissions/submit-referral";
+import { useSuccessFocus } from "@/hooks/use-success-focus";
 import {
   referralInputSchema,
   referralStepOneSchema,
@@ -99,6 +100,7 @@ export function ReferralForm() {
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [referralId, setReferralId] = useState<string | null>(null);
+  const successHeadingRef = useSuccessFocus<HTMLHeadingElement>(Boolean(referralId));
   const formRef = useRef<HTMLFormElement>(null);
   const stepTitleRef = useRef<HTMLHeadingElement>(null);
 
@@ -210,7 +212,13 @@ export function ReferralForm() {
     return (
       <div className="premium-card p-7 md:p-10" role="status">
         <p className="eyebrow">Empfehlung eingegangen</p>
-        <h2 className="section-title mt-4">Vielen Dank für dein Vertrauen.</h2>
+        <h2
+          ref={successHeadingRef}
+          tabIndex={-1}
+          className="section-title mt-4 focus:outline-none"
+        >
+          Vielen Dank für dein Vertrauen.
+        </h2>
         <p className="mt-5 text-lg leading-8 text-[var(--text-muted)]">
           Deine Empfehlung wurde erfolgreich übermittelt.
         </p>

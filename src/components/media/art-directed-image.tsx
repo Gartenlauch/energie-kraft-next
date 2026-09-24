@@ -1,5 +1,3 @@
-import { getImageProps } from "next/image";
-
 interface ArtDirectedImageProps {
   desktopSrc: string;
   mobileSrc: string;
@@ -25,40 +23,32 @@ export function ArtDirectedImage({
   className,
   fetchPriority,
 }: ArtDirectedImageProps) {
-  const common = {
-    alt,
-    sizes,
-    quality: 84,
-  } as const;
-
-  const {
-    props: { srcSet: desktopSrcSet },
-  } = getImageProps({
-    ...common,
-    src: desktopSrc,
-    width: desktopWidth,
-    height: desktopHeight,
-  });
-
-  const {
-    props: { srcSet: mobileSrcSet, ...mobileProps },
-  } = getImageProps({
-    ...common,
-    src: mobileSrc,
-    width: mobileWidth,
-    height: mobileHeight,
-    fetchPriority,
-  });
-
   return (
     <picture className="block h-full w-full">
-      <source media="(min-width: 768px)" srcSet={desktopSrcSet} />
-      <source media="(max-width: 767px)" srcSet={mobileSrcSet} />
-      {/* getImageProps supplies intrinsic dimensions and an optimized fallback URL. */}
+      <source
+        media="(min-width: 768px)"
+        srcSet={desktopSrc}
+        sizes={sizes}
+        width={desktopWidth}
+        height={desktopHeight}
+      />
+      <source
+        media="(max-width: 767px)"
+        srcSet={mobileSrc}
+        sizes={sizes}
+        width={mobileWidth}
+        height={mobileHeight}
+      />
       <img
-        {...mobileProps}
+        src={mobileSrc}
+        width={mobileWidth}
+        height={mobileHeight}
         alt={alt}
+        sizes={sizes}
         className={className}
+        fetchPriority={fetchPriority}
+        loading={fetchPriority === "high" ? "eager" : "lazy"}
+        decoding="async"
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
     </picture>

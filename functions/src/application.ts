@@ -6,7 +6,7 @@ import { HttpsError, onCall } from "firebase-functions/v2/https";
 
 import { sendApplicationAutoReply, sendApplicationInternalMail } from "./application-mail";
 import { applicationPayloadSchema, getApplicationJobTitle } from "./application-validation";
-import { mailgunSendingKey } from "./mailgun";
+import { getMailgunErrorDetails, mailgunSendingKey } from "./mailgun";
 import { attemptMailDelivery } from "./submission-workflow";
 import { hasInvalidSubmissionSignals } from "./submission-security";
 import {
@@ -18,6 +18,7 @@ import type { ApplicationFileMetadata } from "./shared/application-file-policy";
 
 export const submitApplication = onCall(
   {
+    invoker: "public",
     maxInstances: 10,
     memory: "512MiB",
     concurrency: 4,
@@ -203,7 +204,7 @@ export const submitApplication = onCall(
       (error) =>
         logger.error("Application internal mail failed", {
           applicationId: applicationReference.id,
-          error,
+          ...getMailgunErrorDetails(error),
         }),
     );
     const applicant = await attemptMailDelivery(
@@ -211,7 +212,7 @@ export const submitApplication = onCall(
       (error) =>
         logger.error("Application autoreply failed", {
           applicationId: applicationReference.id,
-          error,
+          ...getMailgunErrorDetails(error),
         }),
     );
 

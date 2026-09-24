@@ -1,6 +1,6 @@
 import { FieldValue, getFirestore, type DocumentReference, type Firestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
-import { mailgunSendingKey } from "./mailgun";
+import { getMailgunErrorDetails, mailgunSendingKey } from "./mailgun";
 import { sendConfiguratorCustomerMail } from "./configurator-customer-mail";
 import { generateConfiguratorProjectPdf } from "./configurator-project-pdf";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
@@ -494,7 +494,7 @@ export async function handleConfiguratorLeadRequest(
       logger.error("Configurator lead notification failed", {
         submissionId: input.submissionId,
         leadId: leadReference.id,
-        errorName: error instanceof Error ? error.name : "Unknown",
+        ...getMailgunErrorDetails(error),
       });
     }
     await finishMailAttempt(
@@ -549,7 +549,7 @@ export async function handleConfiguratorLeadRequest(
         logger.error("Configurator customer mail failed", {
           submissionId: input.submissionId,
           leadId: leadReference.id,
-          errorName: error instanceof Error ? error.name : "Unknown",
+          ...getMailgunErrorDetails(error),
         });
       }
     }
@@ -567,6 +567,6 @@ export async function handleConfiguratorLeadRequest(
 }
 
 export const submitConfiguratorLead = onCall(
-  { maxInstances: 10, secrets: [mailgunSendingKey] },
+  { invoker: "public", maxInstances: 10, secrets: [mailgunSendingKey] },
   async (request) => handleConfiguratorLeadRequest(request.data),
 );

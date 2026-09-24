@@ -7,12 +7,15 @@ import {
 
 import { contactLeadPayloadSchema } from "./contact-lead-validation";
 import {
+  getMailgunErrorDetails,
   mailgunSendingKey,
 } from "./mailgun";
 
 import {
+  sendContactCustomerConfirmation,
   sendContactLeadMail,
 } from "./contact-lead-mail";
+import { attemptMailDelivery } from "./submission-workflow";
 
 const LEADS_COLLECTION = "leads";
 const ADMIN_REALTIME_COLLECTION = "adminRealtime";
@@ -28,6 +31,7 @@ function optionalValue(value: string | undefined): string | null {
 
 export const submitContactLead = onCall(
   {
+    invoker: "public",
     maxInstances: 10,
     secrets: [mailgunSendingKey],
   },
@@ -130,6 +134,21 @@ export const submitContactLead = onCall(
         schemaVersion: 1,
       },
 
+      mail: {
+        internal: {
+          status: "pending",
+          provider: "mailgun",
+          messageId: null,
+          updatedAt: timestamp,
+        },
+        customer: {
+          status: "pending",
+          provider: "mailgun",
+          messageId: null,
+          updatedAt: timestamp,
+        },
+      },
+
       createdAt: timestamp,
       updatedAt: timestamp,
     });
@@ -147,66 +166,48 @@ export const submitContactLead = onCall(
 
     await batch.commit();
 
-    let mailStatus:
-      | "accepted"
-      | "failed" = "accepted";
-
-    let mailMessageId: string | null = null;
-
-    try {
-      const mailResult =
-        await sendContactLeadMail({
+    const mailInput = {
+      leadId: leadReference.id,
+      lead: input,
+    };
+    const internal = await attemptMailDelivery(
+      () => sendContactLeadMail(mailInput),
+      (error) =>
+        logger.error("Contact lead notification failed", {
           leadId: leadReference.id,
-          lead: input,
-        });
+          ...getMailgunErrorDetails(error),
+        }),
+    );
+    const customer = await attemptMailDelivery(
+      () => sendContactCustomerConfirmation(mailInput),
+      (error) =>
+        logger.error("Contact customer confirmation failed", {
+          leadId: leadReference.id,
+          ...getMailgunErrorDetails(error),
+        }),
+    );
 
-      mailMessageId = mailResult.id;
-
-      await leadReference.update({
-        "mail.internal.status": "accepted",
+    await leadReference
+      .update({
+        "mail.internal.status": internal.status,
         "mail.internal.provider": "mailgun",
-        "mail.internal.messageId":
-          mailMessageId,
-        "mail.internal.updatedAt":
-          FieldValue.serverTimestamp(),
-      });
-
-      logger.info(
-        "Contact lead notification accepted",
-        {
+        "mail.internal.messageId": internal.messageId,
+        "mail.internal.updatedAt": FieldValue.serverTimestamp(),
+        "mail.customer.status": customer.status,
+        "mail.customer.provider": "mailgun",
+        "mail.customer.messageId": customer.messageId,
+        "mail.customer.updatedAt": FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      })
+      .catch((error) =>
+        logger.error("Contact mail status update failed", {
           leadId: leadReference.id,
-          provider: "mailgun",
-          messageId: mailMessageId,
-        },
-      );
-    } catch (error) {
-      mailStatus = "failed";
-
-      await leadReference
-        .update({
-          "mail.internal.status": "failed",
-          "mail.internal.provider": "mailgun",
-          "mail.internal.messageId": null,
-          "mail.internal.updatedAt":
-            FieldValue.serverTimestamp(),
-        })
-        .catch(() => undefined);
-
-      logger.error(
-        "Contact lead notification failed",
-        {
-          leadId: leadReference.id,
-          provider: "mailgun",
           error:
             error instanceof Error
-              ? {
-                name: error.name,
-                message: error.message,
-              }
-              : "Unknown mail error",
-        },
+              ? { name: error.name, message: error.message }
+              : "Unknown Firestore error",
+        }),
       );
-    }
 
     logger.info("Contact lead created", {
       leadId: leadReference.id,
@@ -216,7 +217,8 @@ export const submitContactLead = onCall(
     return {
       ok: true,
       leadId: leadReference.id,
-      mailStatus,
+      mailStatus: internal.status,
+      customerMailStatus: customer.status,
     };
   },
 );

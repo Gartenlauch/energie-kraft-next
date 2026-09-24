@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { contactFormContent } from "@/content/forms/contact";
+import { useSuccessFocus } from "@/hooks/use-success-focus";
 import { submitContactLead } from "@/lib/leads/submit-contact-lead";
 import { contactLeadInputSchema } from "@/lib/validation/contact-lead";
 import type {
@@ -191,6 +192,7 @@ export function ContactLeadForm() {
 
   const [submittedLeadId, setSubmittedLeadId] =
     useState<string | null>(null);
+  const successHeadingRef = useSuccessFocus<HTMLHeadingElement>(Boolean(submittedLeadId));
 
   function clearFieldError(
     fieldName: keyof ContactLeadInput,
@@ -318,7 +320,11 @@ export function ContactLeadForm() {
               Anfrage übermittelt
             </p>
 
-            <h2 className="section-title mt-4">
+            <h2
+              ref={successHeadingRef}
+              tabIndex={-1}
+              className="section-title mt-4 focus:outline-none"
+            >
               Vielen Dank für Ihre Anfrage
             </h2>
 

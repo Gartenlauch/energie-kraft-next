@@ -1,5 +1,5 @@
 import type { ConfiguratorLeadPayload, ConfiguratorPayload } from "./configurator-lead-validation";
-import { LEAD_MAIL_RECIPIENT, sendMailgunMail } from "./mailgun";
+import { INTERNAL_SUBMISSION_RECIPIENT, sendMailgunMail } from "./mailgun";
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -361,7 +361,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
      * an die technische Versandadresse
      * website@notify... gehen.
      */
-    replyTo: LEAD_MAIL_RECIPIENT,
+    replyTo: INTERNAL_SUBMISSION_RECIPIENT,
     inlineAttachments: [
       {
         filename: CUSTOMER_MAIL_LOGO_FILENAME,

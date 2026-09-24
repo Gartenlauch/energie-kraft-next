@@ -1,5 +1,5 @@
 import {
-    LEAD_MAIL_RECIPIENT,
+    INTERNAL_SUBMISSION_RECIPIENT,
     sendMailgunMail,
   } from "./mailgun";
   
@@ -201,7 +201,7 @@ import {
     `;
   
     return {
-      to: LEAD_MAIL_RECIPIENT,
+      to: INTERNAL_SUBMISSION_RECIPIENT,
       replyTo: lead.email,
       subject:
         "Neue Website-Anfrage – Energie-Kraft",
@@ -210,6 +210,39 @@ import {
     };
   }
 
+  export function buildContactCustomerConfirmation({
+    leadId,
+    lead,
+  }: SendContactLeadMailInput) {
+    const greeting = `${lead.firstName} ${lead.lastName}`.trim();
+
+    return {
+      to: lead.email,
+      replyTo: INTERNAL_SUBMISSION_RECIPIENT,
+      subject: "Ihre Anfrage bei Energie-Kraft Süd ist eingegangen",
+      text: [
+        `Guten Tag ${greeting},`,
+        "",
+        "vielen Dank für Ihre Anfrage. Wir haben Ihre Angaben erhalten und melden uns über den von Ihnen gewünschten Kontaktweg.",
+        "",
+        `Referenz: ${leadId}`,
+        "",
+        "Freundliche Grüße",
+        "Energie-Kraft Süd",
+      ].join("\n"),
+      html: [
+        `<p>Guten Tag ${escapeHtml(greeting)},</p>`,
+        "<p>vielen Dank für Ihre Anfrage. Wir haben Ihre Angaben erhalten und melden uns über den von Ihnen gewünschten Kontaktweg.</p>",
+        `<p>Referenz: ${escapeHtml(leadId)}</p>`,
+        "<p>Freundliche Grüße<br />Energie-Kraft Süd</p>",
+      ].join(""),
+    };
+  }
+
   export async function sendContactLeadMail(input: SendContactLeadMailInput) {
     return sendMailgunMail(buildContactLeadMail(input));
+  }
+
+  export async function sendContactCustomerConfirmation(input: SendContactLeadMailInput) {
+    return sendMailgunMail(buildContactCustomerConfirmation(input));
   }

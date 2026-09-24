@@ -3,7 +3,7 @@ import type {
   ConfiguratorPayload,
 } from "./configurator-lead-validation";
 import {
-  LEAD_MAIL_RECIPIENT,
+  INTERNAL_SUBMISSION_RECIPIENT,
   sendMailgunMail,
 } from "./mailgun";
 
@@ -1399,7 +1399,7 @@ ${leadId}
   `;
 
   return {
-    to: LEAD_MAIL_RECIPIENT,
+    to: INTERNAL_SUBMISSION_RECIPIENT,
 
     replyTo:
       lead.contact.email,

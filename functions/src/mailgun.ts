@@ -13,7 +13,8 @@ const MAILGUN_DOMAIN =
 const MAILGUN_API_URL =
   "https://api.eu.mailgun.net";
 
-export const LEAD_MAIL_RECIPIENT =
+// PRE-LAUNCH: change only this value to anfragen@energie-kraft.de at final domain go-live.
+export const INTERNAL_SUBMISSION_RECIPIENT =
   "anfrage@energie-kraft.de";
 
 export const LEAD_MAIL_FROM =
@@ -38,6 +39,14 @@ export interface SendMailInput {
 export interface SendMailResult {
   id: string;
   message: string;
+}
+
+export function getMailgunErrorDetails(error: unknown) {
+  return {
+    provider: "mailgun" as const,
+    errorName: error instanceof Error ? error.name : "Unknown",
+    errorMessage: error instanceof Error ? error.message : "Unknown mail error",
+  };
 }
 
 export async function sendMailgunMail(

@@ -262,12 +262,14 @@ export async function handleAdminForwardReferral(
   return { ok: true };
 }
 
-export const adminGenerateLeadReport = onCall(async (request) =>
+export const adminGenerateLeadReport = onCall({ invoker: "public" }, async (request) =>
   handleAdminGenerateLeadReport(request),
 );
-export const adminForwardLead = onCall({ secrets: [mailgunSendingKey] }, async (request) =>
-  handleAdminForwardLead(request),
+export const adminForwardLead = onCall(
+  { invoker: "public", secrets: [mailgunSendingKey] },
+  async (request) => handleAdminForwardLead(request),
 );
-export const adminForwardReferral = onCall({ secrets: [mailgunSendingKey] }, async (request) =>
-  handleAdminForwardReferral(request),
+export const adminForwardReferral = onCall(
+  { invoker: "public", secrets: [mailgunSendingKey] },
+  async (request) => handleAdminForwardReferral(request),
 );

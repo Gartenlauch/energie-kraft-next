@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { clearSubmittedConfiguratorProject } from "@/lib/configurator/project-reset";
+import { useSuccessFocus } from "@/hooks/use-success-focus";
 
 interface ConfiguratorSubmitSuccessProps {
   publicReference: string;
@@ -18,6 +19,7 @@ export function ConfiguratorSubmitSuccess({
   reportStatus,
   customerMailStatus,
 }: ConfiguratorSubmitSuccessProps) {
+  const successHeadingRef = useSuccessFocus<HTMLHeadingElement>();
   const projectOverviewSent = reportStatus === "generated" && customerMailStatus === "accepted";
 
   function handleRestart() {
@@ -34,8 +36,10 @@ export function ConfiguratorSubmitSuccess({
         <p className="eyebrow">Anfrage übermittelt</p>
 
         <h1
+          ref={successHeadingRef}
           id="configurator-success-heading"
-          className="text-brand-navy mt-4 text-3xl leading-tight tracking-tight sm:text-4xl"
+          tabIndex={-1}
+          className="text-brand-navy mt-4 text-3xl leading-tight tracking-tight focus:outline-none sm:text-4xl"
         >
           {projectOverviewSent
             ? "Deine Energieprojekt-Analyse ist unterwegs"

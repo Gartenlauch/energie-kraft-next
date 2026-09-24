@@ -2,7 +2,7 @@ import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { logger } from "firebase-functions";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 
-import { mailgunSendingKey } from "./mailgun";
+import { getMailgunErrorDetails, mailgunSendingKey } from "./mailgun";
 import {
   sendReferredCustomerNotice,
   sendReferralInternalMail,
@@ -20,7 +20,7 @@ function getOverallMailStatus(statuses: readonly ("accepted" | "failed")[]) {
 }
 
 export const submitReferral = onCall(
-  { maxInstances: 10, secrets: [mailgunSendingKey] },
+  { invoker: "public", maxInstances: 10, secrets: [mailgunSendingKey] },
   async (request) => {
     const parsed = referralPayloadSchema.safeParse(request.data);
     if (!parsed.success) {
@@ -90,15 +90,24 @@ export const submitReferral = onCall(
     const mailInput = { referralId: referralReference.id, receivedAt, referral: input };
     const internal = await attemptMailDelivery(
       () => sendReferralInternalMail(mailInput),
-      (error) => logger.error("Referral internal mail failed", { referralId: referralReference.id, error }),
+      (error) => logger.error("Referral internal mail failed", {
+        referralId: referralReference.id,
+        ...getMailgunErrorDetails(error),
+      }),
     );
     const referrer = await attemptMailDelivery(
       () => sendReferrerConfirmation(mailInput),
-      (error) => logger.error("Referral confirmation failed", { referralId: referralReference.id, error }),
+      (error) => logger.error("Referral confirmation failed", {
+        referralId: referralReference.id,
+        ...getMailgunErrorDetails(error),
+      }),
     );
     const referredCustomer = await attemptMailDelivery(
       () => sendReferredCustomerNotice(mailInput),
-      (error) => logger.error("Referred customer notice failed", { referralId: referralReference.id, error }),
+      (error) => logger.error("Referred customer notice failed", {
+        referralId: referralReference.id,
+        ...getMailgunErrorDetails(error),
+      }),
     );
 
     await referralReference

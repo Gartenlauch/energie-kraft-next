@@ -83,6 +83,7 @@ export interface SubmitContactLeadResult {
   ok: true;
   leadId: string;
   mailStatus?: "accepted" | "failed";
+  customerMailStatus?: "accepted" | "failed";
 }
 
 export interface ContactLeadDocument {

@@ -1,8 +1,6 @@
-import { sendMailgunMail } from "./mailgun";
+import { INTERNAL_SUBMISSION_RECIPIENT, sendMailgunMail } from "./mailgun";
 import type { ApplicationPayload } from "./application-validation";
 import type { ApplicationFileMetadata } from "./shared/application-file-policy";
-
-const APPLICATION_RECIPIENT = "jobs@energie-kraft.de";
 
 function escapeHtml(value: string): string {
   return value
@@ -29,7 +27,7 @@ export function buildApplicationInternalMail(input: ApplicationMailInput) {
   const { applicationId, jobTitle, receivedAt, application } = input;
   const address = `${application.street}, ${application.postalCode} ${application.city}`;
   return {
-    to: APPLICATION_RECIPIENT,
+    to: INTERNAL_SUBMISSION_RECIPIENT,
     replyTo: application.email,
     subject: `Neue Bewerbung – ${jobTitle}`,
     text: [
@@ -76,7 +74,7 @@ export function buildApplicationAutoReply(input: ApplicationMailInput) {
   const { applicationId, jobTitle, application } = input;
   return {
     to: application.email,
-    replyTo: APPLICATION_RECIPIENT,
+    replyTo: INTERNAL_SUBMISSION_RECIPIENT,
     subject: "Deine Bewerbung bei Energie-Kraft Süd ist eingegangen",
     text: `Hallo ${application.firstName},\n\nvielen Dank für deine Bewerbung als ${jobTitle}. Deine Angaben wurden aufgenommen.\n\nReferenz: ${applicationId}\n\nViele Grüße\nEnergie-Kraft Süd`,
     html: `<p>Hallo ${escapeHtml(application.firstName)},</p><p>vielen Dank für deine Bewerbung als <strong>${escapeHtml(jobTitle)}</strong>. Deine Angaben wurden aufgenommen.</p><p>Referenz: ${escapeHtml(applicationId)}</p><p>Viele Grüße<br />Energie-Kraft Süd</p>`,

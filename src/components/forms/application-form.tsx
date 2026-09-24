@@ -12,6 +12,7 @@ import {
   validateApplicationFiles,
 } from "../../../functions/src/shared/application-file-policy";
 import { applicationInputSchema } from "@/lib/validation/application";
+import { useSuccessFocus } from "@/hooks/use-success-focus";
 import type { ApplicationInput, Salutation } from "@/types/application";
 
 type ApplicationField = Exclude<keyof ApplicationInput, "submissionId" | "formStartedAt">;
@@ -84,6 +85,7 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const successHeadingRef = useSuccessFocus<HTMLHeadingElement>(Boolean(applicationId));
   const formRef = useRef<HTMLFormElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -164,7 +166,13 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
     return (
       <div className="premium-card p-7 md:p-10" role="status">
         <p className="eyebrow">Bewerbung eingegangen</p>
-        <h2 className="section-title mt-4">Vielen Dank für dein Interesse.</h2>
+        <h2
+          ref={successHeadingRef}
+          tabIndex={-1}
+          className="section-title mt-4 focus:outline-none"
+        >
+          Vielen Dank für dein Interesse.
+        </h2>
         <p className="mt-5 text-lg leading-8 text-[var(--text-muted)]">
           Deine Bewerbung wurde erfolgreich übermittelt.
         </p>
