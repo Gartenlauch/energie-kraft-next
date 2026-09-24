@@ -1,5 +1,9 @@
 # Sprint 8.1 – Go-Live Guards
 
+> **Status:** Historischer Sprint-8.1-Guard mit weiterhin offenen Business-Freigaben. Der neue
+> Firebase/App-Hosting-Produktivbetrieb und WordPress-Cutover sind nicht abgeschlossen. Der
+> aktuelle kanonische Runbook-Einstieg ist [Production readiness](deployment.md).
+
 Vor einem Produktions-Go-Live zwingend erneut bestätigen:
 
 - **Firebase-Kontext:** Die relevanten Collections existieren derzeit ausschließlich in der

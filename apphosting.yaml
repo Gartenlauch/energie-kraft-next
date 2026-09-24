@@ -23,7 +23,61 @@ runConfig:
   # - variable: MY_SECRET
   #   secret: mySecretRef
 
-  env:
+env:
+  - variable: NEXT_PUBLIC_SITE_ENV
+    value: "production"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_CANONICAL_BASE_URL
+    value: "https://www.energie-kraft.de"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyA7EedTbkBtJs7XXSjKKR8GoqVVaZGzDeY"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "energie-kraft-next.firebaseapp.com"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "energie-kraft-next"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "energie-kraft-next.firebasestorage.app"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "348172700948"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:348172700948:web:574681aad3ca9630480601"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_USE_FIREBASE_EMULATORS
+    value: "false"
+    availability:
+      - BUILD
+      - RUNTIME
+
   - variable: GOOGLE_PLACES_API_KEY
     secret: GOOGLE_PLACES_API_KEY
     availability:

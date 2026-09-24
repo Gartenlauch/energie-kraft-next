@@ -1,5 +1,9 @@
 # Sprint 8 – Content-Inventar
 
+> **Status:** Historisches Sprint-8-Inventar. Mehrere damals fehlende Seiten, Rechner und
+> Konfiguratoren existieren inzwischen. Für den aktuellen Routenbestand sind `src/app` und
+> `src/config/routes.ts` maßgeblich; siehe [SEO implementation](seo-migration.md).
+
 ## Bereits im Next.js-Projekt vorhanden
 
 - Startseite, Photovoltaik, Stromspeicher, Wärmepumpen, Klimaanlagen und Wallbox.

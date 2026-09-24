@@ -1,5 +1,9 @@
 # Energie-Kraft Süd – SEO-Migrationsmatrix
 
+> **Status:** Historisches Sprint-3-Dokument. Für aktuelle Routen, Redirects, Sitemap und Robots
+> siehe [SEO and migration implementation](../seo-migration.md). Offene Cutover-Evidenz wird in
+> [Legacy URL migration](../legacy-url-migration.md) gepflegt.
+
 Stand: Sprint 3
 
 Diese Datei dokumentiert die Migration der bestehenden WordPress-URLs

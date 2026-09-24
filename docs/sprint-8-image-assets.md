@@ -1,5 +1,10 @@
 # Sprint 8 – Bildassets
 
+> **Status:** Historischer Sprint-8-Asset-Nachweis. Der heutige Referenzbestand wird durch
+> `scripts/process-reference-images.mjs` und `src/generated/reference-projects.generated.ts`
+> erzeugt und ist größer als die hier dokumentierten 32 Projekte. Dieses Dokument nicht als
+> aktuelles Vollinventar verwenden.
+
 Alle finalen Sprint-8-Assets sind lokale WebP-Derivate. Die Rohdateien unter `design-input/`
 bleiben unverändert und sind keine produktive Abhängigkeit. Die Reproduktion erfolgt mit
 `scripts/process-sprint8-assets.mjs` über das bereits verfügbare Paket `sharp`.

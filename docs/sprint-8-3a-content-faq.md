@@ -1,5 +1,9 @@
 # Sprint 8.3A – Content und FAQ
 
+> **Status:** Historischer Sprint-8.3A-Nachweis. FAQ-CRUD sowie JSON-Preview, -Import und -Export
+> sind inzwischen implementiert. Aktuell: [öffentliche FAQ-Ausgabe](architecture/public-faq-rendering.md)
+> und [FAQ-Administration](architecture/faq-entry-admin.md).
+
 ## Redaktionelle Entscheidungen
 
 - Grundlage: öffentliche, fachlich plausible PV-, Batteriespeicher-, Wallbox- und Service-Texte des lokalen WordPress-Exports sowie `sprint-8-seo-baseline.md`. Keine Formulardaten oder SQL-Personendaten verwendet.

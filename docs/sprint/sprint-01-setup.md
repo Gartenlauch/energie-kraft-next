@@ -1,5 +1,9 @@
 # Übergabe Sprint 1 → Sprint 2
 
+> **Status:** Historisches Sprint-1-Übergabedokument. Die damaligen offenen Punkte und
+> Versionsstände beschreiben nicht den heutigen Funktionsumfang. Einstieg in den aktuellen Stand:
+> [Dokumentationsindex](../README.md).
+
 **Projekt:** Energie-Kraft Süd Relaunch
 **Repository/Projekt:** `energie-kraft-next`
 **Produktivdomain:** `https://www.energie-kraft.de`

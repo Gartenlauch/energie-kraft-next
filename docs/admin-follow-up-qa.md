@@ -1,5 +1,11 @@
 # Admin Follow-up – Umsetzung und manuelle Abnahme
 
+> **Status:** Implementierungs- und Prüfnachweis vom 23.09.2026. Für die aktuelle Architektur
+> siehe [Admin backend](architecture/admin-backend.md),
+> [Authentifizierung](architecture/admin-authentication.md) und
+> [Konfigurator](architecture/configurator.md). Offene Checkboxen bleiben manuelle QA, nicht
+> automatisch bestätigte Abnahme.
+
 ## Umfang
 
 - Anfragen: ein einheitliches Desktop-Grid mit festen Checkbox-/Datums-/Statusspalten und `minmax(0, …)` für Namen, Produkte und Ort. Mobile bleibt gestapelt.

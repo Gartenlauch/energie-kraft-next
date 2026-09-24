@@ -1,25 +1,11 @@
-# FAQ-Kategorieverwaltung
+# FAQ category administration
 
-## Route
+**Status: Implemented.**
 
-`/admin/faqs/categories`
+`/admin/faqs/categories` is Administrator-only and performs its own server authorization. It supports list/search/status filtering, create, edit, activation/deactivation, sorting and delete.
 
-Die Route liegt innerhalb des geschützten
-Admin-Layouts und erfordert eine gültige
-Admin-Session.
+Categories are stored at `faqCategories/{slug}`. The document ID and `slug` are fixed after creation; editable fields are `name`, `sortOrder` and `isActive`. Create/update audit fields are server controlled.
 
-## Funktionen
+A category cannot be deleted while any FAQ references its ID. Reads/writes use the Admin SDK; there is no direct browser Firestore write. Mitarbeiter have no route or action access.
 
-- Kategorien anzeigen
-- Kategorien erstellen
-- Name bearbeiten
-- Sortierung bearbeiten
-- Aktivstatus ändern
-- Kategorien löschen
-
-## Dokument-ID
-
-Die Dokument-ID entspricht dem Slug:
-
-```text
-faqCategories/{slug}
+JSON export/preview/import is exposed from the FAQ entry page and includes categories in the same versioned document. See [FAQ entry administration](faq-entry-admin.md).

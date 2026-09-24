@@ -1,119 +1,32 @@
-# Öffentliche FAQ-Ausgabe
+# Public FAQ rendering
 
-Erweiterung Sprint 8.3A: [Katalog, Detailseiten, Adminfelder und lokaler Import](../sprint-8-3a-content-faq.md).
+**Status: Implemented.** Firestore is the sole runtime FAQ source.
 
-## Datenquelle
+## Routes and selection
 
-Öffentliche FAQs werden ausschließlich aus
-Firestore geladen.
+- `/faq`: complete published catalog across active categories, with text search, category filter and incremental display
+- `/faq/[category]`: category catalog with in-topic search and expandable long answers
+- `/faq/[category]/[slug]`: breadcrumb, question/H1, short and long answer, up to five related FAQs and a category-derived product CTA
+- Landing-page FAQ sections: curated by route placement and limited for that surface
 
-Collection:
+`src/lib/faq/public-repository.ts` reads `faqs` and `faqCategories` server-side with the Admin SDK. A record is public only when `isPublished` is true and its category is active. Landing pages additionally require a matching placement; catalog/detail routes do not.
 
-`faqs`
+Placement results sort by placement order, category order and question. Catalog results sort by category, FAQ order and question. Legacy FAQ documents without an explicit slug retain a stable URL derived from their document ID.
 
-Kategorien:
+## Search
 
-`faqCategories`
+The public explorer searches normalized question, short answer, long answer and category text. It shares the general normalized search-term helper with Admin list search; Firestore remains the source of the records.
 
-## Serverseitiger Zugriff
+## Structured data
 
-Der öffentliche Datenzugriff erfolgt über:
+Landing-page `FAQPage` JSON-LD contains only FAQs that are visible on that route and whose placement enables `showInSchema`. FAQ detail pages use WebPage/breadcrumb structure and do not emit `QAPage`. Metadata and canonicals are generated from the resolved category/FAQ routes.
 
-`src/lib/faq/public-repository.ts`
+Audit and administration fields are mapped out before rendering.
 
-Es wird das Firebase Admin SDK verwendet.
+## Admin and transfer
 
-Die Firestore Client Rules bleiben weiterhin
-vollständig geschlossen.
+FAQ/category CRUD and JSON preview/import/export are implemented and Administrator-only. See [FAQ entry administration](faq-entry-admin.md).
 
-## Veröffentlichungsbedingungen
+## Rendering behavior
 
-Eine FAQ wird öffentlich angezeigt, wenn:
-
-1. `isPublished === true`
-2. auf Landingpages eine Placement-Zuordnung für die aktuelle Route
-   vorhanden ist; Katalog und Detailseiten benötigen kein passendes Placement
-3. die zugeordnete Kategorie existiert
-4. die Kategorie `isActive === true` ist
-
-## Sortierung
-
-Die Ausgabe wird primär über:
-
-`placement.sortOrder`
-
-sortiert.
-
-Bei gleicher Sortierung folgen:
-
-1. `category.sortOrder`
-2. alphabetische Sortierung der Frage
-
-## Route-Keys
-
-Die unterstützten Route-Keys werden zentral unter:
-
-`src/config/routes.ts`
-
-verwaltet.
-
-Die Placement-Abfrage wird für Startseite und Produktseiten verwendet:
-
-- photovoltaik
-- stromspeicher
-- wallbox
-- klimaanlagen
-- waermepumpen
-- kontakt
-
-Sie liefert maximal sechs Einträge. `/faq`, Kategorie- und Detailseiten verwenden
-den vollständigen veröffentlichten Katalog aktiver Kategorien. Siehe Sprint-8.3A-Dokumentation.
-
-## Strukturierte Daten
-
-Das Feld:
-
-`placement.showInSchema`
-
-steuert, ob eine öffentlich sichtbare FAQ zusätzlich
-in das generische Schema.org-FAQPage-JSON-LD
-aufgenommen wird.
-
-Nur bereits sichtbar veröffentlichte FAQs können im
-JSON-LD erscheinen.
-
-## Google FAQ Rich Results
-
-Google stellt FAQ Rich Results seit Mai 2026 nicht
-mehr in der Google-Suche dar.
-
-Die Schema-Ausgabe dient daher nicht als
-Rich-Result-Taktik, sondern als semantische,
-maschinenlesbare Struktur für Schema.org-kompatible
-Systeme, Suchmaschinen und AI-Systeme.
-
-## Sicherheit
-
-Audit-Felder wie:
-
-- `createdBy`
-- `updatedBy`
-- `createdAt`
-- `updatedAt`
-
-werden nicht an öffentliche Komponenten
-weitergereicht.
-
-Die öffentliche Darstellung verwendet ausschließlich
-den Typ:
-
-`PublicFaqEntry`
-
-## Rendering
-
-Die Startseite wird aktuell dynamisch gerendert, damit
-CI-Builds keine produktiven Firestore-Zugriffe
-ausführen.
-
-Caching und gezielte Revalidierung werden später
-separat optimiert.
+The sitemap and FAQ pages are dynamic because their route set comes from Firestore. Non-production robots/sitemap behavior prevents local/CI environments from being indexed. No static FAQ datastore is used as a runtime fallback.

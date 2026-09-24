@@ -395,13 +395,14 @@ FAQ import/export should use the existing authenticated admin architecture rathe
 
 The established reference hub is:
 
-`/pv-referenzen`
+`/referenzen`
 
 Location pages use:
 
-`/pv-referenzen/[location]`
+`/referenzen/[location]`
 
-Do not replace this with a parallel `/referenzen/...` architecture.
+Legacy `/pv-referenzen` URLs redirect to this architecture. Do not create a parallel reference
+route family.
 
 Do not mass-generate thin doorway/location pages.
 

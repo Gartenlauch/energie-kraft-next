@@ -1,217 +1,50 @@
-# Firebase-Betriebsmodell
+# Firebase operating model
 
-**Projekt:** Energie-Kraft Süd Relaunch
-**Firebase-Projekt-ID:** `energie-kraft-next`
-**Stand:** 14. Juli 2026
+## Status
 
-## 1. Grundentscheidung
+The repository is emulator-first and uses one configured Firebase project alias, `energie-kraft-next`. The new application does **not** yet have a completed productive Firebase/App Hosting environment or completed WordPress cutover. Configuration files express intended deployment shape, not proof that services are provisioned or live.
 
-Für Entwicklung und Produktion wird genau ein Firebase-Projekt verwendet:
+- Local application data is expected only in the Emulator Suite.
+- CI uses placeholder web configuration, runs tests/builds and does not read/write production data.
+- Production provisioning and deployment require separate authorization and the [production-readiness runbook](../deployment.md).
 
-```text
-energie-kraft-next
-```
+## Configuration
 
-Es gibt:
+- `.firebaserc`: default alias `energie-kraft-next`; no staging/production aliases.
+- `firebase.json`: Firestore `(default)` in `europe-west4`, indexes, Rules, Storage Rules, Functions codebase, Emulator Suite and App Hosting backend `energie-kraft-next`.
+- `apphosting.yaml`: Cloud Run minimum instances and Google Places runtime configuration. It is not deployment evidence.
+- `.env.example`: safe local/demo values and emulator hosts.
+- `functions/.secret.local`: local Functions secrets where required; never committed.
 
-* kein separates Staging-Projekt,
-* keinen Firebase-Alias `staging`,
-* keinen Firebase-Alias `production`,
-* keine zweite produktionsähnliche Firebase-Umgebung.
+Functions use Node.js 22. The public app and Functions both use the existing Firebase/Mailgun architecture; protected business data is written by trusted server code, not public browsers.
 
-Die bestehende WordPress-Webseite bleibt bis zum Go-live auf der Produktivdomain aktiv. Die neue Next.js-Anwendung wird bis dahin lokal entwickelt und getestet.
-
-## 2. Umgebungen
-
-### Lokale Entwicklung
-
-Die lokale Entwicklung verwendet ausschließlich die Firebase Emulator Suite.
-
-Verwendete Emulatoren:
-
-| Dienst          |        Port |
-| --------------- | ----------: |
-| Authentication  |        9099 |
-| Cloud Functions |        5001 |
-| Firestore       |        8080 |
-| Storage         |        9199 |
-| Emulator UI     | automatisch |
-
-Der Emulator-Aufruf verwendet ausdrücklich die Projekt-ID:
-
-Lokale Emulator-Projekt-ID: demo-energie-kraft-next
-Produktives Firebase-Projekt: energie-kraft-next
-
-Die Demo-ID ist kein zweites Firebase-Projekt.
-Sie existiert ausschließlich als lokaler Emulator-Namespace.
-
-```bash
-firebase emulators:start --project energie-kraft-next
-```
-
-Lokale Anwendungen dürfen nicht unbemerkt auf produktive Firebase-Dienste zugreifen.
-
-### Continuous Integration
-
-GitHub Actions verwendet die technische Umgebung:
-
-```text
-ci
-```
-
-CI führt Installations-, Lint-, TypeScript- und Build-Prüfungen aus.
-
-CI darf:
-
-* keine produktiven Firebase-Daten lesen,
-* keine produktiven Firebase-Daten schreiben,
-* keine Firebase-Ressourcen anlegen,
-* keine Deployments durchführen.
-
-### Produktion
-
-Produktive Firebase-Zugriffe erfolgen ausschließlich über:
-
-```text
-energie-kraft-next
-```
-
-Deployments müssen bewusst und explizit ausgeführt werden. Es gibt kein allgemeines automatisches Deployment im Quality-Workflow.
-
-## 3. Regionen
-
-Für alle zentralen Backend-Komponenten wird dieselbe Region verwendet:
-
-| Dienst               | Region         |
-| -------------------- | -------------- |
-| Firebase App Hosting | `europe-west4` |
-| Cloud Functions      | `europe-west4` |
-| Firestore            | `europe-west4` |
-
-Die Cloud-Functions-Region wird im Functions-Quellcode über `setGlobalOptions` festgelegt.
-
-Die Firestore-Datenbank existiert zum Zeitpunkt dieser Dokumentation noch nicht. Beim späteren Anlegen der Datenbank muss ausdrücklich `europe-west4` gewählt werden.
-
-Der Firestore-Standort kann nach dem Erstellen der Datenbank nicht ohne Migration geändert werden.
-
-## 4. Firebase-Konfigurationsdateien
-
-### `.firebaserc`
-
-Die Datei enthält ausschließlich das Standardprojekt:
-
-```json
-{
-  "projects": {
-    "default": "energie-kraft-next"
-  }
-}
-```
-
-### `firebase.json`
-
-Die Konfiguration enthält:
-
-* Firestore Rules,
-* Firestore Indexes,
-* Storage Rules,
-* Functions-Codebase,
-* Emulator-Konfiguration,
-* App-Hosting-Backend,
-* `singleProjectMode: true`.
-
-Die geplante Firestore-Region ist:
-
-```json
-"location": "europe-west4"
-```
-
-### `apphosting.yaml`
-
-App Hosting verwendet aktuell:
-
-```yaml
-runConfig:
-  minInstances: 0
-```
-
-Weitere Ressourcenlimits, Environment-Variablen und Secrets werden erst ergänzt, wenn sie fachlich benötigt werden.
-
-## 5. Sicherheitsregeln
-
-Für lokale Entwicklung gilt:
-
-```text
-NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true
-```
-
-Produktive Firebase-Zugriffe dürfen nicht allein anhand einer Client-Variable freigegeben werden.
-
-Das Firebase Admin SDK darf ausschließlich serverseitig verwendet werden und muss in geschützten Servermodulen liegen.
-
-Das Admin SDK umgeht Firestore Security Rules. Deshalb benötigen administrative Schreiboperationen zusätzlich:
-
-* eine verifizierte Firebase-Session,
-* eine Admin-Rollenprüfung,
-* serverseitige Eingabevalidierung,
-* kontrollierte Route Handler oder Server Actions.
-
-## 6. Erlaubte npm-Scripts
-
-Aktives Firebase-Projekt anzeigen:
+## Commands
 
 ```bash
 npm run firebase:current
-```
-
-Verfügbare Firebase-Projekte anzeigen:
-
-```bash
 npm run firebase:projects
-```
-
-Lokale Emulatoren starten:
-
-```bash
 npm run emulators
+npm run emulators:smoke
+npm run test:rules
+npm run functions:check
 ```
 
-Die früheren Scripts `firebase:staging` und `firebase:production` wurden entfernt, da die entsprechenden Projekt-Aliase nicht existieren und dem Ein-Projekt-Modell widersprechen.
+The quality workflow contains no deployment. Do not run `firebase deploy`, create resources, switch projects or inspect production collections merely to validate local development data without explicit authorization.
 
-## 7. Verbotene beziehungsweise kontrollierte Aktionen
+## Security boundary
 
-Während der lokalen Entwicklung dürfen nicht unbeabsichtigt ausgeführt werden:
+The Admin SDK bypasses Security Rules. Server Actions, Route Handlers and Functions must therefore enforce current identity/role, input validation and operation-specific safeguards. Client Rules are deny-by-default with only the explicit realtime/private-read exceptions documented in [Firebase Security Rules](firebase-security-rules.md).
 
-```bash
-firebase deploy
-firebase deploy --only firestore
-firebase deploy --only functions
-firebase use staging
-firebase use production
-```
+## Environments
 
-Vor einem Deployment müssen mindestens folgende Punkte geprüft werden:
+### Local
 
-1. aktives Firebase-Projekt,
-2. Zielressourcen des Deployments,
-3. lokale Qualitätsprüfungen,
-4. GitHub-Actions-Status,
-5. Security Rules,
-6. Environment-Variablen und Secrets.
+`NEXT_PUBLIC_SITE_ENV=local`, demo project IDs and emulator connections are mandatory. See [Firebase emulators](firebase-emulators.md).
 
-## 8. Noch offene Firebase-Arbeiten
+### CI
 
-Noch nicht Bestandteil dieses Betriebsmodells beziehungsweise noch umzusetzen:
+GitHub Actions installs root/Functions dependencies, creates a non-emulator placeholder environment, and runs lint, typecheck, unit tests, Rules tests, Functions checks and the Next production build. It does not deploy.
 
-* Firestore-Datenbank anlegen,
-* Emulator-Verbindung für Client SDK absichern,
-* Emulator-Verbindung für Admin SDK absichern,
-* Authentifizierung für den Adminbereich,
-* Session Cookies,
-* Admin-Rollenmodell,
-* Firestore Rules Tests,
-* Storage Rules Tests,
-* FAQ-Datenmodell,
-* FAQ-CRUD,
-* Lead-Speicherung,
-* produktive Secrets und Environment-Variablen.
+### Future production
+
+Production must use real service credentials/identity and no emulator host variables. Provisioning, secrets, first Administrator, IAM, Rules, indexes, App Hosting, DNS and cutover remain release work. See [Production readiness](../deployment.md).

@@ -1,5 +1,12 @@
 # Sprint 8.1 – Referenzdaten vor Go-Live
 
+> **Status:** Historische 32-Projekte-Liste, als aktuelles TODO **überholt**. Der generierte
+> Laufzeitbestand ist inzwischen deutlich größer und enthält kein `dataStatus`-/`placeholder`-Feld
+> mehr; kWp-Werte werden sichtbar in Karten, Captions und Alt-Texten verwendet. Eine belastbare
+> fachliche Freigabe ist aus dem Repository nicht ableitbar. Vor Go-live muss deshalb der gesamte
+> aktuelle Bestand aus `src/generated/reference-projects.generated.ts` geprüft und ein
+> nachvollziehbarer Verifikationsstatus wieder hergestellt oder anderweitig dokumentiert werden.
+
 Stand: 9. September 2026. Alle Bilder sind reale Legacy-Projektaufnahmen. Die in den
 Quelldateinamen erkennbaren Leistungswerte wurden als Arbeitswerte übernommen; der Speicherstatus
 ist ein plausibler temporärer Wert. Da nicht beide Angaben fachlich bestätigt sind, ist jedes

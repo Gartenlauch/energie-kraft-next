@@ -1,5 +1,15 @@
 # Sprint 8 – Legacy-URL-Migration
 
+> **Status:** Historische Sprint-8-Arbeitsmatrix und weiterhin relevante Cutover-Evidenz. Die
+> tatsächlich implementierten Routen und Redirects stehen in `src/app`, `src/config/routes.ts`
+> und `next.config.ts`; siehe [current SEO implementation](seo-migration.md). Einzelne damalige
+> Zielpfade (insbesondere `/pv-referenzen`) wurden später durch `/referenzen` ersetzt.
+>
+> Die Binärdatei `02_energie-kraft_relaunch_migrationsmatrix_v2.xlsx` ist ein noch älterer
+> Planungsstand vom 08.07.2026. Sie enthält u. a. überholte Kontakt-, Bewerbungs-, Rechner-,
+> Firestore- und statische-Content-Entscheidungen. Sie bleibt unverändert als historische Quelle
+> erhalten und darf nicht als Deployment-Runbook verwendet werden.
+
 Stand: 9. September 2026. Dieses Dokument ist die Arbeitsmatrix für die spätere
 Go-live-Migration. In Sprint 8 werden **keine** großflächigen Redirects aktiviert.
 

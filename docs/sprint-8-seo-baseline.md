@@ -1,5 +1,8 @@
 # Sprint 8 – SEO-Baseline
 
+> **Status:** Historische Baseline; keine Aussage über aktuelle Rankings, Zugriffe oder
+> Produktionsindexierung. Aktuelle technische Umsetzung: [SEO and migration implementation](seo-migration.md).
+
 Zeitraum der Exporte: 9. Januar 2025 bis 9. September 2026 (GA4) bzw. letzte
 16 Monate (Search Console). Alle Werte sind aggregiert und enthalten keine Formular- oder
 personenbezogenen Rohdaten.

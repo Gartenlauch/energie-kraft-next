@@ -1,63 +1,36 @@
 # Firebase Security Rules
 
-## Status
-
-Firestore und Firebase Storage verwenden aktuell eine vollständig
-geschlossene Deny-by-default-Konfiguration.
-
 ## Firestore
 
-Regeldatei:
+`firestore.rules` is deny-by-default. Public/customer submissions and all protected writes go through server code; there are no direct browser writes to leads, applications, referrals, FAQs, settings, profiles or activities.
 
-`firestore.rules`
+Explicit client reads:
 
-Aktuelles Verhalten:
+- `adminRealtime/{leads|applications|referrals}`: active Administrator or Mitarbeiter
+- `applications/{id}` and `referrals/{id}`: active Administrator only
 
-- keine anonymen Lesezugriffe,
-- keine anonymen Schreibzugriffe,
-- keine Clientzugriffe authentifizierter Benutzer,
-- keine Clientzugriffe mit einem Admin-Claim,
-- keine Zugriffe auf unbekannte Collections.
+All writes to those paths are denied. `adminUsers/{uid}` and `adminLocks/{id}` are completely server-only. Leads, activities, FAQs, configurator settings, counters, idempotency records and unknown paths fall through to deny-all.
 
-Administrative Zugriffe erfolgen später ausschließlich serverseitig
-über das Firebase Admin SDK.
+Role evaluation accepts canonical `role: "admin" | "staff"`; legacy `admin: true` is Administrator only when no explicit role exists. Profile state is also checked: inactive, archived or pending profiles are denied. The rules' narrow reads complement, but do not replace, server authorization.
 
-Das Admin SDK umgeht Firestore Security Rules. Deshalb müssen
-serverseitige Operationen zusätzlich geschützt werden durch:
+Operational Admin pages commonly read business records server-side with the Admin SDK, so a client Rules denial does not mean the feature is unavailable.
 
-- verifizierte Session-Cookies,
-- Admin-Rollenprüfung,
-- serverseitige Zod-Validierung,
-- kontrollierte Route Handler oder Server Actions.
+## Storage
 
-## Firebase Storage
+`storage.rules` denies every client read and write. Application documents and Admin avatars are handled by authenticated server routes/Admin SDK.
 
-Regeldatei:
+Private avatars are stored as `adminUsers/{uid}/avatar.webp`. There is no public Storage download token; upload is Administrator-only and download requires an active internal session.
 
-`storage.rules`
+## Server-side controls
 
-Aktuelles Verhalten:
+Because the Admin SDK bypasses Rules, server operations enforce:
 
-- keine anonymen Uploads,
-- keine authentifizierten Uploads,
-- keine Uploads mit Admin-Claim über das Client SDK,
-- kein Lesen von Dateien oder Metadaten,
-- kein Löschen von Dateien über das Client SDK.
+- verified session/callable identity and live role/profile state;
+- Administrator-only gates for FAQ, settings, users and destructive actions;
+- Zod/domain validation and same-origin checks where applicable;
+- file type/size/content validation;
+- self/last-Administrator and idempotency/transaction protections.
 
-Upload-Regeln werden erst geöffnet, wenn ein konkreter fachlicher
-Anwendungsfall umgesetzt und getestet wird.
+## Tests
 
-## Automatisierte Tests
-
-Testdatei:
-
-`tests/rules/firebase-security.rules.test.ts`
-
-Testkonfiguration:
-
-`vitest.rules.config.mjs`
-
-Lokaler Test:
-
-```bash
-npm run test:rules
+`npm run test:rules` starts Firestore and Storage emulators and runs `vitest.rules.config.mjs`, including role/profile and deny-by-default cases. `npm run check:all` includes the Rules suite. Test counts are intentionally not hardcoded here.

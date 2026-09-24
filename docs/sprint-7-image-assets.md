@@ -1,5 +1,10 @@
 # Sprint 7 – Bildassets
 
+> **Status:** Historischer Asset-Nachweis. Spätere Bild- und Referenzverarbeitung hat Bestand,
+> Pfade und Umfang erweitert. Aktuelle Laufzeitpfade ergeben sich aus `public/images`, den
+> Content-Modellen und `npm run images:references`; Designprinzipien stehen im
+> [Designsystem](design-system.md).
+
 Alle Bilder liegen lokal unter `public/images/`, werden als WebP ausgeliefert und enthalten weder
 Hotlinks noch eingebettete Texte oder Fremdlogos. Die Website nutzt responsive Art Direction;
 Desktop- und Mobile-Crops werden über die Next.js-16-API `getImageProps()` in einem `<picture>`

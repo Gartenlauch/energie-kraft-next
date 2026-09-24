@@ -1,178 +1,76 @@
-# Firebase-Datenmodell
+# Firebase data model
 
-## FAQ-Kategorien
+All protected business writes are server-authoritative. Firestore Timestamps are used for server audit fields unless a field is explicitly an ISO string or number.
 
-Collection:
+## Customer-generated business data
 
-`faqCategories/{categoryId}`
+### `leads/{leadId}`
 
-Persistierte Felder:
+Stores contact and configurator Anfragen. Common fields include `type`, workflow `status`, contact/project data, `createdAt` and `updatedAt`. Configurator leads additionally persist the public reference, settings/settings version, selected products, journey, normalized answers/results, economics, consent and schema metadata. Current configurator writes use schema version 4; Admin normalization supports the implemented older lead variants.
 
-| Feld | Typ | Beschreibung |
-|---|---|---|
-| `name` | `string` | Anzeigename der Kategorie |
-| `slug` | `string` | URL- und systemtauglicher Schlüssel |
-| `sortOrder` | `number` | Globale Sortierung der Kategorie |
-| `isActive` | `boolean` | Aktivstatus |
-| `createdAt` | Firestore Timestamp | Zeitpunkt der Erstellung |
-| `updatedAt` | Firestore Timestamp | Zeitpunkt der letzten Änderung |
-| `createdBy` | `string` | UID des erstellenden Administrators |
-| `updatedBy` | `string` | UID des zuletzt ändernden Administrators |
+`leads/{leadId}/activities/{activityId}` stores status, PDF and forwarding events with type, timestamp, actor UID/e-mail, message and limited metadata.
 
-Die Firestore-Dokument-ID wird nicht zusätzlich als Feld gespeichert.
+### `applications/{submissionId}`
 
-Die Dokument-ID entspricht dem Slug der Kategorie.
+Private application PII, job snapshot, status, consent, document metadata, upload/idempotency state, mail state and audit timestamps. Private files use Storage paths `applications/{applicationId}/{documentId}`. Deletion coordinates Firestore and tracked Storage objects.
 
-Beispiel:
+### `referrals/{submissionId}`
 
-```text
-faqCategories/photovoltaik
+Private referrer/referred-customer PII, campaign snapshot, consent, status, mail state, metadata and timestamps. `referrals/{id}/activities/{activityId}` currently contains forwarding events; status updates do not currently append an activity record.
 
+Public forms call validated Functions; browsers do not write these collections directly.
 
-Der Slug und die Dokument-ID sind nach der
-Erstellung unveränderlich. Dadurch bleiben
-Referenzen über `faqs.categoryId` stabil.
+## FAQ content
 
-## FAQ-Einträge
+### `faqCategories/{slug}`
 
-Collection:
+The immutable document ID equals the category slug. Fields: `name`, `slug`, `sortOrder`, `isActive` and create/update audit fields.
 
-`faqs/{faqId}`
+### `faqs/{faqId}`
 
-Persistierte Felder:
+Fields include question, short/long answer data, immutable `slug`, `categoryId`, `isPublished`, route placements, related FAQ IDs, optional product link and create/update audit fields. Placements contain `routeKey`, `sortOrder` and `showInSchema`.
 
-| Feld | Typ | Beschreibung |
-|---|---|---|
-| `question` | `string` | FAQ-Frage |
-| `answer` | `string` | FAQ-Antwort |
-| `categoryId` | `string` | Dokument-ID der FAQ-Kategorie |
-| `placements` | `array` | Route-Zuordnungen |
-| `isPublished` | `boolean` | Veröffentlichungsstatus |
-| `createdAt` | Firestore Timestamp | Zeitpunkt der Erstellung |
-| `updatedAt` | Firestore Timestamp | Zeitpunkt der letzten Änderung |
-| `createdBy` | `string` | UID des erstellenden Administrators |
-| `updatedBy` | `string` | UID des zuletzt ändernden Administrators |
+Firestore is the runtime FAQ source. Public reads and Admin CRUD/import/export are server-side through the Admin SDK.
 
-Die Firestore-Dokument-ID wird nicht zusätzlich als Feld gespeichert.
+## Configurator model and idempotency
 
-## Route-Zuordnungen
+- `configuratorSettings/current`: current schema/version/settings plus update audit.
+- `configuratorSettingsVersions/{version}`: immutable numbered settings snapshot.
+- `configuratorSubmissions/{submissionId}`: payload fingerprint, lead/public-reference mapping and processing/mail/report state for retry safety.
+- `systemCounters/configuratorLead`: atomic `lastValue` used for public project references.
 
-Jeder Eintrag in `placements` enthält:
+Version 0 is represented by code defaults rather than a required snapshot document.
 
-| Feld | Typ | Beschreibung |
-|---|---|---|
-| `routeKey` | `FaqRouteKey` | Zugeordnete öffentliche Route |
-| `sortOrder` | `number` | Sortierung der FAQ auf dieser Route |
-| `showInSchema` | `boolean` | Aufnahme in das FAQ-Schema dieser Route |
+## Admin identity and operations
 
-Eine Route darf innerhalb derselben FAQ nur einmal vorkommen.
+### `adminUsers/{uid}`
 
-Eine FAQ muss mindestens einer Route zugeordnet sein.
+Server-controlled profile fields:
 
-## Unterstützte Route-Keys
+- `uid`, `firstName`, `lastName`, `displayName`, `email`, `phone` and `jobTitle`
+- canonical `role` (`admin` or `staff`), `active`, `pending` and `archived`
+- private avatar path `photo` or `null`
+- `createdAt` / `createdByUid` and `updatedAt` / `updatedByUid`
+- archived profiles may contain `deletedAt` / `deletedByUid`
 
-- `home`
-- `photovoltaik`
-- `stromspeicher`
-- `wallbox`
-- `klimaanlagen`
-- `waermepumpen`
-- `kontakt`
+Last login is read from Firebase Auth metadata and is not a persisted profile field. Legacy Auth users without a profile remain compatible when their claims resolve to Administrator.
 
-Die technische Quelle dieser Liste ist:
+### `adminLocks/userManagement`
 
-`src/config/routes.ts`
+A server-only lock serializes privileged Auth/profile mutations. It contains the lock owner and creation timestamp while an operation is active; it is not a user-facing record.
 
-## Dokumenttypen
+### `adminRealtime/{leads|applications|referrals}`
 
-Firestore-Dokumenttypen enthalten keine Dokument-ID:
+Small revision/timestamp signals let active internal clients refresh lists. They contain no business payload.
 
-- `FaqCategoryDocument`
-- `FaqEntryDocument`
+## Access classification
 
-Anwendungsobjekte enthalten zusätzlich die aus dem Firestore-Pfad
-gelesene ID:
+| Data | Public browser | Internal client SDK | Trusted server |
+| --- | --- | --- | --- |
+| Leads/applications/referrals and activities | No direct access | Narrow Rules exceptions only where documented | Create/read/update/delete by authorized workflow |
+| FAQ/settings | No direct Firestore access | No direct write | Public rendering or Administrator management |
+| Admin profiles/locks | No | No | Administrator/user-management flow |
+| Realtime signals | No anonymous access | Active staff read | Server write |
+| Application files/avatars | No direct Storage access | Served only by authorized routes | Validated Admin SDK access |
 
-- `FaqCategory`
-- `FaqEntry`
-
-## Eingabetypen
-
-Create-Eingaben:
-
-- `FaqCategoryCreateInput`
-- `FaqEntryCreateInput`
-
-Update-Eingaben:
-
-- `FaqCategoryUpdateInput`
-- `FaqEntryUpdateInput`
-
-Diese Eingaben enthalten keine:
-
-- Dokument-ID,
-- Zeitstempel,
-- Ersteller-UID,
-- Änderungs-UID.
-
-Audit-Felder werden ausschließlich serverseitig gesetzt.
-
-## Zeitstempel
-
-Persistierte Zeitstempel sind echte Firestore-Timestamps und keine
-ISO-Strings.
-
-Neue Dokumente erhalten serverseitig:
-
-- `createdAt`
-- `updatedAt`
-- `createdBy`
-- `updatedBy`
-
-Bei Änderungen werden ausschließlich aktualisiert:
-
-- `updatedAt`
-- `updatedBy`
-
-## Runtime-Validierung
-
-Die zentrale Runtime-Validierung befindet sich unter:
-
-`src/lib/validation/faq.ts`
-
-Sie validiert:
-
-- Kategorien,
-- FAQ-Einträge,
-- Route-Zuordnungen,
-- Create-Eingaben,
-- Update-Eingaben,
-- leere Updates,
-- doppelte Route-Zuordnungen,
-- reservierte Dokument-IDs.
-
-
-## Automatisierte Validierungstests
-
-Die FAQ-Validierung wird mit Vitest getestet.
-
-Testdatei:
-
-`tests/unit/faq-validation.test.ts`
-
-Die Tests prüfen unter anderem:
-
-- gültige und ungültige Route-Keys,
-- Kategorie-Slugs,
-- Sortierungswerte,
-- leere Update-Objekte,
-- Teilupdates,
-- doppelte Route-Zuordnungen,
-- fehlende Route-Zuordnungen,
-- reservierte Dokument-IDs,
-- Normalisierung durch Parse-Helfer.
-
-Lokale Ausführung:
-
-```bash
-npm run test
+See [Security Rules](firebase-security-rules.md) and [Admin backend](admin-backend.md).

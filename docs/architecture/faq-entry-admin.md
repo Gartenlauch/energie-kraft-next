@@ -1,91 +1,30 @@
-# FAQ-Eintragsverwaltung
+# FAQ entry administration
 
-## Route
+**Status: Implemented.**
 
-`/admin/faqs`
+## Admin capability
 
-Die Route liegt innerhalb des geschützten
-Admin-Layouts.
+`/admin/faqs` is Administrator-only and performs its own server authorization. It supports search, published/draft and category filters, create, edit, publication state, ordering, route placements, related FAQs and individual delete.
 
-## Funktionen
+A FAQ stores `question`, long `answer`, optional `shortAnswer`, `slug`, `categoryId`, `isPublished`, `featured`, `sortOrder`, up to five related IDs, placements and server audit fields. Every FAQ has at least one unique placement containing `routeKey`, `sortOrder` and `showInSchema`. The referenced category is checked server-side.
 
-- FAQ-Einträge anzeigen
-- FAQ-Einträge erstellen
-- Fragen und Antworten bearbeiten
-- Kategorie zuordnen
-- Veröffentlichungsstatus ändern
-- Route-Zuordnungen verwalten
-- Sortierung pro Route verwalten
-- FAQ-Schema-Sichtbarkeit pro Route verwalten
-- FAQ-Einträge löschen
+## JSON transfer
 
-## Firestore
+The Admin tool implements deterministic JSON export and a two-step import:
 
-Collection:
+1. Upload a JSON file (maximum 5 MB) and run preview/validation.
+2. Review new/update/skipped counts, confirm explicitly and import.
 
-`faqs/{faqId}`
+Schema version 1 contains `categories` and `faqs`. Validation covers strict shapes, duplicate IDs/slugs, missing category/related references, duplicate placements and existing slug conflicts. Stable IDs are classified as new, update or skipped. Missing repository records are left untouched; import is a non-destructive upsert. Server audit fields are regenerated and writes are chunked below Firestore's batch limit.
 
-Die Dokument-ID wird automatisch von Firestore
-erzeugt.
+Endpoints:
 
-## Route-Zuordnungen
+- `GET /api/admin/faqs/export`
+- `POST /api/admin/faqs/import/preview`
+- `POST /api/admin/faqs/import`
 
-Eine FAQ muss mindestens einer Route zugeordnet
-sein.
+All endpoints require Administrator; mutating endpoints also require same origin. Mitarbeiter have no access.
 
-Jede Zuordnung enthält:
+## Data access
 
-- `routeKey`
-- `sortOrder`
-- `showInSchema`
-
-Eine Route kann innerhalb derselben FAQ nur einmal
-vorkommen.
-
-## Kategorieprüfung
-
-Beim Erstellen und Bearbeiten wird serverseitig
-geprüft, ob die gewählte Kategorie existiert.
-
-Die Prüfung und die Schreiboperation erfolgen in
-einer Firestore-Transaktion.
-
-## Audit-Felder
-
-Beim Erstellen werden gesetzt:
-
-- `createdAt`
-- `updatedAt`
-- `createdBy`
-- `updatedBy`
-
-Beim Bearbeiten werden aktualisiert:
-
-- `updatedAt`
-- `updatedBy`
-
-Die UID stammt aus der geprüften Admin-Session.
-
-## Löschschutz für Kategorien
-
-Eine Kategorie kann nicht gelöscht werden, solange
-mindestens ein FAQ-Eintrag über `categoryId` auf sie
-verweist.
-
-## Datenzugriff
-
-Alle Lese- und Schreibzugriffe erfolgen
-serverseitig über das Firebase Admin SDK.
-
-Die Firestore Client Rules bleiben vollständig
-geschlossen.
-
-## Validierung
-
-Formularvalidierung:
-
-`src/lib/validation/faq-entry-admin.ts`
-
-Zentrale fachliche Validierung:
-
-`src/lib/validation/faq.ts`
+Repositories under `src/lib/faq` use the Admin SDK. Firestore client writes remain denied. See [Public FAQ rendering](public-faq-rendering.md) and [Firebase data model](firebase-data-model.md).

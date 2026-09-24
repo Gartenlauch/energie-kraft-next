@@ -1,5 +1,11 @@
 # Sprint 8 – Team und öffentliche Rollen
 
+> **Status:** Historischer Sprint-8-Nachweis. `src/content/team.ts` und `public/images/team/` sind
+> der aktuelle Laufzeitstand. Seit diesem Dokument wurden weitere Zuordnungen vorgenommen; deren
+> fachliche/Bildrechte-Freigabe bleibt vor Go-live zu bestätigen. Insbesondere verwendet der
+> aktuelle Code dasselbe `dachmontage.webp` für `dachmontage` und `vertrieb-bgl`; diese
+> Zuordnung ist nicht durch dieses historische Dokument bestätigt.
+
 Stand: 9. September 2026. Quelle ist ausschließlich die frühere öffentlich sichtbare
 Service-&-Team-Darstellung. Historische Formular-, SQL- und versteckte Builder-Daten wurden
 nicht zur Identifikation von Personen genutzt.

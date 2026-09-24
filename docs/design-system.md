@@ -1,6 +1,7 @@
 # Energie-Kraft Süd – Designsystem
 
-Stand: Sprint 7
+**Status: Current shared design system.** The public website and Admin use the same Energie-Kraft
+CI tokens from `src/app/globals.css`; historical Sprint-7 asset details remain linked separately.
 
 ## Grundprinzipien
 
@@ -64,7 +65,7 @@ historische Brizy-Schriftgrößen werden nicht übernommen.
 - Mobile Seitenrand: 1rem
 - Ab 768px Seitenrand: 1.5rem
 - Section-Abstand: `clamp(4.5rem, 8vw, 8rem)`
-- Sticky Header: Hauptzeile 4.75rem; Desktop zusätzlich schmale Kontaktzeile
+- Sticky Header: zentraler Token `--header-height: 5rem`; Desktop zusätzlich schmale Kontaktzeile
 
 Die Homepage wechselt zwischen Full-bleed-Hero, blauem Marken-Intro, Bild-Splits, Brand-Fläche und
 ruhigen Informationsbereichen. Split-Proportionen sind 50/50 und ab großen Viewports 45/55,
@@ -102,6 +103,13 @@ CTA-Links werden einmal im DOM ausgegeben, unabhängig vom Breakpoint.
 `.premium-card` verwendet eine feine Border, einen ruhigen weißen Hintergrund und einen
 zurückhaltenden Schatten. Karten werden nur für echte funktionale oder inhaltliche Gruppen
 eingesetzt. Lange Inhaltsseiten verwenden überwiegend offene Spalten und Listen statt Card-Raster.
+
+## Admin
+
+Der Adminbereich verwendet dieselben Brand-, Text-, Surface-, Border-, Fokus- und Status-Tokens.
+Navigation, Dashboard, Statusdiagramme, Listen, Filter, Dialoge und Formulare werden über die
+gemeinsamen Primitives in `src/components/admin/` aufgebaut. Es gibt keine separate grüne oder
+Emerald-Adminidentität. Rollen und Status werden nicht ausschließlich über Farbe vermittelt.
 
 ## Formulare
 

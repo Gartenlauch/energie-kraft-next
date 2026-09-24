@@ -1,5 +1,10 @@
 # Sprint 8.1 – Fehlende Medienassets
 
+> **Status:** Teilweise überholt. Beide damals als fehlend geführten Rollen besitzen im aktuellen
+> `src/content/team.ts` einen Bildpfad. Das ist keine automatische fachliche Freigabe: Zuordnung,
+> Bildrecht und gewünschte anonyme Veröffentlichung bleiben vor Go-live zu bestätigen. Der
+> `vertrieb-bgl`-Eintrag teilt aktuell das Dachmontagebild und benötigt besondere Prüfung.
+
 Premium-Placeholder bleiben sichtbar, bis eine eindeutig zuordenbare und intern freigegebene
 Aufnahme vorliegt. Keine zufälligen Ersatzbilder verwenden.
 
