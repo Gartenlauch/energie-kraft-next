@@ -1,14 +1,17 @@
 import type { MetadataRoute } from "next";
 
-import { publicEnv } from "@/config/env/public";
+import { isSearchIndexingEnabled } from "@/config/search-indexing";
 import { siteConfig } from "@/config/site";
 
-export default function robots(): MetadataRoute.Robots {
-  if (!publicEnv.isProduction) {
+export function buildRobots(
+  searchIndexingEnabled: boolean,
+): MetadataRoute.Robots {
+  if (!searchIndexingEnabled) {
     return {
       rules: {
         userAgent: "*",
-        disallow: "/",
+        allow: "/",
+        disallow: ["/admin/"],
       },
     };
   }
@@ -23,4 +26,8 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: `${siteConfig.canonicalBaseUrl}/sitemap.xml`,
     host: siteConfig.canonicalBaseUrl,
   };
+}
+
+export default function robots(): MetadataRoute.Robots {
+  return buildRobots(isSearchIndexingEnabled());
 }

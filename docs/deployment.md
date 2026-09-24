@@ -27,6 +27,8 @@ Before any production deployment, explicitly verify and record:
 - `functions/.secret.local` supplies local Functions secrets where needed and must not be committed.
 - Firebase/Cloud secrets must be provisioned explicitly for production; documentation must contain names and purpose only, never values.
 - `apphosting.yaml` currently references `GOOGLE_PLACES_API_KEY` as a runtime secret and contains non-secret Place/profile configuration. This is configuration intent, not deployment evidence.
+- `SEARCH_INDEXING_ENABLED=false` is the required pre-launch production state. It is independent of `NEXT_PUBLIC_SITE_ENV=production`, so the application can use the real production Firebase project while returning global `noindex` protection.
+- Only set `SEARCH_INDEXING_ENABLED=true` after the custom production domain has been connected and verified, and the site has been approved for launch. The value must be available during both build and runtime.
 
 ## Verification gate
 
@@ -44,4 +46,6 @@ Then perform an environment-specific smoke test for public pages, Auth/session c
 
 No deployment command is part of the normal quality workflow. A release must name the exact Firebase project and exact targets. Production actions—Firebase provisioning, Rules/Functions/App Hosting deployment, DNS changes and WordPress cutover—require separate authorization and a recorded rollback plan.
 
-After cutover, verify HTTP status/canonicals for all migration routes, production `robots.txt` and `sitemap.xml`, authentication, submissions and operational monitoring. Keep the legacy migration evidence; do not redirect compromised/incident URLs to the homepage.
+For a pre-launch App Hosting release, verify on its `hosted.app` URL that public responses include `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet`, rendered HTML includes `noindex`/`nofollow`, and `robots.txt` allows public crawling while disallowing `/admin/` without advertising a sitemap or production host.
+
+After the approved cutover and indexing enablement, verify HTTP status/canonicals for all migration routes, production `robots.txt` and `sitemap.xml`, authentication, submissions and operational monitoring. Keep the legacy migration evidence; do not redirect compromised/incident URLs to the homepage.

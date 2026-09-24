@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
-const isProduction =
-  process.env.NEXT_PUBLIC_SITE_ENV === "production";
+import {
+  isSearchIndexingEnabled,
+  SEARCH_NO_INDEX_DIRECTIVE,
+} from "./src/config/search-indexing";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -51,7 +53,7 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
-    if (isProduction) {
+    if (isSearchIndexingEnabled()) {
       return [];
     }
 
@@ -61,7 +63,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "X-Robots-Tag",
-            value: "noindex, nofollow, noarchive, nosnippet",
+            value: SEARCH_NO_INDEX_DIRECTIVE,
           },
         ],
       },

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
+import { isSearchIndexingEnabled } from "@/config/search-indexing";
+
 import "./globals.css";
 
 const montserrat = localFont({
@@ -34,6 +36,14 @@ export const metadata: Metadata = {
   },
   description:
     "Individuelle Lösungen für Photovoltaik, Stromspeicher, Wallboxen, Klimaanlagen und Wärmepumpen.",
+  robots: isSearchIndexingEnabled()
+    ? undefined
+    : {
+        index: false,
+        follow: false,
+        noarchive: true,
+        nosnippet: true,
+      },
 };
 
 interface RootLayoutProps {

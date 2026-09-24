@@ -30,6 +30,12 @@ env:
       - BUILD
       - RUNTIME
 
+  - variable: SEARCH_INDEXING_ENABLED
+    value: "false"
+    availability:
+      - BUILD
+      - RUNTIME
+
   - variable: NEXT_PUBLIC_CANONICAL_BASE_URL
     value: "https://www.energie-kraft.de"
     availability:

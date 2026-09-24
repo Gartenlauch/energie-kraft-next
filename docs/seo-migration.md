@@ -5,7 +5,7 @@
 - Canonicals use the configured Energie-Kraft base URL through `buildMetadata()`.
 - Public pages provide route-specific metadata; selected service/about pages also emit WebPage, Service/AboutPage, Organization/LocalBusiness and breadcrumb JSON-LD.
 - Visible, placement-enabled FAQs may emit FAQPage JSON-LD. FAQ detail content does not use QAPage.
-- `robots.ts` disallows the entire site outside production. Production allows public routes, disallows `/admin/` and references the sitemap.
+- Search indexing is controlled independently by the server/build flag `SEARCH_INDEXING_ENABLED`, which is fail-safe: only the exact value `true` enables indexing. While disabled, `robots.ts` allows public crawling so crawlers can observe the global `noindex` directives, continues to disallow `/admin/`, and does not advertise a sitemap or host. When enabled, it publishes the production sitemap and host.
 - `sitemap.ts` returns no URLs outside production. In production it combines configured public routes, current reference-location routes and Firestore-backed FAQ routes.
 - `next.config.ts` contains the redirects that are currently implemented. Historical matrices contain additional proposed redirects and must not be read as active configuration.
 
