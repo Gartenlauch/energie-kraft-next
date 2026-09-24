@@ -30,7 +30,11 @@ export function sortAdminItems<T>(items: readonly T[], sort: AdminSort, name: (i
 export function countStatuses(items: readonly { status: LeadStatus }[]) {
   const counts: Record<LeadStatus, number> = { new: 0, in_progress: 0, completed: 0, rejected: 0 };
   for (const item of items) counts[item.status] += 1;
-  return { ...counts, total: items.length, open: counts.new + counts.in_progress };
+  return {
+    ...counts,
+    total: items.length,
+    open: counts.in_progress,
+  };
 }
 
 export function timestampMillis(value: { toMillis(): number }): number {

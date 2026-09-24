@@ -13,14 +13,20 @@ describe("admin collection helpers", () => {
     expect(matchesSearchTerms("Muller wind", "Müller", "Solaranlage")).toBe(false);
   });
 
-  it("counts open as new plus in progress", () => {
+  it("counts open as in progress only", () => {
     const counts = countStatuses([
       { status: "new" },
       { status: "new" },
       { status: "in_progress" },
       { status: "completed" },
     ]);
-    expect(counts).toMatchObject({ total: 4, new: 2, in_progress: 1, completed: 1, open: 3 });
+    expect(counts).toMatchObject({
+      total: 4,
+      new: 2,
+      in_progress: 1,
+      completed: 1,
+      open: 1,
+    });
   });
 
   it("combines filtering and name sorting deterministically", () => {
