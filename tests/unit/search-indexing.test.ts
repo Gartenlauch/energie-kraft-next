@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 vi.mock("@/config/site", () => ({
   siteConfig: {
     canonicalBaseUrl: "https://www.energie-kraft.de",
+    locale: "de_DE",
+    name: "Energie-Kraft Süd",
   },
 }));
 
@@ -11,6 +13,7 @@ import {
   isSearchIndexingEnabled,
   SEARCH_NO_INDEX_DIRECTIVE,
 } from "@/config/search-indexing";
+import { buildMetadata } from "@/lib/seo/metadata";
 import nextConfig from "../../next.config";
 
 afterEach(() => {
@@ -18,6 +21,12 @@ afterEach(() => {
 });
 
 describe("search indexing launch guard", () => {
+  const pageSeo = {
+    title: "Testseite",
+    description: "Beschreibung",
+    canonicalPath: "/testseite",
+  };
+
   it("fails safe when the flag is missing or is not exactly true", () => {
     expect(isSearchIndexingEnabled(undefined)).toBe(false);
     expect(isSearchIndexingEnabled("false")).toBe(false);
@@ -80,5 +89,33 @@ describe("search indexing launch guard", () => {
 
     vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
     expect(await nextConfig.headers?.()).toEqual([]);
+  });
+
+  it("keeps ordinary public pages noindex before launch", () => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", "false");
+
+    expect(buildMetadata({ ...pageSeo, noIndex: false }).robots).toEqual({
+      index: false,
+      follow: false,
+      noarchive: true,
+      nosnippet: true,
+    });
+  });
+
+  it("leaves ordinary public pages indexable after launch", () => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
+
+    expect(buildMetadata({ ...pageSeo, noIndex: false }).robots).toBeUndefined();
+  });
+
+  it("keeps page-specific noindex protection after launch", () => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
+
+    expect(buildMetadata({ ...pageSeo, noIndex: true }).robots).toEqual({
+      index: false,
+      follow: false,
+      noarchive: true,
+      nosnippet: true,
+    });
   });
 });

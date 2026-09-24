@@ -8,7 +8,9 @@ export const metadata: Metadata = {
   description: "Die aufgerufene Seite wurde nicht gefunden.",
   robots: {
     index: false,
-    follow: true,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
   },
 };
 
