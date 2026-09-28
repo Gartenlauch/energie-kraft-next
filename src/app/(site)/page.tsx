@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
 import { PublicFaqSection } from "@/components/faq/public-faq-section";
@@ -16,7 +17,7 @@ import {
 import { PartnerLogoCarousel } from "@/components/marketing/partner-logo-carousel";
 import { HomePageJsonLd } from "@/components/seo/home-page-json-ld";
 import { EnergyFlow } from "@/components/marketing/energy-flow";
-import { homeContent } from "@/content";
+import { homeContent, homeSections } from "@/content/pages/home";
 import { referenceGroups } from "@/content/reference-projects";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -44,6 +45,15 @@ const productImages = {
     mobileWidth: 1200,
     mobileHeight: 1500,
     alt: "Sigenergy-Stromspeicher an der Terrasse eines Wohnhauses",
+  },
+  commercial: {
+    desktopSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-hero-desktop.webp",
+    mobileSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-hero-mobile.webp",
+    desktopWidth: 1600,
+    desktopHeight: 1000,
+    mobileWidth: 812,
+    mobileHeight: 1015,
+    alt: "Zwei Fachkr?fte auf einer Photovoltaikanlage auf einem Gewerbedach",
   },
   heatPump: {
     desktopSrc: "/images/heat-pump/heat-pump-feature-desktop.webp",
@@ -99,60 +109,64 @@ export default async function HomePage() {
             mobileHeight: 1600,
             alt: "Modernes Haus mit Photovoltaik, Wärmepumpe und Wallbox in den bayerischen Voralpen",
           }}
-          primaryCta={{ label: "Energieprojekt konfigurieren", href: "/konfigurator" }}
-          secondaryCta={{ label: "Lösungen entdecken", href: "#photovoltaik" }}
+          primaryCta={homeContent.hero.primaryCta}
+          secondaryCta={homeContent.hero.secondaryCta}
         />
 
         <BrandIntro />
-        <BrandStatementSection
-          eyebrow="Energie-Kraft Süd"
-          title="Energietechnik mit regionaler Nähe und einem klaren Plan"
-          description="Wir betrachten nicht nur einzelne Geräte, sondern Ihr Gebäude, Ihren Verbrauch und die nächsten sinnvollen Schritte. So entsteht eine Lösung, die technisch zusammenpasst und verständlich bleibt."
-          highlights={[
-            {
-              title: "Persönlich geplant",
-              description: "Ihr Gebäude und Ihre Ziele geben die Richtung vor.",
-            },
-            {
-              title: "Systemisch gedacht",
-              description: "Erzeugung, Speicherung, Wärme und Mobilität greifen ineinander.",
-            },
-            {
-              title: "Regional erreichbar",
-              description: "Direkter Kontakt zu Energie-Kraft Süd in Ainring.",
-            },
-          ]}
-        />
+        <BrandStatementSection {...homeSections.intro} />
 
         <div aria-label="Unsere Energielösungen">
           <SplitFeatureSection
-            id="photovoltaik"
-            eyebrow="Solarstrom produzieren"
-            title="Ihr Dach. Ihr eigener Solarstrom."
-            description="Von Ainring aus planen wir Photovoltaik passend zu Dach und Verbrauch. Reale Projekte aus dem Berchtesgadener Land und dem Landkreis Traunstein zeigen unterschiedliche Anlagenlösungen."
-            benefits={["Individuell geplant", "Fachgerecht montiert"]}
+            {...homeSections.photovoltaic}
             image={productImages.photovoltaic}
             imagePosition="right"
             proportion="image-wide"
             surface="white"
-            primaryCta={{ label: "PV-Projekt konfigurieren", href: "/konfigurator/photovoltaik" }}
-            secondaryCta={{ label: "Photovoltaik kennenlernen", href: "/photovoltaik" }}
           />
 
-          <EnergyFlow />
-
           <SplitFeatureSection
-            id="stromspeicher"
-            eyebrow="Solarstrom speichern"
-            title="Sonne speichern. Abends nutzen."
-            description="Ihr Speicher bringt Solarstrom in die Stunden, in denen Sie ihn brauchen. Kapazität und Steuerung planen wir passend zu Ihrem Alltag."
-            benefits={["Passend zu Ihrem Verbrauch", "Intelligentes Energiemanagement"]}
+            {...homeSections.battery}
             image={productImages.battery}
             imagePosition="left"
             surface="white"
-            primaryCta={{ label: "Speicher konfigurieren", href: "/konfigurator/stromspeicher" }}
-            secondaryCta={{ label: "Stromspeicher kennenlernen", href: "/stromspeicher" }}
           />
+
+          <EnergyFlow />
+          <div className="bg-surface-soft pb-8 md:pb-10">
+            <div className="section-shell border-border-default border-t pt-6 text-sm leading-7">
+              <p>{homeSections.tariff.description}</p>
+              <Link
+                href={homeSections.tariff.link.href}
+                className="text-brand-primary inline-flex min-h-11 items-center font-semibold underline underline-offset-4"
+              >
+                {homeSections.tariff.link.label}
+              </Link>
+            </div>
+          </div>
+
+          <SplitFeatureSection
+            {...homeSections.commercial}
+            image={productImages.commercial}
+            imagePosition="right"
+            imageObjectPosition="right"
+            surface="soft"
+            secondaryCtaStyle="text"
+          />
+
+          <section
+            className="bg-surface-soft py-10 md:py-12"
+            aria-labelledby="supplementary-heading"
+          >
+            <div className="section-shell grid gap-5 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+              <h2 id="supplementary-heading" className="text-2xl leading-snug md:text-3xl">
+                {homeSections.supplementary.title}
+              </h2>
+              <p className="max-w-3xl text-base leading-8 text-[var(--text-muted)]">
+                {homeSections.supplementary.description}
+              </p>
+            </div>
+          </section>
 
           <SplitFeatureSection
             id="waermepumpe"

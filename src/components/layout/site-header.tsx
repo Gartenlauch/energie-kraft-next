@@ -49,6 +49,20 @@ const energyLinks: readonly NavigationLink[] = [
     priority: "primary",
   },
   {
+    label: "Photovoltaik für Unternehmen",
+    href: "/energieloesungen/photovoltaik-fuer-unternehmen",
+    description: "Eigenstrom für Gewerbe, Hallen und betriebliche Dachflächen.",
+    previewImage: "/images/navigation/commercial-photovoltaic-mega.webp",
+    priority: "secondary",
+  },
+  {
+    label: "Gewerbespeicher",
+    href: "/energieloesungen/gewerbespeicher",
+    description: "Erzeugung und Verbrauch im Betrieb besser aufeinander abstimmen.",
+    previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
+    priority: "supporting",
+  },
+  {
     label: "Wärmepumpe",
     href: "/waermepumpen",
     description: "Wärmeversorgung als Teil des Energiesystems.",
@@ -67,20 +81,6 @@ const energyLinks: readonly NavigationLink[] = [
     href: "/wallbox",
     description: "Elektromobilität mit PV-Strom verbinden.",
     previewImage: "/images/wallbox/wallbox-feature-desktop.webp",
-    priority: "supporting",
-  },
-  {
-    label: "Photovoltaik für Unternehmen",
-    href: "/energieloesungen/photovoltaik-fuer-unternehmen",
-    description: "Eigenstrom für Gewerbe, Hallen und betriebliche Dachflächen.",
-    previewImage: "/images/navigation/commercial-photovoltaic-mega.webp",
-    priority: "secondary",
-  },
-  {
-    label: "Gewerbespeicher",
-    href: "/energieloesungen/gewerbespeicher",
-    description: "Erzeugung und Verbrauch im Betrieb besser aufeinander abstimmen.",
-    previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
     priority: "supporting",
   },
   {

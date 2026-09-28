@@ -150,6 +150,9 @@ interface SplitFeatureSectionProps {
   imageReveal?: RevealVariant | "none";
   primaryCta: MarketingCta;
   secondaryCta?: MarketingCta;
+  secondaryCtaStyle?: "button" | "text";
+  brandLine?: string;
+  imageObjectPosition?: "center" | "right";
 }
 
 const surfaceClasses: Record<SplitSurface, string> = {
@@ -173,6 +176,9 @@ export function SplitFeatureSection({
   imageReveal = imagePosition,
   primaryCta,
   secondaryCta,
+  secondaryCtaStyle = "button",
+  brandLine,
+  imageObjectPosition = "center",
 }: SplitFeatureSectionProps) {
   const dark = surface === "blue" || surface === "gradient" || surface === "navy";
   const copyPosition = imagePosition === "right" ? "left" : "right";
@@ -188,7 +194,7 @@ export function SplitFeatureSection({
         mobileHeight={image.mobileHeight}
         alt={image.alt}
         sizes={`(max-width: 1023px) 100vw, ${proportion === "image-dominant" ? "65vw" : proportion === "image-wide" ? "60vw" : "50vw"}`}
-        className="block"
+        className={imageObjectPosition === "right" ? "block lg:object-right" : "block"}
       />
     </div>
   );
@@ -209,6 +215,13 @@ export function SplitFeatureSection({
             >
               {title}
             </h2>
+            {brandLine ? (
+              <p
+                className={`mt-4 text-[clamp(1.6rem,2.8vw,2.5rem)] font-bold tracking-tight ${dark ? "text-white" : "text-brand-primary"}`}
+              >
+                {brandLine}
+              </p>
+            ) : null}
             <p
               className={`mt-6 text-lg leading-8 ${dark ? "text-white" : "text-[var(--text-muted)]"}`}
             >
@@ -233,14 +246,22 @@ export function SplitFeatureSection({
               </ul>
             ) : null}
 
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div
+              className={`mt-9 flex flex-wrap gap-3 ${secondaryCtaStyle === "text" ? "flex-col items-start" : ""}`}
+            >
               <Link href={primaryCta.href} className={dark ? "button-light" : "button-primary"}>
                 {primaryCta.label}
               </Link>
               {secondaryCta ? (
                 <Link
                   href={secondaryCta.href}
-                  className={dark ? "button-outline-light" : "button-secondary"}
+                  className={
+                    secondaryCtaStyle === "text"
+                      ? `inline-flex min-h-11 items-center py-2 text-sm font-semibold underline underline-offset-4 ${dark ? "text-white" : "text-brand-primary"}`
+                      : dark
+                        ? "button-outline-light"
+                        : "button-secondary"
+                  }
                 >
                   {secondaryCta.label}
                 </Link>
