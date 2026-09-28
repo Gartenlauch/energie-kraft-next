@@ -19,6 +19,7 @@ import type { PublicPageContent } from "@/types/content";
 interface PublicContentPageProps {
   content: PublicPageContent;
   beforeFaq?: ReactNode;
+  sectionOverrides?: Readonly<Record<string, ReactNode>>;
 }
 
 interface PageVisual {
@@ -199,7 +200,11 @@ const imageLeftSections = new Set([
   "photovoltaik-kombination",
 ]);
 
-export async function PublicContentPage({ content, beforeFaq }: PublicContentPageProps) {
+export async function PublicContentPage({
+  content,
+  beforeFaq,
+  sectionOverrides,
+}: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
   const faqCategory = (
     {
@@ -249,6 +254,7 @@ export async function PublicContentPage({ content, beforeFaq }: PublicContentPag
         {content.faqRouteKey === "kontakt" && beforeFaq}
 
         {content.sections.map((section, index) => {
+          if (section.id && sectionOverrides?.[section.id]) return sectionOverrides[section.id];
           const sectionImage = section.id
             ? sectionVisuals[content.faqRouteKey]?.[section.id]
             : undefined;

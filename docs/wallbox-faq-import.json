@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "wallbox",
+      "name": "Wallbox",
+      "slug": "wallbox",
+      "sortOrder": 40,
+      "isActive": true
+    }
+  ],
+  "faqs": [
+    {
+      "id": "wallbox-relaunch-wallbox-photovoltaikanlage",
+      "categoryId": "wallbox",
+      "slug": "wallbox-photovoltaikanlage",
+      "question": "Welche Wallbox passt zu meiner Photovoltaikanlage?",
+      "shortAnswer": "Passend ist eine Wallbox, deren Steuerung mit Wechselrichter, Messtechnik und Energiemanagement Ihrer Anlage zusammenarbeitet.",
+      "answer": "Passend ist eine Wallbox, deren Steuerung mit Wechselrichter, Messtechnik und Energiemanagement Ihrer Anlage zusammenarbeitet.\n\nFür das sonnenSystem bieten wir den Alfen Eve Single Plus DE an; für Sigenergy SigenStor das Sigen EV DC Lademodul. Der Fronius Wattpilot Home 22 J passt besonders zu geeigneten Fronius-PV-Systemen. Bei der ABL Pulsar ermöglicht der Energy Meter Pulsar in passender Konfiguration das PV-Überschussladen.\n\nWir prüfen Fahrzeug, vorhandene Komponenten und gewünschte Ladefunktionen gemeinsam. Ein Hausspeicher ist für PV-Überschussladen grundsätzlich keine Voraussetzung.",
+      "relatedFaqIds": [
+        "s83a-wallbox-pv-ueberschussladen",
+        "wallbox-relaunch-wallbox-22-kw-hausanschluss",
+        "s83a-wallbox-wallbox-ladeleistung"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 0,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 50,
+      "isPublished": true
+    },
+    {
+      "id": "s83a-wallbox-pv-ueberschussladen",
+      "categoryId": "wallbox",
+      "slug": "pv-ueberschussladen",
+      "question": "Kann ich mein Elektroauto nur mit PV-Überschuss laden?",
+      "shortAnswer": "Ja, mit geeigneter Wallbox, Messung und Steuerung lässt sich das Laden auf verfügbaren PV-Überschuss begrenzen. Das Auto muss dafür angeschlossen sein, während ausreichend Solarstrom entsteht.",
+      "answer": "Ja, mit geeigneter Wallbox, Messung und Steuerung lässt sich das Laden auf verfügbaren PV-Überschuss begrenzen. Das Auto muss dafür angeschlossen sein, während ausreichend Solarstrom entsteht.\n\nPV-Überschuss ist der Solarstrom, der nach dem aktuellen Bedarf im Haus übrig bleibt. Reicht er nicht für die Mindestladeleistung, pausiert oder endet das Laden abhängig von Fahrzeug und System. Automatische 1-/3-Phasenumschaltung kann bei geeigneten AC-Wallboxen kleinere Überschüsse nutzbar machen.\n\nWenn das Fahrzeug zu einer festen Zeit geladen sein soll, kann je nach Lademodus ergänzend Netzstrom nötig sein. Ein Hausspeicher ist nicht zwingend erforderlich; das Energiemanagement stimmt seine Nutzung mit dem übrigen Bedarf ab.",
+      "relatedFaqIds": [
+        "s83a-wallbox-wallbox-ladeleistung",
+        "s83a-wallbox-dynamisches-lastmanagement",
+        "s83a-wallbox-wallbox-ohne-speicher",
+        "s83a-wallbox-wallbox-installation-planung"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 10,
+          "showInSchema": true
+        },
+        {
+          "routeKey": "home",
+          "sortOrder": 40,
+          "showInSchema": true
+        }
+      ],
+      "featured": true,
+      "sortOrder": 0,
+      "isPublished": true
+    },
+    {
+      "id": "wallbox-relaunch-wallbox-22-kw-hausanschluss",
+      "categoryId": "wallbox",
+      "slug": "wallbox-22-kw-hausanschluss",
+      "question": "Brauche ich für eine 22-kW-Wallbox einen stärkeren Hausanschluss?",
+      "shortAnswer": "Nicht zwangsläufig. Entscheidend sind die vorhandene Anschlussleistung, weitere Verbraucher und die geplante gleichzeitige Nutzung.",
+      "answer": "Nicht zwangsläufig. Entscheidend sind die vorhandene Anschlussleistung, weitere Verbraucher und die geplante gleichzeitige Nutzung.\n\nEin Elektrofachbetrieb prüft Hausanschluss, Zuleitung, Absicherung und Lastmanagement. Eine Begrenzung der Ladeleistung kann je nach Anlage ausreichen; in anderen Fällen ist eine Anpassung der Installation erforderlich.\n\nWallboxen sind beim Netzbetreiber anzumelden. Für eine Ladeeinrichtung mit mehr als 12 kVA ist grundsätzlich dessen vorherige Zustimmung erforderlich. Die konkrete Auslegung und die geltenden Anschlussbedingungen werden vor der Installation abgestimmt.",
+      "relatedFaqIds": [
+        "wallbox-relaunch-wallbox-photovoltaikanlage",
+        "s83a-wallbox-pv-ueberschussladen",
+        "s83a-wallbox-wallbox-ladeleistung"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 20,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 70,
+      "isPublished": true
+    },
+    {
+      "id": "s83a-wallbox-wallbox-ladeleistung",
+      "categoryId": "wallbox",
+      "slug": "wallbox-ladeleistung",
+      "question": "Was ist der Unterschied zwischen 11 kW und 22 kW Ladeleistung?",
+      "shortAnswer": "22 kW beschreibt die doppelte maximale AC-Ladeleistung gegenüber 11 kW. Schneller lädt das Auto aber nur, wenn es diese Leistung aufnehmen kann und der Anschluss sie bereitstellt.",
+      "answer": "22 kW beschreibt die doppelte maximale AC-Ladeleistung gegenüber 11 kW. Schneller lädt das Auto aber nur, wenn es diese Leistung aufnehmen kann und der Anschluss sie bereitstellt.\n\nDie tatsächliche Ladeleistung wird durch Fahrzeug, Wallbox, elektrische Installation, eingestellte Begrenzung und verfügbare Anschlussleistung bestimmt. Ein Fahrzeug mit einem AC-Ladegerät für höchstens 11 kW lädt auch an einer 22-kW-Wallbox nicht mit 22 kW.\n\nBei PV-Überschussladen schwankt die Leistung zusätzlich mit dem verfügbaren Solarstrom. Für die Auswahl zählen Fahrbedarf, Standzeiten und Ausbaupläne. Die DC-Lösung Sigen EV DC ist davon zu unterscheiden: Hier hängen Leistung und Kompatibilität von der DC-Ladetechnik des Fahrzeugs und der Systemauslegung ab.",
+      "relatedFaqIds": [
+        "s83a-wallbox-pv-ueberschussladen",
+        "s83a-wallbox-dynamisches-lastmanagement",
+        "s83a-wallbox-wallbox-ohne-speicher",
+        "s83a-wallbox-wallbox-installation-planung"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 30,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 10,
+      "isPublished": true
+    },
+    {
+      "id": "wallbox-relaunch-bidirektionales-laden",
+      "categoryId": "wallbox",
+      "slug": "bidirektionales-laden",
+      "question": "Was bedeutet bidirektionales Laden und welche Fahrzeuge unterstützen es?",
+      "shortAnswer": "Bidirektionales Laden ermöglicht zusätzlich zum Laden die Abgabe von Energie aus der Fahrzeugbatterie. V2H versorgt das Haus, V2G speist ins öffentliche Netz zurück.",
+      "answer": "Bidirektionales Laden ermöglicht zusätzlich zum Laden die Abgabe von Energie aus der Fahrzeugbatterie. V2H versorgt das Haus, V2G speist ins öffentliche Netz zurück.\n\nWir bieten dafür das Sigenergy Sigen EV DC Lademodul im SigenStor-System an. Nicht jedes Elektroauto unterstützt V2H oder V2G. Entscheidend sind Fahrzeugmodell, Fahrzeugfreigabe, Software, Ladehardware und regulatorische Voraussetzungen.\n\nEine Hersteller-Testliste ist keine allgemeine Fahrzeugfreigabe. Wir prüfen die aktuelle Freigabe der konkreten Fahrzeug- und Systemkombination vor der Planung; eine pauschale Liste vermeintlich kompatibler Fahrzeuge wäre dafür nicht zuverlässig genug.",
+      "relatedFaqIds": [
+        "wallbox-relaunch-wallbox-photovoltaikanlage",
+        "s83a-wallbox-pv-ueberschussladen",
+        "wallbox-relaunch-wallbox-22-kw-hausanschluss"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 40,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 90,
+      "isPublished": true
+    },
+    {
+      "id": "wallbox-relaunch-sonnenhome-charger-2",
+      "categoryId": "wallbox",
+      "slug": "sonnenhome-charger-2",
+      "question": "Ist der sonnenHome Charger 2 noch erhältlich?",
+      "shortAnswer": "Nein. Der sonnenHome Charger 2 ist nicht mehr erhältlich. Energie-Kraft setzt für neue sonnen-Systeme auf den Alfen Eve Single Plus DE als aktuelle Ladelösung im sonnenSystem.",
+      "answer": "Nein. Der sonnenHome Charger 2 ist nicht mehr erhältlich. Energie-Kraft setzt für neue sonnen-Systeme auf den Alfen Eve Single Plus DE als aktuelle Ladelösung im sonnenSystem.\n\nDer Alfen bietet bis zu 22 kW AC-Ladeleistung, automatische Phasenumschaltung und einen eichrechtskonformen Zähler. Die Integration wird passend zu Ihrer sonnenBatterie geplant. sonnen kündigt die vollständige App-Steuerung für Oktober 2026 an; der aktuelle Freigabe- und Softwarestand wird vor der Umsetzung geprüft.\n\nFür den eingestellten sonnen Charger 2 nennen wir keinen Verkaufspreis und bieten ihn nicht als bestellbares Produkt an. Ein neues Angebot umfasst die passende aktuelle Ladetechnik und deren Installation.",
+      "relatedFaqIds": [
+        "wallbox-relaunch-wallbox-photovoltaikanlage",
+        "s83a-wallbox-pv-ueberschussladen",
+        "wallbox-relaunch-wallbox-22-kw-hausanschluss"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 50,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 100,
+      "isPublished": true
+    },
+    {
+      "id": "s83a-wallbox-dynamisches-lastmanagement",
+      "categoryId": "wallbox",
+      "slug": "dynamisches-lastmanagement",
+      "question": "Wozu dient dynamisches Lastmanagement?",
+      "shortAnswer": "Dynamisches Lastmanagement berücksichtigt den aktuellen Gebäudeverbrauch und passt die Ladeleistung an die verfügbare Leistung an.",
+      "answer": "Dynamisches Lastmanagement berücksichtigt den aktuellen Gebäudeverbrauch und passt die Ladeleistung an die verfügbare Leistung an.\n\nWenn zum Beispiel Wärmepumpe und andere größere Verbraucher gleichzeitig laufen, bleibt weniger Leistung für das Elektroauto. Ein geeignetes Lastmanagement kann die Ladung entsprechend begrenzen.\n\nBei mehreren Ladepunkten wird zusätzlich die Verteilung unter den Fahrzeugen relevant. Messung, Steuerung und Installation müssen dafür aufeinander abgestimmt sein.",
+      "relatedFaqIds": [
+        "s83a-wallbox-pv-ueberschussladen",
+        "s83a-wallbox-wallbox-ladeleistung",
+        "s83a-wallbox-wallbox-ohne-speicher",
+        "s83a-wallbox-wallbox-installation-planung"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 60,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 20,
+      "isPublished": true
+    },
+    {
+      "id": "s83a-wallbox-wallbox-ohne-speicher",
+      "categoryId": "wallbox",
+      "slug": "wallbox-ohne-speicher",
+      "question": "Brauche ich für eine Wallbox einen Stromspeicher?",
+      "shortAnswer": "Nein. Eine Wallbox kann ohne Batteriespeicher betrieben werden und bei geeigneter Steuerung auch direkt verfügbaren Solarstrom nutzen.",
+      "answer": "Nein. Eine Wallbox kann ohne Batteriespeicher betrieben werden und bei geeigneter Steuerung auch direkt verfügbaren Solarstrom nutzen.\n\nEin Speicher ist eine mögliche Ergänzung des Energiesystems, aber keine technische Grundvoraussetzung für das Laden. Entscheidend ist, wann das Fahrzeug zu Hause steht und wie viel Solarstrom dann verfügbar ist.\n\nOb das Laden aus einem Hausspeicher sinnvoll ist, hängt von Kapazität, Leistung, Verlusten und dem übrigen Strombedarf ab. Das wird gemeinsam mit den Ladezielen betrachtet.",
+      "relatedFaqIds": [
+        "s83a-wallbox-pv-ueberschussladen",
+        "s83a-wallbox-wallbox-ladeleistung",
+        "s83a-wallbox-dynamisches-lastmanagement",
+        "s83a-wallbox-wallbox-installation-planung"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 70,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 30,
+      "isPublished": true
+    },
+    {
+      "id": "s83a-wallbox-wallbox-installation-planung",
+      "categoryId": "wallbox",
+      "slug": "wallbox-installation-planung",
+      "question": "Was wird vor der Wallbox-Installation geprüft?",
+      "shortAnswer": "Geprüft werden Hausanschluss, Elektroinstallation, Leitungsweg, Montageort sowie Fahrzeug und gewünschte Ladefunktionen.",
+      "answer": "Geprüft werden Hausanschluss, Elektroinstallation, Leitungsweg, Montageort sowie Fahrzeug und gewünschte Ladefunktionen.\n\nDie Wallbox wird als leistungsstarker Verbraucher in das Gebäude eingebunden. Passende Schutztechnik und die fachgerechte elektrische Installation gehören deshalb zur Umsetzung.\n\nWenn Photovoltaik, Speicher oder weitere Ladepunkte vorhanden oder geplant sind, werden deren Schnittstellen berücksichtigt. Fotos des Zählerschranks und Angaben zum Stellplatz helfen bei der ersten Aufnahme.",
+      "relatedFaqIds": [
+        "s83a-wallbox-pv-ueberschussladen",
+        "s83a-wallbox-wallbox-ladeleistung",
+        "s83a-wallbox-dynamisches-lastmanagement",
+        "s83a-wallbox-wallbox-ohne-speicher"
+      ],
+      "placements": [
+        {
+          "routeKey": "wallbox",
+          "sortOrder": 80,
+          "showInSchema": true
+        }
+      ],
+      "featured": false,
+      "sortOrder": 40,
+      "isPublished": true
+    }
+  ]
+}
