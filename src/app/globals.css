@@ -514,6 +514,10 @@ footer,
 .split-feature-copy > [data-reveal] {
   max-width: 37.5rem;
 }
+
+#gewerbe .split-feature-copy {
+  padding-block: clamp(2.5rem, 4vw, 4rem);
+}
 .premium-hero {
   width: 100%;
   max-width: none;

@@ -150,19 +150,20 @@ export default async function HomePage() {
             image={productImages.commercial}
             imagePosition="right"
             imageObjectPosition="right"
+            imageReveal="none"
             surface="soft"
             secondaryCtaStyle="text"
           />
 
           <section
-            className="bg-surface-soft py-10 md:py-12"
+            className="bg-background py-6 md:py-7"
             aria-labelledby="supplementary-heading"
           >
-            <div className="section-shell grid gap-5 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-              <h2 id="supplementary-heading" className="text-2xl leading-snug md:text-3xl">
+            <div className="section-shell grid gap-4 lg:grid-cols-[0.8fr_1.6fr] lg:items-center lg:gap-12">
+              <h2 id="supplementary-heading" className="max-w-[25ch] text-2xl leading-snug">
                 {homeSections.supplementary.title}
               </h2>
-              <p className="max-w-3xl text-base leading-8 text-[var(--text-muted)]">
+              <p className="max-w-4xl text-[0.9375rem] leading-6 text-[var(--text-muted)]">
                 {homeSections.supplementary.description}
               </p>
             </div>
