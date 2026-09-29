@@ -9,5 +9,5 @@ const content = sprint8Pages.commercialStorage;
 export const metadata: Metadata = buildMetadata(content.seo);
 
 export default function CommercialStoragePage() {
-  return <Sprint8ContentPage content={content} />;
+  return <Sprint8ContentPage brandIntroVariant="brand" content={content} />;
 }

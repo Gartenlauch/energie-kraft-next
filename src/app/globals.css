@@ -709,6 +709,9 @@ footer,
   position: absolute;
   top: 0;
   translate: 0 -50%;
+}
+
+.brand-intro--white .brand-intro__mark {
   filter: brightness(0) invert(1);
 }
 
@@ -718,7 +721,7 @@ footer,
 }
 
 .brand-intro .brand-intro__mark {
-  animation: brand-intro-mark 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: brand-intro-mark 920ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes brand-intro-mark {

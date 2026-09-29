@@ -74,6 +74,7 @@ const sections = [
 export default function ServicePage() {
   return (
     <MarketingFeaturePage
+      brandIntroVariant="brand"
       seo={seo}
       breadcrumbLabel="Service & Wartung"
       eyebrow="Service & Wartung"

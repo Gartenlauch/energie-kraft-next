@@ -17,6 +17,7 @@ export default async function BusinessPhotovoltaicsPage() {
   const faqs = await getPublicFaqEntriesByRoute("photovoltaik");
   return (
     <Sprint8ContentPage
+      brandIntroVariant="brand"
       content={content}
       afterSections={
         <>

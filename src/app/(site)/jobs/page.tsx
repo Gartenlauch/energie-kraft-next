@@ -1,3 +1,4 @@
+import { BrandIntro } from "@/components/marketing/brand-intro";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -49,6 +50,8 @@ export default function JobsPage() {
           primaryCta={{ label: "Aktuelle Stellen", href: "#stellen" }}
           secondaryCta={{ label: "Direkt bewerben", href: "/bewerbung" }}
         />
+
+        <BrandIntro variant="brand" />
 
         <EditorialFeatureSection
           eyebrow="Arbeitgeber Energie-Kraft"

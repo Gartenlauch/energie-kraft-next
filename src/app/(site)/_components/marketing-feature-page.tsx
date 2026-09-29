@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { BrandIntro, type BrandIntroVariant } from "@/components/marketing/brand-intro";
 
 import { SecondaryPageHeading } from "@/components/marketing/secondary-page-heading";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
@@ -27,6 +28,7 @@ export interface MarketingFeatureSection {
 }
 
 interface MarketingFeaturePageProps {
+  brandIntroVariant?: BrandIntroVariant | false;
   compactHeading?: boolean;
   seo: SeoContent;
   breadcrumbLabel: string;
@@ -50,6 +52,7 @@ interface MarketingFeaturePageProps {
 }
 
 export function MarketingFeaturePage({
+  brandIntroVariant = false,
   compactHeading = false,
   seo,
   breadcrumbLabel,
@@ -107,6 +110,8 @@ export function MarketingFeaturePage({
             primaryCta={{ label: ctaLabel, href: ctaHref }}
           />
         )}
+
+        {brandIntroVariant && <BrandIntro variant={brandIntroVariant} />}
 
         {afterHero}
 

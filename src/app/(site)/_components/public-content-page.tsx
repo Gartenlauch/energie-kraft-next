@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { BrandIntro, type BrandIntroVariant } from "@/components/marketing/brand-intro";
 
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
 import { PublicFaqSection } from "@/components/faq/public-faq-section";
@@ -17,6 +18,7 @@ import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import type { PublicPageContent } from "@/types/content";
 
 interface PublicContentPageProps {
+  brandIntroVariant?: BrandIntroVariant | false;
   content: PublicPageContent;
   beforeFaq?: ReactNode;
   sectionOverrides?: Readonly<Record<string, ReactNode>>;
@@ -201,6 +203,7 @@ const imageLeftSections = new Set([
 ]);
 
 export async function PublicContentPage({
+  brandIntroVariant = false,
   content,
   beforeFaq,
   sectionOverrides,
@@ -250,6 +253,8 @@ export async function PublicContentPage({
             }
           />
         ) : null}
+
+        {brandIntroVariant && <BrandIntro variant={brandIntroVariant} />}
 
         {content.faqRouteKey === "kontakt" && beforeFaq}
 

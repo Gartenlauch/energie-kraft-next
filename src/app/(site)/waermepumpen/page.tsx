@@ -9,5 +9,5 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata(waermepumpenContent.seo);
 
 export default function WaermepumpenPage() {
-  return <PublicContentPage content={waermepumpenContent} />;
+  return <PublicContentPage brandIntroVariant="brand" content={waermepumpenContent} />;
 }

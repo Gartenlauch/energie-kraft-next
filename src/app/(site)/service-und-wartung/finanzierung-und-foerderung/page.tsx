@@ -9,5 +9,5 @@ const content = sprint8Pages.funding;
 export const metadata: Metadata = buildMetadata(content.seo);
 
 export default function FundingPage() {
-  return <Sprint8ContentPage content={content} />;
+  return <Sprint8ContentPage brandIntroVariant="brand" content={content} />;
 }

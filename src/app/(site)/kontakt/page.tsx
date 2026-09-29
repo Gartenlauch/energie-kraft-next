@@ -12,6 +12,7 @@ export const metadata: Metadata = buildMetadata(kontaktContent.seo);
 export default function KontaktPage() {
   return (
     <PublicContentPage
+      brandIntroVariant="brand"
       content={kontaktContent}
       beforeFaq={
         <div id="kontaktformular" className="contact-form-anchor">

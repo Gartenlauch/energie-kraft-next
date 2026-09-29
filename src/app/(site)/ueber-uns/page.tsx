@@ -1,3 +1,4 @@
+import { BrandIntro } from "@/components/marketing/brand-intro";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -49,6 +50,8 @@ export default function AboutPage() {
           primaryCta={{ label: "Projekt besprechen", href: CONTACT_FORM_HREF }}
           secondaryCta={{ label: "Referenzen entdecken", href: "/referenzen" }}
         />
+
+        <BrandIntro variant="brand" />
 
         <EditorialFeatureSection
           eyebrow="Wer wir sind"

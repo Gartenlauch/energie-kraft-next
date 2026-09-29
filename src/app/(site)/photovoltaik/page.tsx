@@ -9,5 +9,5 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata(photovoltaikContent.seo);
 
 export default function PhotovoltaikPage() {
-  return <PublicContentPage content={photovoltaikContent} />;
+  return <PublicContentPage brandIntroVariant="brand" content={photovoltaikContent} />;
 }

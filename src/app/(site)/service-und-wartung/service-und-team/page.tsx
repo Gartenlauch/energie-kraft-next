@@ -41,6 +41,7 @@ const sections = [
 export default function ServiceTeamPage() {
   return (
     <MarketingFeaturePage
+      brandIntroVariant="brand"
       compactHeading
       seo={seo}
       breadcrumbLabel="Service & Team"

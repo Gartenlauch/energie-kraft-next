@@ -9,5 +9,5 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata(klimaanlagenContent.seo);
 
 export default function KlimaanlagenPage() {
-  return <PublicContentPage content={klimaanlagenContent} />;
+  return <PublicContentPage brandIntroVariant="brand" content={klimaanlagenContent} />;
 }

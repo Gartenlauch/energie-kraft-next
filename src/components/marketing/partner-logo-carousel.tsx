@@ -70,8 +70,18 @@ const partners = [
 export function PartnerLogoCarousel() {
   const sectionRef = useRef<HTMLElement>(null);
   const [paused, setPaused] = useState(false);
+  const [autoplayPlugin] = useState(() =>
+    Autoplay({
+      delay: 2000,
+      playOnInit: true,
+      stopOnInteraction: false,
+      stopOnFocusIn: false,
+      stopOnMouseEnter: false,
+      breakpoints: { "(prefers-reduced-motion: reduce)": { active: false } },
+    }),
+  );
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 }, [
-    Autoplay({ delay: 6500, playOnInit: false, stopOnInteraction: false, stopOnFocusIn: false }),
+    autoplayPlugin,
   ]);
 
   useEffect(() => {
@@ -87,14 +97,11 @@ export function PartnerLogoCarousel() {
 
     function sync() {
       if (disposed) return;
-      const hovered = window.matchMedia("(hover: hover)").matches && section?.matches(":hover");
       const blocked =
         paused ||
         motion.matches ||
         document.hidden ||
         !visible ||
-        hovered ||
-        section?.matches(":focus-within") ||
         dragging;
       if (blocked) autoplay?.stop();
       else if (!autoplay?.isPlaying()) autoplay?.play();
@@ -117,10 +124,7 @@ export function PartnerLogoCarousel() {
       { threshold: 0 },
     );
     observer.observe(viewport);
-    section.addEventListener("mouseenter", sync);
-    section.addEventListener("mouseleave", sync);
-    section.addEventListener("focusin", sync);
-    section.addEventListener("focusout", afterInteraction);
+    sync();
     document.addEventListener("visibilitychange", afterInteraction);
     motion.addEventListener("change", sync);
     emblaApi
@@ -132,10 +136,6 @@ export function PartnerLogoCarousel() {
       disposed = true;
       observer.disconnect();
       autoplay.stop();
-      section.removeEventListener("mouseenter", sync);
-      section.removeEventListener("mouseleave", sync);
-      section.removeEventListener("focusin", sync);
-      section.removeEventListener("focusout", afterInteraction);
       document.removeEventListener("visibilitychange", afterInteraction);
       motion.removeEventListener("change", sync);
       emblaApi

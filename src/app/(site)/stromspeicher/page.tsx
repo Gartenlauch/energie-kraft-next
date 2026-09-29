@@ -9,5 +9,5 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = buildMetadata(stromspeicherContent.seo);
 
 export default function StromspeicherPage() {
-  return <PublicContentPage content={stromspeicherContent} />;
+  return <PublicContentPage brandIntroVariant="brand" content={stromspeicherContent} />;
 }

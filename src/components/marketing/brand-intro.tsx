@@ -1,8 +1,14 @@
 import Image from "next/image";
 
-export function BrandIntro() {
+export type BrandIntroVariant = "white" | "brand";
+
+interface BrandIntroProps {
+  variant?: BrandIntroVariant;
+}
+
+export function BrandIntro({ variant = "brand" }: BrandIntroProps) {
   return (
-    <div className="brand-intro" aria-hidden="true">
+    <div className={`brand-intro brand-intro--${variant}`} aria-hidden="true">
       <span className="brand-intro__mark">
         <Image
           src="/brand/energie-kraft/energie-kraft-supersign.svg"

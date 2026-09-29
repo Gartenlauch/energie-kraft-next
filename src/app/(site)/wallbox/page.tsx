@@ -15,6 +15,7 @@ export const metadata: Metadata = buildMetadata(wallboxContent.seo);
 export default function WallboxPage() {
   return (
     <PublicContentPage
+      brandIntroVariant="brand"
       content={wallboxContent}
       sectionOverrides={Object.fromEntries(
         wallboxContent.sections.flatMap((section) => {

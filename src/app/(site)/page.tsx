@@ -113,7 +113,7 @@ export default async function HomePage() {
           secondaryCta={homeContent.hero.secondaryCta}
         />
 
-        <BrandIntro />
+        <BrandIntro variant="white" />
         <BrandStatementSection {...homeSections.intro} />
 
         <div aria-label="Unsere Energielösungen">
