@@ -6,10 +6,12 @@ import type { BrandIntroVariant } from "@/components/marketing/brand-intro";
 export function Sprint8ContentPage({
   content,
   afterSections,
+  sectionOverrides,
   brandIntroVariant = false,
 }: {
   content: Sprint8PageContent;
   afterSections?: ReactNode;
+  sectionOverrides?: Readonly<Record<string, ReactNode>>;
   brandIntroVariant?: BrandIntroVariant | false;
 }) {
   return (
@@ -24,7 +26,13 @@ export function Sprint8ContentPage({
       desktopSrc={content.desktopSrc}
       mobileSrc={content.mobileSrc}
       imageAlt={content.imageAlt}
+      secondaryCta={content.secondaryCta}
+      desktopWidth={content.desktopWidth}
+      desktopHeight={content.desktopHeight}
+      mobileWidth={content.mobileWidth}
+      mobileHeight={content.mobileHeight}
       sections={content.sections}
+      sectionOverrides={sectionOverrides}
       afterSections={afterSections}
       ctaTitle={content.ctaTitle}
       ctaLabel={content.ctaLabel}

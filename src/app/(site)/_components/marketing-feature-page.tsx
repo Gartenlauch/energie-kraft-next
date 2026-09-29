@@ -10,7 +10,7 @@ import {
 } from "@/components/marketing/marketing-sections";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
-import type { SeoContent } from "@/types/content";
+import type { CtaContent, SeoContent } from "@/types/content";
 
 export interface MarketingFeatureSection {
   image?: Parameters<typeof EditorialFeatureSection>[0]["image"];
@@ -40,11 +40,13 @@ interface MarketingFeaturePageProps {
   desktopSrc: string;
   mobileSrc: string;
   imageAlt: string;
+  secondaryCta?: CtaContent;
   desktopWidth?: number;
   desktopHeight?: number;
   mobileWidth?: number;
   mobileHeight?: number;
   sections: readonly MarketingFeatureSection[];
+  sectionOverrides?: Readonly<Record<string, ReactNode>>;
   afterHero?: ReactNode;
   afterSections?: ReactNode;
   ctaTitle: string;
@@ -64,11 +66,13 @@ export function MarketingFeaturePage({
   desktopSrc,
   mobileSrc,
   imageAlt,
+  secondaryCta,
   desktopWidth = 1600,
   desktopHeight = 1000,
   mobileWidth = 1080,
   mobileHeight = 1350,
   sections,
+  sectionOverrides,
   afterHero,
   afterSections,
   ctaTitle,
@@ -110,6 +114,7 @@ export function MarketingFeaturePage({
               alt: imageAlt,
             }}
             primaryCta={{ label: ctaLabel, href: ctaHref }}
+            secondaryCta={secondaryCta}
           />
         )}
 
@@ -117,23 +122,27 @@ export function MarketingFeaturePage({
 
         {afterHero}
 
-        {sections.map((section, index) => (
-          <EditorialFeatureSection
-            key={section.title}
-            id={section.id}
-            eyebrow={section.eyebrow}
-            title={section.title}
-            paragraphs={section.paragraphs}
-            items={section.items}
-            links={section.links}
-            surface={section.surface ?? (index % 2 === 0 ? "soft" : "white")}
-            layout={
-              section.layout ??
-              (section.image ? (index % 2 ? "image-right" : "image-left") : "editorial")
-            }
-            image={section.image}
-          />
-        ))}
+        {sections.map((section, index) =>
+          section.id && sectionOverrides?.[section.id] ? (
+            <div key={section.id}>{sectionOverrides[section.id]}</div>
+          ) : (
+            <EditorialFeatureSection
+              key={section.title}
+              id={section.id}
+              eyebrow={section.eyebrow}
+              title={section.title}
+              paragraphs={section.paragraphs}
+              items={section.items}
+              links={section.links}
+              surface={section.surface ?? (index % 2 === 0 ? "soft" : "white")}
+              layout={
+                section.layout ??
+                (section.image ? (index % 2 ? "image-right" : "image-left") : "editorial")
+              }
+              image={section.image}
+            />
+          ),
+        )}
 
         {afterSections}
         <section className="brand-gradient py-16 text-white md:py-20">

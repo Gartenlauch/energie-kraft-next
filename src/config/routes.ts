@@ -39,6 +39,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "wallbox-rechner",
   "energieloesungen",
   "photovoltaik-fuer-unternehmen",
+  "gewerbespeicher",
   "stromtarife-pv",
   "service-und-wartung",
   "service-und-team",
@@ -204,6 +205,14 @@ export const PUBLIC_ROUTES = {
     navigation: { header: true, footer: true },
     sitemap: { changeFrequency: "monthly", priority: 0.8 },
   },
+  gewerbespeicher: {
+    key: "gewerbespeicher",
+    href: "/energieloesungen/gewerbespeicher",
+    label: "Gewerbespeicher",
+    faqRouteKey: "stromspeicher",
+    navigation: { header: false, footer: false },
+    sitemap: { changeFrequency: "monthly", priority: 0.8 },
+  },
   "stromtarife-pv": {
     key: "stromtarife-pv",
     href: "/energieloesungen/stromtarife-pv",
@@ -234,7 +243,7 @@ export const PUBLIC_ROUTES = {
     navigation: { header: true, footer: true },
     sitemap: { changeFrequency: "monthly", priority: 0.7 },
   },
-  "referenzen": {
+  referenzen: {
     key: "referenzen",
     href: "/referenzen",
     label: "Referenzen",

@@ -1,6 +1,7 @@
 import { CONTACT_FORM_HREF } from "@/config/routes";
 import { siteConfig } from "@/config/site";
-import type { SeoContent } from "@/types/content";
+import type { CtaContent, SeoContent } from "@/types/content";
+import { commercialStorageContent } from "@/content/pages/gewerbespeicher";
 import type { MarketingFeatureSection } from "@/app/(site)/_components/marketing-feature-page";
 
 export interface Sprint8PageContent {
@@ -13,6 +14,11 @@ export interface Sprint8PageContent {
   desktopSrc: string;
   mobileSrc: string;
   imageAlt: string;
+  secondaryCta?: CtaContent;
+  desktopWidth?: number;
+  desktopHeight?: number;
+  mobileWidth?: number;
+  mobileHeight?: number;
   sections: readonly MarketingFeatureSection[];
   ctaTitle: string;
   ctaLabel: string;
@@ -236,56 +242,7 @@ export const sprint8Pages = {
     ctaLabel: "Gewerbeprojekt besprechen",
     ctaHref: CONTACT_FORM_HREF,
   },
-  commercialStorage: {
-    seo: {
-      title: "Gewerbespeicher für Unternehmen | Energie-Kraft Süd",
-      description:
-        "Gewerbliche Stromspeicher im Zusammenspiel mit Photovoltaik, Lastprofil und Eigenstromnutzung technisch und bedarfsgerecht planen.",
-      canonicalPath: "/energieloesungen/gewerbespeicher",
-      noIndex: true,
-    },
-    breadcrumbLabel: "Gewerbespeicher",
-    breadcrumbItems: energyBreadcrumb,
-    eyebrow: "Speicher für Betriebe",
-    title: "Energie dann nutzen, wenn der Betrieb sie braucht.",
-    description:
-      "Ein Gewerbespeicher kann Erzeugung und Verbrauch zeitlich besser verbinden. Die sinnvolle Auslegung hängt vom konkreten Lastprofil ab.",
-    desktopSrc: "/images/battery-storage/battery-storage-feature-desktop.webp",
-    mobileSrc: "/images/battery-storage/battery-storage-feature-mobile.webp",
-    imageAlt: "Stromspeichersystem als Baustein einer gewerblichen Energielösung",
-    sections: [
-      {
-        eyebrow: "Einsatz",
-        title: "Nicht die Kapazität allein entscheidet",
-        paragraphs: [
-          "Erzeugungsverlauf, Verbrauchsspitzen, Betriebszeiten und vorhandene Technik bestimmen, welche Speicherstrategie infrage kommt. Veraltete Produktdaten aus der früheren Website wurden nicht übernommen.",
-        ],
-        items: [
-          "Eigenstrom zeitlich verschieben",
-          "Lastverlauf analysieren",
-          "PV-Erzeugung einbeziehen",
-          "Technische Schnittstellen prüfen",
-        ],
-        links: [
-          {
-            label: "Photovoltaik für Unternehmen",
-            href: "/energieloesungen/photovoltaik-fuer-unternehmen",
-          },
-          { label: "Stromspeicher für Zuhause", href: "/stromspeicher" },
-        ],
-      },
-      {
-        eyebrow: "Planung",
-        title: "Speicher als Teil des betrieblichen Energiesystems",
-        paragraphs: [
-          "Wir bewerten einen Speicher nicht isoliert, sondern zusammen mit Photovoltaik, Netzanschluss und relevanten Verbrauchern. Konkrete Wirtschaftlichkeit entsteht erst aus verifizierten Projektdaten.",
-        ],
-      },
-    ],
-    ctaTitle: "Soll ein Speicher Ihr PV-System ergänzen?",
-    ctaLabel: "Anwendung prüfen lassen",
-    ctaHref: CONTACT_FORM_HREF,
-  },
+  commercialStorage: commercialStorageContent,
   electricityTariffs: {
     seo: {
       title: "Stromtarife für Photovoltaik verstehen | Energie-Kraft Süd",
