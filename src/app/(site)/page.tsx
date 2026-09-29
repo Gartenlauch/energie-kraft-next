@@ -95,7 +95,7 @@ export default async function HomePage() {
       <HomePageJsonLd seo={homeContent.seo} />
       <FaqJsonLd faqs={faqs} />
 
-      <main id="main-content">
+      <main id="main-content" className="home-page">
         <PremiumHeroSection
           eyebrow={homeContent.hero.eyebrow}
           title={homeContent.hero.title}
@@ -129,6 +129,7 @@ export default async function HomePage() {
             {...homeSections.battery}
             image={productImages.battery}
             imagePosition="left"
+            proportion="image-wide"
             surface="white"
           />
 
@@ -156,7 +157,7 @@ export default async function HomePage() {
           />
 
           <section
-            className="bg-background py-6 md:py-7"
+            className="bg-background py-8 md:py-12"
             aria-labelledby="supplementary-heading"
           >
             <div className="section-shell grid gap-4 lg:grid-cols-[0.8fr_1.6fr] lg:items-center lg:gap-12">
@@ -202,6 +203,7 @@ export default async function HomePage() {
             description="Wir verbinden Ihre Wallbox mit Hausanschluss und Photovoltaik. Sicher installiert und vorbereitet für intelligentes Laden mit Solarstrom."
             image={productImages.wallbox}
             imagePosition="right"
+            proportion="image-wide"
             surface="white"
             primaryCta={{ label: "Wallbox konfigurieren", href: "/konfigurator/wallbox" }}
             secondaryCta={{ label: "Wallbox kennenlernen", href: "/wallbox" }}

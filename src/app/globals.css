@@ -518,6 +518,63 @@ footer,
 #gewerbe .split-feature-copy {
   padding-block: clamp(2.5rem, 4vw, 4rem);
 }
+
+/* Homepage composition; shared marketing layouts retain their own rhythm. */
+.home-page {
+  --section-space: clamp(3rem, 5vw, 5.5rem);
+}
+
+.home-page .brand-statement {
+  padding-block: clamp(5rem, 8vw, 7rem) var(--section-space);
+}
+
+.home-page .brand-statement > .section-shell > div:last-child {
+  margin-top: 2.5rem;
+}
+
+.home-page .brand-statement > .section-shell > div:last-child > [data-reveal] {
+  padding-block: 1.5rem;
+}
+
+.home-page .split-feature-copy {
+  padding-block: clamp(2.75rem, 4.5vw, 4.5rem);
+}
+
+.home-page section[aria-labelledby="process-heading"] ol,
+.home-page .reference-mosaic {
+  margin-top: 2.5rem;
+}
+
+.home-page #referenzen {
+  background-color: var(--surface-soft);
+}
+
+.home-page section[aria-labelledby="customer-reviews-heading"] > .section-shell > .border-y {
+  margin-top: 2rem;
+  padding-block: 1.25rem;
+}
+
+.home-page [aria-label="Google-Bewertungen"] {
+  margin-top: 2rem;
+}
+
+.home-page .partner-section {
+  padding-block: var(--section-space);
+}
+
+.home-page #faq .section-shell > div:first-child {
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 47.999rem) {
+  .home-page section:not(#gewerbe) .split-feature-copy
+    :is(.button-primary, .button-secondary, .button-light, .button-outline-light),
+  .home-page section[aria-labelledby="closing-cta-heading"]
+    :is(.button-light, .button-outline-light) {
+    width: 100%;
+  }
+}
+
 .premium-hero {
   width: 100%;
   max-width: none;
