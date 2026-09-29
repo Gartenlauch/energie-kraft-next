@@ -37,6 +37,10 @@ export interface ContentSection {
   items?: string[];
   links?: ContentLink[];
   cta?: CtaContent;
+  presentation?: {
+    surface?: "white" | "soft" | "blue";
+    layout?: "editorial" | "statement" | "image-left" | "image-right";
+  };
 }
 
 export interface HomePageContent {

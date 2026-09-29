@@ -635,6 +635,17 @@ footer,
   position: absolute;
   inset: 0;
 }
+/* Opt-in technical illustrations retain their complete geometry on PV. */
+.editorial-section--technical .editorial-media {
+  display: flex;
+  align-items: center;
+  min-height: 0;
+  background: var(--background);
+}
+.editorial-technical-figure {
+  width: 100%;
+  padding: clamp(1rem, 3vw, 3rem);
+}
 .editorial-image-grid .editorial-heading {
   padding: 3.5rem 1rem 0;
 }

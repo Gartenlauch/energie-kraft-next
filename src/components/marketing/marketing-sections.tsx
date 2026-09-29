@@ -296,6 +296,8 @@ interface EditorialFeatureSectionProps {
   layout?: "editorial" | "statement" | "image-left" | "image-right";
   linkLayout?: "editorial" | "topics";
   image?: MarketingImage;
+  imagePresentation?: "cover" | "technical";
+  imageCaption?: string;
 }
 
 export function EditorialFeatureSection({
@@ -310,6 +312,8 @@ export function EditorialFeatureSection({
   layout = "editorial",
   linkLayout = "editorial",
   image,
+  imagePresentation = "cover",
+  imageCaption,
 }: EditorialFeatureSectionProps) {
   const dark = surface === "blue";
   const surfaceClass = dark
@@ -321,13 +325,35 @@ export function EditorialFeatureSection({
   const action = cta && !links?.some((link) => link.href === cta.href) ? cta : undefined;
 
   return (
-    <section id={id} className={`editorial-section editorial-section--${layout} ${surfaceClass}`}>
+    <section
+      id={id}
+      className={`editorial-section editorial-section--${layout} ${imagePresentation === "technical" ? "editorial-section--technical" : ""} ${surfaceClass}`}
+    >
       <div className={hasImage ? "editorial-image-grid" : "section-shell editorial-grid"}>
         {hasImage ? (
           <Reveal variant={layout === "image-left" ? "left" : "right"} className="editorial-media">
-            <div className="editorial-photo">
-              <ArtDirectedImage {...image} sizes="(max-width: 1023px) 100vw, 50vw" />
-            </div>
+            {imagePresentation === "technical" ? (
+              <figure className="editorial-technical-figure">
+                <Image
+                  src={image.desktopSrc}
+                  width={image.desktopWidth}
+                  height={image.desktopHeight}
+                  alt={image.alt}
+                  sizes="(max-width: 1023px) 100vw, 50vw"
+                  unoptimized
+                  className="h-auto w-full object-contain"
+                />
+                {imageCaption ? (
+                  <figcaption className="mt-4 text-sm leading-6 text-[var(--text-muted)]">
+                    {imageCaption}
+                  </figcaption>
+                ) : null}
+              </figure>
+            ) : (
+              <div className="editorial-photo">
+                <ArtDirectedImage {...image} sizes="(max-width: 1023px) 100vw, 50vw" />
+              </div>
+            )}
           </Reveal>
         ) : null}
         <div className="editorial-heading">
@@ -603,7 +629,10 @@ export function ReferenceProjectsSection({
               >
                 <Image
                   src={project.overviewImage}
-                  alt={project.projects.find((entry) => entry.image === project.overviewImage)?.alt ?? "Photovoltaikanlage"}
+                  alt={
+                    project.projects.find((entry) => entry.image === project.overviewImage)?.alt ??
+                    "Photovoltaikanlage"
+                  }
                   fill
                   sizes={
                     index === 0 || index === 3

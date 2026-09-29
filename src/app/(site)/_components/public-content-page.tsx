@@ -33,6 +33,8 @@ interface PageVisual {
   mobileWidth: number;
   mobileHeight: number;
   configuratorHref?: string;
+  imagePresentation?: "cover" | "technical";
+  imageCaption?: string;
 }
 
 const pageVisuals: Partial<Record<PublicPageContent["faqRouteKey"], PageVisual>> = {
@@ -121,15 +123,34 @@ const sectionVisuals: Partial<
     },
   },
   photovoltaik: {
-    eigenverbrauch: pageVisuals.stromspeicher!,
-    komponenten: {
-      desktopSrc: "/images/service/service-solar-legacy-desktop.webp",
-      mobileSrc: "/images/service/service-solar-legacy-mobile.webp",
+    eigenverbrauch: {
+      desktopSrc: "/images/battery-storage/residential-storage-feature-desktop.webp",
+      mobileSrc: "/images/battery-storage/residential-storage-feature-mobile.webp",
+      desktopWidth: 1600,
+      desktopHeight: 1200,
+      mobileWidth: 1200,
+      mobileHeight: 1500,
+      alt: "Sigenergy-Batteriespeicher an einem Wohnhaus",
+    },
+    montagesysteme: {
+      desktopSrc: "/images/photovoltaic/siko-montagesystem-schneefang.webp",
+      mobileSrc: "/images/photovoltaic/siko-montagesystem-schneefang.webp",
+      desktopWidth: 1679,
+      desktopHeight: 1256,
+      mobileWidth: 1679,
+      mobileHeight: 1256,
+      alt: "SIKO-Montagesystem mit Schneefang an einer Photovoltaikanlage",
+      imagePresentation: "technical",
+      imageCaption: "SIKO-Montagesystem mit Schneefang.",
+    },
+    "regionale-referenzen": {
+      desktopSrc: "/images/photovoltaic/ainring-pv-region.webp",
+      mobileSrc: "/images/photovoltaic/ainring-pv-region.webp",
       desktopWidth: 1800,
-      desktopHeight: 1000,
-      mobileWidth: 1080,
-      mobileHeight: 1350,
-      alt: "Photovoltaikmodule im warmen Abendlicht",
+      desktopHeight: 1039,
+      mobileWidth: 1800,
+      mobileHeight: 1039,
+      alt: "Photovoltaikmodule auf einem Dach vor der Berglandschaft bei Ainring",
     },
   },
   wallbox: {
@@ -285,9 +306,14 @@ export async function PublicContentPage({
                   : "editorial"
               }
               cta={section.cta}
-              surface={index === 0 ? "soft" : index === 2 ? "blue" : index === 4 ? "soft" : "white"}
-              layout={layout}
+              surface={
+                section.presentation?.surface ??
+                (index === 0 ? "soft" : index === 2 ? "blue" : index === 4 ? "soft" : "white")
+              }
+              layout={section.presentation?.layout ?? layout}
               image={sectionImage}
+              imagePresentation={sectionImage?.imagePresentation}
+              imageCaption={sectionImage?.imageCaption}
             />
           );
         })}

@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
-import {
-  isSearchIndexingEnabled,
-  SEARCH_NO_INDEX_DIRECTIVE,
-} from "./src/config/search-indexing";
+import { isSearchIndexingEnabled, SEARCH_NO_INDEX_DIRECTIVE } from "./src/config/search-indexing";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -24,6 +21,24 @@ const nextConfig: NextConfig = {
         destination: "/photovoltaik",
         permanent: true,
       },
+      { source: "/photovoltaik/strom-speichern", destination: "/stromspeicher", permanent: true },
+      {
+        source: "/photovoltaik/foerderungen",
+        destination: "/service-und-wartung/finanzierung-und-foerderung",
+        permanent: true,
+      },
+      {
+        source: "/photovoltaik/preistabelle-photovoltaik",
+        destination: "/rechner/photovoltaik-kosten",
+        permanent: true,
+      },
+      {
+        source: "/photovoltaik/service-und-reparatur",
+        destination: "/service-und-wartung",
+        permanent: true,
+      },
+      { source: "/photovoltaik/strom-produzieren", destination: "/photovoltaik", permanent: true },
+      { source: "/photovoltaik/strom-tanken", destination: "/wallbox", permanent: true },
       {
         source: "/energieloesungen/batteriespeicher-photovoltaik",
         destination: "/stromspeicher",
@@ -48,7 +63,7 @@ const nextConfig: NextConfig = {
         source: "/datenschutzerklaerung",
         destination: "/datenschutz",
         permanent: true,
-      }
+      },
     ];
   },
 
