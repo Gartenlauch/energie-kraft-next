@@ -270,7 +270,9 @@ export async function PublicContentPage({
                 : content.hero.primaryCta
             }
             secondaryCta={
-              visual.configuratorHref ? content.hero.primaryCta : content.hero.secondaryCta
+              visual.configuratorHref && content.hero.primaryCta.href !== visual.configuratorHref
+                ? content.hero.primaryCta
+                : content.hero.secondaryCta
             }
           />
         ) : null}
@@ -332,13 +334,27 @@ export async function PublicContentPage({
                 <div>
                   <p className="eyebrow eyebrow-on-dark">Persönliche Beratung</p>
                   <h2 className="mt-4 max-w-3xl text-3xl text-white md:text-4xl">
-                    Ihr Projekt verdient eine Lösung, die wirklich passt.
+                    {content.finalCta?.title ??
+                      "Ihr Projekt verdient eine Lösung, die wirklich passt."}
                   </h2>
                 </div>
-                <Link href={CONTACT_FORM_HREF} className="button-light group shrink-0">
-                  Beratung anfragen
-                  <ArrowRightIcon className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+                <div className="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
+                  <Link
+                    href={content.finalCta?.primaryCta.href ?? CONTACT_FORM_HREF}
+                    className="button-light group"
+                  >
+                    {content.finalCta?.primaryCta.label ?? "Beratung anfragen"}
+                    <ArrowRightIcon className="ml-2 size-4 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  {content.finalCta?.secondaryCta && (
+                    <Link
+                      href={content.finalCta.secondaryCta.href}
+                      className="button-outline-light"
+                    >
+                      {content.finalCta.secondaryCta.label}
+                    </Link>
+                  )}
+                </div>
               </Reveal>
             </div>
           </section>

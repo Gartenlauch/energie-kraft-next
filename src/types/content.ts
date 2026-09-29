@@ -53,6 +53,11 @@ export interface PublicPageContent {
   faqRouteKey: FaqRouteKey;
   hero: HeroContent;
   sections: ContentSection[];
+  finalCta?: {
+    title: string;
+    primaryCta: CtaContent;
+    secondaryCta?: CtaContent;
+  };
 }
 
 export interface CalculatorFieldContent {
