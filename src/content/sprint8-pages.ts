@@ -1,6 +1,7 @@
 import { CONTACT_FORM_HREF } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 import type { SeoContent } from "@/types/content";
+import type { MarketingFeatureSection } from "@/app/(site)/_components/marketing-feature-page";
 
 export interface Sprint8PageContent {
   seo: SeoContent;
@@ -12,27 +13,7 @@ export interface Sprint8PageContent {
   desktopSrc: string;
   mobileSrc: string;
   imageAlt: string;
-  sections: readonly {
-    image?: {
-      desktopSrc: string;
-      mobileSrc: string;
-      desktopWidth: number;
-      desktopHeight: number;
-      mobileWidth: number;
-      mobileHeight: number;
-      alt: string;
-    };
-    eyebrow: string;
-    title: string;
-    paragraphs: readonly string[];
-    items?: readonly string[];
-    links?: readonly {
-      eyebrow?: string;
-      label: string;
-      description?: string;
-      href: string;
-    }[];
-  }[];
+  sections: readonly MarketingFeatureSection[];
   ctaTitle: string;
   ctaLabel: string;
   ctaHref: string;
@@ -111,31 +92,43 @@ export const sprint8Pages = {
   },
   businessPv: {
     seo: {
-      title: "Photovoltaik für Unternehmen | Energie-Kraft Süd",
+      title: "Photovoltaik für Unternehmen & Gewerbe | Energie-Kraft Süd",
       description:
-        "Photovoltaik für Gewerbe, Unternehmen und Hallendächer: Verbrauch analysieren, Anlage technisch planen und Eigenstrom im Betrieb nutzen.",
+        "Photovoltaik für Unternehmen und Gewerbe in Bayern: Lastprofil analysieren, Eigenstrom nutzen und PV mit Speicher kombinieren. Planung, Installation und Service aus einer Hand.",
       canonicalPath: "/energieloesungen/photovoltaik-fuer-unternehmen",
     },
     breadcrumbLabel: "Photovoltaik für Unternehmen",
     breadcrumbItems: energyBreadcrumb,
-    eyebrow: "Energie für Unternehmen",
-    title: "Dachfläche in planbaren Eigenstrom übersetzen.",
+    eyebrow: "Photovoltaik für Gewerbe & Unternehmen",
+    title: "Photovoltaik für Unternehmen: eigenen Solarstrom wirtschaftlich nutzen",
     description:
-      "Für Gewerbe zählt nicht nur die Größe einer Anlage, sondern wie Erzeugung, Lastprofil, Dach und betriebliche Abläufe zusammenwirken.",
+      "Unternehmen verbrauchen häufig genau dann viel Strom, wenn eine Photovoltaikanlage Energie erzeugt. Wir analysieren Lastprofil, Dachflächen und technische Voraussetzungen und entwickeln daraus eine PV-Lösung, die zu Ihrem Betrieb passt – von der Planung über die Installation bis zum laufenden Service.",
     desktopSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-hero-desktop.webp",
     mobileSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-hero-mobile.webp",
     imageAlt: "Zwei Fachkräfte auf einer großen Photovoltaikanlage auf einem Gewerbedach",
     sections: [
       {
-        eyebrow: "Ausgangslage",
-        title: "Verbrauch und Gebäude bilden den Planungsrahmen",
+        id: "eigenstrom",
+        eyebrow: "Eigenstrom im Betrieb",
+        title: "Strom dort erzeugen, wo er im Unternehmen gebraucht wird",
+        layout: "statement",
         paragraphs: [
-          "Ein Betrieb mit hohem Tagesverbrauch kann Solarstrom unmittelbar nutzen. Schichtbetrieb, Wochenenden und saisonale Schwankungen verändern das Lastprofil. Deshalb betrachten wir Verbrauchsverlauf, nutzbare Dachfläche, Dachzustand und Anschlussbedingungen gemeinsam.",
+          "Gerade Betriebe mit hohem Tagesverbrauch können einen großen Teil des erzeugten Solarstroms direkt selbst nutzen. Dadurch kann sich der Strombezug aus dem Netz reduzieren und ein größerer Teil des betrieblichen Energiebedarfs durch die eigene Anlage gedeckt werden.",
+          "Entscheidend ist nicht allein die Größe der Dachfläche. Verbrauchszeiten, Lastspitzen, Betriebsabläufe und mögliche zukünftige Verbraucher bestimmen mit, welche Photovoltaiklösung wirtschaftlich und technisch sinnvoll ist.",
+        ],
+      },
+      {
+        id: "planung",
+        eyebrow: "Ausgangslage",
+        title: "Verbrauch, Lastprofil und Gebäude bilden den Planungsrahmen",
+        paragraphs: [
+          "Ein Betrieb mit hohem Tagesverbrauch kann Solarstrom unmittelbar nutzen. Schichtbetrieb, Wochenenden und saisonale Schwankungen verändern dagegen das Lastprofil. Deshalb betrachten wir Verbrauchsverlauf, nutzbare Dachflächen, Dachzustand und Anschlussbedingungen gemeinsam.",
+          "Daraus entsteht eine Anlage, deren Größe und technische Auslegung nicht pauschal, sondern anhand des tatsächlichen Betriebs geplant wird.",
         ],
         items: [
           "Verbrauchs- und Lastprofil",
           "Dach- und Flächensituation",
-          "Technische Einbindung",
+          "Netz- und Anschlussbedingungen",
           "Erweiterungsoptionen",
         ],
         links: [
@@ -152,8 +145,18 @@ export const sprint8Pages = {
         ],
       },
       {
+        id: "wirtschaftlichkeit",
+        eyebrow: "Investition verstehen",
+        title: "Vor der Investition prüfen, wie Erzeugung und Verbrauch zusammenpassen",
+        paragraphs: [
+          "Im Rahmen der Planung stellen wir den erwartbaren PV-Ertrag dem tatsächlichen Stromverbrauch des Unternehmens gegenüber. So lässt sich einschätzen, wie viel Solarstrom direkt genutzt werden kann und welche Anlagengröße zum Betrieb passt.",
+          "Investitionsrahmen, Eigenstromnutzung und mögliche Erweiterungen werden transparent betrachtet. Förderprogramme und regulatorische Rahmenbedingungen können sich ändern und werden deshalb zum jeweiligen Projektzeitpunkt aktuell geprüft.",
+        ],
+      },
+      {
+        id: "gewerbespeicher",
         eyebrow: "Systemlösung",
-        title: "Photovoltaik, Speicher und betriebliche Verbraucher abstimmen",
+        title: "Solarstrom speichern, wenn das Lastprofil davon profitiert",
         image: {
           desktopSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-system-desktop.webp",
           mobileSrc: "/images/commercial-photovoltaic/commercial-photovoltaic-system-mobile.webp",
@@ -164,18 +167,72 @@ export const sprint8Pages = {
           alt: "Photovoltaikanlage auf dem Dach eines Gewerbegebäudes",
         },
         paragraphs: [
-          "Ein Gewerbespeicher, Ladeinfrastruktur oder weitere Verbraucher können die Eigenstromnutzung ergänzen. Ob das fachlich sinnvoll ist, wird projektspezifisch bewertet.",
+          "Ein Gewerbespeicher kann überschüssigen Solarstrom zeitlich verschieben und damit die Eigenstromnutzung erhöhen. Ob ein Speicher wirtschaftlich und technisch sinnvoll ist, hängt jedoch vom konkreten Lastprofil, den Betriebszeiten und der vorhandenen Infrastruktur ab.",
+          "Deshalb betrachten wir Photovoltaik und Batteriespeicher gemeinsam. Auch Ladeinfrastruktur oder weitere elektrische Verbraucher können bereits bei der Planung berücksichtigt werden.",
+        ],
+        links: [
+          { label: "Gewerbespeicher kennenlernen", href: "/energieloesungen/gewerbespeicher" },
+          { label: "Wallbox & Ladeinfrastruktur", href: "/wallbox" },
         ],
       },
       {
-        eyebrow: "Umsetzung",
-        title: "Von der technischen Klärung bis zum Service",
+        id: "anwendungen",
+        eyebrow: "Von Gewerbe bis Industrie",
+        title: "Photovoltaik für unterschiedliche Betriebsgrößen und Anwendungen",
+        layout: "statement",
+        surface: "blue",
         paragraphs: [
-          "Planung, Installation, Inbetriebnahme und spätere Betreuung werden als zusammenhängender Prozess organisiert. Schnittstellen und Projektumfang stimmen wir vor der Umsetzung transparent ab.",
+          "Energie-Kraft Süd plant Photovoltaiksysteme für kleinere und mittlere Gewerbebetriebe ebenso wie für größere Dachflächen in Industrie, Landwirtschaft und kommunalen Projekten. Die technische Lösung wird an Nutzung, Gebäude und Energiebedarf angepasst und so geplant, dass spätere Erweiterungen berücksichtigt werden können.",
+        ],
+        items: ["Gewerbebetriebe", "Industrie", "Landwirtschaft", "Kommunale Projekte"],
+      },
+      {
+        id: "erfahrung",
+        eyebrow: "Energie-Kraft Süd",
+        title: "Über 20 Jahre Erfahrung für gewerbliche Energieprojekte",
+        paragraphs: [
+          "Energie-Kraft Süd besteht seit über 20 Jahren. Von der ersten Analyse über die technische Planung und Installation bis zur Inbetriebnahme und späteren Betreuung begleiten wir Ihr Projekt mit klaren Ansprechpartnern.",
+          "Von Ainring aus realisieren wir gewerbliche Photovoltaikanlagen in unserem regionalen Schwerpunktgebiet rund um das Berchtesgadener Land und den Landkreis Traunstein und bei größeren Projekten auch in ganz Bayern.",
+        ],
+        items: [
+          "Beratung & Analyse",
+          "Planung",
+          "Installation & Inbetriebnahme",
+          "Service & Betreuung",
         ],
       },
+      {
+        id: "service",
+        eyebrow: "Service nach der Inbetriebnahme",
+        title: "Damit Ihre PV-Anlage auch langfristig zuverlässig arbeitet",
+        paragraphs: [
+          "Mit der Inbetriebnahme endet unsere Betreuung nicht. Für gewerbliche Photovoltaikanlagen bieten wir Wartung, Instandhaltung, Reparatur und Störungsbeseitigung sowie auf Wunsch passende Wartungsverträge.",
+          "Über unsere Leitstelle können Anlagen laufend überwacht werden. Auffälligkeiten und Störungen lassen sich dadurch früh erkennen und gezielt prüfen.",
+        ],
+        items: [
+          "Anlagenüberwachung",
+          "Wartung",
+          "Instandhaltung",
+          "Reparatur und Störungsbeseitigung",
+          "Wartungsverträge",
+        ],
+        links: [
+          { label: "Service & Wartung", href: "/service-und-wartung" },
+          { label: "Service & Team", href: "/service-und-wartung/service-und-team" },
+        ],
+      },
+      {
+        id: "referenzen",
+        eyebrow: "Realisierte Projekte",
+        title: "Photovoltaik-Projekte für Unternehmen aus der Region",
+        layout: "statement",
+        paragraphs: [
+          "Unsere Referenzen zeigen unterschiedliche gewerbliche Photovoltaikprojekte aus dem Berchtesgadener Land, dem Landkreis Traunstein und der angrenzenden Region.",
+        ],
+        links: [{ label: "Gewerbliche Referenzen ansehen", href: "/referenzen" }],
+      },
     ],
-    ctaTitle: "Sie planen Photovoltaik für Ihren Betrieb?",
+    ctaTitle: "Sie planen eine Photovoltaikanlage für Ihren Betrieb?",
     ctaLabel: "Gewerbeprojekt besprechen",
     ctaHref: CONTACT_FORM_HREF,
   },

@@ -18,6 +18,8 @@ export interface MarketingFeatureSection {
   eyebrow: string;
   title: string;
   paragraphs: readonly string[];
+  surface?: Parameters<typeof EditorialFeatureSection>[0]["surface"];
+  layout?: Parameters<typeof EditorialFeatureSection>[0]["layout"];
   items?: readonly string[];
   links?: readonly {
     eyebrow?: string;
@@ -124,8 +126,11 @@ export function MarketingFeaturePage({
             paragraphs={section.paragraphs}
             items={section.items}
             links={section.links}
-            surface={index % 2 === 0 ? "soft" : "white"}
-            layout={section.image ? (index % 2 ? "image-right" : "image-left") : "editorial"}
+            surface={section.surface ?? (index % 2 === 0 ? "soft" : "white")}
+            layout={
+              section.layout ??
+              (section.image ? (index % 2 ? "image-right" : "image-left") : "editorial")
+            }
             image={section.image}
           />
         ))}
