@@ -8,7 +8,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 const seo = {
   title: "Service & Team für Energieanlagen | Energie-Kraft Süd",
   description:
-    "Ansprechpartner, Serviceorganisation und technische Betreuung von Energie-Kraft Süd: Unterstützung für Photovoltaik und vernetzte Energiesysteme.",
+    "Ansprechpartner und Serviceorganisation von Energie-Kraft Süd: technische Betreuung für Photovoltaik, Speicher, Wärmepumpen und Klimaanlagen.",
   canonicalPath: "/service-und-wartung/service-und-team",
 };
 
@@ -23,6 +23,7 @@ const sections = [
     ],
     items: [
       "Technische Betreuung bestehender Anlagen",
+      "Servicefragen zu Wärmepumpen und Klimaanlagen",
       "Koordination von Prüfung und Wartung",
       "Unterstützung bei erkennbaren Störungen",
       "Abstimmung mit Verwaltung und Vertrieb",
