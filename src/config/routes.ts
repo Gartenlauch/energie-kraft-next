@@ -240,7 +240,7 @@ export const PUBLIC_ROUTES = {
     href: "/service-und-wartung/service-und-team",
     label: "Service & Team",
     faqRouteKey: "kontakt",
-    navigation: { header: true, footer: true },
+    navigation: { header: false, footer: false },
     sitemap: { changeFrequency: "monthly", priority: 0.7 },
   },
   referenzen: {

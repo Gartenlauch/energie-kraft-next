@@ -40,6 +40,11 @@ describe("Service and maintenance hub", () => {
     expect(html).toContain("Filter und luftführende Komponenten");
     expect(html).toContain("Kondensatablauf");
     expect(html).toContain("Nachlassende Kühl- oder Heizleistung");
+    expect(html).toContain("Sichtprüfung und Anlagenzustand");
+    expect(html).toContain("Ertragsauffälligkeiten einordnen");
+    expect(html).toContain("Bedarfsgerechte Reinigung");
+    expect(html).toContain("keine pauschale regelmäßige Reinigung");
+    expect(html).toContain("technisch und wirtschaftlich sinnvoll");
     expect(html).toContain("qualifizierten Fach- und Montagepartnern");
     expect(html).toContain("Ladeinfrastruktur");
     expect(html).toContain('href="/wallbox"');
@@ -49,8 +54,9 @@ describe("Service and maintenance hub", () => {
     expect(html).toContain("Monitoring unterstützt die frühzeitige Einordnung");
     expect(html).toContain("abhängig vom vereinbarten Serviceumfang");
     expect(html).toContain("über unsere Leitstelle");
+    expect(html).toContain('id="anlagencheck-monitoring"');
     expect(html).toContain('href="/service-und-wartung/service-und-team"');
-    expect(html).toContain('href="/service-und-wartung/wartung-und-reinigung"');
+    expect(html).not.toContain('href="/service-und-wartung/wartung-und-reinigung"');
     expect(
       html.match(new RegExp(`href="${CONTACT_FORM_HREF}"`, "g"))?.length,
     ).toBeGreaterThanOrEqual(2);

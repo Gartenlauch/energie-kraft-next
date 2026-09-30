@@ -20,7 +20,6 @@ const companyLinks = [
   ["Fragen & Antworten", "/faq"],
   ["Über uns", "/ueber-uns"],
   ["Service & Wartung", "/service-und-wartung"],
-  ["Service & Team", "/service-und-wartung/service-und-team"],
   ["Referenzen", "/referenzen"],
   ["Jobs", "/jobs"],
   ["Kunden werben Kunden", "/kunden-werben-kunden"],

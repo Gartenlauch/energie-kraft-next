@@ -96,25 +96,25 @@ const serviceLinks: readonly NavigationLink[] = [
   {
     label: "Service & Wartung",
     href: "/service-und-wartung",
-    description: "Zuverlässiger Betrieb über die Inbetriebnahme hinaus.",
+    description: "Service, Wartung und technische Betreuung für Ihre Energietechnik.",
     previewImage: "/images/navigation/service-maintenance-mega.webp",
   },
   {
-    label: "Service & Team",
-    href: "/service-und-wartung/service-und-team",
-    description: "Ansprechpartner, technische Betreuung und Serviceorganisation.",
-    previewImage: "/images/team/company-service-hero-desktop.webp",
-  },
-  {
-    label: "Wartung & Reinigung",
-    href: "/service-und-wartung/wartung-und-reinigung",
-    description: "Prüfung, Pflege und Fehlererkennung passend zur Anlage.",
+    label: "Anlagencheck & Monitoring",
+    href: "/service-und-wartung#anlagencheck-monitoring",
+    description: "Anlagenzustand prüfen und Betriebsdaten gezielt einordnen.",
     previewImage: "/images/navigation/maintenance-cleaning-mega.webp",
   },
   {
     label: "Finanzierung & Förderung",
     href: "/service-und-wartung/finanzierung-und-foerderung",
     description: "Rahmenbedingungen und mögliche Programme individuell klären.",
+    previewImage: "/images/home-premium/consultation-reference-desktop.webp",
+  },
+  {
+    label: "Kunden werben Kunden",
+    href: "/kunden-werben-kunden",
+    description: "Energie-Kraft Süd persönlich weiterempfehlen.",
     previewImage: "/images/home-premium/consultation-reference-desktop.webp",
   },
 ] as const;
@@ -224,8 +224,9 @@ function MegaMenu({
           <div className="border-border-default bg-background overflow-hidden rounded-[1.5rem] border shadow-[var(--shadow-float)]">
             <div className="grid grid-cols-[0.8fr_1.2fr]">
               <div
-                className={`bg-brand-navy relative overflow-hidden ${menuKey === "service" ? "min-h-[20rem]" : "min-h-[25rem]"
-                  }`}
+                className={`bg-brand-navy relative overflow-hidden ${
+                  menuKey === "service" ? "min-h-[20rem]" : "min-h-[25rem]"
+                }`}
                 aria-hidden="true"
               >
                 {scenes.map((scene) => (
@@ -277,8 +278,9 @@ function MegaMenu({
                       setTemporaryPreviewItem(null);
                       setOpenMenu(null);
                     }}
-                    className={`mega-menu-link group ${link.priority === "primary" ? "bg-brand-primary/[0.045]" : ""
-                      }`}
+                    className={`mega-menu-link group ${
+                      link.priority === "primary" ? "bg-brand-primary/[0.045]" : ""
+                    }`}
                   >
                     <span className="text-brand-navy group-hover:text-brand-primary flex items-center justify-between gap-3 font-semibold transition">
                       <span>
@@ -327,7 +329,8 @@ function MobileGroup({
   pathname,
 }: MobileGroupProps) {
   const isOpen = openGroup === groupKey;
-  const activeGroup = links.some((link) => isPathWithin(pathname, link.href)) ||
+  const activeGroup =
+    links.some((link) => isPathWithin(pathname, link.href)) ||
     (groupKey === "energy" && pathname === "/energieloesungen") ||
     (groupKey === "service" && pathname === "/service-und-wartung");
 

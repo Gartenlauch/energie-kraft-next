@@ -37,6 +37,11 @@ const nextConfig: NextConfig = {
         destination: "/service-und-wartung",
         permanent: true,
       },
+      {
+        source: "/service-und-wartung/wartung-und-reinigung",
+        destination: "/service-und-wartung",
+        permanent: true,
+      },
       { source: "/photovoltaik/strom-produzieren", destination: "/photovoltaik", permanent: true },
       { source: "/photovoltaik/strom-tanken", destination: "/wallbox", permanent: true },
       {

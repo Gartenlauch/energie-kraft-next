@@ -20,13 +20,16 @@ const systems = [
   {
     title: "Photovoltaik-Service",
     description:
-      "Bei Photovoltaikanlagen unterstützen wir bei technischen Auffälligkeiten, Ertragsabweichungen, Wartungsbedarf und Fragen zum Anlagenbetrieb. Betriebsdaten, Monitoring und sichtbare Komponenten helfen dabei, mögliche Ursachen einzugrenzen.",
+      "Bei Photovoltaikanlagen unterstützen wir bei technischen Auffälligkeiten, Ertragsabweichungen, Wartungsbedarf und Fragen zum Anlagenbetrieb. Betriebsdaten, Monitoring und sichtbare Komponenten helfen dabei, mögliche Ursachen einzugrenzen. Verschmutzung, Standort, Dachneigung und Zugänglichkeit unterscheiden sich von Anlage zu Anlage. Deshalb empfehlen wir keine pauschale regelmäßige Reinigung, sondern beurteilen zunächst, ob sie technisch und wirtschaftlich sinnvoll ist.",
     items: [
+      "Sichtprüfung und Anlagenzustand",
       "Monitoring und Ertragskontrolle",
+      "Ertragsauffälligkeiten einordnen",
       "Photovoltaik-Anlagencheck",
       "Fehler- und Störungseinordnung",
       "Wechselrichter und elektrische Komponenten",
       "PV-Wartung und Instandhaltung",
+      "Bedarfsgerechte Reinigung",
       "Reparatur und Störungsbeseitigung je nach System",
     ],
     link: { label: "Photovoltaik", href: "/photovoltaik" },
@@ -211,7 +214,7 @@ const sections = [
     links: [{ label: "Wallbox", href: "/wallbox" }],
   },
   {
-    id: "anlagencheck",
+    id: "anlagencheck-monitoring",
     eyebrow: "Anlagencheck",
     title: "Auffälligkeiten strukturiert aufnehmen und gezielt prüfen",
     paragraphs: [
@@ -252,13 +255,6 @@ const sections = [
       "Verschmutzung und Zugänglichkeit einordnen",
       "Auffälligkeiten dokumentieren",
       "Nächste Schritte transparent abstimmen",
-    ],
-    links: [
-      {
-        label: "Wartung & Reinigung",
-        description: "Weitere Informationen zur Prüfung und Pflege von Photovoltaikanlagen.",
-        href: "/service-und-wartung/wartung-und-reinigung",
-      },
     ],
   },
   {
