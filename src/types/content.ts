@@ -36,6 +36,7 @@ export interface ContentSection {
   text: string[];
   items?: string[];
   links?: ContentLink[];
+  afterItems?: { text: string; link?: CtaContent };
   cta?: CtaContent;
   presentation?: {
     surface?: "white" | "soft" | "blue";

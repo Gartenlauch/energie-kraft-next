@@ -247,7 +247,7 @@ export async function PublicContentPage({
       <PublicPageJsonLd content={content} />
       <FaqJsonLd faqs={faqs} />
 
-      <main id="main-content">
+      <main id="main-content" className={content.faqRouteKey === "klimaanlagen" ? "climate-page" : undefined}>
         <Breadcrumbs currentLabel={breadcrumbLabel} />
 
         {content.faqRouteKey === "kontakt" ? (
@@ -301,6 +301,7 @@ export async function PublicContentPage({
               title={section.title}
               paragraphs={section.text}
               items={section.items}
+              afterItems={section.afterItems}
               links={section.links}
               linkLayout={
                 content.faqRouteKey === "kontakt" && section.id === "leistungen"

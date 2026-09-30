@@ -290,6 +290,7 @@ interface EditorialFeatureSectionProps {
   title: string;
   paragraphs: readonly string[];
   items?: readonly string[];
+  afterItems?: { text: string; link?: MarketingCta };
   links?: readonly EditorialLink[];
   cta?: MarketingCta;
   surface?: "white" | "soft" | "blue";
@@ -306,6 +307,7 @@ export function EditorialFeatureSection({
   title,
   paragraphs,
   items,
+  afterItems,
   links,
   cta,
   surface = "white",
@@ -395,6 +397,21 @@ export function EditorialFeatureSection({
                 </li>
               ))}
             </ul>
+          ) : null}
+
+          {afterItems ? (
+            <div className="mt-8 max-w-3xl border-t border-border-default pt-6 text-sm leading-7 text-[var(--text-muted)]">
+              <p>{afterItems.text}</p>
+              {afterItems.link ? (
+                <Link
+                  href={afterItems.link.href}
+                  className="text-brand-primary mt-3 inline-flex min-h-11 items-center gap-2 font-semibold underline underline-offset-4"
+                >
+                  {afterItems.link.label}
+                  <ArrowRightIcon className="size-4" />
+                </Link>
+              ) : null}
+            </div>
           ) : null}
 
           {links?.length && linkLayout === "topics" ? (

@@ -325,6 +325,19 @@ select:focus-visible {
   letter-spacing: -0.045em;
 }
 
+.climate-page .premium-hero-title {
+  max-width: none;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+@media (min-width: 64rem) {
+  .climate-page .hero-copy {
+    width: 52%;
+    max-width: 43rem;
+  }
+}
+
 .section-title {
   max-width: 24ch;
   font-size: clamp(2rem, 3.5vw, 3.65rem);
