@@ -9,6 +9,11 @@ export const siteConfig = {
   language: "de",
   locale: "de_DE",
 
+  social: {
+    facebook: "https://www.facebook.com/EnergieKraftSued/?locale=de_DE",
+    instagram: "https://www.instagram.com/energie_kraft_sued/",
+  },
+
   contact: {
     phoneDisplay: "+49 (0) 8654 77161-0",
     phoneHref: "tel:+498654771610",

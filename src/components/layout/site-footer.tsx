@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MarketingInvitation } from "@/components/layout/marketing-invitation";
 
-import { ArrowRightIcon, PhoneIcon } from "@/components/ui/icons";
+import { ArrowRightIcon, FacebookIcon, InstagramIcon, PhoneIcon } from "@/components/ui/icons";
 import { LEGAL_ROUTE_LIST } from "@/config/legal-routes";
 import { siteConfig } from "@/config/site";
 
@@ -123,6 +123,26 @@ export function SiteFooter() {
               </a>
             </p>
           </address>
+          <div className="mt-5 flex gap-3">
+            <a
+              href={siteConfig.social.facebook}
+              aria-label="Energie-Kraft Süd auf Facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-border-default text-brand-primary hover:border-brand-primary hover:bg-brand-primary flex size-11 items-center justify-center rounded-lg border transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+            >
+              <FacebookIcon className="size-5" />
+            </a>
+            <a
+              href={siteConfig.social.instagram}
+              aria-label="Energie-Kraft Süd auf Instagram"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-border-default text-brand-primary hover:border-brand-primary hover:bg-brand-primary flex size-11 items-center justify-center rounded-lg border transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+            >
+              <InstagramIcon className="size-5" />
+            </a>
+          </div>
           <Image
             src="/brand/certifications/dgs-mitglied.jpg"
             alt="Mitglied der Deutschen Gesellschaft für Sonnenenergie (DGS)"
