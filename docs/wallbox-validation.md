@@ -1,5 +1,7 @@
 # Wallbox: Premium-Produktdarstellung und Abnahme
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 Stand: 28.09.2026. Folgeauftrag auf dem bestehenden uncommitteten Wallbox-Arbeitsstand. Kein Reset, Commit, Push oder Deployment.
 
 ## Änderungen dieses Folgeauftrags

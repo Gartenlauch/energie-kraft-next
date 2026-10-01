@@ -1,5 +1,7 @@
 # Sprint 10 – Gewerbespeicher: Validation
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 ## Ausgangsstand und Scope
 
 Keine vorhandenen Änderungen an getrackten Dateien überschrieben; bestehende QA-Artefakte bleiben unberührt. Zielroute `/energieloesungen/gewerbespeicher` war eine kompakte Seite mit zwei Textabschnitten, einem passenden Gewerbe-Hero und seitenspezifischem `noIndex: true`.

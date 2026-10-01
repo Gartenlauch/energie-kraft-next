@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const base = "http://localhost:3020";
-const route = "/energieloesungen/photovoltaik-fuer-unternehmen";
+const route = "/photovoltaik-fuer-unternehmen";
 const output = "artifacts/sprint10-business-pv-qa";
 await mkdir(output, { recursive: true });
 const profile = await mkdtemp(join(tmpdir(), "ek-business-pv-"));
@@ -202,7 +202,7 @@ try {
   }
   for (const destination of [
     "/referenzen",
-    "/energieloesungen/gewerbespeicher",
+    "/gewerbespeicher",
     "/service-und-wartung",
     "/service-und-wartung/service-und-team",
     "/wallbox",

@@ -86,10 +86,9 @@ export const commercialStorageContent: Sprint8PageContent = {
     title: "Gewerbespeicher für Unternehmen | Energie-Kraft Süd",
     description:
       "Gewerbespeicher für Unternehmen in Bayern: SigenStack und sonnenPro FlexStack passend zu Photovoltaik, Lastprofil und betrieblichen Anforderungen planen.",
-    canonicalPath: "/energieloesungen/gewerbespeicher",
+    canonicalPath: "/gewerbespeicher",
   },
   breadcrumbLabel: "Gewerbespeicher",
-  breadcrumbItems: [{ label: "Energielösungen", href: PUBLIC_ROUTES.energieloesungen.href }],
   eyebrow: "Gewerbespeicher für Unternehmen",
   title: "Energie speichern, Lastspitzen steuern und Eigenstrom besser nutzen",
   description:

@@ -1,5 +1,7 @@
 # Sprint 10 – Wärmepumpen: Umsetzung und Validierung
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 Stand / Herstellerprüfung: 29.09.2026. Lokaler `main`-Arbeitsstand; `git status --short` und `git diff --stat` zu Beginn ausgeführt. Keine bestehenden Änderungen an den betroffenen getrackten Dateien; vorhandene untracked QA-Ordner erhalten. Keine fremden Änderungen, bestehenden QA-Ordner oder Sicherungsbranches verändert. Kein Commit, Push, Deployment oder Produktionseingriff.
 
 ## Angebot und Content

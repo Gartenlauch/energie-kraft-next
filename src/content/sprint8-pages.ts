@@ -1,4 +1,4 @@
-import { CONTACT_FORM_HREF } from "@/config/routes";
+import { CONTACT_FORM_HREF, PUBLIC_ROUTES } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 import type { CtaContent, SeoContent } from "@/types/content";
 import { commercialStorageContent } from "@/content/pages/gewerbespeicher";
@@ -25,86 +25,17 @@ export interface Sprint8PageContent {
   ctaHref: string;
 }
 
-const energyBreadcrumb = [{ label: "Energielösungen", href: "/energieloesungen" }] as const;
 const serviceBreadcrumb = [{ label: "Service & Wartung", href: "/service-und-wartung" }] as const;
 
 export const sprint8Pages = {
-  energySolutions: {
-    seo: {
-      title: "Energielösungen für Gebäude | Energie-Kraft Süd",
-      description:
-        "Photovoltaik, Stromspeicher, Wärmepumpe, Klima und Ladeinfrastruktur als abgestimmtes Energiesystem für private und gewerbliche Gebäude.",
-      canonicalPath: "/energieloesungen",
-    },
-    breadcrumbLabel: "Energielösungen",
-    eyebrow: "Erzeugung, Speicherung & Verbrauch",
-    title: "Energie wird stärker, wenn die Komponenten zusammenpassen.",
-    description:
-      "Wir planen Photovoltaik und Stromspeicher als Kern eines Systems, das Wärme, Klima und Elektromobilität sinnvoll einbeziehen kann.",
-    desktopSrc: "/images/home-premium/hero-energy-home-desktop.webp",
-    mobileSrc: "/images/home-premium/hero-energy-home-mobile.webp",
-    imageAlt: "Wohnhaus mit Photovoltaikanlage als Teil eines vernetzten Energiesystems",
-    sections: [
-      {
-        eyebrow: "Schwerpunkt",
-        title: "Photovoltaik und Speicher zuerst gemeinsam betrachten",
-        paragraphs: [
-          "Dachfläche und Verbrauchszeiten bilden die Grundlage: Solarstrom lässt sich direkt nutzen, in einer Batterie für später speichern oder ins Netz einspeisen. Wir stimmen Photovoltaik und Speicher darauf ab und berücksichtigen anschließend zusätzliche Verbraucher.",
-        ],
-        items: ["Photovoltaik", "Stromspeicher", "Eigenverbrauch", "Technische Erweiterbarkeit"],
-        links: [
-          {
-            label: "Photovoltaik",
-            description: "Solarstrom passend zum Gebäude planen.",
-            href: "/photovoltaik",
-          },
-          {
-            label: "Stromspeicher",
-            description: "Eigenen Strom zeitlich flexibler nutzen.",
-            href: "/stromspeicher",
-          },
-        ],
-      },
-      {
-        eyebrow: "Weitere Bausteine",
-        title: "Wärme, Klima und Mobilität passend ergänzen",
-        paragraphs: [
-          "Wärmepumpe, Klimaanlage und Wallbox haben jeweils eigene technische Anforderungen. Wir prüfen ihren Platz im Gesamtsystem, ohne jede Komponente pauschal vorauszusetzen.",
-        ],
-        items: ["Wärmepumpe", "Klimatisierung", "Wallbox", "Strombezug und Tarifmodell"],
-        links: [
-          {
-            label: "Wärmepumpen",
-            description: "Wärme als Teil des Energiesystems.",
-            href: "/waermepumpen",
-          },
-          {
-            label: "Klimaanlagen",
-            description: "Räume effizient temperieren.",
-            href: "/klimaanlagen",
-          },
-          { label: "Wallbox", description: "Elektromobilität mit PV verbinden.", href: "/wallbox" },
-          {
-            label: "Stromtarife",
-            description: "Eigenstrom und Netzbezug zusammendenken.",
-            href: "/energieloesungen/stromtarife-pv",
-          },
-        ],
-      },
-    ],
-    ctaTitle: "Welches Energiesystem passt zu Ihrem Gebäude?",
-    ctaLabel: "Projekt konfigurieren",
-    ctaHref: "/konfigurator",
-  },
   businessPv: {
     seo: {
       title: "Photovoltaik für Unternehmen & Gewerbe | Energie-Kraft Süd",
       description:
         "Photovoltaik für Unternehmen und Gewerbe in Bayern: Lastprofil analysieren, Eigenstrom nutzen und PV mit Speicher kombinieren. Planung, Installation und Service aus einer Hand.",
-      canonicalPath: "/energieloesungen/photovoltaik-fuer-unternehmen",
+      canonicalPath: "/photovoltaik-fuer-unternehmen",
     },
     breadcrumbLabel: "Photovoltaik für Unternehmen",
-    breadcrumbItems: energyBreadcrumb,
     eyebrow: "Photovoltaik für Gewerbe & Unternehmen",
     title: "Photovoltaik für Unternehmen: eigenen Solarstrom wirtschaftlich nutzen",
     description:
@@ -146,7 +77,7 @@ export const sprint8Pages = {
           {
             label: "Gewerbespeicher",
             description: "Speicherung im betrieblichen System prüfen.",
-            href: "/energieloesungen/gewerbespeicher",
+            href: PUBLIC_ROUTES.gewerbespeicher.href,
           },
         ],
       },
@@ -177,7 +108,7 @@ export const sprint8Pages = {
           "Deshalb betrachten wir Photovoltaik und Batteriespeicher gemeinsam. Auch Ladeinfrastruktur oder weitere elektrische Verbraucher können bereits bei der Planung berücksichtigt werden.",
         ],
         links: [
-          { label: "Gewerbespeicher kennenlernen", href: "/energieloesungen/gewerbespeicher" },
+          { label: "Gewerbespeicher kennenlernen", href: PUBLIC_ROUTES.gewerbespeicher.href },
           { label: "Wallbox & Ladeinfrastruktur", href: "/wallbox" },
         ],
       },
@@ -248,10 +179,9 @@ export const sprint8Pages = {
       title: "Stromtarife für Photovoltaik verstehen | Energie-Kraft Süd",
       description:
         "Wie Photovoltaik, Eigenverbrauch, Speicher und ergänzender Strombezug zusammenspielen – mit einer Tarifwahl passend zum Verbrauch.",
-      canonicalPath: "/energieloesungen/stromtarife-pv",
+      canonicalPath: "/stromtarife-pv",
     },
     breadcrumbLabel: "Stromtarife",
-    breadcrumbItems: energyBreadcrumb,
     eyebrow: "PV & Strombezug",
     title: "Eigenstrom und Netzbezug sinnvoll zusammendenken.",
     description:

@@ -12,8 +12,8 @@ const energyLinks = [
   ["Wärmepumpen", "/waermepumpen"],
   ["Klimaanlagen", "/klimaanlagen"],
   ["Wallbox", "/wallbox"],
-  ["Für Unternehmen", "/energieloesungen/photovoltaik-fuer-unternehmen"],
-  ["Stromtarife", "/energieloesungen/stromtarife-pv"],
+  ["Für Unternehmen", "/photovoltaik-fuer-unternehmen"],
+  ["Stromtarife", "/stromtarife-pv"],
 ] as const;
 
 const companyLinks = [

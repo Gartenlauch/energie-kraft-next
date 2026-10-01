@@ -1,5 +1,7 @@
 # Energie-Kraft Süd – SEO-Migrationsmatrix
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](../sprint10-energy-solutions-routing-cleanup.md).
+
 > **Status:** Historisches Sprint-3-Dokument. Für aktuelle Routen, Redirects, Sitemap und Robots
 > siehe [SEO and migration implementation](../seo-migration.md). Offene Cutover-Evidenz wird in
 > [Legacy URL migration](../legacy-url-migration.md) gepflegt.

@@ -186,7 +186,7 @@ try {
       "/konfigurator/stromspeicher",
     ])
       assert(info.links.includes(href));
-    assert(!info.links.includes("/energieloesungen/stromtarife-pv"));
+    assert(!info.links.includes("/stromtarife-pv"));
     assert.deepEqual(
       info.products.map((p) => p.id),
       ["sigenstor-neo", "sigenstor"],
@@ -205,7 +205,7 @@ try {
     await pause(350);
     assert(
       await js(
-        `!!document.querySelector('footer a[href="/energieloesungen/stromtarife-pv"]') && !!document.querySelector('header a[href="/energieloesungen/stromtarife-pv"]') && !document.querySelector('main a[href="/energieloesungen/stromtarife-pv"]')`,
+        `!!document.querySelector('footer a[href="/stromtarife-pv"]') && !!document.querySelector('header a[href="/stromtarife-pv"]') && !document.querySelector('main a[href="/stromtarife-pv"]')`,
       ),
     );
     await js(`document.querySelector(${JSON.stringify(menuSelector)}).click()`);
@@ -292,7 +292,7 @@ try {
       await navigate(path);
       await primePage();
       const info = await js(
-        `({h1:document.querySelector('main h1')?.textContent,overflow:document.documentElement.scrollWidth>innerWidth,signets:document.querySelectorAll('.brand-intro').length,tariffLink:!!document.querySelector('footer a[href="/energieloesungen/stromtarife-pv"]'),broken:[...document.querySelectorAll('main img')].filter(i=>i.complete&&!i.naturalWidth).map(i=>i.currentSrc)})`,
+        `({h1:document.querySelector('main h1')?.textContent,overflow:document.documentElement.scrollWidth>innerWidth,signets:document.querySelectorAll('.brand-intro').length,tariffLink:!!document.querySelector('footer a[href="/stromtarife-pv"]'),broken:[...document.querySelectorAll('main img')].filter(i=>i.complete&&!i.naturalWidth).map(i=>i.currentSrc)})`,
       );
       assert(info.h1 && !info.h1.includes("technischer Fehler"));
       assert.equal(info.overflow, false);

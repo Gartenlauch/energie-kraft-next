@@ -86,7 +86,7 @@ describe("Residential storage migration", () => {
     expect(final).toContain(`href="${CONTACT_FORM_HREF}"`);
     for (const href of ["/photovoltaik", "/wallbox", "/waermepumpen"])
       expect(html).toContain(`href="${href}"`);
-    expect(html).not.toContain("/energieloesungen/stromtarife-pv");
+    expect(html).not.toContain("/stromtarife-pv");
   });
 
   it("uses local imagery and excludes obsolete products and fabricated product schemas", () => {

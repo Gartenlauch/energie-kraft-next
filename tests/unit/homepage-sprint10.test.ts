@@ -87,7 +87,7 @@ describe("Sprint 10 rendered homepage", () => {
       new RegExp(`href="${CONTACT_FORM_HREF}"[^>]*>Nehmen Sie jetzt mit uns Kontakt auf`),
     );
     expect(commercial).toMatch(
-      /href="\/energieloesungen\/photovoltaik-fuer-unternehmen"[^>]*>Photovoltaik für Unternehmen kennenlernen/,
+      /href="\/photovoltaik-fuer-unternehmen"[^>]*>Photovoltaik für Unternehmen kennenlernen/,
     );
     expect(commercial).not.toContain("/konfigurator");
     expect(commercial).toContain("commercial-photovoltaic-hero-desktop.webp");
@@ -136,12 +136,12 @@ describe("Sprint 10 rendered homepage", () => {
     const expected = [
       "/photovoltaik",
       "/stromspeicher",
-      "/energieloesungen/photovoltaik-fuer-unternehmen",
-      "/energieloesungen/gewerbespeicher",
+      "/photovoltaik-fuer-unternehmen",
+      "/gewerbespeicher",
       "/waermepumpen",
       "/klimaanlagen",
       "/wallbox",
-      "/energieloesungen/stromtarife-pv",
+      "/stromtarife-pv",
     ];
     const desktop = [...header.matchAll(/<a\b[^>]*class="mega-menu-link[^"]*"[^>]*>[\s\S]*?<\/a>/g)]
       .map((match) => match[0]).join("");
@@ -153,7 +153,7 @@ describe("Sprint 10 rendered homepage", () => {
     }
     expect(header).toMatch(/href="\/ueber-uns"/);
     expect(renderToStaticMarkup(createElement(SiteFooter))).toMatch(
-      /href="\/energieloesungen\/photovoltaik-fuer-unternehmen"[^>]*>Für Unternehmen/,
+      /href="\/photovoltaik-fuer-unternehmen"[^>]*>Für Unternehmen/,
     );
     expect(sprint8Pages.businessPv.seo.canonicalPath).toBe(expected[2]);
     expect(sprint8Pages.businessPv.ctaHref).toBe(CONTACT_FORM_HREF);

@@ -1,5 +1,7 @@
 # Sprint 8 – Content-Inventar
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 > **Status:** Historisches Sprint-8-Inventar. Mehrere damals fehlende Seiten, Rechner und
 > Konfiguratoren existieren inzwischen. Für den aktuellen Routenbestand sind `src/app` und
 > `src/config/routes.ts` maßgeblich; siehe [SEO implementation](seo-migration.md).

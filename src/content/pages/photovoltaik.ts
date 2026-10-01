@@ -171,7 +171,7 @@ export const photovoltaikContent = {
         },
         {
           label: "Stromtarife für Photovoltaik kennenlernen",
-          href: "/energieloesungen/stromtarife-pv",
+          href: "/stromtarife-pv",
         },
       ],
       presentation: {

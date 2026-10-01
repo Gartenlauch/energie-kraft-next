@@ -1,5 +1,7 @@
 # Wallbox: Produktbilder und verifizierte Angaben
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 Abruf und fachliche Prüfung: **28.09.2026**. Die Nutzung der offiziellen sonnen-/Alfen- und Sigenergy-Bilder wurde im Folgebriefing ausdrücklich vom Auftraggeber bestätigt. Keine offenen Bildfreigaben. Keine generierten Bilder, Drittanbieterbilder oder Frontend-Hotlinks.
 
 ## Übernommene Bilder

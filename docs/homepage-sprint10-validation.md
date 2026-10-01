@@ -1,5 +1,7 @@
 # Startseite – Sprint 10: SEO/GEO und Gewerbe
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 Stand: 28.09.2026. Ausgangsbasis: lokaler Stand auf `main`, Arbeitsbaum vor Beginn sauber.
 
 ## Umsetzung und Quellen

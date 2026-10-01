@@ -50,7 +50,7 @@ describe("Global footer navigation", () => {
     ]) {
       location.pathname = pathname;
       const html = renderToStaticMarkup(createElement(SiteFooter));
-      expect(html).toContain('href="/energieloesungen/stromtarife-pv"');
+      expect(html).toContain('href="/stromtarife-pv"');
       expect(html).toContain("Stromtarife");
     }
   });

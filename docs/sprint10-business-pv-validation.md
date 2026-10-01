@@ -1,5 +1,7 @@
 # Sprint 10 – Photovoltaik für Unternehmen
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 ## Ausgangsstand und Quellen
 
 Die bestehende Route `/energieloesungen/photovoltaik-fuer-unternehmen` enthielt drei Abschnitte zu Lastprofil/Gebäude, PV/Speicher/Verbrauchern und Umsetzung/Service. Vor Beginn bestanden keine Änderungen an versionierten Dateien; bereits vorhandene, unversionierte Homepage-/Signet-QA-Artefakte wurden erhalten.

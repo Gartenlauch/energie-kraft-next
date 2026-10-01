@@ -356,7 +356,7 @@ try {
       "/wallbox",
       "/waermepumpen",
       "/klimaanlagen",
-      "/energieloesungen/photovoltaik-fuer-unternehmen",
+      "/photovoltaik-fuer-unternehmen",
     ]) {
       await navigate(path);
       await primePage();

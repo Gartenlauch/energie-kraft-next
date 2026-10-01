@@ -50,14 +50,14 @@ const energyLinks: readonly NavigationLink[] = [
   },
   {
     label: "Photovoltaik für Unternehmen",
-    href: "/energieloesungen/photovoltaik-fuer-unternehmen",
+    href: "/photovoltaik-fuer-unternehmen",
     description: "Eigenstrom für Gewerbe, Hallen und betriebliche Dachflächen.",
     previewImage: "/images/navigation/commercial-photovoltaic-mega.webp",
     priority: "secondary",
   },
   {
     label: "Gewerbespeicher",
-    href: "/energieloesungen/gewerbespeicher",
+    href: "/gewerbespeicher",
     description: "Erzeugung und Verbrauch im Betrieb besser aufeinander abstimmen.",
     previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
     priority: "supporting",
@@ -85,7 +85,7 @@ const energyLinks: readonly NavigationLink[] = [
   },
   {
     label: "Stromtarife",
-    href: "/energieloesungen/stromtarife-pv",
+    href: "/stromtarife-pv",
     description: "PV, Eigenverbrauch und ergänzenden Strombezug zusammendenken.",
     previewImage: "/images/navigation/electricity-tariffs-mega.webp",
     priority: "supporting",
@@ -158,7 +158,6 @@ function MegaMenu({
   const activeItem = links.find((link) => isPathWithin(pathname, link.href));
   const activeGroup =
     activeItem !== undefined ||
-    (menuKey === "energy" && pathname === "/energieloesungen") ||
     (menuKey === "service" && pathname === "/service-und-wartung");
   const previewItem = temporaryPreviewItem ?? activeItem?.href ?? "default";
   const scenes = [
@@ -331,7 +330,6 @@ function MobileGroup({
   const isOpen = openGroup === groupKey;
   const activeGroup =
     links.some((link) => isPathWithin(pathname, link.href)) ||
-    (groupKey === "energy" && pathname === "/energieloesungen") ||
     (groupKey === "service" && pathname === "/service-und-wartung");
 
   return (

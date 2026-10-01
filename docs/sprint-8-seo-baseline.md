@@ -1,5 +1,7 @@
 # Sprint 8 – SEO-Baseline
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 > **Status:** Historische Baseline; keine Aussage über aktuelle Rankings, Zugriffe oder
 > Produktionsindexierung. Aktuelle technische Umsetzung: [SEO and migration implementation](seo-migration.md).
 

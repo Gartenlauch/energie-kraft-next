@@ -65,13 +65,13 @@ export default function AboutPage() {
               eyebrow: "Schwerpunkt",
               label: "Photovoltaik & Speicher",
               description: "Erzeugung, Speicherung und Verbrauch gemeinsam planen.",
-              href: "/energieloesungen",
+              href: "/",
             },
             {
               eyebrow: "Für Betriebe",
               label: "Energie für Unternehmen",
               description: "Technische Lösungen für Hallen, Gewerbe und betriebliche Nutzung.",
-              href: "/energieloesungen/photovoltaik-fuer-unternehmen",
+              href: "/photovoltaik-fuer-unternehmen",
             },
           ]}
           surface="soft"

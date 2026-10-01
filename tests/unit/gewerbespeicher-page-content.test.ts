@@ -6,7 +6,7 @@ vi.mock("@/config/env/public", () => ({
   publicEnv: { NEXT_PUBLIC_CANONICAL_BASE_URL: "https://www.energie-kraft.de" },
 }));
 
-import CommercialStoragePage from "@/app/(site)/energieloesungen/gewerbespeicher/page";
+import CommercialStoragePage from "@/app/(site)/gewerbespeicher/page";
 import { CONTACT_FORM_HREF, PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { SEARCH_NO_INDEX_DIRECTIVE } from "@/config/search-indexing";
 import { sprint8Pages } from "@/content/sprint8-pages";
@@ -31,7 +31,7 @@ describe("Commercial storage page", () => {
       "Gewerbespeicher für Unternehmen in Bayern: SigenStack und sonnenPro FlexStack passend zu Photovoltaik, Lastprofil und betrieblichen Anforderungen planen.",
     );
     expect(metadata.alternates?.canonical).toBe(
-      "https://www.energie-kraft.de/energieloesungen/gewerbespeicher",
+      "https://www.energie-kraft.de/gewerbespeicher",
     );
     expect(content.seo).not.toHaveProperty("noIndex");
     expect(SEARCH_NO_INDEX_DIRECTIVE).toBe("noindex, nofollow, noarchive, nosnippet");
@@ -82,7 +82,7 @@ describe("Commercial storage page", () => {
     expect(hero.match(/<a\b/g)).toHaveLength(2);
     expect(hero).toContain(`href="${CONTACT_FORM_HREF}"`);
     expect(hero).toContain("Gewerbespeicher besprechen");
-    expect(hero).toContain('href="/energieloesungen/photovoltaik-fuer-unternehmen"');
+    expect(hero).toContain('href="/photovoltaik-fuer-unternehmen"');
     const final = html.slice(html.indexOf("Welcher Gewerbespeicher passt zu Ihrem Betrieb?"));
     expect(final).toContain(`href="${CONTACT_FORM_HREF}"`);
     for (const href of [

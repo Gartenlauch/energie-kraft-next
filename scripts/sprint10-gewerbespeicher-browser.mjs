@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const base = "http://localhost:3021";
-const route = "/energieloesungen/gewerbespeicher";
+const route = "/gewerbespeicher";
 const output = "artifacts/sprint10-gewerbespeicher-qa";
 await mkdir(output, { recursive: true });
 const profile = await mkdtemp(join(tmpdir(), "ek-commercial-storage-"));
@@ -235,7 +235,7 @@ try {
     "[...document.querySelectorAll('main a')].map(a=>a.getAttribute('href'))",
   );
   for (const href of [
-    "/energieloesungen/photovoltaik-fuer-unternehmen",
+    "/photovoltaik-fuer-unternehmen",
     "/referenzen",
     "/service-und-wartung",
     "/service-und-wartung/service-und-team",
@@ -266,7 +266,7 @@ try {
   assert(report.keyboardProductOrder);
   for (const destination of [
     "/referenzen",
-    "/energieloesungen/photovoltaik-fuer-unternehmen",
+    "/photovoltaik-fuer-unternehmen",
     "/service-und-wartung",
     "/service-und-wartung/service-und-team",
     "/kontakt",

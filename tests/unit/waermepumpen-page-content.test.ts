@@ -126,6 +126,6 @@ describe("Wärmepumpen advisory and Bosch offering", () => {
     expect(JSON.stringify(waermepumpenContent)).not.toMatch(
       /verkaufen keine Wärmepumpen|installieren keine Wärmepumpen|Bestseller|meistverkauft|Bosch-zertifiziert|20 Jahren.*Wärmepumpeninstallateur/i,
     );
-    expect(html).not.toContain("/energieloesungen/stromtarife-pv");
+    expect(html).not.toContain("/stromtarife-pv");
   });
 });

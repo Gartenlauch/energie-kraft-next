@@ -1,5 +1,7 @@
 # Sprint 10 – Photovoltaik: Validierung
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 Stand: 29.09.2026. Ausgangsbasis: keine vorhandenen Änderungen an getrackten Dateien (`git diff --stat` leer). Bereits bestehende untracked QA-Ordner wurden unverändert erhalten. Kein Commit, Push, Deployment, Production-Write oder Versand.
 
 ## Umsetzung und Scope

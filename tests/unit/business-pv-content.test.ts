@@ -31,12 +31,12 @@ describe("Business photovoltaic migration contracts", () => {
       title: "Photovoltaik für Unternehmen & Gewerbe | Energie-Kraft Süd",
       description:
         "Photovoltaik für Unternehmen und Gewerbe in Bayern: Lastprofil analysieren, Eigenstrom nutzen und PV mit Speicher kombinieren. Planung, Installation und Service aus einer Hand.",
-      canonicalPath: "/energieloesungen/photovoltaik-fuer-unternehmen",
+      canonicalPath: "/photovoltaik-fuer-unternehmen",
     });
     const metadata = buildMetadata(content.seo);
     expect(metadata.title).toEqual({ absolute: content.seo.title });
     expect(metadata.alternates?.canonical).toBe(
-      "https://www.energie-kraft.de/energieloesungen/photovoltaik-fuer-unternehmen",
+      "https://www.energie-kraft.de/photovoltaik-fuer-unternehmen",
     );
     expect(content.title).toBe(
       "Photovoltaik für Unternehmen: eigenen Solarstrom wirtschaftlich nutzen",
@@ -74,7 +74,7 @@ describe("Business photovoltaic migration contracts", () => {
     );
     for (const href of [
       "/referenzen",
-      "/energieloesungen/gewerbespeicher",
+      "/gewerbespeicher",
       "/service-und-wartung",
       "/service-und-wartung/service-und-team",
       "/wallbox",

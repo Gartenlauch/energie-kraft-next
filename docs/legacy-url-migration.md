@@ -1,5 +1,7 @@
 # Sprint 8 – Legacy-URL-Migration
 
+> Historischer Stand vor der Routing-Migration in Sprint 10: Die hier genannten alten Energielösungen-URLs sind keine aktiven Ziele mehr. Aktuelle Zuordnung und Prüfung: [Routing-Cleanup](sprint10-energy-solutions-routing-cleanup.md).
+
 > **Status:** Historische Sprint-8-Arbeitsmatrix und weiterhin relevante Cutover-Evidenz. Die
 > tatsächlich implementierten Routen und Redirects stehen in `src/app`, `src/config/routes.ts`
 > und `next.config.ts`; siehe [current SEO implementation](seo-migration.md). Einzelne damalige
