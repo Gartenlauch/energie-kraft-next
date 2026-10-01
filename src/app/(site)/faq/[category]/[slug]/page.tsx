@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props) {
 }
 export default async function FaqDetailPage({ params }: Props) {
   const { faq, related } = await getEntry(params);
-  const categoryHref = `/faq/${faq.categorySlug}`;
+  const categoryHref = `/faq?${new URLSearchParams({ category: faq.categorySlug })}`;
   const product = FAQ_PRODUCT_LINKS[faq.categorySlug];
   return (
     <main id="main-content">

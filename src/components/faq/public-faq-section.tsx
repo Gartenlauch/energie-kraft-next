@@ -69,7 +69,7 @@ export function PublicFaqSection({
           ))}
         </div>
         <Link
-          href={categorySlug ? `/faq/${categorySlug}` : "/faq"}
+          href={categorySlug ? { pathname: "/faq", query: { category: categorySlug } } : "/faq"}
           className="button-secondary mt-8"
         >
           {categoryLabel ? `Alle Fragen zu ${categoryLabel}` : "Alle Fragen & Antworten"}

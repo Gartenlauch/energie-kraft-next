@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      { source: "/faq/:category", destination: "/faq?category=:category", permanent: true },
       { source: "/energieloesungen", destination: "/", permanent: true },
       {
         source: "/energieloesungen/photovoltaik-fuer-unternehmen",

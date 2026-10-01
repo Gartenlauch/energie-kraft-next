@@ -15,7 +15,7 @@ export function EnergyFlow() {
             Überschüsse für den Abend aufnehmen. Was danach fehlt, liefert das Stromnetz.
           </p>
           <Link
-            href="/faq/photovoltaik"
+            href="/faq?category=photovoltaik"
             className="text-brand-primary mt-6 inline-block py-3 font-semibold underline underline-offset-4"
           >
             Fragen zur Solarstromnutzung

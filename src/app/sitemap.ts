@@ -25,14 +25,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  const { entries, categories } = await getPublicFaqCatalog();
-  const faqPaths = [
-    "/faq",
-    ...categories
-      .filter((category) => entries.some((faq) => faq.categoryId === category.id))
-      .map((category) => `/faq/${category.slug}`),
-    ...entries.map((faq) => faq.href),
-  ];
+  const { entries } = await getPublicFaqCatalog();
+  const faqPaths = ["/faq", ...entries.map((faq) => faq.href)];
   return [
     ...publicRoutes,
     ...referenceLocationRoutes,

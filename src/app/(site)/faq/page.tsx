@@ -34,7 +34,8 @@ export default async function FaqPage() {
                   <li key={category.id}>
                     <Link
                       className="text-brand-primary border-border-strong flex min-h-16 items-center border-t py-4 pr-4 font-semibold underline-offset-4 hover:underline"
-                      href={`/faq/${category.slug}`}
+                      href={{ pathname: "/faq", query: { category: category.slug } }}
+                      scroll={false}
                     >
                       {category.name}
                     </Link>
