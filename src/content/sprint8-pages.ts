@@ -1,6 +1,7 @@
 import { CONTACT_FORM_HREF, PUBLIC_ROUTES } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 import type { CtaContent, SeoContent } from "@/types/content";
+import { fundingPageContent } from "@/content/pages/funding";
 import { commercialStorageContent } from "@/content/pages/gewerbespeicher";
 import type { MarketingFeatureSection } from "@/app/(site)/_components/marketing-feature-page";
 
@@ -261,53 +262,7 @@ export const sprint8Pages = {
     ctaLabel: "Serviceanfrage stellen",
     ctaHref: CONTACT_FORM_HREF,
   },
-  funding: {
-    seo: {
-      title: "Finanzierung & Förderung für Energieprojekte",
-      description:
-        "Finanzierung und mögliche Förderprogramme für Photovoltaik und Energietechnik einordnen – abhängig von Vorhaben, Zeitraum und Verfügbarkeit.",
-      canonicalPath: "/service-und-wartung/finanzierung-und-foerderung",
-      noIndex: true,
-    },
-    breadcrumbLabel: "Finanzierung & Förderung",
-    breadcrumbItems: serviceBreadcrumb,
-    eyebrow: "Rahmenbedingungen klären",
-    title: "Ein Energieprojekt braucht auch einen belastbaren finanziellen Rahmen.",
-    description:
-      "Finanzierungswege und Förderprogramme können sich kurzfristig verändern. Entscheidend ist die Prüfung für Ihr konkretes Vorhaben.",
-    desktopSrc: "/images/home-premium/consultation-reference-desktop.webp",
-    mobileSrc: "/images/home-premium/consultation-reference-mobile.webp",
-    imageAlt: "Persönliche Beratung zu einem Energieprojekt",
-    sections: [
-      {
-        eyebrow: "Finanzierung",
-        title: "Investition und Projektumfang zusammen betrachten",
-        paragraphs: [
-          "Technischer Umfang, zeitliche Planung und Finanzierungsmodell beeinflussen sich gegenseitig. Wir schaffen zunächst Klarheit über das Projekt; konkrete Finanzierungsbedingungen kommen vom jeweiligen Finanzierungspartner.",
-        ],
-      },
-      {
-        eyebrow: "Förderung",
-        title: "Programme immer aktuell und fallbezogen prüfen",
-        paragraphs: [
-          "Verfügbarkeit, Förderhöhe und Voraussetzungen hängen unter anderem von Programm, Zeitpunkt, Technologie und Antragstellung ab. Deshalb übernehmen wir keine alten Prozent- oder Zuschussangaben aus dem Legacy-Bestand.",
-        ],
-        items: [
-          "Aktuellen Programmstand prüfen",
-          "Voraussetzungen vor Auftrag klären",
-          "Fristen und Antragsweg beachten",
-          "Keine Förderung pauschal voraussetzen",
-        ],
-        links: [
-          { label: "Photovoltaik planen", href: "/photovoltaik" },
-          { label: "Energieprojekt konfigurieren", href: "/konfigurator" },
-        ],
-      },
-    ],
-    ctaTitle: "Sie möchten den Rahmen Ihres Projekts klären?",
-    ctaLabel: "Projekt besprechen",
-    ctaHref: CONTACT_FORM_HREF,
-  },
+  funding: fundingPageContent,
   application: {
     seo: {
       title: "Bewerbung bei Energie-Kraft Süd",
