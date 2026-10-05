@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
+import sharp from "sharp";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/config/env/public", () => ({
@@ -65,6 +66,28 @@ describe("Klimaanlagen advisory and Bosch offering", () => {
       );
       expect(existsSync(`public${product.image}`)).toBe(true);
     }
+  });
+
+  it("loads distinct desktop and mobile hero images with matching intrinsic dimensions", async () => {
+    const hero = html.split('class="premium-hero ')[1].split("</section>")[0];
+    const sources = [...hero.matchAll(/<source\b[^>]*>/g)].map((match) => match[0]);
+    expect(sources).toHaveLength(2);
+    expect(sources[0]).toContain('(min-width: 768px)');
+    expect(sources[1]).toContain('(max-width: 767px)');
+    const paths = sources.map((source) => source.match(/srcSet="([^"]+)"/i)![1]);
+    expect(paths).toEqual([
+      "/images/climate/climate-hero-desktop.webp",
+      "/images/climate/climate-hero-mobile.webp",
+    ]);
+    for (const [index, source] of sources.entries()) {
+      const image = await sharp(`public${paths[index]}`).metadata();
+      expect(image.format).toBe("webp");
+      expect(image.space).toBe("srgb");
+      expect(image.width).toBe(Number(source.match(/width="(\d+)"/)![1]));
+      expect(image.height).toBe(Number(source.match(/height="(\d+)"/)![1]));
+    }
+    expect(hero).toContain('fetchPriority="high"');
+    expect(hero).toContain('loading="eager"');
   });
 
   it("shows the actual conversion links and accurate installation cooperation", () => {

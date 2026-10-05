@@ -88,7 +88,7 @@ export function CustomerReviewsSection({ reviews, summaries }: ReviewCollection)
           <div className="border-border-default flex flex-wrap items-center gap-x-3 gap-y-1 md:border-l md:pl-8">
             <RatingStars rating={summary.averageRating} />
             <strong className="text-3xl tracking-tight text-brand-dark">{number.format(summary.averageRating)}</strong>
-            <span className="text-sm text-[var(--text-muted)]">{number.format(summary.totalReviews)} Bewertungen</span>
+            <strong className="text-3xl tracking-tight whitespace-nowrap text-brand-dark">{number.format(summary.totalReviews)} Bewertungen</strong>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm font-semibold">

@@ -79,13 +79,35 @@ export const commercialStorageProducts = [
       { label: "Steuerung", text: "Einbindung in sonnenPro EMS" },
     ],
   },
+  {
+    id: "sungrow-powerstack",
+    manufacturer: "Sungrow",
+    name: "PowerStack 255CS · ST255CS-2H",
+    description:
+      "Sungrow PowerStack 255CS (ST255CS-2H) ist ein flüssigkeitsgekühltes Energiespeichersystem für Gewerbe und Industrie. Es verbindet 125 kW AC-Nennleistung mit 257 kWh Batteriekapazität. Mehrere Einheiten können laut Hersteller parallel eingebunden werden.",
+    image: "/images/commercial-storage/products/sungrow-powerstack.webp",
+    width: 1600,
+    height: 900,
+    alt: "Visualisierung des Sungrow PowerStack ST255CS-2H in einem hellgrauen Speicherschrank",
+    imageCaption:
+      "Eigene Visualisierung nach der Produktform des Sungrow PowerStack ST255CS-2H. Systemausstattung je nach Konfiguration.",
+    source: "https://www.sungrowpower.com/de/de/products/c-i-energy-storage-system/st255cs-2h",
+    sourceLabel: "Produktinformationen bei Sungrow",
+    details: [
+      { label: "Leistung", text: "125 kW AC-Nennleistung" },
+      { label: "Kapazität", text: "257 kWh Batteriekapazität" },
+      { label: "Kühlung", text: "Flüssigkeitsgekühlt" },
+      { label: "Monitoring", text: "Überwachung und Verwaltung über iSolarCloud" },
+      { label: "Einbindung", text: "Parallele Einbindung mehrerer Einheiten laut Hersteller" },
+    ],
+  },
 ] as const;
 
 export const commercialStorageContent: Sprint8PageContent = {
   seo: {
     title: "Gewerbespeicher für Unternehmen | Energie-Kraft Süd",
     description:
-      "Gewerbespeicher für Unternehmen in Bayern: SigenStack und sonnenPro FlexStack passend zu Photovoltaik, Lastprofil und betrieblichen Anforderungen planen.",
+      "Gewerbespeicher für Unternehmen in Bayern: SigenStack, sonnenPro FlexStack und Sungrow PowerStack passend zu Photovoltaik und Lastprofil planen.",
     canonicalPath: "/gewerbespeicher",
   },
   breadcrumbLabel: "Gewerbespeicher",
@@ -130,9 +152,9 @@ export const commercialStorageContent: Sprint8PageContent = {
     {
       id: "produkte",
       eyebrow: "Unsere Gewerbespeicher",
-      title: "SigenStack und sonnenPro FlexStack",
+      title: "SigenStack, sonnenPro FlexStack und Sungrow PowerStack",
       paragraphs: [
-        "Zwei modulare Systemkonzepte für gewerbliche Anforderungen. Auslegung und Ausstattung werden für den jeweiligen Betrieb geplant.",
+        "Drei Systemkonzepte für gewerbliche Anforderungen. Auslegung und Ausstattung werden für den jeweiligen Betrieb geplant.",
       ],
     },
     {
@@ -142,7 +164,7 @@ export const commercialStorageContent: Sprint8PageContent = {
       surface: "soft",
       paragraphs: [
         "Welche Lösung geeignet ist, hängt von Lastprofil, PV-Erzeugung, benötigter Leistung und Kapazität, Aufstellort, Erweiterungsbedarf und den Anforderungen an Energiemanagement und Infrastruktur ab. Diese Punkte werden projektspezifisch bewertet.",
-        "SigenStack verfolgt einen DC-gekoppelten Ansatz mit stapelbaren Batteriemodulen. FlexStack bietet modular konfigurierbare Leistung und Kapazität mit Einbindung in sonnenPro EMS. Die Einbindung in die vorhandene oder geplante Anlage wird für beide Systeme technisch geprüft.",
+        "SigenStack verfolgt einen DC-gekoppelten Ansatz mit stapelbaren Batteriemodulen. FlexStack bietet modular konfigurierbare Leistung und Kapazität mit Einbindung in sonnenPro EMS. Sungrow PowerStack kombiniert 125 kW AC-Nennleistung und 257 kWh Batteriekapazität mit Flüssigkeitskühlung und iSolarCloud zur Überwachung. Die Einbindung in die vorhandene oder geplante Anlage wird für alle drei Systeme technisch geprüft.",
       ],
     },
     {

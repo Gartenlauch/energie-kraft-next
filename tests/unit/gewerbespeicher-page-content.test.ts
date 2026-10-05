@@ -28,7 +28,7 @@ describe("Commercial storage page", () => {
       absolute: "Gewerbespeicher für Unternehmen | Energie-Kraft Süd",
     });
     expect(metadata.description).toBe(
-      "Gewerbespeicher für Unternehmen in Bayern: SigenStack und sonnenPro FlexStack passend zu Photovoltaik, Lastprofil und betrieblichen Anforderungen planen.",
+      "Gewerbespeicher für Unternehmen in Bayern: SigenStack, sonnenPro FlexStack und Sungrow PowerStack passend zu Photovoltaik und Lastprofil planen.",
     );
     expect(metadata.alternates?.canonical).toBe(
       "https://www.energie-kraft.de/gewerbespeicher",
@@ -47,7 +47,7 @@ describe("Commercial storage page", () => {
     expect(PUBLIC_ROUTE_LIST.some((route) => route.href === content.seo.canonicalPath)).toBe(true);
   });
 
-  it("renders one H1, the signet and the full section order with both product portraits", () => {
+  it("renders one H1, the signet and the full section order with all three product portraits", () => {
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain("Energie speichern, Lastspitzen steuern und Eigenstrom besser nutzen");
     expect(html.match(/class="brand-intro /g)).toHaveLength(1);
@@ -59,6 +59,7 @@ describe("Commercial storage page", () => {
       "produkte",
       "sigenstack",
       "sonnenpro-flexstack",
+      "sungrow-powerstack",
       "entscheidung",
       "energiemanagement",
       "standort",
@@ -72,9 +73,32 @@ describe("Commercial storage page", () => {
       expect(html).toContain(product.name);
       expect(html).toContain(`href="${product.source}" target="_blank" rel="noreferrer"`);
       expect(html).toContain(product.alt);
-      expect(html).toContain(`Produktdarstellung von ${product.manufacturer}`);
+      expect(html).toContain(
+        "imageCaption" in product
+          ? product.imageCaption
+          : `Produktdarstellung von ${product.manufacturer}`,
+      );
       expect(existsSync(`public${product.image}`)).toBe(true);
     }
+  });
+
+  it("presents Sungrow with verified manufacturer data and identifies its own visualization", () => {
+    expect(commercialStorageProducts).toHaveLength(3);
+    const sungrow = commercialStorageProducts.find((product) => product.id === "sungrow-powerstack")!;
+    expect(sungrow.source).toBe(
+      "https://www.sungrowpower.com/de/de/products/c-i-energy-storage-system/st255cs-2h",
+    );
+    expect(sungrow.details).toEqual([
+      { label: "Leistung", text: "125 kW AC-Nennleistung" },
+      { label: "Kapazität", text: "257 kWh Batteriekapazität" },
+      { label: "Kühlung", text: "Flüssigkeitsgekühlt" },
+      { label: "Monitoring", text: "Überwachung und Verwaltung über iSolarCloud" },
+      { label: "Einbindung", text: "Parallele Einbindung mehrerer Einheiten laut Hersteller" },
+    ]);
+    expect(html).toContain("Eigene Visualisierung nach der Produktform des Sungrow PowerStack ST255CS-2H");
+    expect(html).toContain("PowerStack · iSolarCloud");
+    expect(html).toContain("Drei Systemkonzepte");
+    expect(html).not.toMatch(/Zwei modulare Systemkonzepte|für beide Systeme/);
   });
 
   it("renders the actual contact and B2B destinations in the hero and final CTA", () => {

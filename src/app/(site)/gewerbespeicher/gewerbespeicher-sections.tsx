@@ -81,8 +81,9 @@ export function CommercialStorageProductsSection() {
                     />
                   </div>
                   <figcaption className="mt-4 text-xs leading-6 text-[var(--text-muted)]">
-                    Produktdarstellung von {product.manufacturer}. Systemausstattung je nach
-                    Konfiguration.
+                    {"imageCaption" in product
+                      ? product.imageCaption
+                      : `Produktdarstellung von ${product.manufacturer}. Systemausstattung je nach Konfiguration.`}
                   </figcaption>
                 </figure>
               </Reveal>
@@ -184,6 +185,14 @@ export function CommercialStorageEnergyManagementSection() {
                 Laut sonnen unterstützt sonnenPro EMS die Nutzung von PV-Strom, die Reduktion von
                 Lastspitzen und die Steuerung von Verbrauchern. Die konkrete Betriebsstrategie wird
                 an den Betrieb angepasst.
+              </dd>
+            </div>
+            <div className="border-border-strong border-t py-5">
+              <dt className="text-brand-primary font-semibold">PowerStack · iSolarCloud</dt>
+              <dd className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
+                Sungrow beschreibt iSolarCloud zur zentralen Überwachung und Verwaltung der
+                Speicherfunktionen. Verfügbare Funktionen und die Einbindung in das betriebliche
+                Energiesystem werden im Projekt geprüft.
               </dd>
             </div>
           </dl>
