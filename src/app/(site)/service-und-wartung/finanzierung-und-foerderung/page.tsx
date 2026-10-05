@@ -364,6 +364,26 @@ function Financing() {
           <SourceLink source="kfw270" />
           <SourceLink source="heatingCredit" />
         </div>
+        <aside
+          className="border-border-strong mt-10 border-t pt-8"
+          aria-labelledby="projektfinanzierung-heading"
+        >
+          <h3 id="projektfinanzierung-heading" className="text-brand-navy text-xl md:text-2xl">
+            Finanzierung passend zu Ihrem Energieprojekt
+          </h3>
+          <p className="mt-4 max-w-4xl text-sm leading-7 text-[var(--text-muted)]">
+            Je nach Umfang können Sie Ihr Vorhaben aus Eigenmitteln oder über Ihre eigene Hausbank
+            finanzieren. Bei geeigneten Projekten können wir Sie auch mit unseren
+            Finanzierungspartnern zusammenbringen. Neben einer klassischen Finanzierung oder
+            Investitionsfinanzierung kommen je nach Vorhaben gegebenenfalls Leasing oder alternative
+            Investitionsmodelle infrage.
+          </p>
+          <p className="mt-3 max-w-4xl text-xs leading-6 text-[var(--text-muted)]">
+            Die Verfügbarkeit, Konditionen und Zusage prüft der jeweilige Finanzierungspartner.
+            Unsere Unterstützung bei der technischen Projektplanung ersetzt keine individuelle
+            Finanzberatung.
+          </p>
+        </aside>
         <div className="bg-surface-soft mt-10 grid gap-6 rounded-lg p-6 md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <h3 className="text-brand-navy text-xl">Mit Ihrem konkreten Vorhaben starten</h3>

@@ -2,6 +2,7 @@ import { CONTACT_FORM_HREF, PUBLIC_ROUTES } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 import type { CtaContent, SeoContent } from "@/types/content";
 import { fundingPageContent } from "@/content/pages/funding";
+import { electricityTariffsContent } from "@/content/pages/stromtarife";
 import { commercialStorageContent } from "@/content/pages/gewerbespeicher";
 import type { MarketingFeatureSection } from "@/app/(site)/_components/marketing-feature-page";
 
@@ -175,46 +176,7 @@ export const sprint8Pages = {
     ctaHref: CONTACT_FORM_HREF,
   },
   commercialStorage: commercialStorageContent,
-  electricityTariffs: {
-    seo: {
-      title: "Stromtarife für Photovoltaik verstehen | Energie-Kraft Süd",
-      description:
-        "Wie Photovoltaik, Eigenverbrauch, Speicher und ergänzender Strombezug zusammenspielen – mit einer Tarifwahl passend zum Verbrauch.",
-      canonicalPath: "/stromtarife-pv",
-    },
-    breadcrumbLabel: "Stromtarife",
-    eyebrow: "PV & Strombezug",
-    title: "Eigenstrom und Netzbezug sinnvoll zusammendenken.",
-    description:
-      "Auch mit Photovoltaik bleibt ergänzender Strombezug relevant. Ein passendes Modell berücksichtigt Erzeugung, Verbrauch und Flexibilität.",
-    desktopSrc: "/images/electricity-tariffs/electricity-tariffs-hero-desktop.webp",
-    mobileSrc: "/images/electricity-tariffs/electricity-tariffs-hero-mobile.webp",
-    imageAlt: "Beleuchtetes Wohnhaus in der Abenddämmerung",
-    sections: [
-      {
-        eyebrow: "Grundprinzip",
-        title: "Zuerst den eigenen Verbrauch verstehen",
-        paragraphs: [
-          "Photovoltaik deckt den Strombedarf nicht zu jeder Zeit vollständig. Eigenverbrauch, mögliche Speicherung und verbleibender Netzbezug sollten deshalb gemeinsam betrachtet werden.",
-        ],
-        items: ["Verbrauchsprofil", "PV-Erzeugung", "Speichernutzung", "Verbleibender Netzbezug"],
-        links: [
-          { label: "Photovoltaik", href: "/photovoltaik" },
-          { label: "Stromspeicher", href: "/stromspeicher" },
-        ],
-      },
-      {
-        eyebrow: "Tarifwahl",
-        title: "Modelle vergleichen statt alte Preise fortschreiben",
-        paragraphs: [
-          "Tarife, Vergütungen und Anbieterbedingungen können sich ändern. Wir erklären die technischen Zusammenhänge; konkrete Konditionen müssen zum Entscheidungszeitpunkt beim jeweiligen Anbieter geprüft werden.",
-        ],
-      },
-    ],
-    ctaTitle: "Sie möchten PV und Strombezug gemeinsam planen?",
-    ctaLabel: "Beratung anfragen",
-    ctaHref: CONTACT_FORM_HREF,
-  },
+  electricityTariffs: electricityTariffsContent,
   maintenance: {
     seo: {
       title: "PV-Wartung & Reinigung | Energie-Kraft Süd",

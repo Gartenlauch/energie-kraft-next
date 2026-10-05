@@ -68,4 +68,18 @@ describe("Funding guide: verified October 2026 snapshot", () => {
     expect(html).toContain("Landkreis Traunstein");
     expect(html).not.toContain('"@type":"FAQPage"');
   });
+
+  it("adds project financing without publishing unconfirmed partners or a credit promise", () => {
+    const block = html.match(
+      /<aside[^>]*aria-labelledby="projektfinanzierung-heading"[\s\S]*?<\/aside>/,
+    )?.[0];
+    expect(block).toBeTruthy();
+    expect(block).toContain("Finanzierung passend zu Ihrem Energieprojekt");
+    expect(block).toContain("Eigenmitteln");
+    expect(block).toContain("Hausbank");
+    expect(block).toContain("Finanzierungspartnern");
+    expect(block).toContain("Leasing");
+    expect(block).toContain("keine individuelle Finanzberatung");
+    expect(block).not.toMatch(/Sparkasse|Raiffeisen|IBC|garantierte|Zinssatz/i);
+  });
 });
