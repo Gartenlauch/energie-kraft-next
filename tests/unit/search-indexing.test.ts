@@ -5,7 +5,7 @@ vi.mock("@/config/site", () => ({
   siteConfig: {
     canonicalBaseUrl: "https://www.energie-kraft.de",
     locale: "de_DE",
-    name: "Energie-Kraft SÃ¼d",
+    name: "Energie-Kraft Süd",
   },
 }));
 

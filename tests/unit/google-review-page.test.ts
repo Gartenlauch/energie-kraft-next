@@ -87,10 +87,10 @@ describe("Google review invitation", () => {
   it("renders one heading and a deliberate, accessible external link without redirect", () => {
     const html = renderToStaticMarkup(GoogleReviewPage());
     expect(html.match(/<h1\b/g)).toHaveLength(1);
-    expect(html).toContain("Ihre Meinung zÃ¤hlt.");
+    expect(html).toContain("Ihre Meinung zählt.");
     expect(html).toContain('href="https://g.page/r/CbQYaiCf6F9eEBM/review"');
     expect(html).toContain("Google-Bewertung abgeben");
-    expect(html).toContain('alt="Energie-Kraft SÃ¼d"');
+    expect(html).toContain('alt="Energie-Kraft Süd"');
     expect(html).toContain('aria-describedby="google-review-hint"');
     expect(html).not.toMatch(/<script|http-equiv="refresh"|NEXT_REDIRECT/i);
     const source = readFileSync("src/app/google-bewertung/page.tsx", "utf8");
@@ -118,9 +118,9 @@ describe("Google review invitation", () => {
       expect(metadata.robots).toEqual({ index: false, follow: true });
       expect(metadata.alternates?.canonical).toBe("https://www.energie-kraft.de/google-bewertung");
       expect(metadata.openGraph).toMatchObject({
-        title: "Energie-Kraft SÃ¼d | Ihre Meinung zÃ¤hlt",
+        title: "Energie-Kraft Süd | Ihre Meinung zählt",
         description:
-          "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns Ã¼ber Ihre Bewertung bei Google.",
+          "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns über Ihre Bewertung bei Google.",
         type: "website",
         url: `${protocol}://${host}/google-bewertung`,
         images: [

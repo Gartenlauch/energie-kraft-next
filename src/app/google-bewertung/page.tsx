@@ -5,9 +5,9 @@ import { headers } from "next/headers";
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
 import { buildMetadata } from "@/lib/seo/metadata";
 
-const title = "Energie-Kraft SÃ¼d | Ihre Meinung zÃ¤hlt";
+const title = "Energie-Kraft Süd | Ihre Meinung zählt";
 const description =
-  "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns Ã¼ber Ihre Bewertung bei Google.";
+  "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns über Ihre Bewertung bei Google.";
 const baseMetadata = buildMetadata({
   title,
   description,
@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
           type: "image/jpeg",
           width: 1200,
           height: 630,
-          alt: "Energie-Kraft SÃ¼d â€“ Ihre Meinung zÃ¤hlt. FÃ¼nf Sterne vor einem illustrativen Hausmotiv mit Photovoltaik und WÃ¤rmepumpe.",
+          alt: "Energie-Kraft Süd “ Ihre Meinung zählt. Fünf Sterne vor einem illustrativen Hausmotiv mit Photovoltaik und Wärmepumpe.",
         },
       ],
     },
@@ -69,7 +69,7 @@ export default function GoogleReviewPage() {
     >
       <Image
         src="/brand/energie-kraft/eksued-logo-website.svg"
-        alt="Energie-Kraft SÃ¼d"
+        alt="Energie-Kraft Süd"
         width={292}
         height={57}
         priority
@@ -86,16 +86,16 @@ export default function GoogleReviewPage() {
         </div>
 
         <h1 className="text-brand-navy text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.08] font-bold tracking-tight">
-          Ihre Meinung zÃ¤hlt.
+          Ihre Meinung zählt.
         </h1>
 
         <div className="text-brand-dark mx-auto mt-6 max-w-lg space-y-4 text-[0.9375rem] leading-relaxed sm:text-base">
           <p>
             Waren Sie mit unserer Beratung, Installation oder unserem Service zufrieden? Dann freuen
-            wir uns sehr Ã¼ber Ihre persÃ¶nliche Bewertung bei Google.
+            wir uns sehr über Ihre persönliche Bewertung bei Google.
           </p>
           <p>
-            Ihre RÃ¼ckmeldung hilft anderen Kunden bei ihrer Entscheidung und unterstÃ¼tzt uns als
+            Ihre Rückmeldung hilft anderen Kunden bei ihrer Entscheidung und unterstützt uns als
             regionales Unternehmen.
           </p>
         </div>
@@ -121,13 +121,13 @@ export default function GoogleReviewPage() {
           id="google-review-hint"
           className="mx-auto mt-4 max-w-sm text-xs leading-relaxed text-[var(--text-muted)] sm:text-sm"
         >
-          Sie werden anschlieÃŸend zu unserem Google-Unternehmensprofil weitergeleitet.
+          Sie werden anschließend zu unserem Google-Unternehmensprofil weitergeleitet.
         </p>
 
         <p className="text-brand-dark mt-9 text-sm leading-relaxed sm:mt-12">
-          Vielen Dank fÃ¼r Ihr Vertrauen.
+          Vielen Dank für Ihr Vertrauen.
           <br />
-          <span className="font-semibold">Ihr Team von Energie-Kraft SÃ¼d</span>
+          <span className="font-semibold">Ihr Team von Energie-Kraft Süd</span>
         </p>
       </div>
     </main>
