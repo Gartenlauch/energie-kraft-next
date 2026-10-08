@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
 import { SelectionCard } from "@/components/configurator/selection-card";
 import { SelectionGrid } from "@/components/configurator/selection-grid";
+import { FieldError } from "@/components/forms/form-control";
 import { configuratorContactFormSchema } from "@/lib/validation/configurator/lead";
 import type { ConfiguratorContactFormValues } from "@/types/configurator";
 
@@ -45,14 +46,6 @@ function createInitialValues(): ConfiguratorContactFormValues {
 const inputClassName =
   "mt-2 min-h-13 w-full min-w-0 rounded-xl border border-border-default bg-background px-4 py-3 text-base text-brand-navy";
 
-function FieldError({ message }: { message?: string }) {
-  if (!message) {
-    return null;
-  }
-
-  return <p className="mt-2 text-sm font-medium text-red-700">{message}</p>;
-}
-
 export function ConfiguratorContactForm({
   initialValues,
   initialFormStartedAt,
@@ -67,6 +60,7 @@ export function ConfiguratorContactForm({
   const [formStartedAt] = useState(() => initialFormStartedAt ?? Date.now());
 
   const [errors, setErrors] = useState<ContactFieldErrors>({});
+  const sectionRef = useRef<HTMLElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -118,6 +112,11 @@ export function ConfiguratorContactForm({
       }
 
       setErrors(nextErrors);
+      window.requestAnimationFrame(() => {
+        sectionRef.current?.querySelector<HTMLElement>(
+          'input[aria-invalid="true"], [role="radiogroup"][aria-invalid="true"] input[type="radio"]',
+        )?.focus();
+      });
       return;
     }
 
@@ -143,7 +142,7 @@ export function ConfiguratorContactForm({
     <>
       <ConfiguratorPhaseIndicator currentPhase="contact" />
 
-      <section aria-labelledby="configurator-contact-heading">
+      <section ref={sectionRef} aria-labelledby="configurator-contact-heading">
         <p className="eyebrow">Fast geschafft</p>
 
         <h1
@@ -170,6 +169,8 @@ export function ConfiguratorContactForm({
             <input
               ref={firstNameRef}
               id="configurator-first-name"
+              aria-invalid={errors.firstName ? true : undefined}
+              aria-describedby={errors.firstName ? "configurator-first-name-error" : undefined}
               type="text"
               autoComplete="given-name"
               value={values.firstName}
@@ -177,7 +178,7 @@ export function ConfiguratorContactForm({
               className={inputClassName}
             />
 
-            <FieldError message={errors.firstName} />
+            <FieldError id="configurator-first-name-error" message={errors.firstName} />
           </div>
 
           <div>
@@ -190,6 +191,8 @@ export function ConfiguratorContactForm({
 
             <input
               id="configurator-last-name"
+              aria-invalid={errors.lastName ? true : undefined}
+              aria-describedby={errors.lastName ? "configurator-last-name-error" : undefined}
               type="text"
               autoComplete="family-name"
               value={values.lastName}
@@ -197,7 +200,7 @@ export function ConfiguratorContactForm({
               className={inputClassName}
             />
 
-            <FieldError message={errors.lastName} />
+            <FieldError id="configurator-last-name-error" message={errors.lastName} />
           </div>
 
           <div>
@@ -210,6 +213,8 @@ export function ConfiguratorContactForm({
 
             <input
               id="configurator-email"
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? "configurator-email-error" : undefined}
               type="email"
               autoComplete="email"
               value={values.email}
@@ -217,7 +222,7 @@ export function ConfiguratorContactForm({
               className={inputClassName}
             />
 
-            <FieldError message={errors.email} />
+            <FieldError id="configurator-email-error" message={errors.email} />
           </div>
 
           <div>
@@ -230,6 +235,8 @@ export function ConfiguratorContactForm({
 
             <input
               id="configurator-phone"
+              aria-invalid={errors.phone ? true : undefined}
+              aria-describedby={`configurator-phone-help${errors.phone ? " configurator-phone-error" : ""}`}
               type="tel"
               autoComplete="tel"
               value={values.phone}
@@ -237,34 +244,45 @@ export function ConfiguratorContactForm({
               className={inputClassName}
             />
 
-            <p className="text-foreground/60 mt-2 text-sm">Optional</p>
+            <p id="configurator-phone-help" className="text-foreground/60 mt-2 text-sm">Optional</p>
 
-            <FieldError message={errors.phone} />
+            <FieldError id="configurator-phone-error" message={errors.phone} />
           </div>
         </div>
 
-        <fieldset className="mt-10">
-          <legend className="text-brand-primary text-lg font-semibold">
+        <fieldset
+          className="mt-10"
+          role="radiogroup"
+          aria-labelledby="configurator-installation-label"
+          aria-invalid={errors.installationAtResidence ? true : undefined}
+        >
+          <legend id="configurator-installation-label" className="text-brand-primary text-lg font-semibold">
             Soll die Installation an deinem Wohnort erfolgen?
           </legend>
 
           <div className="mt-5">
             <SelectionGrid columns={2}>
               <SelectionCard
+                aria-describedby={errors.installationAtResidence ? "configurator-installation-error" : undefined}
                 title="Ja, an meinem Wohnort"
+                radioName="installationAtResidence"
+                radioValue="yes"
                 selected={values.installationAtResidence === true}
                 onSelect={() => updateValue("installationAtResidence", true)}
               />
 
               <SelectionCard
+                aria-describedby={errors.installationAtResidence ? "configurator-installation-error" : undefined}
                 title="Nein, andere Adresse"
+                radioName="installationAtResidence"
+                radioValue="no"
                 selected={values.installationAtResidence === false}
                 onSelect={() => updateValue("installationAtResidence", false)}
               />
             </SelectionGrid>
           </div>
 
-          <FieldError message={errors.installationAtResidence} />
+          <FieldError id="configurator-installation-error" message={errors.installationAtResidence} />
         </fieldset>
 
         {values.installationAtResidence !== null ? (
@@ -282,6 +300,8 @@ export function ConfiguratorContactForm({
 
                 <input
                   id="configurator-street"
+                  aria-invalid={errors.street ? true : undefined}
+                  aria-describedby={errors.street ? "configurator-street-error" : undefined}
                   type="text"
                   autoComplete="street-address"
                   value={values.street}
@@ -289,7 +309,7 @@ export function ConfiguratorContactForm({
                   className={inputClassName}
                 />
 
-                <FieldError message={errors.street} />
+                <FieldError id="configurator-street-error" message={errors.street} />
               </div>
 
               <div>
@@ -302,6 +322,8 @@ export function ConfiguratorContactForm({
 
                 <input
                   id="configurator-postal-code"
+                  aria-invalid={errors.postalCode ? true : undefined}
+                  aria-describedby={errors.postalCode ? "configurator-postal-code-error" : undefined}
                   type="text"
                   autoComplete="postal-code"
                   value={values.postalCode}
@@ -309,7 +331,7 @@ export function ConfiguratorContactForm({
                   className={inputClassName}
                 />
 
-                <FieldError message={errors.postalCode} />
+                <FieldError id="configurator-postal-code-error" message={errors.postalCode} />
               </div>
 
               <div>
@@ -322,6 +344,8 @@ export function ConfiguratorContactForm({
 
                 <input
                   id="configurator-city"
+                  aria-invalid={errors.city ? true : undefined}
+                  aria-describedby={errors.city ? "configurator-city-error" : undefined}
                   type="text"
                   autoComplete="address-level2"
                   value={values.city}
@@ -329,7 +353,7 @@ export function ConfiguratorContactForm({
                   className={inputClassName}
                 />
 
-                <FieldError message={errors.city} />
+                <FieldError id="configurator-city-error" message={errors.city} />
               </div>
             </div>
           </fieldset>
@@ -338,6 +362,9 @@ export function ConfiguratorContactForm({
         <div className="border-border-default bg-surface mt-10 rounded-2xl border p-5">
           <label className="flex cursor-pointer items-start gap-3">
             <input
+              id="configurator-privacy"
+              aria-invalid={errors.privacyAccepted ? true : undefined}
+              aria-describedby={errors.privacyAccepted ? "configurator-privacy-error" : undefined}
               type="checkbox"
               checked={values.privacyAccepted}
               onChange={(event) => updateValue("privacyAccepted", event.currentTarget.checked)}
@@ -357,7 +384,7 @@ export function ConfiguratorContactForm({
             </span>
           </label>
 
-          <FieldError message={errors.privacyAccepted} />
+          <FieldError id="configurator-privacy-error" message={errors.privacyAccepted} />
         </div>
 
         <div className="absolute -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { contactFormContent } from "@/content/forms/contact";
 import { useSuccessFocus } from "@/hooks/use-success-focus";
@@ -173,6 +173,7 @@ const inputClassName =
   "min-h-13 w-full min-w-0 rounded-xl border border-border-default bg-background px-4 py-3 text-base text-brand-navy";
 
 export function ContactLeadForm() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [formValues, setFormValues] =
     useState<ContactFormValues>(
       createInitialFormValues,
@@ -282,6 +283,11 @@ export function ContactLeadForm() {
       }
 
       setFieldErrors(nextErrors);
+      window.requestAnimationFrame(() => {
+        formRef.current?.querySelector<HTMLElement>(
+          'input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"], [role="radiogroup"][aria-invalid="true"] input[type="radio"]',
+        )?.focus();
+      });
       setGeneralError(
         "Die Anfrage konnte noch nicht gesendet werden. Bitte prüfen Sie die markierten Angaben.",
       );
@@ -387,6 +393,7 @@ export function ContactLeadForm() {
         </div>
 
         <form
+          ref={formRef}
           noValidate
           aria-busy={isSubmitting}
           onSubmit={(event) => {
@@ -495,6 +502,8 @@ export function ContactLeadForm() {
 
                 <input
                   id="contact-company"
+                  aria-invalid={fieldErrors.company ? true : undefined}
+                  aria-describedby={fieldErrors.company ? "contact-company-error" : undefined}
                   type="text"
                   autoComplete="organization"
                   value={formValues.company}
@@ -506,6 +515,7 @@ export function ContactLeadForm() {
                   }
                   className={`${inputClassName} mt-2`}
                 />
+                <FieldError id="contact-company-error" message={fieldErrors.company} />
               </div>
 
               <div>
@@ -598,17 +608,12 @@ export function ContactLeadForm() {
               Ihr Projekt
             </legend>
 
-            <p className="text-foreground/65 mt-2 text-sm leading-6">
+            <p id="contact-interests-help" className="text-foreground/65 mt-2 text-sm leading-6">
               Mehrfachauswahl möglich.
             </p>
 
             <div
               className="mt-6 grid gap-3 sm:grid-cols-2"
-              aria-describedby={
-                fieldErrors.interests
-                  ? "contact-interests-error"
-                  : undefined
-              }
             >
               {contactFormContent.interests.map(
                 (interest) => {
@@ -624,6 +629,8 @@ export function ContactLeadForm() {
                     >
                       <input
                         type="checkbox"
+                        aria-invalid={fieldErrors.interests ? true : undefined}
+                        aria-describedby={`contact-interests-help${fieldErrors.interests ? " contact-interests-error" : ""}`}
                         checked={checked}
                         onChange={(event) => {
                           const isChecked =
@@ -751,6 +758,8 @@ export function ContactLeadForm() {
 
                 <select
                   id="contact-building-type"
+                  aria-invalid={fieldErrors.buildingType ? true : undefined}
+                  aria-describedby={fieldErrors.buildingType ? "contact-building-type-error" : undefined}
                   value={formValues.buildingType}
                   onChange={(event) => {
                     const value = event.currentTarget
@@ -780,6 +789,7 @@ export function ContactLeadForm() {
                     ),
                   )}
                 </select>
+                <FieldError id="contact-building-type-error" message={fieldErrors.buildingType} />
               </div>
 
               <div>
@@ -792,6 +802,8 @@ export function ContactLeadForm() {
 
                 <select
                   id="contact-ownership"
+                  aria-invalid={fieldErrors.ownership ? true : undefined}
+                  aria-describedby={fieldErrors.ownership ? "contact-ownership-error" : undefined}
                   value={formValues.ownership}
                   onChange={(event) => {
                     const value = event.currentTarget
@@ -821,6 +833,7 @@ export function ContactLeadForm() {
                     ),
                   )}
                 </select>
+                <FieldError id="contact-ownership-error" message={fieldErrors.ownership} />
               </div>
             </div>
           </fieldset>
@@ -873,11 +886,16 @@ export function ContactLeadForm() {
             </div>
 
             <div className="mt-7">
-              <p className="text-sm font-semibold">
+              <p id="contact-preference-label" className="text-sm font-semibold">
                 Wie dürfen wir Sie bevorzugt kontaktieren?
               </p>
 
-              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              <div
+                className="mt-3 grid gap-3 sm:grid-cols-3"
+                role="radiogroup"
+                aria-labelledby="contact-preference-label"
+                aria-invalid={fieldErrors.preferredContact ? true : undefined}
+              >
                 {contactFormContent.contactPreferences.map(
                   (option) => (
                     <label
@@ -887,6 +905,7 @@ export function ContactLeadForm() {
                       <input
                         type="radio"
                         name="preferredContact"
+                        aria-describedby={fieldErrors.preferredContact ? "contact-preference-error" : undefined}
                         value={option.value}
                         checked={
                           formValues.preferredContact ===
@@ -921,6 +940,7 @@ export function ContactLeadForm() {
                   ),
                 )}
               </div>
+              <FieldError id="contact-preference-error" message={fieldErrors.preferredContact} />
             </div>
           </fieldset>
 
@@ -928,6 +948,9 @@ export function ContactLeadForm() {
             <label className="flex items-start gap-3">
               <input
                 type="checkbox"
+                id="contact-privacy"
+                aria-invalid={fieldErrors.privacyAccepted ? true : undefined}
+                aria-describedby={fieldErrors.privacyAccepted ? "contact-privacy-error" : undefined}
                 checked={formValues.privacyAccepted}
                 onChange={(event) => {
                   const checked =
@@ -989,7 +1012,7 @@ export function ContactLeadForm() {
 
             {generalError ? (
               <p
-                role="alert"
+                role={Object.keys(fieldErrors).length === 0 ? "alert" : undefined}
                 className="mt-6 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
               >
                 {generalError}

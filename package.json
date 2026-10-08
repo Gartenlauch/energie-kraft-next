@@ -54,6 +54,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "firebase-tools": "^15.23.0",
+    "jsdom": "^29.1.1",
     "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
