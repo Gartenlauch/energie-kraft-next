@@ -52,7 +52,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="de" className={montserrat.variable}>
+    <html lang="de" className={montserrat.variable} data-scroll-behavior="smooth" >
       <body>{children}</body>
     </html>
   );
