@@ -28,6 +28,7 @@ describe("Google review invitation", () => {
       );
       const metadata = await generateMetadata();
       expect(metadata.openGraph).toMatchObject({
+        url: "https://www.energie-kraft.de/google-bewertung",
         images: [
           {
             url: "https://www.energie-kraft.de/images/google-bewertung/google-bewertung-share.jpg",
@@ -109,10 +110,11 @@ describe("Google review invitation", () => {
         description:
           "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns über Ihre Bewertung bei Google.",
         type: "website",
-        url: "https://www.energie-kraft.de/google-bewertung",
+        url: `${protocol}://${host}/google-bewertung`,
         images: [
           {
             url: `${protocol}://${host}/images/google-bewertung/google-bewertung-share.jpg`,
+            type: "image/jpeg",
             width: 1200,
             height: 630,
             alt: expect.any(String),

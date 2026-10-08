@@ -26,26 +26,31 @@ export async function generateMetadata(): Promise<Metadata> {
       : host && /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host)
         ? "http"
         : "https";
-  let imageOrigin = buildCanonicalUrl("/");
+  let requestOrigin = buildCanonicalUrl("/");
   if (host && !/[\s/@\\?#]/.test(host)) {
     try {
-      imageOrigin = new URL(`${protocol}://${host}`).origin;
+      requestOrigin = new URL(`${protocol}://${host}`).origin;
     } catch {
       // Malformed/missing proxy headers must not break metadata rendering.
     }
   }
+
+  const requestPageUrl = new URL("/google-bewertung", requestOrigin).toString();
+  const requestImageUrl = new URL(
+    "/images/google-bewertung/google-bewertung-share.jpg",
+    requestOrigin,
+  ).toString();
 
   return {
     ...baseMetadata,
     robots: { index: false, follow: true },
     openGraph: {
       ...baseMetadata.openGraph,
+      url: requestPageUrl,
       images: [
         {
-          url: new URL(
-            "/images/google-bewertung/google-bewertung-share.jpg",
-            imageOrigin,
-          ).toString(),
+          url: requestImageUrl,
+          type: "image/jpeg",
           width: 1200,
           height: 630,
           alt: "Energie-Kraft Süd – Ihre Meinung zählt. Fünf Sterne vor einem illustrativen Hausmotiv mit Photovoltaik und Wärmepumpe.",
