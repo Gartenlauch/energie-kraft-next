@@ -109,7 +109,7 @@ const serviceLinks: readonly NavigationLink[] = [
     label: "Finanzierung & Förderung",
     href: "/service-und-wartung/finanzierung-und-foerderung",
     description: "Rahmenbedingungen und mögliche Programme individuell klären.",
-    previewImage: "/images/home-premium/consultation-reference-desktop.webp",
+    previewImage: "/images/finanzierung/photovoltaik-desktop.webp",
   },
   {
     label: "Kunden werben Kunden",
@@ -155,10 +155,15 @@ function MegaMenu({
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [temporaryPreviewItem, setTemporaryPreviewItem] = useState<string | null>(null);
-  const activeItem = links.find((link) => isPathWithin(pathname, link.href));
+  const activeItem = links.reduce<NavigationLink | undefined>(
+    (active, link) =>
+      isPathWithin(pathname, link.href) && (!active || link.href.length > active.href.length)
+        ? link
+        : active,
+    undefined,
+  );
   const activeGroup =
-    activeItem !== undefined ||
-    (menuKey === "service" && pathname === "/service-und-wartung");
+    activeItem !== undefined || (menuKey === "service" && pathname === "/service-und-wartung");
   const previewItem = temporaryPreviewItem ?? activeItem?.href ?? "default";
   const scenes = [
     { key: "default", image: imageSrc, title, description: intro },
@@ -374,6 +379,7 @@ export function SiteHeader() {
   const [mobileGroup, setMobileGroup] = useState<MegaMenuKey | null>("energy");
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
+  const desktopNavRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!mobileOpen) {
@@ -418,14 +424,29 @@ export function SiteHeader() {
       }
     }
 
+    // Keep state and the modal lifecycle aligned with Tailwind's xl breakpoint.
+    const desktopViewport = window.matchMedia("(min-width: 80rem)");
+    function closeOnDesktop() {
+      if (!desktopViewport.matches) return;
+      if (
+        mobilePanelRef.current?.contains(document.activeElement) ||
+        document.activeElement === mobileButtonRef.current
+      ) {
+        desktopNavRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
+      }
+      setMobileOpen(false);
+    }
+    desktopViewport.addEventListener("change", closeOnDesktop);
     document.addEventListener("keydown", handleKeyDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const focusFrame = window.requestAnimationFrame(() => {
-      mobilePanelRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
+      if (desktopViewport.matches) closeOnDesktop();
+      else mobilePanelRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
     });
 
     return () => {
+      desktopViewport.removeEventListener("change", closeOnDesktop);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
       window.cancelAnimationFrame(focusFrame);
@@ -460,7 +481,11 @@ export function SiteHeader() {
           />
         </Link>
 
-        <nav aria-label="Hauptnavigation" className="hidden h-full items-center gap-0.5 xl:flex">
+        <nav
+          ref={desktopNavRef}
+          aria-label="Hauptnavigation"
+          className="hidden h-full items-center gap-0.5 xl:flex"
+        >
           <MegaMenu
             menuKey="energy"
             label="Energielösungen"

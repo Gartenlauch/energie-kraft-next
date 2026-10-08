@@ -86,7 +86,7 @@ Ein Gedankenstrich bedeutet, dass der Export keinen belastbaren Einzelwert auswe
 | `/kontakt-formular/`                                                   | historischer Kontakt-Slug       | älter, nicht in aktueller Sitemap            |                 — |         5 / 5 | `/kontakt`                     | `/kontakt#kontaktformular`                          | REDIRECT_LATER    | im Kontaktworkflow abgedeckt                   | mittel     | ja               | Später zum echten Formular.                                             |
 | `/kundenmeinungen/`                                                    | historische Reviewseite         | älter, nicht in aktueller Sitemap            |                 — |         3 / 3 | keine Live-Daten               | offen                                               | REVIEW            | nicht migriert                                 | niedrig    | offen            | Nur mit offiziellen Google-/Trustpilot-Daten reaktivieren.              |
 | `/finanzierung-und-foerderung/`                                        | historischer Kurz-Slug          | älter, nicht in aktueller Sitemap            |                 — |         3 / 1 | neue Förderseite               | `/service-und-wartung/finanzierung-und-foerderung/` | REDIRECT_LATER    | dort abgedeckt                                 | niedrig    | ja               | Eindeutiges 1:1-Ziel.                                                   |
-| `/wartung-und-reinigung/`                                              | historischer Kurz-Slug          | älter, nicht in aktueller Sitemap            |                 — |         2 / 1 | neue Wartungsseite             | `/service-und-wartung/wartung-und-reinigung/`       | REDIRECT_LATER    | dort abgedeckt                                 | niedrig    | ja               | Eindeutiges 1:1-Ziel.                                                   |
+| `/wartung-und-reinigung/`                                              | historischer Kurz-Slug          | älter, nicht in aktueller Sitemap            |                 — |         2 / 1 | neue Wartungsseite             | `/service-und-wartung`       | REDIRECT_LATER    | dort abgedeckt                                 | niedrig    | ja               | Finales Routing Sprint 10.1: direkt zum Service-Hub, ohne Redirect-Kette.                                                   |
 | `/gewerbespeicher/`                                                    | historischer Kurz-Slug          | älter, nicht in aktueller Sitemap            |                 — |         2 / — | neue B2B-Speicherseite         | `/energieloesungen/gewerbespeicher/`                | REDIRECT_LATER    | dort abgedeckt                                 | niedrig    | ja               | Ziel bleibt bis Indexaudit noindex.                                     |
 | `/energie-loesungen/`                                                  | historische Schreibvariante     | älter, nicht in aktueller Sitemap            |                 — |         1 / — | `/energieloesungen/`           | `/energieloesungen/`                                | REDIRECT_LATER    | im Hub abgedeckt                               | niedrig    | ja               | Schreibvariante vereinheitlichen.                                       |
 | `/home.html`                                                           | historische Startseitenvariante | älter, nicht in aktueller Sitemap            |                 — |         1 / 1 | `/`                            | `/`                                                 | REDIRECT_LATER    | in Startseite abgedeckt                        | niedrig    | ja               | Nur eindeutige Variante.                                                |
@@ -103,6 +103,23 @@ Ein Gedankenstrich bedeutet, dass der Export keinen belastbaren Einzelwert auswe
 | `/var/www/vhosts/...`, `/tpc/mycatalog/...`, `/sued/+`                 | fremde/technische Pfade         | Incident oder kompromittierte Navigation     |                 — |        gering | keine                          | kein Ziel                                           | INCIDENT_SUSPECT  | ausgeschlossen                                 | kritisch   | nein             | Im Go-live-Security-Audit prüfen.                                       |
 
 ## Offene Index- und Redirect-Entscheidungen
+
+### Routing-Ergänzung Sprint 10.1 (8. Oktober 2026)
+
+Die historischen Kurzpfade `/service-und-team`, `/unternehmen`, `/jobs-karriere`,
+`/bewerbung-formular`, `/kontakt-formular` und `/finanzierung-und-foerderung` werden
+jetzt permanent auf ihre oben genannten finalen Ziele weitergeleitet. Für
+`/wartung-und-reinigung` gilt verbindlich direkt `/service-und-wartung`; der frühere
+Zwischenschritt über `/service-und-wartung/wartung-und-reinigung` entfällt.
+
+Die globale Next.js-Slash-Normalisierung bleibt bestehen. Sie wird vor den
+projektspezifischen Redirects ausgeführt (`load-custom-routes`, `redirects.unshift`).
+Bei Slash-Varianten bleibt deshalb ein zusätzlicher 308-Schritt zur Variante ohne
+Slash erhalten, auch bei `/photovoltaik/foerderungen/` und `/faq/photovoltaik/`.
+Zusätzliche lokale Redirect-Regeln können diese vorgelagerte Normalisierung nicht
+überholen. Die Zielzuordnungen selbst führen direkt auf die endgültigen Routen.
+
+### Historische Sprint-8-Entscheidungen
 
 Die 51 Matrixzeilen verteilen sich auf: 3 `KEEP`, 9 `IMPROVE`, 24 `REDIRECT_LATER`,
 3 `REVIEW`, 6 `INCIDENT_SUSPECT`, 3 `REMOVE_AT_GO_LIVE` und 3 `INDEX_DECISION`.

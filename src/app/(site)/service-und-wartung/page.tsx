@@ -295,11 +295,13 @@ export default function ServicePage() {
       eyebrow="Service & Wartung"
       title="Damit Ihre Energietechnik zuverlässig weiterarbeitet"
       description="Wir unterstützen Sie bei Anlagenchecks, Wartung, Monitoring und technischen Auffälligkeiten – für Photovoltaik, Stromspeicher, Wärmepumpen und Klimaanlagen. Persönlich koordiniert von Energie-Kraft Süd aus Ainring."
-      desktopSrc="/images/service/service-solar-legacy-desktop.webp"
-      mobileSrc="/images/service/service-solar-legacy-mobile.webp"
-      desktopWidth={1800}
-      desktopHeight={1000}
-      imageAlt="Photovoltaikanlage im Abendlicht als Teil eines betreuten Energiesystems"
+      desktopSrc="/images/navigation/service-maintenance-mega.webp"
+      mobileSrc="/images/service/service-maintenance-mobile.webp"
+      desktopWidth={1200}
+      desktopHeight={800}
+      mobileWidth={480}
+      mobileHeight={800}
+      imageAlt="Techniker prüft die elektrischen Komponenten einer Energieanlage mit einem Messgerät"
       sections={sections}
       sectionOverrides={{
         "service-systeme": <ServiceSystemsSection />,

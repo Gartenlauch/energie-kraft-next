@@ -14,6 +14,21 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      {
+        source: "/service-und-team",
+        destination: "/service-und-wartung/service-und-team",
+        permanent: true,
+      },
+      { source: "/unternehmen", destination: "/ueber-uns", permanent: true },
+      { source: "/jobs-karriere", destination: "/jobs", permanent: true },
+      { source: "/bewerbung-formular", destination: "/bewerbung", permanent: true },
+      { source: "/kontakt-formular", destination: "/kontakt#kontaktformular", permanent: true },
+      {
+        source: "/finanzierung-und-foerderung",
+        destination: "/service-und-wartung/finanzierung-und-foerderung",
+        permanent: true,
+      },
+      { source: "/wartung-und-reinigung", destination: "/service-und-wartung", permanent: true },
       { source: "/faq/:category", destination: "/faq?category=:category", permanent: true },
       { source: "/energieloesungen", destination: "/", permanent: true },
       {
