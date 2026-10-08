@@ -114,7 +114,7 @@ const nextConfig: NextConfig = {
         // Only these exact social-preview paths bypass the global header.
         // The review page retains its own noindex, follow HTML metadata.
         source:
-          "/:path((?!google-bewertung$|images/google-bewertung/google-bewertung-share\\.jpg$).*)",
+          "/:path((?!google-bewertung$|images/google-bewertung/google-bewertung-share-v2\\.jpg$).*)",
         headers: [
           {
             key: "X-Robots-Tag",

@@ -1,11 +1,11 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+﻿import { afterEach, describe, expect, it, vi } from "vitest";
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 
 vi.mock("@/config/site", () => ({
   siteConfig: {
     canonicalBaseUrl: "https://www.energie-kraft.de",
     locale: "de_DE",
-    name: "Energie-Kraft Süd",
+    name: "Energie-Kraft SÃ¼d",
   },
 }));
 
@@ -99,13 +99,13 @@ describe("search indexing launch guard", () => {
     ["/konfigurator", true],
     ["/admin/leads", true],
     ["/google-bewertung", false],
-    ["/images/google-bewertung/google-bewertung-share.jpg", false],
+    ["/images/google-bewertung/google-bewertung-share-v2.jpg", false],
     ["/brand/energie-kraft/eksued-logo-website.svg", true],
     ["/google-bewertung/extra", true],
     ["/google-bewertung-extra", true],
     ["/images/google-bewertung/other.jpg", true],
     ["/images/google-bewertung/google-bewertung-shareXjpg", true],
-    ["/images/google-bewertung/google-bewertung-share.jpg/extra", true],
+    ["/images/google-bewertung/google-bewertung-share-v2.jpg/extra", true],
   ])("applies the pre-launch header to %s: %s", async (path, guarded) => {
     vi.stubEnv("SEARCH_INDEXING_ENABLED", "false");
     const rules = await nextConfig.headers!();

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+﻿import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import sharp from "sharp";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -43,7 +43,7 @@ describe("Google review invitation", () => {
         url: "https://www.energie-kraft.de/google-bewertung",
         images: [
           {
-            url: "https://www.energie-kraft.de/images/google-bewertung/google-bewertung-share.jpg",
+            url: "https://www.energie-kraft.de/images/google-bewertung/google-bewertung-share-v2.jpg",
           },
         ],
       });
@@ -87,10 +87,10 @@ describe("Google review invitation", () => {
   it("renders one heading and a deliberate, accessible external link without redirect", () => {
     const html = renderToStaticMarkup(GoogleReviewPage());
     expect(html.match(/<h1\b/g)).toHaveLength(1);
-    expect(html).toContain("Ihre Meinung zählt.");
+    expect(html).toContain("Ihre Meinung zÃ¤hlt.");
     expect(html).toContain('href="https://g.page/r/CbQYaiCf6F9eEBM/review"');
     expect(html).toContain("Google-Bewertung abgeben");
-    expect(html).toContain('alt="Energie-Kraft Süd"');
+    expect(html).toContain('alt="Energie-Kraft SÃ¼d"');
     expect(html).toContain('aria-describedby="google-review-hint"');
     expect(html).not.toMatch(/<script|http-equiv="refresh"|NEXT_REDIRECT/i);
     const source = readFileSync("src/app/google-bewertung/page.tsx", "utf8");
@@ -118,14 +118,14 @@ describe("Google review invitation", () => {
       expect(metadata.robots).toEqual({ index: false, follow: true });
       expect(metadata.alternates?.canonical).toBe("https://www.energie-kraft.de/google-bewertung");
       expect(metadata.openGraph).toMatchObject({
-        title: "Energie-Kraft Süd | Ihre Meinung zählt",
+        title: "Energie-Kraft SÃ¼d | Ihre Meinung zÃ¤hlt",
         description:
-          "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns über Ihre Bewertung bei Google.",
+          "Waren Sie mit unserer Arbeit zufrieden? Wir freuen uns Ã¼ber Ihre Bewertung bei Google.",
         type: "website",
         url: `${protocol}://${host}/google-bewertung`,
         images: [
           {
-            url: `${protocol}://${host}/images/google-bewertung/google-bewertung-share.jpg`,
+            url: `${protocol}://${host}/images/google-bewertung/google-bewertung-share-v2.jpg`,
             type: "image/jpeg",
             width: 1200,
             height: 630,
@@ -142,9 +142,9 @@ describe("Google review invitation", () => {
     expect(entries.some(({ url }) => url.includes("/google-bewertung"))).toBe(false);
   });
 
-  it("ships the social image as a 1200 × 630 sRGB JPEG", async () => {
+  it("ships the social image as a 1200 Ã— 630 sRGB JPEG", async () => {
     const image = await sharp(
-      "public/images/google-bewertung/google-bewertung-share.jpg",
+      "public/images/google-bewertung/google-bewertung-share-v2.jpg",
     ).metadata();
     expect(image).toMatchObject({ format: "jpeg", width: 1200, height: 630, space: "srgb" });
   });
