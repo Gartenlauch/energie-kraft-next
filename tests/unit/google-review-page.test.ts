@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import sharp from "sharp";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/config/env/public", () => ({
   publicEnv: {
@@ -19,7 +19,19 @@ import { headers } from "next/headers";
 
 vi.mock("next/headers", () => ({ headers: vi.fn() }));
 
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
 describe("Google review invitation", () => {
+  it.each(["false", "true"])("keeps page-specific noindex with indexing %s", async (enabled) => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", enabled);
+    vi.mocked(headers).mockResolvedValue(
+      new Headers({ host: "www.energie-kraft.de" }) as Awaited<ReturnType<typeof headers>>,
+    );
+    expect((await generateMetadata()).robots).toEqual({ index: false, follow: true });
+  });
+
   it.each([undefined, "bad/host", "bad:port"])(
     "handles invalid or missing hosts (%s)",
     async (host) => {

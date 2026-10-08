@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 
 vi.mock("@/config/site", () => ({
   siteConfig: {
@@ -77,7 +78,7 @@ describe("search indexing launch guard", () => {
 
     expect(guardedHeaders).toEqual([
       {
-        source: "/:path*",
+        source: expect.any(String),
         headers: [
           {
             key: "X-Robots-Tag",
@@ -89,6 +90,33 @@ describe("search indexing launch guard", () => {
 
     vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
     expect(await nextConfig.headers?.()).toEqual([]);
+  });
+
+  it.each([
+    ["/", true],
+    ["/photovoltaik", true],
+    ["/kontakt", true],
+    ["/konfigurator", true],
+    ["/admin/leads", true],
+    ["/google-bewertung", false],
+    ["/images/google-bewertung/google-bewertung-share.jpg", false],
+    ["/brand/energie-kraft/eksued-logo-website.svg", true],
+    ["/google-bewertung/extra", true],
+    ["/google-bewertung-extra", true],
+    ["/images/google-bewertung/other.jpg", true],
+    ["/images/google-bewertung/google-bewertung-shareXjpg", true],
+    ["/images/google-bewertung/google-bewertung-share.jpg/extra", true],
+  ])("applies the pre-launch header to %s: %s", async (path, guarded) => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", "false");
+    const rules = await nextConfig.headers!();
+    // Use the installed Next.js matcher, as the custom-header router does.
+    const responseHeaders = rules
+      .filter(({ source }) => getPathMatch(source, { strict: true })(path))
+      .flatMap(({ headers }) => headers);
+
+    expect(responseHeaders).toEqual(
+      guarded ? [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }] : [],
+    );
   });
 
   it("keeps ordinary public pages noindex before launch", () => {
