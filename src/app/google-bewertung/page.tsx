@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { headers } from "next/headers";
 
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -14,21 +15,45 @@ const baseMetadata = buildMetadata({
   noIndex: true,
 });
 
-export const metadata: Metadata = {
-  ...baseMetadata,
-  robots: { index: false, follow: true },
-  openGraph: {
-    ...baseMetadata.openGraph,
-    images: [
-      {
-        url: buildCanonicalUrl("/images/google-bewertung/google-bewertung-share.jpg"),
-        width: 1200,
-        height: 630,
-        alt: "Energie-Kraft Süd – Ihre Meinung zählt. Fünf Sterne vor einem illustrativen Hausmotiv mit Photovoltaik und Wärmepumpe.",
-      },
-    ],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const first = (value: string | null) => value?.split(",")[0]?.trim();
+  const host = first(requestHeaders.get("x-forwarded-host")) || first(requestHeaders.get("host"));
+  const forwardedProtocol = first(requestHeaders.get("x-forwarded-proto"));
+  const protocol =
+    forwardedProtocol === "http" || forwardedProtocol === "https"
+      ? forwardedProtocol
+      : host && /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host)
+        ? "http"
+        : "https";
+  let imageOrigin = buildCanonicalUrl("/");
+  if (host && !/[\s/@\\?#]/.test(host)) {
+    try {
+      imageOrigin = new URL(`${protocol}://${host}`).origin;
+    } catch {
+      // Malformed/missing proxy headers must not break metadata rendering.
+    }
+  }
+
+  return {
+    ...baseMetadata,
+    robots: { index: false, follow: true },
+    openGraph: {
+      ...baseMetadata.openGraph,
+      images: [
+        {
+          url: new URL(
+            "/images/google-bewertung/google-bewertung-share.jpg",
+            imageOrigin,
+          ).toString(),
+          width: 1200,
+          height: 630,
+          alt: "Energie-Kraft Süd – Ihre Meinung zählt. Fünf Sterne vor einem illustrativen Hausmotiv mit Photovoltaik und Wärmepumpe.",
+        },
+      ],
+    },
+  };
+}
 
 // Outside (site) deliberately: this focused invitation needs no marketing navigation.
 export default function GoogleReviewPage() {
@@ -89,7 +114,7 @@ export default function GoogleReviewPage() {
         </a>
         <p
           id="google-review-hint"
-          className="text-[var(--text-muted)] mx-auto mt-4 max-w-sm text-xs leading-relaxed sm:text-sm"
+          className="mx-auto mt-4 max-w-sm text-xs leading-relaxed text-[var(--text-muted)] sm:text-sm"
         >
           Sie werden anschließend zu unserem Google-Unternehmensprofil weitergeleitet.
         </p>
