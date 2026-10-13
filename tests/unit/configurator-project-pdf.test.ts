@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import PDFDocument from "../../functions/node_modules/pdfkit";
 import {
   generateConfiguratorProjectPdf,
   getComfortPdfCopy,
@@ -223,6 +224,72 @@ function buildPdfLead(state: ConfiguratorState) {
 }
 
 describe("premium configurator project PDF", () => {
+  it("uses canonical heating results and stored assumptions on page 11 even with different current settings", async () => {
+    const state = createCompleteProject();
+    state.settings = structuredClone(state.settings);
+    state.settings.economics.gasPriceDevelopmentPercent = 4.25;
+    state.settings.economics.oilPriceDevelopmentPercent = 1.5;
+    const preview = buildPdfLead(state);
+    const canonical = applyAuthoritativeConfiguratorModel(preview, state.settings);
+    expect(canonical.economics.heating).toEqual(preview.economics.heating);
+    const latest = structuredClone(state.settings);
+    latest.version = state.settings.version + 1;
+    latest.economics.gasPriceDevelopmentPercent = 9;
+    latest.economics.oilPriceDevelopmentPercent = 8;
+    latest.heatPump.electricityPriceEuroPerKwh = 0.99;
+    const textSpy = vi.spyOn(PDFDocument.prototype, "text");
+    try {
+      const pdf = await generateConfiguratorProjectPdf({ leadId: "package-5", lead: canonical, settings: latest });
+      expect(pdf.toString("latin1").match(/\/Type \/Page\b/g)).toHaveLength(12);
+      const texts = textSpy.mock.calls.map((call) => call[0]);
+      const start = texts.indexOf("Annahmen und nächste technische Prüfung");
+      const end = texts.findIndex((text, index) => index > start && text.startsWith("Der nächste Schritt"));
+      const assumptions = texts.slice(start, end);
+      for (const text of ["Jährliche Strompreissteigerung", "2,0 %/Jahr", "Jährliche Gaspreissteigerung", "4,25 %/Jahr", "Jährliche Heizölpreissteigerung", "1,5 %/Jahr", "0,3 €/kWh"]) {
+        expect(assumptions).toContain(text);
+      }
+      expect(assumptions).not.toContain("9,0 %/Jahr");
+      expect(assumptions).not.toContain("0,99 €/kWh");
+      const euro = (value: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+      expect(texts).toContain(euro(preview.economics.heating!.saving10YearsEuro!));
+      expect(texts).toContain(euro(preview.economics.heating!.saving20YearsEuro!));
+      expect(texts).toContain("HEIZKOSTENERSPARNIS IN 10 JAHREN");
+      expect(texts).toContain("HEIZKOSTENERSPARNIS IN 20 JAHREN");
+      expect(texts).not.toContain("ERSPARNIS IN 10 JAHREN");
+      expect(texts).not.toContain("ERSPARNIS IN 20 JAHREN");
+      expect(texts).toContain("Kumulierte Heizkostenersparnis unter Berücksichtigung jährlicher Energiepreissteigerungen. Investitionskosten, Förderung und Finanzierung sind nicht berücksichtigt.");
+      const output = path.join(tmpdir(), `energie-kraft-package5-${process.pid}.pdf`);
+      writeFileSync(output, pdf);
+      console.info("PACKAGE5_REPRESENTATIVE_PDF", output);
+    } finally {
+      textSpy.mockRestore();
+    }
+  });
+
+  it("does not insert new fuel assumptions into an old stored PDF", async () => {
+    const historical = buildPdfLead(createCompleteProject());
+    delete historical.economics.heating!.annualProjections;
+    historical.economics.heating!.saving10YearsEuro = historical.economics.heating!.annualSavingEuro! * 10;
+    historical.economics.heating!.saving20YearsEuro = historical.economics.heating!.annualSavingEuro! * 20;
+    historical.economics.assumptions = historical.economics.assumptions.filter((item) => !["gas_price_growth", "oil_price_growth", "heat_pump_electricity_price"].includes(item.key));
+    expect(configuratorLeadPayloadSchema.safeParse(historical).success).toBe(true);
+    const before = structuredClone(historical);
+    const latest = structuredClone(DEFAULT_CONFIGURATOR_SETTINGS);
+    latest.version = 42;
+    latest.economics.gasPriceDevelopmentPercent = 12;
+    const textSpy = vi.spyOn(PDFDocument.prototype, "text");
+    try {
+      await generateConfiguratorProjectPdf({ leadId: "historical", lead: historical, settings: latest });
+      const texts = textSpy.mock.calls.map((call) => call[0]);
+      expect(texts).not.toContain("Jährliche Gaspreissteigerung");
+      expect(texts).not.toContain("Jährliche Heizölpreissteigerung");
+      expect(texts).toContain("Kumulierte Heizkostenersparnis bei unveränderten jährlichen Kosten. Investitionskosten, Förderung und Finanzierung sind nicht berücksichtigt.");
+      expect(historical).toEqual(before);
+    } finally {
+      textSpy.mockRestore();
+    }
+  });
+
   it.each([0, 240])("filters financial and assumption PDF rows for %s operating costs", (cost) => {
     expect(pvOperatingCostRows(cost).some((row) => row.label === "Betriebskosten")).toBe(cost > 0);
     expect(pvOperatingCostRows(cost, true).some((row) => row.label === "PV-Betriebskosten")).toBe(cost > 0);

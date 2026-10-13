@@ -227,6 +227,16 @@ export function calculateSolarEconomics(
   };
 }
 
+export interface HeatingYearProjection {
+  year: number;
+  currentAnnualEuro: number | null;
+  heatPumpAnnualEuro: number;
+  annualSavingEuro: number | null;
+  cumulativeCurrentEuro: number | null;
+  cumulativeHeatPumpEuro: number;
+  cumulativeSavingEuro: number | null;
+}
+
 export interface HeatingSavings {
   referenceSource: string;
   currentAnnualEuro: number | null;
@@ -235,6 +245,8 @@ export interface HeatingSavings {
   savingPercent: number | null;
   saving10YearsEuro: number | null;
   saving20YearsEuro: number | null;
+  // Optional so persisted reports from the constant-price model remain readable.
+  annualProjections?: HeatingYearProjection[];
 }
 
 export function calculateHeatingSavings(input: {
@@ -242,11 +254,35 @@ export function calculateHeatingSavings(input: {
   currentAnnualEuro: number | null;
   heatPumpAnnualEuro: number;
   authoritativeAnnualDifferenceEuro: number | null;
+  referencePriceDevelopmentPercent: number;
+  electricityPriceDevelopmentPercent: number;
+  horizonYears: number;
 }): HeatingSavings {
   const currentAnnualEuro = input.currentAnnualEuro;
   const annual = currentAnnualEuro === null ? null
     : input.authoritativeAnnualDifferenceEuro ?? round(currentAnnualEuro - input.heatPumpAnnualEuro);
-  // No heating-fuel price growth assumption exists in the versioned settings.
+  // The technical heat-pump model supplies energy purchase costs only.
+  // Investments, subsidies and maintenance are not part of these price-dependent amounts.
+  const annualProjections: HeatingYearProjection[] = [];
+  let cumulativeCurrentEuro = currentAnnualEuro === null ? null : 0;
+  let cumulativeHeatPumpEuro = 0;
+  let cumulativeSavingEuro = annual === null ? null : 0;
+  for (let year = 1; year <= Math.max(20, input.horizonYears); year += 1) {
+    const current = currentAnnualEuro === null ? null
+      : round(currentAnnualEuro * (1 + input.referencePriceDevelopmentPercent / 100) ** (year - 1));
+    const pump = round(input.heatPumpAnnualEuro *
+      (1 + input.electricityPriceDevelopmentPercent / 100) ** (year - 1));
+    const saving = current === null ? null : year === 1 ? annual : round(current - pump);
+    cumulativeCurrentEuro = cumulativeCurrentEuro === null || current === null
+      ? null : round(cumulativeCurrentEuro + current);
+    cumulativeHeatPumpEuro = round(cumulativeHeatPumpEuro + pump);
+    cumulativeSavingEuro = cumulativeSavingEuro === null || saving === null
+      ? null : round(cumulativeSavingEuro + saving);
+    annualProjections.push({
+      year, currentAnnualEuro: current, heatPumpAnnualEuro: pump, annualSavingEuro: saving,
+      cumulativeCurrentEuro, cumulativeHeatPumpEuro, cumulativeSavingEuro,
+    });
+  }
   return {
     referenceSource: input.referenceSource,
     currentAnnualEuro,
@@ -254,7 +290,8 @@ export function calculateHeatingSavings(input: {
     annualSavingEuro: annual,
     savingPercent: annual === null || currentAnnualEuro === null || currentAnnualEuro === 0
       ? null : round(annual / currentAnnualEuro * 100),
-    saving10YearsEuro: annual === null ? null : round(annual * 10),
-    saving20YearsEuro: annual === null ? null : round(annual * 20),
+    saving10YearsEuro: annualProjections[9]!.cumulativeSavingEuro,
+    saving20YearsEuro: annualProjections[19]!.cumulativeSavingEuro,
+    annualProjections,
   };
 }

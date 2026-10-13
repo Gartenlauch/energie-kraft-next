@@ -63,4 +63,13 @@ export const heatingSavingsSchema = z.object({
   savingPercent: money.nullable(),
   saving10YearsEuro: money.nullable(),
   saving20YearsEuro: money.nullable(),
+  annualProjections: z.array(z.object({
+    year: z.number().int().min(1).max(40),
+    currentAnnualEuro: nonnegative.nullable(),
+    heatPumpAnnualEuro: nonnegative,
+    annualSavingEuro: money.nullable(),
+    cumulativeCurrentEuro: nonnegative.nullable(),
+    cumulativeHeatPumpEuro: nonnegative,
+    cumulativeSavingEuro: money.nullable(),
+  }).strict()).min(20).max(40).optional(),
 }).strict();

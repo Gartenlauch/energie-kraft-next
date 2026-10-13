@@ -7,6 +7,7 @@ import type {
 } from "@/types/configurator";
 import { CONFIGURATOR_STATE_VERSION } from "@/types/configurator";
 import { buildConfiguratorJourney } from "@/lib/configurator/journey";
+import { getAdditionalConsumptionSolutions } from "@/lib/configurator/additional-consumption";
 import {
   DEFAULT_CONFIGURATOR_SETTINGS,
   type ConfiguratorSettings,
@@ -318,6 +319,10 @@ function reduceConfiguratorState(
 
         interests,
 
+        acknowledgedConsumptionSolutions: state.acknowledgedConsumptionSolutions?.filter(
+          (solution) => interests[solution],
+        ),
+
         results,
       };
     }
@@ -415,6 +420,12 @@ function reduceConfiguratorState(
           ...state.journey,
           additionalSolutionsReviewed: true,
         },
+      };
+
+    case "ACKNOWLEDGE_ADDITIONAL_CONSUMPTION":
+      return {
+        ...state,
+        acknowledgedConsumptionSolutions: getAdditionalConsumptionSolutions(state.interests),
       };
 
     case "SET_SUBMISSION":

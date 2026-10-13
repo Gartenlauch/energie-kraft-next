@@ -144,6 +144,10 @@ export function calculateCanonicalProjectEconomics(
     currentAnnualEuro: products.heatPump.currentHeatingOperatingCostEuro,
     heatPumpAnnualEuro: products.heatPump.annualHeatPumpOperatingCostEuro,
     authoritativeAnnualDifferenceEuro: products.heatPump.annualOperatingCostDifferenceEuro,
+    referencePriceDevelopmentPercent: products.heatPump.comparisonFuelUnit === "litre"
+      ? settings.economics.oilPriceDevelopmentPercent : settings.economics.gasPriceDevelopmentPercent,
+    electricityPriceDevelopmentPercent: settings.economics.electricityPriceDevelopmentPercent,
+    horizonYears: settings.economics.projectHorizonYears,
   }) : null;
   const components: ComponentEconomics[] = [];
   const add = (
@@ -228,6 +232,9 @@ export function calculateCanonicalProjectEconomics(
   const heat = products.heatPump;
   const heatPumpAssumptions: EconomicAssumption[] = heat ? [
     { key: "heating_comparison", label: "Heizungsvergleich", value: heat.heatingComparisonLabel, source: "user_input" },
+    { key: "gas_price_growth", label: "Jährliche Gaspreissteigerung", value: `${settings.economics.gasPriceDevelopmentPercent.toLocaleString("de-DE", { minimumFractionDigits: 1 })} %/Jahr`, source: "default_assumption" },
+    { key: "oil_price_growth", label: "Jährliche Heizölpreissteigerung", value: `${settings.economics.oilPriceDevelopmentPercent.toLocaleString("de-DE", { minimumFractionDigits: 1 })} %/Jahr`, source: "default_assumption" },
+    { key: "heat_pump_electricity_price", label: "Wärmepumpen-Strompreis", value: `${settings.heatPump.electricityPriceEuroPerKwh.toLocaleString("de-DE")} €/kWh`, source: "default_assumption" },
     ...(heat.comparisonFuelPriceEuroPerUnit === null ? [] : [{
       key: "heating_fuel_price", label: heat.comparisonFuelUnit === "litre" ? "Heizölpreis im Modell" : "Gaspreis im Modell",
       value: `${heat.comparisonFuelPriceEuroPerUnit.toLocaleString("de-DE")} €/${heat.comparisonFuelUnit === "litre" ? "Liter" : "kWh"}`,
@@ -262,7 +269,7 @@ export function calculateCanonicalProjectEconomics(
       { key: "settings_version", label: "Modellversion", value: `${settings.version}`, source: "modeled" },
       { key: "electricity_price", label: "Netzstrompreis", value: `${settings.economics.gridElectricityPriceEuroPerKwh.toLocaleString("de-DE")} €/kWh`, source: "default_assumption" },
       { key: "feed_in", label: "Einspeisewert", value: `${settings.economics.feedInValueEuroPerKwh.toLocaleString("de-DE")} €/kWh`, source: "default_assumption" },
-      { key: "price_growth", label: "Strompreisentwicklung", value: `${settings.economics.electricityPriceDevelopmentPercent.toLocaleString("de-DE")} %/Jahr`, source: "default_assumption" },
+      { key: "price_growth", label: "Jährliche Strompreissteigerung", value: `${settings.economics.electricityPriceDevelopmentPercent.toLocaleString("de-DE", { minimumFractionDigits: 1 })} %/Jahr`, source: "default_assumption" },
       { key: "pv_degradation", label: "PV-Degradation", value: `${settings.photovoltaic.annualDegradationPercent.toLocaleString("de-DE")} %/Jahr`, source: "default_assumption" },
       { key: "storage_efficiency", label: "Speicherwirkungsgrad", value: `${settings.batteryStorage.roundTripEfficiencyPercent.toLocaleString("de-DE")} %`, source: "default_assumption" },
       { key: "storage_lifetime", label: "Speicherhorizont", value: `${settings.batteryStorage.economicLifetimeYears} Jahre`, source: "default_assumption" },
@@ -272,7 +279,7 @@ export function calculateCanonicalProjectEconomics(
     limitations: [
       "Jahresmodell ohne stündliche Lastgangsimulation oder doppelte Solarertragszählung.",
       "Finanzierung, Steuern und Förderung sind nicht eingerechnet.",
-      "Heizkosteneinsparungen sind bei konstanten Jahreskosten separat modelliert.",
+      "Heizkosteneinsparungen sind separat mit jährlicher Strom- und Brennstoffpreisentwicklung modelliert; Jahr 1 verwendet die Ausgangspreise.",
     ],
   };
 }

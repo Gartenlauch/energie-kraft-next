@@ -299,8 +299,8 @@ describe("canonical configurator project economics", () => {
     expect(economics.heating?.savingPercent).toBeCloseTo(
       economics.heating!.annualSavingEuro! / economics.heating!.currentAnnualEuro! * 100, 2,
     );
-    expect(economics.heating?.saving10YearsEuro).toBe(economics.heating!.annualSavingEuro! * 10);
-    expect(economics.heating?.saving20YearsEuro).toBe(economics.heating!.annualSavingEuro! * 20);
+    expect(economics.heating?.saving10YearsEuro).toBe(economics.heating!.annualProjections![9]!.cumulativeSavingEuro);
+    expect(economics.heating?.saving20YearsEuro).toBe(economics.heating!.annualProjections![19]!.cumulativeSavingEuro);
     expect(economics.components[0]?.explanation).toContain("Förderung nicht eingerechnet");
   });
 

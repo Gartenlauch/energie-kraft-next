@@ -52,6 +52,8 @@ export const configuratorSettingsSchema = z
         gridElectricityPriceEuroPerKwh: finitePositive.max(5),
         feedInValueEuroPerKwh: z.number().finite().min(0).max(5),
         electricityPriceDevelopmentPercent: z.number().finite().min(-10).max(20),
+        gasPriceDevelopmentPercent: z.number().finite().min(-10).max(20).default(3),
+        oilPriceDevelopmentPercent: z.number().finite().min(-10).max(20).default(3),
         projectHorizonYears: z.number().int().min(1).max(40),
       })
       .strict(),
@@ -130,6 +132,8 @@ export const DEFAULT_CONFIGURATOR_SETTINGS: ConfiguratorSettings = {
     gridElectricityPriceEuroPerKwh: 0.32,
     feedInValueEuroPerKwh: 0.08,
     electricityPriceDevelopmentPercent: 2,
+    gasPriceDevelopmentPercent: 3,
+    oilPriceDevelopmentPercent: 3,
     projectHorizonYears: 20,
   },
   photovoltaic: {

@@ -750,11 +750,13 @@ function drawHeating(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   text(doc, `${euro(pump)} / Jahr`, 421, 443, 132, 9, "semibold", COLOR.green);
   if (hasReference) {
     rect(doc, LEFT, 495, WIDTH, 122, COLOR.pale);
-    valueLine(doc, "Ersparnis in 10 Jahren", euro(heat.saving10YearsEuro), 512,
+    valueLine(doc, "Heizkostenersparnis in 10 Jahren", euro(heat.saving10YearsEuro), 512,
       { x: 57, width: 230, valueSize: 18, color: COLOR.navy });
-    valueLine(doc, "Ersparnis in 20 Jahren", euro(heat.saving20YearsEuro), 512,
+    valueLine(doc, "Heizkostenersparnis in 20 Jahren", euro(heat.saving20YearsEuro), 512,
       { x: 314, width: 223, valueSize: 18, color: COLOR.navy });
-    text(doc, "Bei unveränderten jährlichen Kosten; ohne Förderung und Finanzierung.",
+    text(doc, heat.annualProjections
+      ? "Kumulierte Heizkostenersparnis unter Berücksichtigung jährlicher Energiepreissteigerungen. Investitionskosten, Förderung und Finanzierung sind nicht berücksichtigt."
+      : "Kumulierte Heizkostenersparnis bei unveränderten jährlichen Kosten. Investitionskosten, Förderung und Finanzierung sind nicht berücksichtigt.",
       57, 583, 480, 8, "regular", COLOR.muted);
   }
   rule(doc, 634);
@@ -901,7 +903,7 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
     ? getSolarPdfCopy(Boolean(product(lead, "battery_storage"))).assumptionKeys : [];
   const solarLabels: Record<string, string> = {
     electricity_price: "Netzstrompreis", feed_in: "Einspeisewert",
-    price_growth: "Strompreisentwicklung", pv_degradation: "PV-Degradation",
+    price_growth: "Jährliche Strompreissteigerung", pv_degradation: "PV-Degradation",
     storage_efficiency: "Speicherwirkungsgrad", project_horizon: "Betrachtungszeitraum",
   };
   const solarItems = solarKeys.map((key) => ({ label: solarLabels[key]!, value: assumption(lead, key) }))
@@ -915,6 +917,14 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
   const heatingItems: { label: string; value: string }[] = [];
   if (lead.economics.heating) {
     heatingItems.push({ label: "Heizungsvergleich", value: lead.economics.heating.referenceSource });
+    for (const [key, label] of [
+      ...(!solarKeys.includes("price_growth") ? [["price_growth", "Jährliche Strompreissteigerung"]] : []),
+      ["gas_price_growth", "Jährliche Gaspreissteigerung"],
+      ["oil_price_growth", "Jährliche Heizölpreissteigerung"],
+    ]) {
+      const value = assumption(lead, key!);
+      if (value) heatingItems.push({ label: label!, value });
+    }
     const fuel = assumption(lead, "heating_fuel_price");
     if (fuel) heatingItems.push({ label: "Preis Vergleichsheizung", value: fuel });
     const efficiency = assumption(lead, "heating_efficiency");
@@ -922,8 +932,10 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
     const heat = product(lead, "heat_pump");
     if (heat) {
       heatingItems.push({ label: "Wärmepumpen-JAZ", value: format(heat.answers.annualPerformanceFactor) });
-      if (settings) heatingItems.push({ label: "Wärmepumpen-Strompreis",
-        value: `${num.format(settings.heatPump.electricityPriceEuroPerKwh)} €/kWh` });
+      const electricityPrice = assumption(lead, "heat_pump_electricity_price") ??
+        (settings?.version === lead.settingsVersion
+          ? `${num.format(settings.heatPump.electricityPriceEuroPerKwh)} €/kWh` : null);
+      if (electricityPrice) heatingItems.push({ label: "Wärmepumpen-Strompreis", value: electricityPrice });
     }
   }
   let rowY = 224;
@@ -935,10 +947,10 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
     text(doc, group.title, LEFT, rowY, columnWidth, 8, "semibold", COLOR.blue, 1);
     rowY += 18;
     for (const item of group.items) {
-      const labelEnd = text(doc, item.label, LEFT, rowY, columnWidth, 7.5, "regular", COLOR.muted, 1);
-      const valueEnd = text(doc, item.value!, LEFT, labelEnd + 3, columnWidth, 9,
+      const labelEnd = text(doc, item.label, LEFT, rowY, 142, 7.5, "regular", COLOR.muted, 1);
+      const valueEnd = text(doc, item.value!, LEFT + 150, rowY, columnWidth - 150, 8,
         "semibold", COLOR.navy, 1);
-      rowY = valueEnd + 8;
+      rowY = Math.max(labelEnd, valueEnd) + 10;
     }
     rowY += 7;
   }
@@ -957,6 +969,11 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
     const valueEnd = text(doc, check.value, rightX, labelEnd + 5, columnWidth, 8,
       "regular", COLOR.ink, 2);
     checkY = valueEnd + 20;
+  }
+  if (lead.economics.heating?.annualProjections) {
+    text(doc,
+      "Gas- und Heizölsteigerung gelten jeweils nur für den ausgewiesenen Vergleichsbrennstoff. Die Stromsteigerung gilt für den Wärmepumpenstrom.",
+      rightX, checkY + 8, columnWidth, 7.5, "regular", COLOR.muted, 2);
   }
   rule(doc, 674);
   text(doc,

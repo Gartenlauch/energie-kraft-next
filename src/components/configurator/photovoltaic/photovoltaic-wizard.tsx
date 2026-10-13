@@ -467,7 +467,13 @@ export function PhotovoltaicWizard() {
       ) : null}
 
       {currentStepId === "energy_solutions" ? (
-        <EnergySolutionsStep interests={state.interests} onToggle={handleEnergySolutionToggle} />
+        <EnergySolutionsStep
+          interests={state.interests}
+          acknowledgedConsumptionSolutions={state.acknowledgedConsumptionSolutions}
+          onToggle={handleEnergySolutionToggle}
+          onAdjustConsumption={goBack}
+          onAcknowledgeConsumption={() => dispatch({ type: "ACKNOWLEDGE_ADDITIONAL_CONSUMPTION" })}
+        />
       ) : null}
 
       {currentStepId === "notes" ? (

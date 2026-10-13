@@ -327,6 +327,7 @@ export const configuratorStateSchema: z.ZodType<ConfiguratorState> = z.object({
     version: z.literal(CONFIGURATOR_STATE_VERSION),
     settingsVersion: z.number().int().nonnegative(),
     settings: configuratorSettingsSchema,
+    acknowledgedConsumptionSolutions: z.array(z.enum(["heatPump", "climate", "wallbox"])).max(3).optional(),
 
     activeConfigurator: configuratorTypeSchema.nullable(),
     journey: z.object({

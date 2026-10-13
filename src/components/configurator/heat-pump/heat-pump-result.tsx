@@ -122,6 +122,18 @@ export function HeatPumpResult({
                   ) : null}
                 </div>
               ) : null}
+              {heating.annualProjections ? (
+                <div className="mt-6">
+                  <dl className="grid gap-5 sm:grid-cols-2">
+                    <ResultMetric label="Heizkostendifferenz über 10 Jahre" value={euro(heating.saving10YearsEuro!)} />
+                    <ResultMetric label="Heizkostendifferenz über 20 Jahre" value={euro(heating.saving20YearsEuro!)} />
+                  </dl>
+                  <p className="text-foreground/70 mt-4 text-sm leading-6">
+                    Positive Werte zeigen eine Ersparnis, negative Werte Mehrkosten. Jährlich
+                    aufgezinst werden nur die Energiebezugskosten; ohne Förderung und Finanzierung.
+                  </p>
+                </div>
+              ) : null}
             </>
           ) : (
             <div className="border-brand-secondary mt-5 border-l-4 pl-5">
@@ -138,7 +150,14 @@ export function HeatPumpResult({
       ) : null}
 
       <div className="border-brand-primary/15 text-foreground/70 mt-8 border-t pt-5 text-sm leading-6">
-        <p className="text-brand-navy font-semibold">Förderung nicht berücksichtigt</p>
+        <p className="text-brand-navy font-semibold">Verwendete Preisentwicklung</p>
+        <p className="mt-1">
+          Strom: {percent(state.settings.economics.electricityPriceDevelopmentPercent, 3)} pro Jahr.
+          {result.comparisonFuelUnit === "kWh" ? ` Gas: ${percent(state.settings.economics.gasPriceDevelopmentPercent, 3)} pro Jahr.` : null}
+          {result.comparisonFuelUnit === "litre" ? ` Heizöl: ${percent(state.settings.economics.oilPriceDevelopmentPercent, 3)} pro Jahr.` : null}
+          {" "}Jahr 1 verwendet die Ausgangspreise.
+        </p>
+        <p className="text-brand-navy mt-4 font-semibold">Förderung nicht berücksichtigt</p>
         <p className="mt-1">
           Mögliche Fördermittel können die tatsächliche Investition reduzieren. Die konkrete
           Förderfähigkeit prüfen wir im weiteren Beratungsprozess.

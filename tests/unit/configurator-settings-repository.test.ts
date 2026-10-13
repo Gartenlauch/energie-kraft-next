@@ -80,6 +80,30 @@ describe("configurator settings repository", () => {
     expect(fakeStore.documents.size).toBe(0);
   });
 
+  it("reads old snapshots without migration and saves fuel rates independently", async () => {
+    const { gasPriceDevelopmentPercent: _gas, oilPriceDevelopmentPercent: _oil, ...economics } = DEFAULT_CONFIGURATOR_SETTINGS.economics;
+    const legacy = { ...DEFAULT_CONFIGURATOR_SETTINGS, version: 7, economics: { ...economics, electricityPriceDevelopmentPercent: 1.25 } };
+    fakeStore.documents.set("configuratorSettings/current", { settings: legacy });
+    fakeStore.documents.set("configuratorSettingsVersions/7", { settings: legacy });
+    const settings = await getCurrentConfiguratorSettings();
+    expect(settings.economics).toMatchObject({ gasPriceDevelopmentPercent: 3, oilPriceDevelopmentPercent: 3, electricityPriceDevelopmentPercent: 1.25 });
+    expect(await getConfiguratorSettingsVersion(7)).toEqual(settings);
+    expect(fakeStore.documents.get("configuratorSettingsVersions/7")!.settings).toEqual(legacy);
+    settings.economics.gasPriceDevelopmentPercent = 0;
+    settings.economics.oilPriceDevelopmentPercent = 4.25;
+    const saved = await saveConfiguratorSettings(settings, "admin-1");
+    expect(await getCurrentConfiguratorSettings()).toEqual(saved);
+    expect(saved.economics).toMatchObject({ gasPriceDevelopmentPercent: 0, oilPriceDevelopmentPercent: 4.25, electricityPriceDevelopmentPercent: 1.25 });
+    expect(fakeStore.documents.get("configuratorSettingsVersions/7")!.settings).toEqual(legacy);
+  });
+
+  it.each(["gasPriceDevelopmentPercent", "oilPriceDevelopmentPercent"] as const)("rejects invalid %s before writing", async (field) => {
+    const invalid = structuredClone(DEFAULT_CONFIGURATOR_SETTINGS);
+    invalid.economics[field] = 21;
+    await expect(saveConfiguratorSettings(invalid, "admin-1")).rejects.toThrow();
+    expect(fakeStore.documents.size).toBe(0);
+  });
+
   it("rejects a stale admin edit before it can overwrite a newer version", async () => {
     await saveConfiguratorSettings(DEFAULT_CONFIGURATOR_SETTINGS, "admin-1");
 

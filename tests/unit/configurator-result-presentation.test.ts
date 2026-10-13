@@ -234,6 +234,7 @@ describe("customer-facing configurator results", () => {
 
   it("shows heating costs, saving and funding exclusion without heating ROI", () => {
     activeState = withHeatPump();
+    activeState.settings.economics.gasPriceDevelopmentPercent = 4.25;
     const heating = calculateProjectEconomics(activeState).heating!;
     const html = renderToStaticMarkup(
       createElement(HeatPumpResult, {
@@ -248,6 +249,11 @@ describe("customer-facing configurator results", () => {
     expect(html).toContain(euro(heating.heatPumpAnnualEuro));
     expect(html).toContain(euro(heating.annualSavingEuro!));
     expect(html).toContain(number(heating.savingPercent!));
+    expect(html).toContain(euro(heating.saving10YearsEuro!));
+    expect(html).toContain(euro(heating.saving20YearsEuro!));
+    expect(html).toContain("Gas: 4,25 % pro Jahr.");
+    expect(html).toContain("Strom:");
+    expect(html).not.toContain("Heizöl:");
     expect(html).toContain("Förderung nicht berücksichtigt");
     expect(html).not.toContain("Amortisation");
     expect(html).not.toContain("Rendite");

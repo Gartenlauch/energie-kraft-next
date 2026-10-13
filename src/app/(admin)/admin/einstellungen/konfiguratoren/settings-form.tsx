@@ -11,11 +11,13 @@ interface NumberFieldProps {
   unit: string;
   value: number;
   step?: number;
+  min?: number;
+  max?: number;
   help?: string;
   onChange: (value: number) => void;
 }
 
-function NumberField({ label, unit, value, step = 0.01, help, onChange }: NumberFieldProps) {
+function NumberField({ label, unit, value, step = 0.01, min, max, help, onChange }: NumberFieldProps) {
   return (
     <label className="block">
       <span className="text-sm font-semibold text-slate-800">{label}</span>
@@ -24,6 +26,8 @@ function NumberField({ label, unit, value, step = 0.01, help, onChange }: Number
           type="number"
           required
           step={step}
+          min={min}
+          max={max}
           value={Number.isFinite(value) ? value : ""}
           onChange={(event) => onChange(event.currentTarget.valueAsNumber)}
           className="min-w-0 flex-1 px-3 py-2.5 text-slate-950 outline-none"
@@ -152,6 +156,8 @@ export function ConfiguratorSettingsForm({ initialSettings }: { initialSettings:
         <NumberField label="Netzstrompreis" unit="€/kWh" value={settings.economics.gridElectricityPriceEuroPerKwh} onChange={(value) => update("economics", { gridElectricityPriceEuroPerKwh: value })} />
         <NumberField label="Einspeisewert" unit="€/kWh" value={settings.economics.feedInValueEuroPerKwh} onChange={(value) => update("economics", { feedInValueEuroPerKwh: value })} />
         <NumberField label="Strompreisentwicklung" unit="%/Jahr" value={settings.economics.electricityPriceDevelopmentPercent} onChange={(value) => update("economics", { electricityPriceDevelopmentPercent: value })} />
+        <NumberField label="Gaspreissteigerung pro Jahr (%)" unit="%/Jahr" min={-10} max={20} help="Nur Gasbezugskosten; zulässiger Bereich −10 bis 20 %." value={settings.economics.gasPriceDevelopmentPercent} onChange={(value) => update("economics", { gasPriceDevelopmentPercent: value })} />
+        <NumberField label="Heizölpreissteigerung pro Jahr (%)" unit="%/Jahr" min={-10} max={20} help="Nur Heizölbezugskosten; zulässiger Bereich −10 bis 20 %." value={settings.economics.oilPriceDevelopmentPercent} onChange={(value) => update("economics", { oilPriceDevelopmentPercent: value })} />
         <NumberField label="Projektbetrachtung" unit="Jahre" step={1} value={settings.economics.projectHorizonYears} onChange={(value) => update("economics", { projectHorizonYears: value })} />
       </Section>
 

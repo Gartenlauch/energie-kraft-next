@@ -6,6 +6,7 @@ import type { WallboxConfiguratorResult, WallboxConfiguratorState } from "./wall
 import type { HeatPumpConfiguratorResult, HeatPumpConfiguratorState } from "./heat-pump";
 import type { ClimateConfiguratorResult, ClimateConfiguratorState } from "./climate";
 import type { ConfiguratorSettings } from "@/lib/configurator/settings-model";
+import type { ConsumptionSolution } from "@/lib/configurator/additional-consumption";
 
 export const CONFIGURATOR_STATE_VERSION = 10 as const;
 
@@ -128,6 +129,7 @@ export interface ConfiguratorState {
   wallbox: WallboxConfiguratorState;
   climate: ClimateConfiguratorState;
   interests: ConfiguratorInterests;
+  acknowledgedConsumptionSolutions?: ConsumptionSolution[];
   notes: ConfiguratorNotes;
   results: ConfiguratorResults;
   submission: {
@@ -140,6 +142,7 @@ export interface ConfiguratorState {
 }
 
 export type ConfiguratorAction =
+  | { type: "ACKNOWLEDGE_ADDITIONAL_CONSUMPTION" }
   | {
     type: "SET_ACTIVE_CONFIGURATOR";
     payload: ConfiguratorType | null;
