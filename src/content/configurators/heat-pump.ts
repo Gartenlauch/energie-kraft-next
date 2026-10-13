@@ -18,15 +18,15 @@ import type {
         title: "Wie groß ist die beheizte Fläche?",
         shortLabel: "Fläche",
         description:
-          "Gib die Wohn- oder Nutzfläche an, die künftig durch die Wärmepumpe beheizt werden soll.",
+          "Geben Sie die Wohn- oder Nutzfläche an, die künftig durch die Wärmepumpe beheizt werden soll.",
         phase: "configuration",
       },
       {
         id: "heating_demand",
-        title: "Wie hoch ist der Wärmebedarf deines Gebäudes?",
+        title: "Wie hoch ist der Wärmebedarf Ihres Gebäudes?",
         shortLabel: "Wärmebedarf",
         description:
-          "Wenn du keinen genauen Wert kennst, kannst du eine passende Gebäudeorientierung auswählen. Der Wert dient nur als erste Modellannahme.",
+          "Wenn Sie keinen genauen Wert kennen, können Sie eine passende Gebäudeorientierung auswählen. Der Wert dient nur als erste Modellannahme.",
         phase: "configuration",
       },
       {
@@ -39,7 +39,7 @@ import type {
       },
       {
         id: "flow_temperature",
-        title: "Welche Vorlauftemperatur benötigt deine Heizung?",
+        title: "Welche Vorlauftemperatur benötigt Ihre Heizung?",
         shortLabel: "Vorlauf",
         description:
           "Entscheidend ist die ungefähr höchste benötigte Vorlauftemperatur an kalten Tagen.",

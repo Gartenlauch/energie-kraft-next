@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PublicContentPage } from "@/app/(site)/_components/public-content-page";
 import { stromspeicherContent } from "@/content";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { StorageEnergyManagementSection, StorageProductsSection } from "./stromspeicher-sections";
+import { StorageEnergyManagementSection, StorageProductsSection, StorageFunctionSection } from "./stromspeicher-sections";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +15,7 @@ export default function StromspeicherPage() {
       brandIntroVariant="brand"
       content={stromspeicherContent}
       sectionOverrides={{
+        funktionsweise: <StorageFunctionSection key="funktionsweise" />,
         speicherprodukte: <StorageProductsSection key="speicherprodukte" />,
         energiemanagement: <StorageEnergyManagementSection key="energiemanagement" />,
       }}

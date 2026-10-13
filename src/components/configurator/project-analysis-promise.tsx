@@ -23,7 +23,7 @@ export function ProjectAnalysisPromise({ compact = false }: { compact?: boolean 
             : "mt-3 max-w-3xl text-base leading-7 text-white/80"
         }
       >
-        Nach deiner Konfiguration erhältst du eine personalisierte PDF mit ausgewählten Systemen,
+        Nach Ihrer Konfiguration erhalten Sie eine personalisierte PDF mit ausgewählten Systemen,
         modellierten Projektkosten und Wirtschaftlichkeit, verständlichen Diagrammen, Annahmen und
         nächsten Schritten.
       </p>

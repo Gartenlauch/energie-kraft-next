@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -34,6 +34,12 @@ function baseJourney(entryPoint: "photovoltaic" | "heat_pump") {
     additionalSolutionsReviewed: true,
   };
 }
+
+it("uses polite customer address throughout the PDF, including escaped line breaks", () => {
+  const copy = readFileSync("functions/src/configurator-project-pdf.ts", "utf8").replaceAll("\\n", " ");
+  expect(copy).not.toMatch(/\b(?:du|dich|dir|dein\w*)\b/i);
+  expect(copy).toContain("Der nächste Schritt zu Ihrem Energieprojekt");
+});
 
 function createPvOnlyProject(): ConfiguratorState {
   const state: ConfiguratorState = {
@@ -476,7 +482,7 @@ describe("premium configurator project PDF", () => {
     expect(JSON.stringify(wallbox)).not.toContain("Klimaanlage");
     const combined = getComfortPdfCopy(true, true);
     expect(combined.overviewLabel).toBe("Klimaanlage + Wallbox");
-    expect(combined.closing).toContain("Klimaanlage und Wallbox ergänzen dein Energieprojekt");
+    expect(combined.closing).toContain("Klimaanlage und Wallbox ergänzen Ihr Energieprojekt");
   });
 
   it.each(["climate", "wallbox"] as const)("renders the %s-only comfort PDF", async (type) => {

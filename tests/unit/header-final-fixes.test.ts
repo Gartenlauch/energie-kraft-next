@@ -52,11 +52,13 @@ describe("Header route fallback", () => {
     [
       "/service-und-wartung/finanzierung-und-foerderung",
       "/images/finanzierung/photovoltaik-desktop.webp",
+      "service",
     ],
-    ["/kunden-werben-kunden", "/images/home-premium/consultation-reference-desktop.webp"],
-  ])("keeps the distinct existing preview image for %s", (pathname, image) => {
+    ["/kunden-werben-kunden", "/images/home-premium/consultation-reference-desktop.webp", "service"],
+    ["/gewerbespeicher", "/images/navigation/commercial-storage-mega.webp", "energy"],
+  ])("uses the specific preview image for %s", (pathname, image, menu) => {
     harness.pathname = pathname;
-    harness.menu = "service";
+    harness.menu = menu;
     const html = renderToStaticMarkup(createElement(SiteHeader));
     const activeImage = html.match(
       /class="mega-preview-scene" data-active="true">[\s\S]*?<img\b[^>]*>/,

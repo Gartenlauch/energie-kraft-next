@@ -1,4 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
+import { existsSync } from "node:fs";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/config/env/public", () => ({
@@ -15,6 +16,17 @@ describe("Funding guide: verified October 2026 snapshot", () => {
   let html: string;
   beforeAll(() => {
     html = renderToStaticMarkup(FundingPage());
+  });
+
+  it("uses the supplied storage photo without a generated-image caption or obsolete global disclaimer", () => {
+    const storage = fundingTopics.find(topic => topic.id === "batteriespeicher")!;
+    expect(storage.image?.src).toBe("/images/finanzierung/sigenergy-battery-storage.webp");
+    expect(existsSync(`public${storage.image!.src}`)).toBe(true);
+    const section = html.split('id="batteriespeicher"')[1].split("</section>")[0];
+    expect(section).toContain(storage.image!.alt);
+    expect(section).not.toContain("KI-generiert");
+    expect(section).not.toContain("/images/finanzierung/batteriespeicher.webp");
+    expect(html).not.toContain("Die drei Fotomotive dieser Seite");
   });
 
   it("keeps one H1, canonical metadata, central sitemap registration and project CTAs", () => {

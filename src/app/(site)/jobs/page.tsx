@@ -10,7 +10,7 @@ import {
 import { Reveal } from "@/components/marketing/reveal";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
-import { activeJobOpenings, sharedJobBenefits } from "@/content/jobs";
+import { activeJobOpenings, jobOpenings, sharedJobBenefits } from "@/content/jobs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
 
@@ -19,7 +19,7 @@ import { JobEditorialArticle } from "./job-editorial-article";
 const seo = {
   title: "Jobs & Karriere | Energie-Kraft Süd",
   description:
-    "Aktuelle Jobs bei Energie-Kraft Süd in Ainring: Elektriker, Dachmontage und Ausbildung in einer regionalen Photovoltaik-Mannschaft.",
+    "Aktuelle Jobs bei Energie-Kraft Süd in Ainring: Elektriker:in, Dachmonteur:in und Ausbildung Elektroniker:in Gebäudetechnik.",
   canonicalPath: "/jobs",
 };
 
@@ -124,10 +124,10 @@ export default function JobsPage() {
                   className="group border-border-default flex min-h-24 items-center gap-5 border-b py-6 last:border-b-0 md:border-b-0 md:pr-8"
                 >
                   <span className="text-brand-primary text-xs tabular-nums">0{index + 1}</span>
-                  <span className="flex-1 text-sm leading-6 font-semibold group-hover:underline">
-                    {job.title}
+                  <span className="min-w-0 text-sm leading-6 font-semibold group-hover:underline">
+                    {job.title}{" "}
+                    <ArrowRightIcon className="text-brand-primary ml-1 inline-block size-4 align-middle" />
                   </span>
-                  <ArrowRightIcon className="text-brand-primary size-4 shrink-0" />
                 </a>
               ))}
             </nav>
@@ -136,6 +136,11 @@ export default function JobsPage() {
                 <JobEditorialArticle key={job.id} job={job} index={index} />
               ))}
             </div>
+            {jobOpenings.filter((job) => !job.active).map((job) => (
+              <p key={job.id} id={job.id} className="mt-8 text-sm leading-7 text-[var(--text-muted)]">
+                Die Stelle „{job.title}“ ist derzeit nicht ausgeschrieben. Unsere aktuellen Stellen findest du oben.
+              </p>
+            ))}
           </div>
         </section>
 

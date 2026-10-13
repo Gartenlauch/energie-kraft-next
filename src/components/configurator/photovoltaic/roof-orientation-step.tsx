@@ -21,7 +21,7 @@ export function RoofOrientationStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-roof-orientation-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Wie ist dein Dach hauptsächlich ausgerichtet?"
+      title="Wie ist Ihr Dach hauptsächlich ausgerichtet?"
       description="Die Dachausrichtung beeinflusst, wann und wie viel Solarstrom erzeugt werden kann."
     >
       <SelectionGrid columns={4}>

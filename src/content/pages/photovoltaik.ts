@@ -111,6 +111,7 @@ export const photovoltaikContent = {
         "Anlagensteuerung und Ertragskontrolle",
         "Schnittstellen für Speicher und mögliche Erweiterungen",
       ],
+      cta: { label: "PV-Projekt konfigurieren", href: "/konfigurator/photovoltaik" },
       presentation: {
         surface: "white",
         layout: "editorial",
@@ -152,7 +153,6 @@ export const photovoltaikContent = {
       ],
       presentation: {
         surface: "white",
-        layout: "editorial",
       },
     },
     {
@@ -161,7 +161,7 @@ export const photovoltaikContent = {
       title: "Investition, Finanzierung und Fördermöglichkeiten einordnen",
       text: [
         "Die Kosten einer Photovoltaikanlage hängen nicht nur von der Modulanzahl ab. Dach- und Montagesituation, elektrische Einbindung, gewählte Komponenten und ein möglicher Batteriespeicher beeinflussen den Projektumfang.",
-        "Finanzierungsangebote, Fördermöglichkeiten und weitere Rahmenbedingungen können sich ändern. Welche Möglichkeiten für Ihr Vorhaben infrage kommen, muss zum jeweiligen Projektzeitpunkt geprüft werden.",
+        "Förderungen, Vergütungen und Finanzierungskonditionen ändern sich regelmäßig. Gerne unterstützen wir Sie dabei die besten Optionen zu wählen",
         "Auch der verbleibende Strombezug gehört zur Planung Ihres Energiesystems.",
       ],
       links: [

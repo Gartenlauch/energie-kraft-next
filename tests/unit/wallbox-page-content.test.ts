@@ -1,6 +1,13 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { WallboxProductShowcase } from "@/app/(site)/wallbox/_components/wallbox-product-showcase";
+
+vi.mock("@/config/env/public", () => ({
+  publicEnv: { NEXT_PUBLIC_CANONICAL_BASE_URL: "https://www.energie-kraft.de" },
+}));
 import { wallboxContent } from "../../src/content/pages/wallbox";
 import { wallboxProducts } from "../../src/content/wallbox-products";
 import { analyzeFaqJsonImport } from "../../src/lib/faq/json-transfer";
@@ -23,6 +30,7 @@ describe("Wallbox relaunch content contracts", () => {
     expect(wallboxProducts.map((product) => product.id)).toEqual([
       "alfen-eve-single-plus-de",
       "sigen-ev-dc",
+      "sigen-ev-ac",
       "fronius-wattpilot-home-22-j",
       "abl-pulsar",
     ]);
@@ -48,6 +56,34 @@ describe("Wallbox relaunch content contracts", () => {
         expect(product.image.width).toBeGreaterThan(0);
         expect(product.image.height).toBeGreaterThan(0);
       }
+  });
+
+  it("renders the AC charger after DC with the verified specifications, supplied image and official sources", () => {
+    const section = wallboxContent.sections.find((section) => section.id === "wallbox-produkte")!;
+    const html = renderToStaticMarkup(createElement(WallboxProductShowcase, { section }));
+    const order = [...html.matchAll(/<article[^>]*id="([^"]+)"/g)].map((match) => match[1]);
+    expect(order).toEqual(wallboxProducts.map((product) => product.id));
+    const ac = wallboxProducts.find((product) => product.id === "sigen-ev-ac")!;
+    const block = html.split('id="sigen-ev-ac"')[1].split("</article>")[0];
+    expect(ac.specifications).toHaveLength(9);
+    for (const spec of ac.specifications!) {
+      expect(block).toContain(spec.label);
+      expect(block).toContain(spec.value);
+    }
+    expect(block).toContain("Sigen EV AC Charger");
+    expect(block).toContain("Sigen Power Sensor");
+    expect(block).toContain("SigenStor-Konfiguration");
+    expect(block).toContain("object-contain");
+    expect(block).not.toMatch(/V2H|V2G/);
+    expect(html).toContain("Sigenergy AC");
+    expect(html).toContain("Sigenergy DC");
+    for (const source of ac.sources!) {
+      const link = [...block.matchAll(/<a\b[^>]*>/g)]
+        .map((match) => match[0])
+        .find((anchor) => anchor.includes(source.href));
+      expect(link).toContain('target="_blank"');
+      expect(link).toContain('rel="noopener"');
+    }
   });
 
   it("keeps the requested section order and existing anchor targets", () => {

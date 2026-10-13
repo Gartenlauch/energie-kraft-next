@@ -42,7 +42,7 @@ export function FutureConsumptionStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-future-consumption-heading"
       eyebrow="Photovoltaik-Konfigurator"
-      title="Wird sich dein Stromverbrauch künftig erhöhen?"
+      title="Wird sich Ihr Stromverbrauch künftig erhöhen?"
       description="Ein höherer Verbrauch kann zum Beispiel durch Elektroauto, Wärmepumpe oder Klimaanlage entstehen."
     >
       <SelectionGrid columns={4}>
@@ -75,7 +75,7 @@ export function FutureConsumptionStep({
           max={200}
           step={1}
           unit="%"
-          helpText="Du kannst statt der Vorauswahl auch einen eigenen Prozentwert eingeben."
+          helpText="Sie können statt der Vorauswahl auch einen eigenen Prozentwert eingeben."
           error={error}
         />
       </div>

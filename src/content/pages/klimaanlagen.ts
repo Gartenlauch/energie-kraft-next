@@ -15,7 +15,7 @@ export const klimaanlagenContent = {
     eyebrow: "Klimaanlagen für Zuhause und Gewerbe",
     title: "Angenehme Raumtemperaturen – individuell und effizient geplant",
     description:
-      "Wir planen Klimaanlagen passend zu Raumgröße, Gebäudesituation und gewünschtem Komfort und begleiten Ihr Projekt von der Auswahl des passenden Bosch-Systems bis zur fachgerechten Installation mit qualifizierten Partnern.",
+      "Wir planen Klimaanlagen passend zu Raumgröße, Gebäudesituation und gewünschtem Komfort und begleiten Ihr Projekt von der Auswahl des passenden Bosch-Systems bis zur fachgerechten Installation mit qualifizierten Partnern. Viele Modelle können in der Übergangszeit auch einzelne Räume bedarfsgerecht heizen.",
     primaryCta: {
       label: "Klimaanlagen-Beratung anfragen",
       href: CONTACT_FORM_HREF,

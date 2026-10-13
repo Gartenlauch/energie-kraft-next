@@ -1,5 +1,7 @@
 "use client";
 
+import { PublicLink as Link } from "@/components/ui/public-link";
+
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
@@ -44,12 +46,12 @@ function ReviewCard({ review }: { review: CustomerReview }) {
         {safeHref(review.authorImageUrl) && <Image src={safeHref(review.authorImageUrl)!} alt="" width={40} height={40} unoptimized referrerPolicy="no-referrer" className="size-10 shrink-0 rounded-full object-cover" />}
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-brand-dark">
-            {safeHref(review.authorUrl) ? <a href={safeHref(review.authorUrl)} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">{review.author}</a> : review.author}
+            {safeHref(review.authorUrl) ? <Link href={safeHref(review.authorUrl)!} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:underline">{review.author}</Link> : review.author}
           </p>
           <p className="mt-0.5 text-xs text-[var(--text-muted)]"><time dateTime={review.publishedAt}>{review.relativeDate ?? date.format(new Date(review.publishedAt))}</time></p>
         </div>
       </div>
-      {original && <a href={original} target="_blank" rel="noopener noreferrer" className="text-brand-primary mt-3 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">Originalbewertung ansehen</a>}
+      {original && <Link href={original} target="_blank" rel="noopener noreferrer" className="text-brand-primary mt-3 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">Originalbewertung ansehen</Link>}
     </div>
   </article>;
 }
@@ -92,8 +94,8 @@ export function CustomerReviewsSection({ reviews, summaries }: ReviewCollection)
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm font-semibold">
-          {safeHref(summary.sourceUrl) && <a href={safeHref(summary.sourceUrl)} target="_blank" rel="noopener noreferrer" className="text-brand-primary inline-flex min-h-11 items-center underline underline-offset-4">Alle Google-Bewertungen ansehen</a>}
-          {safeHref(summary.writeReviewUrl) && <a href={safeHref(summary.writeReviewUrl)} target="_blank" rel="noopener noreferrer" className="text-brand-primary inline-flex min-h-11 items-center underline underline-offset-4">Eine Bewertung schreiben</a>}
+          {safeHref(summary.sourceUrl) && <Link href={safeHref(summary.sourceUrl)!} target="_blank" rel="noopener noreferrer" className="text-brand-primary inline-flex min-h-11 items-center underline underline-offset-4">Alle Google-Bewertungen ansehen</Link>}
+          {safeHref(summary.writeReviewUrl) && <Link href={safeHref(summary.writeReviewUrl)!} target="_blank" rel="noopener noreferrer" className="text-brand-primary inline-flex min-h-11 items-center underline underline-offset-4">Eine Bewertung schreiben</Link>}
         </div>
       </div>
       <div className="mt-9 overflow-hidden md:mt-11" ref={emblaRef} aria-label="Google-Bewertungen">
@@ -109,10 +111,10 @@ export function CustomerReviewsSection({ reviews, summaries }: ReviewCollection)
         </div>
       </div>}
       {summary.attributions?.length ? <div className="mt-6 text-xs text-[var(--text-muted)]">{summary.attributions.map((credit) => safeHref(credit.providerUri)
-        ? <a key={credit.provider} href={safeHref(credit.providerUri)} target="_blank" rel="noopener noreferrer" className="mr-4 underline">{credit.provider}</a>
+        ? <Link key={credit.provider} href={safeHref(credit.providerUri)!} target="_blank" rel="noopener noreferrer" className="mr-4 underline">{credit.provider}</Link>
         : <span key={credit.provider} className="mr-4">{credit.provider}</span>)}</div> : null}
       <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">Google liefert eine Auswahl von bis zu fünf Bewertungen nach Relevanz. Wir zeigen deren gültige Texte nach Datum, neueste zuerst.</p>
-      <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">Google überprüft Bewertungen nicht auf einen tatsächlichen Kundenkontakt. <a href="https://support.google.com/contributionpolicy/answer/7400114" target="_blank" rel="noopener noreferrer" className="underline">Bewertungsrichtlinien</a> · <a href="https://maps.google.com/help/terms_maps.html" target="_blank" rel="noopener noreferrer" className="underline">Google Maps-Nutzungsbedingungen</a> · <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline">Datenschutz</a></p>
+      <p className="mt-3 text-xs leading-5 text-[var(--text-muted)]">Google überprüft Bewertungen nicht auf einen tatsächlichen Kundenkontakt. <Link href="https://support.google.com/contributionpolicy/answer/7400114" target="_blank" rel="noopener noreferrer" className="underline">Bewertungsrichtlinien</Link> · <Link href="https://maps.google.com/help/terms_maps.html" target="_blank" rel="noopener noreferrer" className="underline">Google Maps-Nutzungsbedingungen</Link> · <Link href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline">Datenschutz</Link></p>
     </div>
   </section>;
 }

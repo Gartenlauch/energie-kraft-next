@@ -10,15 +10,15 @@ import type {
     [
       {
         id: "system_data",
-        title: "Welche Ausgangsdaten hat deine Anlage?",
+        title: "Welche Ausgangsdaten hat Ihre Anlage?",
         shortLabel: "Anlagendaten",
         description:
-          "Für die Speicherempfehlung benötigen wir deinen Jahresstromverbrauch und die Leistung deiner Photovoltaikanlage.",
+          "Für die Speicherempfehlung benötigen wir Ihren Jahresstromverbrauch und die Leistung Ihrer Photovoltaikanlage.",
         phase: "configuration",
       },
       {
         id: "consumption_pattern",
-        title: "Wann verbrauchst du den meisten Strom?",
+        title: "Wann verbrauchen Sie den meisten Strom?",
         shortLabel: "Verbrauchszeit",
         description:
           "Der Zeitpunkt des Stromverbrauchs beeinflusst, wie stark ein Speicher den Eigenverbrauch erhöhen kann.",
@@ -26,7 +26,7 @@ import type {
       },
       {
         id: "backup_preference",
-        title: "Ist dir Ersatzstrom wichtig?",
+        title: "Ist Ihnen Ersatzstrom wichtig?",
         shortLabel: "Ersatzstrom",
         description:
           "Ersatz- oder Notstrom muss technisch zur gewünschten Versorgung und zur Elektroinstallation passen.",
@@ -34,10 +34,10 @@ import type {
       },
       {
         id: "goal",
-        title: "Was ist dir bei deinem Stromspeicher besonders wichtig?",
+        title: "Was ist Ihnen bei Ihrem Stromspeicher besonders wichtig?",
         shortLabel: "Ziel",
         description:
-          "Wir verwenden deine Auswahl für die Größenordnung des Speichers – ohne unnötige Überdimensionierung.",
+          "Wir verwenden Ihre Auswahl für die Größenordnung des Speichers – ohne unnötige Überdimensionierung.",
         phase: "configuration",
       },
     ];

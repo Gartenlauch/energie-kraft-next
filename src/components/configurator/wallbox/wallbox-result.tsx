@@ -40,9 +40,9 @@ export function WallboxResult({
       <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
       <ResultIntro
         id="wallbox-result-heading"
-        eyebrow="Deine erste Orientierung"
-        title="Deine Wallbox-Empfehlung"
-        description="Bequem zu Hause laden und dein Fahrzeug für den nächsten Weg bereithalten. Die Wallbox wird passend zu Auto, Elektroinstallation und deinem Energiesystem eingeordnet."
+        eyebrow="Ihre erste Orientierung"
+        title="Ihre Wallbox-Empfehlung"
+        description="Bequem zu Hause laden und Ihr Fahrzeug für den nächsten Weg bereithalten. Die Wallbox wird passend zu Auto, Elektroinstallation und Ihrem Energiesystem eingeordnet."
       />
 
       <div className="bg-brand-navy mt-8 overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
@@ -65,7 +65,7 @@ export function WallboxResult({
         <ResultMetric
           label="Heimladebedarf im Jahr"
           value={`${number(result.annualHomeChargingInputEnergyKwh, 0)} kWh`}
-          note="Auf Basis deines angegebenen Fahr- und Ladeverhaltens."
+          note="Auf Basis Ihres angegebenen Fahr- und Ladeverhaltens."
         />
       </dl>
 

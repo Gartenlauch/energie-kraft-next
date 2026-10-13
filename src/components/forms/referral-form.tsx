@@ -153,7 +153,7 @@ export function ReferralForm() {
       if (typeof key === "string") next[`${prefix}.${key}` as ReferralField] ??= issue.message;
     }
     setErrors(next);
-    setGeneralError("Bitte prüfe die markierten Angaben, bevor du fortfährst.");
+    setGeneralError("Bitte prüfen Sie die markierten Angaben, bevor Sie fortfahren.");
     focusFirstError();
   }
 
@@ -201,7 +201,7 @@ export function ReferralForm() {
       setReferralId(result.referralId);
     } catch {
       setGeneralError(
-        "Deine Empfehlung konnte momentan nicht übermittelt werden. Bitte versuche es erneut oder kontaktiere uns telefonisch.",
+        "Ihre Empfehlung konnte momentan nicht übermittelt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch.",
       );
     } finally {
       setIsSubmitting(false);
@@ -217,10 +217,10 @@ export function ReferralForm() {
           tabIndex={-1}
           className="section-title mt-4 focus:outline-none"
         >
-          Vielen Dank für dein Vertrauen.
+          Vielen Dank für Ihr Vertrauen.
         </h2>
         <p className="mt-5 text-lg leading-8 text-[var(--text-muted)]">
-          Deine Empfehlung wurde erfolgreich übermittelt.
+          Ihre Empfehlung wurde erfolgreich übermittelt.
         </p>
         <p className="mt-5 text-sm text-[var(--text-subtle)]">
           Referenz: <span className="font-mono">{referralId}</span>

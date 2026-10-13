@@ -648,6 +648,17 @@ footer,
   position: absolute;
   inset: 0;
 }
+/* Preserve the storage video's entire 2:1 energy-flow scene on smaller screens. */
+#funktionsweise .editorial-media:has([data-loop-video]) {
+  aspect-ratio: 2 / 1;
+  min-height: 0;
+}
+@media (min-width: 1024px) {
+  #funktionsweise .editorial-media:has([data-loop-video]) {
+    aspect-ratio: auto;
+    min-height: 24rem;
+  }
+}
 /* Opt-in technical illustrations retain their complete geometry on PV. */
 .editorial-section--technical .editorial-media {
   display: flex;

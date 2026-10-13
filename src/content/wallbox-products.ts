@@ -9,6 +9,9 @@ export interface WallboxProduct {
   detail?: string;
   note?: { title: string; text: string };
   availabilityNote?: string;
+  navigationLabel?: string;
+  specifications?: readonly { label: string; value: string }[];
+  sources?: readonly { label: string; href: string }[];
 }
 
 // Verified manufacturer sources and client-approved images: docs/wallbox-product-assets.md.
@@ -45,6 +48,7 @@ export const wallboxProducts: readonly WallboxProduct[] = [
     id: "sigen-ev-dc",
     brand: "Sigenergy",
     name: "Sigen EV DC",
+    navigationLabel: "Sigenergy DC",
     positioning: "Bidirektionales Laden im SigenStor Energiesystem",
     description:
       "Das Sigen EV DC Charging Module verbindet das Elektroauto über Gleichstrom mit SigenStor. Es wird zusammen mit dem Sigen Energy Controller geplant und bindet Fahrzeug, Photovoltaik und Speicher in ein gemeinsames Energiesystem ein.",
@@ -65,6 +69,57 @@ export const wallboxProducts: readonly WallboxProduct[] = [
       title: "V2X braucht eine freigegebene Kombination",
       text: "Ob Energie aus dem Fahrzeug nutzbar ist, hängt von Fahrzeugmodell, Fahrzeugfreigabe, Software, Ladehardware und regulatorischen Voraussetzungen ab. Herstellerseitige Tests einzelner Fahrzeuge sind keine pauschale Freigabe für jedes Fahrzeug oder jeden Einsatzort.",
     },
+  },
+  {
+    id: "sigen-ev-ac",
+    brand: "Sigenergy",
+    name: "Sigen EV AC Charger",
+    navigationLabel: "Sigenergy AC",
+    positioning: "Intelligentes AC-Laden mit Solarstrom",
+    description:
+      "Der Sigen EV AC Charger verbindet tägliches Laden mit der Solarenergie Ihres Hauses. Im SigenStor-System lässt sich das Elektroauto gezielt mit verfügbarem PV-Überschuss laden; Ladezeiten und Betriebsmodi steuern Sie über die mySigen App.",
+    benefits: [
+      "PV-Überschussladen im SigenStor-System",
+      "Ladeplanung und Steuerung über die mySigen App",
+      "Dynamisches Lastmanagement mit passender Messtechnik",
+      "Für Innen- und Außeninstallation geeignet",
+    ],
+    specifications: [
+      { label: "Nominale Ladeleistung", value: "7 / 11 / 22 kW, je nach Ausführung" },
+      {
+        label: "Nominale Ausgangsspannung",
+        value: "7 kW: 220–240 V, einphasig; 11 / 22 kW: 220–240 V / 380–415 V, dreiphasig",
+      },
+      { label: "Fahrzeuganbindung", value: "Typ 2 Stecker oder Typ 2 Buchse mit Shutter" },
+      { label: "Kommunikation", value: "4G / WLAN / Ethernet, je nach Ausführung" },
+      {
+        label: "Dynamisches Lastmanagement",
+        value: "Unterstützt; Sigen Power Sensor erforderlich",
+      },
+      { label: "Schutzart", value: "IP65" },
+      { label: "Schlagfestigkeit", value: "IK10" },
+      { label: "Gewicht", value: "4,5 kg / 6,4 kg, je nach Ausführung" },
+      { label: "Kühlung", value: "Natürliche Konvektion" },
+    ],
+    detail:
+      "Die tatsächlich nutzbare Ladeleistung richtet sich nach Variante, Fahrzeug und elektrischem Anschluss. PV-Laden erfordert eine passende SigenStor-Konfiguration; dynamisches Lastmanagement setzt den Sigen Power Sensor voraus.",
+    image: {
+      src: "/images/wallbox/products/sigen-ev-ac-charger.webp",
+      alt: "Sigenergy Sigen EV AC Charger an einer Garagenwand neben einem ladenden Elektroauto",
+      width: 1920,
+      height: 900,
+    },
+    // Manufacturer product page and original EVAC 7/11/22 datasheet, checked 2026-10-13.
+    sources: [
+      {
+        label: "Produktinformationen bei Sigenergy",
+        href: "https://www.sigenergy.com/de/products/ac-charger",
+      },
+      {
+        label: "Sigen EV AC Datenblatt",
+        href: "https://www.sigenergy.com/uploads/en_download/1693469297981431.pdf",
+      },
+    ],
   },
   {
     id: "fronius-wattpilot-home-22-j",

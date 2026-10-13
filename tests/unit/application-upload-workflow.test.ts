@@ -8,6 +8,7 @@ const state = vi.hoisted(() => ({
   failDelete: false,
   failMail: false,
   admin: false,
+  storageAccesses: 0,
 }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/auth/session", () => ({
@@ -25,14 +26,14 @@ vi.mock("firebase-admin/firestore", () => ({
   FieldValue: { serverTimestamp: () => "timestamp", increment: (value: number) => value },
   getFirestore: () => database,
 }));
-vi.mock("firebase-admin/storage", () => ({ getStorage: () => ({ bucket: () => bucket }) }));
+vi.mock("firebase-admin/storage", () => ({ getStorage: () => { state.storageAccesses++; return { bucket: () => bucket }; } }));
 // Functions has its own firebase-admin installation; mock that resolved entry too.
 vi.mock("../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js", () => ({
   FieldValue: { serverTimestamp: () => "timestamp", increment: (value: number) => value },
   getFirestore: () => database,
 }));
 vi.mock("../../functions/node_modules/firebase-admin/lib/esm/storage/index.js", () => ({
-  getStorage: () => ({ bucket: () => bucket }),
+  getStorage: () => { state.storageAccesses++; return { bucket: () => bucket }; },
 }));
 vi.mock("@/lib/firebase/admin", () => ({
   adminFirestore: database,
@@ -53,7 +54,10 @@ const { database, bucket } = vi.hoisted(() => {
     };
   }
   const database = {
-    collection: () => ({ doc: reference }),
+    collection: () => ({
+      doc: reference,
+      get: async () => ({ docs: Array.from(state.records, ([id, data]) => ({ id, data: () => data })) }),
+    }),
     runTransaction: async (work: (tx: object) => Promise<unknown>) =>
       work({
         get: (ref: ReturnType<typeof reference>) => ref.get(),
@@ -104,7 +108,7 @@ const { database, bucket } = vi.hoisted(() => {
 });
 
 import { submitApplication } from "../../functions/src/application";
-import { deleteApplication } from "@/lib/submissions/application-repository";
+import { deleteApplication, listApplications } from "@/lib/submissions/application-repository";
 import { GET as download } from "@/app/api/admin/applications/[applicationId]/documents/[documentId]/route";
 
 const bytes = Buffer.from("%PDF-1.7\n%%EOF");
@@ -123,6 +127,7 @@ const input = {
   documents: [
     {
       name: "CV.pdf",
+      documentType: "attachment" as const,
       contentType: "application/pdf",
       size: bytes.length,
       base64: bytes.toString("base64"),
@@ -140,9 +145,30 @@ beforeEach(() => {
   state.failDelete = false;
   state.failMail = false;
   state.admin = false;
+  state.storageAccesses = 0;
   vi.clearAllMocks();
 });
 describe("application upload persistence (mock infrastructure, no emails)", () => {
+  it.each([false, true])("persists and mails applications without documents, even if mail fails (%s)", async (failMail) => {
+    state.failMail = failMail;
+    const data = { ...input, documents: [] };
+    const result = await submit(data);
+    expect(result.ok).toBe(true);
+    expect(result.mailStatus).toBe(failMail ? "failed" : "accepted");
+    expect(state.records.get(input.submissionId)?.documents).toEqual([]);
+    expect(state.records.get(input.submissionId)?.uploadState).toBe("ready");
+    expect(state.storageAccesses).toBe(0);
+    expect(state.objects.size).toBe(0);
+    expect(state.events).not.toContain("upload");
+    expect(state.events).not.toContain("remove");
+    expect(state.events.indexOf("reserve")).toBeLessThan(state.events.indexOf("mail"));
+    await submit(data);
+    expect(state.events.filter((event) => event === "mail")).toHaveLength(1);
+    expect((await listApplications())[0].documents).toEqual([]);
+    await deleteApplication(input.submissionId);
+    expect(state.records.has(input.submissionId)).toBe(false);
+    expect(state.storageAccesses).toBe(0);
+  });
   it("reserves metadata before Storage, then mails; mail failure never loses files/data", async () => {
     state.failMail = true;
     const result = await submit();

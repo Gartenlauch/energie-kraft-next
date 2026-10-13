@@ -20,8 +20,8 @@ export function HouseholdPersonsStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-household-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Wie viele Personen leben in deinem Haushalt?"
-      description="Die Haushaltsgröße hilft uns, deinen Stromverbrauch sinnvoll vorzubelegen."
+      title="Wie viele Personen leben in Ihrem Haushalt?"
+      description="Die Haushaltsgröße hilft uns, Ihren Stromverbrauch sinnvoll vorzubelegen."
     >
       <SelectionGrid columns={4}>
         {photovoltaicHouseholdPersonOptions.map((option) => (

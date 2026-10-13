@@ -54,29 +54,27 @@ export const commercialStorageProducts = [
     ],
   },
   {
-    id: "sonnenpro-flexstack",
+    id: "sonnenpro-compact-261",
     manufacturer: "sonnen",
-    name: "sonnenPro FlexStack",
+    name: "sonnenPro Compact 261",
     description:
-      "sonnenPro FlexStack ist ein modular konfigurierbarer Gewerbespeicher für Gewerbe, Industrie und Landwirtschaft. Leistung und Speicherkapazität lassen sich anhand des jeweiligen Projekts konfigurieren.",
-    image: "/images/commercial-storage/products/sonnenpro-flexstack.webp",
+      "sonnenPro Compact 261 ist ein vorkonfigurierter Gewerbespeicher mit integriertem Wechselrichter. Das Plug-&-Play-Komplettsystem verbindet 125 kW Leistung mit 261 kWh Kapazität und unterstützt mit sonnenPro EMS Peak Shaving, PV-Eigenverbrauchsoptimierung und Lastmanagement.",
+    image: "/images/commercial-storage/products/sonnenpro-compact-261.webp",
     width: 1600,
-    height: 889,
-    alt: "sonnenPro FlexStack Gewerbespeicher",
-    source: "https://www.sonnen.pro/de-de/flexstack",
+    height: 900,
+    alt: "Offizielle Produktdarstellung des sonnenPro Compact 261 als Einzelsystem",
+    source: "https://www.sonnen.pro/de-de/compact",
     sourceLabel: "Produktinformationen bei sonnen",
     details: [
-      {
-        label: "Systemaufbau",
-        text: "Modular; unterschiedliche Leistungs- und Kapazitätskonfigurationen",
-      },
-      { label: "Erweiterung", text: "In 55-kWh-Schritten laut Hersteller" },
-      {
-        label: "Konfiguration",
-        text: "Bis 368 kW Leistung / bis 495 kWh Kapazität laut Herstellerdarstellung; abhängig von der Konfiguration",
-      },
-      { label: "Aufstellung", text: "Innen und außen gemäß Hersteller; Schutzart IP65" },
-      { label: "Steuerung", text: "Einbindung in sonnenPro EMS" },
+      { label: "Leistung", text: "125 kW" },
+      { label: "Kapazität", text: "261 kWh" },
+      { label: "Zelltechnologie", text: "Lithium-Eisenphosphat (LFP)" },
+      { label: "Systemaufbau", text: "Vorkonfiguriertes Plug-&-Play-Komplettsystem mit integriertem Wechselrichter" },
+      { label: "Aufstellung", text: "Innen- und Außenaufstellung, Schutzart IP55, Stellfläche kleiner als 1,5 m²" },
+      { label: "Erweiterung", text: "Bis zu 10 Systeme kaskadierbar" },
+      { label: "Notstrom", text: "Optional mit sonnenPro Backup: Umschaltung ≤ 20 ms; nur für ein Einzelsystem, nicht für die Kaskade" },
+      { label: "Garantie", text: "10 Jahre Produktgarantie, 5 Jahre auf den Wechselrichter; gemäß Herstellerbedingungen" },
+      { label: "Steuerung", text: "sonnenPro EMS für Peak Shaving, PV-Eigenverbrauchsoptimierung und Lastmanagement" },
     ],
   },
   {
@@ -107,7 +105,7 @@ export const commercialStorageContent: Sprint8PageContent = {
   seo: {
     title: "Gewerbespeicher für Unternehmen | Energie-Kraft Süd",
     description:
-      "Gewerbespeicher für Unternehmen in Bayern: SigenStack, sonnenPro FlexStack und Sungrow PowerStack passend zu Photovoltaik und Lastprofil planen.",
+      "Gewerbespeicher für Unternehmen in Bayern: SigenStack, sonnenPro Compact 261 und Sungrow PowerStack passend zu Photovoltaik und Lastprofil planen.",
     canonicalPath: "/gewerbespeicher",
   },
   breadcrumbLabel: "Gewerbespeicher",
@@ -115,13 +113,13 @@ export const commercialStorageContent: Sprint8PageContent = {
   title: "Energie speichern, Lastspitzen steuern und Eigenstrom besser nutzen",
   description:
     "Gewerbliche Batteriespeicher verbinden Photovoltaik, Verbrauch und betriebliche Anforderungen. Energie-Kraft Süd analysiert Lastprofil, Erzeugung, Netzanschluss und geplante Verbraucher und entwickelt daraus eine passende Speicherlösung für Ihren Betrieb.",
-  desktopSrc: "/images/battery-storage/battery-storage-feature-desktop.webp",
-  mobileSrc: "/images/battery-storage/battery-storage-feature-mobile.webp",
-  desktopWidth: 1600,
-  desktopHeight: 1200,
-  mobileWidth: 1200,
-  mobileHeight: 1527,
-  imageAlt: "Gewerblicher Batteriespeicher neben Gewächshäusern mit Photovoltaik",
+  desktopSrc: "/images/commercial-storage/sonnenpro-compact-hero-desktop.avif",
+  mobileSrc: "/images/commercial-storage/sonnenpro-compact-hero-mobile.webp",
+  desktopWidth: 2000,
+  desktopHeight: 1116,
+  mobileWidth: 850,
+  mobileHeight: 1116,
+  imageAlt: "sonnenPro Compact Gewerbespeicher in einer Kaskade aus mehreren Systemen",
   secondaryCta: businessPv,
   sections: [
     {
@@ -152,7 +150,7 @@ export const commercialStorageContent: Sprint8PageContent = {
     {
       id: "produkte",
       eyebrow: "Unsere Gewerbespeicher",
-      title: "SigenStack, sonnenPro FlexStack und Sungrow PowerStack",
+      title: "SigenStack, sonnenPro Compact 261 und Sungrow PowerStack",
       paragraphs: [
         "Drei Systemkonzepte für gewerbliche Anforderungen. Auslegung und Ausstattung werden für den jeweiligen Betrieb geplant.",
       ],
@@ -164,7 +162,7 @@ export const commercialStorageContent: Sprint8PageContent = {
       surface: "soft",
       paragraphs: [
         "Welche Lösung geeignet ist, hängt von Lastprofil, PV-Erzeugung, benötigter Leistung und Kapazität, Aufstellort, Erweiterungsbedarf und den Anforderungen an Energiemanagement und Infrastruktur ab. Diese Punkte werden projektspezifisch bewertet.",
-        "SigenStack verfolgt einen DC-gekoppelten Ansatz mit stapelbaren Batteriemodulen. FlexStack bietet modular konfigurierbare Leistung und Kapazität mit Einbindung in sonnenPro EMS. Sungrow PowerStack kombiniert 125 kW AC-Nennleistung und 257 kWh Batteriekapazität mit Flüssigkeitskühlung und iSolarCloud zur Überwachung. Die Einbindung in die vorhandene oder geplante Anlage wird für alle drei Systeme technisch geprüft.",
+        "SigenStack verfolgt einen DC-gekoppelten Ansatz mit stapelbaren Batteriemodulen. sonnenPro Compact 261 ist ein vorkonfiguriertes Komplettsystem mit 125 kW Leistung, 261 kWh Kapazität und sonnenPro EMS; bis zu 10 Systeme lassen sich kaskadieren. Sungrow PowerStack kombiniert 125 kW AC-Nennleistung und 257 kWh Batteriekapazität mit Flüssigkeitskühlung und iSolarCloud zur Überwachung. Die Einbindung in die vorhandene oder geplante Anlage wird für alle drei Systeme technisch geprüft.",
       ],
     },
     {
@@ -184,7 +182,7 @@ export const commercialStorageContent: Sprint8PageContent = {
       surface: "soft",
       paragraphs: [
         "Gewerbliche Batteriespeicher benötigen eine projektspezifische Planung von Aufstellort, elektrischer Einbindung, Zugänglichkeit und Schutzkonzept. Anforderungen unterscheiden sich je nach System, Leistung, Betriebsumgebung und Gebäude.",
-        "Sigenergy nennt für SigenStack IP66 sowie Schutzmechanismen auf Modulebene, darunter Rauch- und Temperaturüberwachung. sonnen nennt für FlexStack IP65 und die Möglichkeit der Innen- und Außenaufstellung mit festem Untergrund und guter Zugänglichkeit für Installation und Service.",
+        "Sigenergy nennt für SigenStack IP66 sowie Schutzmechanismen auf Modulebene, darunter Rauch- und Temperaturüberwachung. sonnen nennt für sonnenPro Compact 261 IP55 und eine Stellfläche kleiner als 1,5 m². Innen- und Außenaufstellung erfordern einen festen, geeigneten Untergrund und gute Zugänglichkeit für Installation und Service.",
         "Die IP-Schutzart allein macht nicht jeden Aufstellort zulässig. Herstellervorgaben sowie das projektspezifische Brandschutz- und Schutzkonzept müssen geprüft werden; baurechtliche und versicherungstechnische Anforderungen werden dadurch nicht ersetzt.",
         "Backup oder Ersatzstrom ist ein separates Planungsthema. Ob und in welchem Umfang dies möglich ist, muss anhand der jeweiligen Produktkonfiguration und elektrischen Einbindung geprüft werden.",
       ],

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import { BrandIntro, type BrandIntroVariant } from "@/components/marketing/brand-intro";
 
 import { SecondaryPageHeading } from "@/components/marketing/secondary-page-heading";
@@ -47,6 +47,8 @@ interface MarketingFeaturePageProps {
   mobileHeight?: number;
   sections: readonly MarketingFeatureSection[];
   sectionOverrides?: Readonly<Record<string, ReactNode>>;
+  sectionHeadingContent?: Readonly<Record<string, ReactNode>>;
+  heroImageFlipHorizontal?: boolean;
   afterHero?: ReactNode;
   afterSections?: ReactNode;
   ctaTitle: string;
@@ -73,6 +75,8 @@ export function MarketingFeaturePage({
   mobileHeight = 1350,
   sections,
   sectionOverrides,
+  sectionHeadingContent,
+  heroImageFlipHorizontal,
   afterHero,
   afterSections,
   ctaTitle,
@@ -105,6 +109,7 @@ export function MarketingFeaturePage({
             title={title}
             description={description}
             image={{
+              flipHorizontal: heroImageFlipHorizontal,
               desktopSrc,
               mobileSrc,
               desktopWidth,
@@ -140,6 +145,7 @@ export function MarketingFeaturePage({
                 (section.image ? (index % 2 ? "image-right" : "image-left") : "editorial")
               }
               image={section.image}
+              headingContent={section.id ? sectionHeadingContent?.[section.id] : undefined}
             />
           ),
         )}

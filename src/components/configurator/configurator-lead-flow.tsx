@@ -49,7 +49,7 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
     const parsed = configuratorLeadInputSchema.safeParse(leadInput);
 
         if (!parsed.success) {
-      setSubmissionError("Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.");
+      setSubmissionError("Die Anfrage ist noch nicht vollständig. Bitte prüfen Sie Ihre Angaben.");
 
             return;
         }
@@ -65,7 +65,7 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
         } catch {
             dispatch({ type: "SET_SUBMISSION", payload: { id: leadInput.submissionId, status: "failed" } });
             setSubmissionError(
-                "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
+                "Ihre Anfrage konnte momentan nicht übermittelt werden. Bitte versuchen Sie es erneut.",
             );
             submitInFlight.current = false;
             setIsSubmitting(false);
@@ -122,7 +122,7 @@ export function ConfiguratorLeadFlow({ renderResult }: ConfiguratorLeadFlowProps
         <div role="alert" className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800">
           <p className="font-semibold">Die Anfrage konnte nicht vorbereitet werden.</p>
 
-          <p className="mt-2 text-sm">Bitte gehe zurück und prüfe deine Angaben.</p>
+          <p className="mt-2 text-sm">Bitte gehen Sie zurück und prüfen Sie Ihre Angaben.</p>
 
                     <button
                         type="button"

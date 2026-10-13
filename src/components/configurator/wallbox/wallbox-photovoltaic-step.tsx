@@ -24,7 +24,7 @@ export function WallboxPhotovoltaicStep({
           </p>
 
           <p className="mt-2 text-sm leading-6 text-foreground/70">
-            Aus deiner vorherigen Konfiguration wissen wir,
+            Aus Ihrer vorherigen Konfiguration wissen wir,
             dass eine Photovoltaikanlage berücksichtigt
             werden soll. Wie viel davon tatsächlich zum
             Laden genutzt werden kann, hängt aber stark vom

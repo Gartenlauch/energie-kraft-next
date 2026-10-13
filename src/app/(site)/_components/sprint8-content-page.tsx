@@ -7,11 +7,15 @@ export function Sprint8ContentPage({
   content,
   afterSections,
   sectionOverrides,
+  sectionHeadingContent,
+  heroImageFlipHorizontal,
   brandIntroVariant = false,
 }: {
   content: Sprint8PageContent;
   afterSections?: ReactNode;
   sectionOverrides?: Readonly<Record<string, ReactNode>>;
+  sectionHeadingContent?: Readonly<Record<string, ReactNode>>;
+  heroImageFlipHorizontal?: boolean;
   brandIntroVariant?: BrandIntroVariant | false;
 }) {
   return (
@@ -33,6 +37,8 @@ export function Sprint8ContentPage({
       mobileHeight={content.mobileHeight}
       sections={content.sections}
       sectionOverrides={sectionOverrides}
+      sectionHeadingContent={sectionHeadingContent}
+      heroImageFlipHorizontal={heroImageFlipHorizontal}
       afterSections={afterSections}
       ctaTitle={content.ctaTitle}
       ctaLabel={content.ctaLabel}

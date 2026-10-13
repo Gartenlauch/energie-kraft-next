@@ -31,21 +31,21 @@ export const configuratorContactFormSchema = z
     firstName: z
       .string()
       .trim()
-      .min(2, "Bitte gib deinen Vornamen ein.")
+      .min(2, "Bitte geben Sie Ihren Vornamen ein.")
       .max(80, "Der Vorname ist zu lang."),
 
     lastName: z
       .string()
       .trim()
-      .min(2, "Bitte gib deinen Nachnamen ein.")
+      .min(2, "Bitte geben Sie Ihren Nachnamen ein.")
       .max(80, "Der Nachname ist zu lang."),
 
     email: z
       .string()
       .trim()
-      .min(1, "Bitte gib deine E-Mail-Adresse ein.")
+      .min(1, "Bitte geben Sie Ihre E-Mail-Adresse ein.")
       .max(254, "Die E-Mail-Adresse ist zu lang.")
-      .email("Bitte gib eine gültige E-Mail-Adresse ein."),
+      .email("Bitte geben Sie eine gültige E-Mail-Adresse ein."),
 
     phone: optionalPhoneSchema,
 
@@ -54,20 +54,20 @@ export const configuratorContactFormSchema = z
     street: z
       .string()
       .trim()
-      .min(3, "Bitte gib Straße und Hausnummer ein.")
+      .min(3, "Bitte geben Sie Straße und Hausnummer ein.")
       .max(150, "Die Adresse ist zu lang."),
 
     postalCode: z
       .string()
       .trim()
-      .min(3, "Bitte gib eine gültige Postleitzahl ein.")
+      .min(3, "Bitte geben Sie eine gültige Postleitzahl ein.")
       .max(10, "Die Postleitzahl ist zu lang.")
-      .regex(/^[0-9A-Za-z -]+$/, "Bitte gib eine gültige Postleitzahl ein."),
+      .regex(/^[0-9A-Za-z -]+$/, "Bitte geben Sie eine gültige Postleitzahl ein."),
 
     city: z
       .string()
       .trim()
-      .min(2, "Bitte gib einen Ort ein.")
+      .min(2, "Bitte geben Sie einen Ort ein.")
       .max(100, "Der Ortsname ist zu lang."),
 
     privacyAccepted: z.boolean(),
@@ -80,7 +80,7 @@ export const configuratorContactFormSchema = z
       context.addIssue({
         code: "custom",
         path: ["installationAtResidence"],
-        message: "Bitte wähle aus, ob die Anlage an deinem Wohnort installiert werden soll.",
+        message: "Bitte wählen Sie aus, ob die Anlage an Ihrem Wohnort installiert werden soll.",
       });
     }
 

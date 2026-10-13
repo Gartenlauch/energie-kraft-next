@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import { notFound } from "next/navigation";
 import { FaqPageHeading } from "@/components/faq/faq-page-heading";
 import { FAQ_PRODUCT_LINKS, selectRelatedFaqs } from "@/lib/faq/catalog";

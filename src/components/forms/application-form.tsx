@@ -166,11 +166,7 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
     return (
       <div className="premium-card p-7 md:p-10" role="status">
         <p className="eyebrow">Bewerbung eingegangen</p>
-        <h2
-          ref={successHeadingRef}
-          tabIndex={-1}
-          className="section-title mt-4 focus:outline-none"
-        >
+        <h2 ref={successHeadingRef} tabIndex={-1} className="section-title mt-4 focus:outline-none">
           Vielen Dank für dein Interesse.
         </h2>
         <p className="mt-5 text-lg leading-8 text-[var(--text-muted)]">
@@ -206,7 +202,9 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
       }}
       className="secondary-form min-w-0 bg-white p-5 md:p-8 lg:p-10"
     >
-      {generalError ? <ErrorSummary>{generalError}</ErrorSummary> : null}
+      {generalError ? (
+        <ErrorSummary title="Bitte prüfe die markierten Angaben.">{generalError}</ErrorSummary>
+      ) : null}
 
       <fieldset disabled={isSubmitting}>
         <legend className="text-2xl font-bold">
@@ -321,11 +319,12 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
           </span>
         </legend>
         <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">
-          Lebenslauf, Anschreiben oder Zeugnisse: Gib uns einen Einblick in deinen bisherigen Weg.
+          Wenn du möchtest, ergänze deinen Lebenslauf, dein Anschreiben oder Zeugnisse.
+          Du kannst deine Bewerbung auch ohne Unterlagen senden.
         </p>
         <div className="bg-surface-soft border-brand-primary/30 mt-5 border border-dashed p-5 sm:p-6">
           <label htmlFor="application-documents" className="block text-base font-semibold">
-            Bewerbungsunterlagen auswählen
+            Bewerbungsunterlagen auswählen (optional)
           </label>
           <p
             id="application-documents-hint"
@@ -348,7 +347,9 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
               event.currentTarget.value = "";
               if (!selected.length) return;
               const next = [...files, ...selected];
-              const error = validateApplicationFiles(selectedApplicationFiles(next));
+              const error = validateApplicationFiles(
+                selectedApplicationFiles(next),
+              );
               setFileError(error);
               if (!error) setFiles(next);
             }}
@@ -370,7 +371,9 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
           className="mt-4 text-sm text-[var(--text-muted)]"
         >
           {files.length} von 5 Dateien ·{" "}
-          {(files.reduce((sum, file) => sum + file.size, 0) / 1_000_000).toLocaleString("de-DE", {
+          {(
+            files.reduce((sum, file) => sum + file.size, 0) / 1_000_000
+          ).toLocaleString("de-DE", {
             maximumFractionDigits: 2,
           })}{" "}
           von 20 MB

@@ -143,8 +143,8 @@ export const fundingTopics: readonly FundingTopic[] = [
     description:
       "Für private Heimspeicher gibt es 2026 keinen allgemeinen bundesweiten Investitionszuschuss. Finanzierung und steuerliche Behandlung hängen vom Gesamtsystem ab.",
     image: {
-      src: "/images/finanzierung/batteriespeicher.webp",
-      alt: "Illustratives Motiv: modularer Heimspeicher mit Wechselrichter und geschlossener Kabelführung in einem Technikraum",
+      src: "/images/finanzierung/sigenergy-battery-storage.webp",
+      alt: "Drei Sigenergy-Batteriespeicher in unterschiedlichen Größen vor einer hellen Wand",
     },
     current: [
       {

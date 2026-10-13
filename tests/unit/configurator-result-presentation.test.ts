@@ -310,7 +310,7 @@ describe("customer-facing configurator results", () => {
     expect(html).toContain("Heizkosten im Vergleich");
     expect(html).toContain("Komfort &amp; Lebensqualität");
     expect(html).toContain("KOSTENLOSE PERSÖNLICHE PROJEKTANALYSE");
-    expect(html).toContain("Hier im Browser erhältst du bereits eine kompakte Auswertung");
+    expect(html).toContain("Hier im Browser erhalten Sie bereits eine kompakte Auswertung");
     expect(html).toContain("PDF-Projektanalyse mit detaillierter Wirtschaftlichkeitsberechnung");
     expect(html).toContain("Energiefluss, Annahmen und den nächsten Planungsschritten");
     expect(html).toContain(

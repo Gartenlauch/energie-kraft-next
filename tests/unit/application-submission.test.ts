@@ -22,10 +22,33 @@ const validApplication = {
   formStartedAt: 1_000,
 };
 
+const resume = {
+  name: "Lebenslauf.pdf", documentType: "resume" as const, contentType: "application/pdf",
+  size: 14, base64: Buffer.from("%PDF-1.7\n%%EOF").toString("base64"),
+};
+const serverApplication = { ...validApplication, documents: [resume] };
+
 describe("application submission", () => {
   it("accepts a valid payload on client and server", () => {
     expect(parseApplicationInput(validApplication).jobId).toBe("elektriker");
-    expect(applicationPayloadSchema.parse(validApplication).email).toBe("application@example.test");
+    expect(applicationPayloadSchema.parse(serverApplication).email).toBe("application@example.test");
+  });
+
+  it("accepts applications without documents and with optional attachments", () => {
+    expect(applicationPayloadSchema.parse(validApplication).documents).toEqual([]);
+    expect(applicationPayloadSchema.parse({ ...validApplication, documents: [] }).documents).toEqual([]);
+    expect(applicationPayloadSchema.safeParse({ ...validApplication, documents: [{ ...resume, documentType: "attachment" }] }).success).toBe(true);
+  });
+
+  it("accepts the apprenticeship on client and server", () => {
+    const jobId = "ausbildung-elektroniker-gebaeudetechnik";
+    expect(parseApplicationInput({ ...validApplication, jobId }).jobId).toBe(jobId);
+    expect(applicationPayloadSchema.parse({ ...validApplication, jobId }).jobId).toBe(jobId);
+  });
+
+  it("rejects unknown jobs on client and server", () => {
+    expect(() => parseApplicationInput({ ...validApplication, jobId: "unknown" })).toThrow();
+    expect(applicationPayloadSchema.safeParse({ ...validApplication, jobId: "unknown" }).success).toBe(false);
   });
 
   it("rejects an invalid email", () => {

@@ -25,6 +25,24 @@ describe("Residential photovoltaic migration", () => {
     html = renderToStaticMarkup(await PublicContentPage(page.props));
   });
 
+  it("keeps the component-planning CTA and renders the complete illustrative monitoring dashboard", () => {
+    const components = html.split('id="komponenten"')[1].split("</section>")[0];
+    expect(components).toContain("PV-Projekt konfigurieren");
+    expect(components).toContain('href="/konfigurator/photovoltaik"');
+    const monitoring = html.split('id="monitoring"')[1].split("</section>")[0];
+    expect(monitoring).toContain("Erträge im Blick");
+    expect(monitoring).not.toContain("Media-Placeholder");
+    expect(monitoring).not.toContain("editorial-photo");
+    expect(monitoring).toContain("editorial-section--image-right");
+    expect(monitoring).toContain("editorial-technical-figure");
+    expect(monitoring).toContain("/images/photovoltaic/pv-monitoring-dashboard.webp");
+    expect(monitoring).toContain('width="1448" height="1086"');
+    expect(monitoring).toContain("h-auto w-full object-contain");
+    expect(monitoring).toContain("Illustrative Monitoring-Ansicht mit Beispieldaten, keine Messwerte einer realen Anlage.");
+    expect(existsSync("public/images/photovoltaic/pv-monitoring-dashboard.webp")).toBe(true);
+    for (const text of photovoltaikContent.sections.find(section => section.id === "monitoring")!.text) expect(monitoring).toContain(text);
+  });
+
   it("preserves metadata, the H1, regional positioning and all anchors", () => {
     expect(metadata.title).toEqual({
       absolute: "Photovoltaik kaufen: Planung & Montage | Energie-Kraft Süd",

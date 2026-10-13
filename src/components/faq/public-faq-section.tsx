@@ -1,5 +1,5 @@
 import type { PublicFaqEntry } from "@/types/faq";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 
 interface PublicFaqSectionProps {
   faqs: readonly PublicFaqEntry[];

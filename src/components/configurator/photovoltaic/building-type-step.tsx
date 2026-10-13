@@ -22,7 +22,7 @@ export function BuildingTypeStep({
       headingId="photovoltaic-building-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
       title="Um welche Gebäudeart handelt es sich?"
-      description="Wähle die Gebäudeart, auf der die Photovoltaikanlage geplant werden soll."
+      description="Wählen Sie die Gebäudeart, auf der die Photovoltaikanlage geplant werden soll."
     >
       <SelectionGrid columns={3}>
         {photovoltaicBuildingTypeOptions.map((option) => (

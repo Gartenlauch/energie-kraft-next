@@ -52,8 +52,8 @@ export function ConfiguratorJourneyActions({
         <h2 className="text-brand-primary text-sm font-semibold">Wie geht es weiter?</h2>
         <p className="text-foreground/70 mt-1 text-sm leading-6">
           {nextConfigurator
-            ? `${currentProduct.title} ist abgeschlossen. Weiter mit dem ${NEXT_CONFIGURATOR_LABELS[nextConfigurator]}; deine Angaben bleiben erhalten.`
-            : "Deine Konfiguration ist bereit für die persönliche Projektanalyse."}
+            ? `${currentProduct.title} ist abgeschlossen. Weiter mit dem ${NEXT_CONFIGURATOR_LABELS[nextConfigurator]}; Ihre Angaben bleiben erhalten.`
+            : "Ihre Konfiguration ist bereit für die persönliche Projektanalyse."}
         </p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <button

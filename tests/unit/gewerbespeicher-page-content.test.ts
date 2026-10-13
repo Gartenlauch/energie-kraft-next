@@ -22,13 +22,31 @@ describe("Commercial storage page", () => {
     html = renderToStaticMarkup(CommercialStoragePage());
   });
 
+  it("uses the new unmirrored responsive hero and retains the illustrative load profile below the heading", () => {
+    const hero = html.split('class="premium-hero ')[1].split("</section>")[0];
+    expect(hero).not.toContain("-scale-x-100");
+    expect(hero).toContain('media="(min-width: 768px)" srcSet="/images/commercial-storage/sonnenpro-compact-hero-desktop.avif"');
+    expect(hero).toContain('media="(max-width: 767px)" srcSet="/images/commercial-storage/sonnenpro-compact-hero-mobile.webp"');
+    expect(hero).toContain("sonnenPro Compact Gewerbespeicher in einer Kaskade aus mehreren Systemen");
+    const section = html.split('id="einsatz"')[1].split("</section>")[0];
+    const heading = section.split('class="editorial-heading"')[1].split('class="editorial-body"')[0];
+    expect(heading).toContain("Beispielhaftes Tageslastprofil");
+    expect(heading).toContain('role="img"');
+    expect(heading).toContain("aria-labelledby=");
+    expect(heading).toContain("Uhrzeit");
+    expect(heading).toContain("Leistung (kW)");
+    expect(heading).toContain("Lastspitze");
+    expect(heading).toContain("Beispieldaten, keine Messwerte eines realen Betriebs");
+    for (const paragraph of content.sections[0].paragraphs) expect(section).toContain(paragraph);
+  });
+
   it("preserves exact SEO data and makes only the page ready for indexing", () => {
     const metadata = buildMetadata(content.seo);
     expect(metadata.title).toEqual({
       absolute: "Gewerbespeicher für Unternehmen | Energie-Kraft Süd",
     });
     expect(metadata.description).toBe(
-      "Gewerbespeicher für Unternehmen in Bayern: SigenStack, sonnenPro FlexStack und Sungrow PowerStack passend zu Photovoltaik und Lastprofil planen.",
+      "Gewerbespeicher für Unternehmen in Bayern: SigenStack, sonnenPro Compact 261 und Sungrow PowerStack passend zu Photovoltaik und Lastprofil planen.",
     );
     expect(metadata.alternates?.canonical).toBe(
       "https://www.energie-kraft.de/gewerbespeicher",
@@ -58,7 +76,7 @@ describe("Commercial storage page", () => {
       "anwendungen",
       "produkte",
       "sigenstack",
-      "sonnenpro-flexstack",
+      "sonnenpro-compact-261",
       "sungrow-powerstack",
       "entscheidung",
       "energiemanagement",
@@ -71,7 +89,9 @@ describe("Commercial storage page", () => {
     for (const product of commercialStorageProducts) {
       expect(html).toContain(`<h3 id="${product.id}-heading"`);
       expect(html).toContain(product.name);
-      expect(html).toContain(`href="${product.source}" target="_blank" rel="noreferrer"`);
+      const link = [...html.matchAll(/<a\b[^>]*>/g)].map(match => match[0]).find(anchor => anchor.includes(`href="${product.source}"`));
+      expect(link).toContain('target="_blank"');
+      expect(link).toContain('rel="noreferrer noopener"');
       expect(html).toContain(product.alt);
       expect(html).toContain(
         "imageCaption" in product
@@ -80,6 +100,25 @@ describe("Commercial storage page", () => {
       );
       expect(existsSync(`public${product.image}`)).toBe(true);
     }
+  });
+
+  it("replaces the old sonnen product with Compact 261 data and limits optional backup to a single system", () => {
+    const compact = commercialStorageProducts.find((product) => product.id === "sonnenpro-compact-261")!;
+    expect(compact.name).toBe("sonnenPro Compact 261");
+    expect(compact.source).toBe("https://www.sonnen.pro/de-de/compact");
+    expect(compact.image).toBe("/images/commercial-storage/products/sonnenpro-compact-261.webp");
+    expect(compact.details).toEqual(expect.arrayContaining([
+      { label: "Leistung", text: "125 kW" },
+      { label: "Kapazität", text: "261 kWh" },
+      { label: "Zelltechnologie", text: "Lithium-Eisenphosphat (LFP)" },
+      { label: "Aufstellung", text: "Innen- und Außenaufstellung, Schutzart IP55, Stellfläche kleiner als 1,5 m²" },
+      { label: "Erweiterung", text: "Bis zu 10 Systeme kaskadierbar" },
+      { label: "Notstrom", text: "Optional mit sonnenPro Backup: Umschaltung ≤ 20 ms; nur für ein Einzelsystem, nicht für die Kaskade" },
+      { label: "Garantie", text: "10 Jahre Produktgarantie, 5 Jahre auf den Wechselrichter; gemäß Herstellerbedingungen" },
+    ]));
+    expect(html).toContain("sonnenPro Compact 261 · sonnenPro EMS");
+    expect(html).not.toMatch(/FlexStack|55-kWh|368 kW|495 kWh|IP65/i);
+    expect(JSON.stringify(content)).not.toMatch(/FlexStack/i);
   });
 
   it("presents Sungrow with verified manufacturer data and identifies its own visualization", () => {
@@ -123,11 +162,11 @@ describe("Commercial storage page", () => {
       "Kilowattstunden (kWh)",
       "Peak Shaving",
       "12 kWh",
-      "55-kWh",
-      "368 kW",
-      "495 kWh",
+      "125 kW",
+      "261 kWh",
+      "LFP",
       "IP66",
-      "IP65",
+      "IP55",
       "Sigen Cloud",
       "sonnenPro EMS",
       "Ainring",

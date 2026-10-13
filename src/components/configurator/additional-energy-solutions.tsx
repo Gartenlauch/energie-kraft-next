@@ -60,7 +60,7 @@ export function AdditionalEnergySolutions({
       className="border-border-default mt-8 border-y py-7"
       aria-labelledby={`${currentProduct}-additional-solutions`}
     >
-      <p className="eyebrow">Dein Energieprojekt erweitern</p>
+      <p className="eyebrow">Ihr Energieprojekt erweitern</p>
       <h2
         id={`${currentProduct}-additional-solutions`}
         className="text-brand-navy mt-3 text-2xl font-semibold tracking-tight"

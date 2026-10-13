@@ -44,7 +44,7 @@ export function ClimateOccupancyStep({
             (!Number.isInteger(value) ||
                 value < 1 ||
                 value > 200)
-            ? "Bitte gib eine Personenzahl zwischen 1 und 200 ein."
+            ? "Bitte geben Sie eine Personenzahl zwischen 1 und 200 ein."
             : null;
 
     return (
@@ -58,7 +58,7 @@ export function ClimateOccupancyStep({
 
             {prefilledFromHeatPump ? (
                 <p className="mt-2 text-xs font-semibold text-cyan-700">
-                    Aus deiner Wärmepumpen-Konfiguration übernommen – weiterhin frei änderbar.
+                    Aus Ihrer Wärmepumpen-Konfiguration übernommen – weiterhin frei änderbar.
                 </p>
             ) : null}
 
@@ -101,7 +101,7 @@ export function ClimateOccupancyStep({
                 </p>
             ) : (
                 <p className="mt-2 text-sm leading-6 text-foreground/60">
-                    Gib die typische gleichzeitige Belegung
+                    Geben Sie die typische gleichzeitige Belegung
                     der zu klimatisierenden Räume an.
                 </p>
             )}

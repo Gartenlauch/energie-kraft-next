@@ -10,8 +10,8 @@ const OPTIONS: readonly {
   title: string;
   description: string;
 }[] = [
-  { value: "gas", title: "Gasheizung", description: "Vergleich mit deinem heutigen Gasverbrauch oder dem Wärmemodell." },
-  { value: "oil", title: "Ölheizung", description: "Vergleich mit deinem Heizölverbrauch oder dem Wärmemodell." },
+  { value: "gas", title: "Gasheizung", description: "Vergleich mit Ihrem heutigen Gasverbrauch oder dem Wärmemodell." },
+  { value: "oil", title: "Ölheizung", description: "Vergleich mit Ihrem Heizölverbrauch oder dem Wärmemodell." },
   { value: "new_build", title: "Neubau / keine bestehende Heizung", description: "Kein bisheriges System; wir kennzeichnen ein Öl-Referenzszenario ausdrücklich." },
   { value: "other_unknown", title: "Andere / weiß nicht", description: "Wir zeigen die Wärmepumpenkosten ohne erfundenen Altanlagenvergleich." },
 ];
@@ -57,7 +57,7 @@ export function HeatPumpExistingHeatingStep({
             min={500}
             max={200000}
             unit="kWh/Jahr"
-            helpText="Den Wert findest du meist auf deiner letzten Gasabrechnung. Ohne Angabe rechnen wir transparent mit dem modellierten Wärmebedarf."
+            helpText="Den Wert finden Sie meist auf Ihrer letzten Gasabrechnung. Ohne Angabe rechnen wir transparent mit dem modellierten Wärmebedarf."
           />
         </div>
       ) : null}
@@ -72,7 +72,7 @@ export function HeatPumpExistingHeatingStep({
             min={50}
             max={20000}
             unit="Liter/Jahr"
-            helpText="Den Wert findest du meist auf deiner letzten Heizölabrechnung. Die Umrechnung in Energie wird später in den PDF-Annahmen offengelegt."
+            helpText="Den Wert finden Sie meist auf Ihrer letzten Heizölabrechnung. Die Umrechnung in Energie wird später in den PDF-Annahmen offengelegt."
           />
         </div>
       ) : null}

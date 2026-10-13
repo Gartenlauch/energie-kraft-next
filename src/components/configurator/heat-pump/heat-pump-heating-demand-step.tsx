@@ -32,7 +32,7 @@ export function HeatPumpHeatingDemandStep({
       </SelectionGrid>
 
       <p className="mt-5 text-sm leading-6 text-foreground/60">
-        Wenn dir ein genauer Wert aus einem
+        Wenn Ihnen ein genauer Wert aus einem
         Energieausweis oder einer energetischen
         Berechnung vorliegt, kann er später im
         detaillierten Wärmepumpen-Rechner verwendet

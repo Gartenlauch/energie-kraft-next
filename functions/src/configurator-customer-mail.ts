@@ -76,10 +76,10 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
   const text = [
     `Hallo ${firstName},`,
     "",
-    "vielen Dank für deine Konfiguration bei Energie-Kraft.",
+    "vielen Dank für Ihre Konfiguration bei Energie-Kraft.",
     "",
-    "Deine persönliche Energieprojekt-Analyse wurde erstellt.",
-    "Im Anhang findest du die PDF mit Systemempfehlungen, modellierten Projektkosten, Wirtschaftlichkeit, Annahmen und nächsten Schritten.",
+    "Ihre persönliche Energieprojekt-Analyse wurde erstellt.",
+    "Im Anhang finden Sie die PDF mit Systemempfehlungen, modellierten Projektkosten, Wirtschaftlichkeit, Annahmen und nächsten Schritten.",
     "",
     `Berücksichtigte Energielösungen: ${productText}`,
     "",
@@ -90,10 +90,10 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
     "Sie stellen kein Angebot und keine technische Planung dar.",
     "Verbindliche Aussagen zu Auslegung, Kosten und technischer Umsetzbarkeit sind erst nach fachlicher Prüfung möglich.",
     "",
-    "Als nächsten Schritt prüfen wir deine Angaben gemeinsam und konkretisieren die technischen Details.",
+    "Als nächsten Schritt prüfen wir Ihre Angaben gemeinsam und konkretisieren die technischen Details.",
     "",
     "Viele Grüße",
-    "Dein Energie-Kraft Team",
+    "Ihr Energie-Kraft Team",
   ].join("\n");
 
   const html = `
@@ -177,7 +177,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
                     color:#bcebf8;
                   "
                 >
-                  Dein Energieprojekt
+                  Ihr Energieprojekt
                 </div>
 
                 <div
@@ -188,7 +188,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
                     font-weight:700;
                   "
                 >
-                  Deine Energieprojekt-Analyse ist da
+                  Ihre Energieprojekt-Analyse ist da
                 </div>
               </td>
             </tr>
@@ -207,14 +207,14 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
                 </p>
 
                 <p>
-                  vielen Dank für deine Konfiguration
+                  vielen Dank für Ihre Konfiguration
                   bei Energie-Kraft.
                 </p>
 
                 <p>
-                  Im Anhang findest du deine persönliche
+                  Im Anhang finden Sie Ihre persönliche
                   Energieprojekt-Analyse mit den wichtigsten
-                  Angaben und Ergebnissen deines
+                  Angaben und Ergebnissen Ihres
                   Energieprojekts.
                 </p>
 
@@ -236,7 +236,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
                       color:#526178;
                     "
                   >
-                    Dein Energieprojekt
+                    Ihr Energieprojekt
                   </div>
 
                   <div>
@@ -256,13 +256,13 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
                   <strong
                     style="color:#005ca9;"
                   >
-                    Deine persönliche Energieprojekt-Analyse findest du
+                    Ihre persönliche Energieprojekt-Analyse finden Sie
                     als PDF im Anhang dieser E-Mail.
                   </strong>
                 </div>
 
                 <p>
-                  Die Analyse fasst deine ausgewählten Systeme,
+                  Die Analyse fasst Ihre ausgewählten Systeme,
                   Kostenkorridore, die modellierte Wirtschaftlichkeit,
                   Annahmen und nächste Schritte übersichtlich zusammen.
                 </p>
@@ -322,7 +322,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
                 <p style="margin-top:30px;">
                   Viele Grüße<br />
                   <strong style="color:#005ca9;">
-                    Dein Energie-Kraft Team
+                    Ihr Energie-Kraft Team
                   </strong>
                 </p>
               </td>
@@ -353,7 +353,7 @@ export async function sendConfiguratorCustomerMail(input: SendConfiguratorCustom
 
   return sendMailgunMail({
     to: lead.contact.email,
-    subject: `Deine persönliche Energieprojekt-Analyse · ${leadId}`,
+    subject: `Ihre persönliche Energieprojekt-Analyse · ${leadId}`,
     text,
     html,
     /*

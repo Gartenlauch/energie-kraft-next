@@ -21,7 +21,7 @@ export function RoofPitchStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-roof-pitch-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Welche Neigung hat dein Dach?"
+      title="Welche Neigung hat Ihr Dach?"
       description="Eine ungefähre Einschätzung reicht aus. Die exakte Dachneigung wird später bei der technischen Planung geprüft."
     >
       <SelectionGrid columns={4}>

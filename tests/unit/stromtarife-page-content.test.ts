@@ -19,6 +19,11 @@ describe("Electricity tariffs: system advice and regulatory boundaries", () => {
     text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   });
 
+  it("removes the detached generated-hero caption", () => {
+    expect(html).not.toContain("Hero: KI-generiertes");
+    expect(html).not.toContain("KI-generiertes, illustratives Motiv");
+  });
+
   it("preserves the canonical and central content contract with one H1 and working journeys", () => {
     expect(metadata.alternates?.canonical).toBe("https://www.energie-kraft.de/stromtarife-pv");
     expect(sprint8Pages.electricityTariffs).toBe(electricityTariffsContent);
@@ -82,7 +87,7 @@ describe("Electricity tariffs: system advice and regulatory boundaries", () => {
       expect(data.toString("ascii", 8, 12)).toBe("WEBP");
       expect(width / height).toBeCloseTo(src.includes("mobile") ? 0.8 : 1.6);
     }
-    expect(text).toContain("kein Referenzprojekt");
+    expect(text).not.toContain("Hero: KI-generiertes");
     expect(text).toContain("Schematische Erklärung ohne Marktdaten oder Preisangaben");
     expect(text).toContain("es ist keine Energiequelle");
   });

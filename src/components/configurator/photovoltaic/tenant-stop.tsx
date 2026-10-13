@@ -23,7 +23,7 @@ export function TenantStop({
     >
       <div className="rounded-2xl border border-border-default bg-surface p-6">
         <p className="leading-7 text-foreground/70">
-          Sobald eine Zustimmung vorliegt, kannst du den
+          Sobald eine Zustimmung vorliegt, können Sie den
           Konfigurator jederzeit erneut starten oder direkt mit uns
           Kontakt aufnehmen.
         </p>

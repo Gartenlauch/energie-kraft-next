@@ -20,7 +20,7 @@ export const jobOpenings: readonly JobOpening[] = [
   {
     id: "elektriker",
     slug: "elektriker",
-    title: "Elektriker (w/m/d)",
+    title: "Elektriker:in (w/m/d)",
     intro:
       "Für unseren Standort in Ainring suchen wir zum nächstmöglichen Zeitpunkt Verstärkung in der Elektrotechnik.",
     tasks: [

@@ -1,3 +1,4 @@
+import { PublicLink as Link } from "@/components/ui/public-link";
 import { LegalSection } from "@/app/(site)/_components/legal/legal-section";
 import { siteConfig } from "@/config/site";
 import type { LegalDocumentContent } from "@/content/legal/documents";
@@ -40,12 +41,12 @@ export function LegalDocument({ content }: { content: LegalDocumentContent }) {
             return (
               <p key={index}>
                 {href ? (
-                  <a
+                  <Link
                     href={href}
                     className="text-brand-primary underline underline-offset-4 hover:decoration-2 focus-visible:outline-2 focus-visible:outline-offset-4"
                   >
                     {block.text}
-                  </a>
+                  </Link>
                 ) : (
                   block.text
                 )}

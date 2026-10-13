@@ -13,14 +13,20 @@ export function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function ErrorSummary({ children }: { children: ReactNode }) {
+export function ErrorSummary({
+  children,
+  title = "Bitte prüfen Sie die markierten Angaben.",
+}: {
+  children: ReactNode;
+  title?: string;
+}) {
   return (
     <div
       role="alert"
       tabIndex={-1}
       className="mb-8 border-l-4 border-red-700 bg-red-50 px-5 py-4 text-sm text-red-900"
     >
-      <p className="font-bold">Bitte prüfen Sie die markierten Angaben.</p>
+      <p className="font-bold">{title}</p>
       <div className="mt-2">{children}</div>
     </div>
   );

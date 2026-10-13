@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 
 import { Reveal } from "@/components/marketing/reveal";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
@@ -80,7 +80,7 @@ export function HeatPumpProductsSection() {
                     </li>
                   ))}
                 </ul>
-                <a
+                <Link
                   href={product.source}
                   target="_blank"
                   rel="noreferrer"
@@ -88,7 +88,7 @@ export function HeatPumpProductsSection() {
                 >
                   {waermepumpenProductNotes.sourceLabel}
                   <ArrowRightIcon className="size-4" />
-                </a>
+                </Link>
               </Reveal>
             </article>
           ))}

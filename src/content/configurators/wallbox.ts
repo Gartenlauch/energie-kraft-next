@@ -8,7 +8,7 @@ export const wallboxWizardSteps: readonly WallboxStepDefinition[] =
     [
         {
             id: "vehicle_data",
-            title: "Wie sieht dein Elektrofahrzeug aus?",
+            title: "Wie sieht Ihr Elektrofahrzeug aus?",
             shortLabel: "Fahrzeug",
             description:
                 "Fahrleistung, Verbrauch und Batteriekapazität bestimmen den typischen Ladebedarf.",
@@ -16,15 +16,15 @@ export const wallboxWizardSteps: readonly WallboxStepDefinition[] =
         },
         {
             id: "home_charging",
-            title: "Wie viel möchtest du zu Hause laden?",
+            title: "Wie viel möchten Sie zu Hause laden?",
             shortLabel: "Heimladen",
             description:
-                "Schätze, welcher Anteil des jährlichen Fahrstroms voraussichtlich an deiner eigenen Wallbox geladen wird.",
+                "Schätzen Sie, welcher Anteil des jährlichen Fahrstroms voraussichtlich an Ihrer eigenen Wallbox geladen wird.",
             phase: "configuration",
         },
         {
             id: "charging_power",
-            title: "Welche Ladeleistung möchtest du?",
+            title: "Welche Ladeleistung möchten Sie?",
             shortLabel: "Ladeleistung",
             description:
                 "11 kW sind für viele private Anwendungen ein sinnvoller Standard. Die tatsächlich mögliche Leistung hängt von Fahrzeug und Elektroinstallation ab.",
@@ -32,7 +32,7 @@ export const wallboxWizardSteps: readonly WallboxStepDefinition[] =
         },
         {
             id: "photovoltaics",
-            title: "Wie viel Solarstrom möchtest du zum Laden nutzen?",
+            title: "Wie viel Solarstrom möchten Sie zum Laden nutzen?",
             shortLabel: "Photovoltaik",
             description:
                 "Der tatsächliche PV-Anteil hängt unter anderem von Fahrzeugstandzeiten, PV-Erzeugung und Energiemanagement ab.",

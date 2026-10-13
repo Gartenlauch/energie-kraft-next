@@ -20,8 +20,8 @@ export function RoofRenovationStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-roof-renovation-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Wann wurde dein Dach gebaut oder zuletzt saniert?"
-      description="Diese Information dient der Vorbereitung der späteren technischen Prüfung und ist keine automatische Bewertung deines Daches."
+      title="Wann wurde Ihr Dach gebaut oder zuletzt saniert?"
+      description="Diese Information dient der Vorbereitung der späteren technischen Prüfung und ist keine automatische Bewertung Ihres Daches."
     >
       <SelectionGrid columns={3}>
         {photovoltaicRoofRenovationOptions.map((option) => (

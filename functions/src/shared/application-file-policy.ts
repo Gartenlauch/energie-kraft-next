@@ -16,12 +16,14 @@ export const APPLICATION_FILE_ACCEPT = Object.keys(APPLICATION_FILE_TYPES)
   .map((ext) => `.${ext}`)
   .join(",");
 export interface ApplicationFileInput {
+  documentType: "resume" | "attachment";
   name: string;
   contentType: string;
   size: number;
   base64: string;
 }
 export interface ApplicationFileMetadata {
+  documentType?: "resume" | "attachment";
   id: string;
   name: string;
   storagePath: string;

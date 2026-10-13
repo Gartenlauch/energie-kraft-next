@@ -21,15 +21,15 @@ function formatKwh(value: number): string {
 export const photovoltaicWizardSteps = [
   {
     id: "household_persons",
-    title: "Wie viele Personen leben in deinem Haushalt?",
+    title: "Wie viele Personen leben in Ihrem Haushalt?",
     shortLabel: "Haushalt",
     description:
-      "Die Haushaltsgröße hilft uns, deinen Stromverbrauch sinnvoll vorzubelegen.",
+      "Die Haushaltsgröße hilft uns, Ihren Stromverbrauch sinnvoll vorzubelegen.",
     phase: "configuration",
   },
   {
     id: "ownership",
-    title: "Bist du Eigentümer oder Mieter?",
+    title: "Sind Sie Eigentümer oder Mieter?",
     shortLabel: "Eigentum",
     description:
       "Für eine fest installierte Photovoltaikanlage ist die Zustimmung des Eigentümers erforderlich.",
@@ -40,20 +40,20 @@ export const photovoltaicWizardSteps = [
     title: "Um welche Gebäudeart handelt es sich?",
     shortLabel: "Gebäude",
     description:
-      "Wähle die Gebäudeart, auf der die Photovoltaikanlage geplant werden soll.",
+      "Wählen Sie die Gebäudeart, auf der die Photovoltaikanlage geplant werden soll.",
     phase: "configuration",
   },
   {
     id: "annual_consumption",
-    title: "Wie hoch ist dein Jahresstromverbrauch?",
+    title: "Wie hoch ist Ihr Jahresstromverbrauch?",
     shortLabel: "Verbrauch",
     description:
-      "Wir haben anhand deiner Haushaltsgröße bereits einen Richtwert vorausgewählt. Du kannst ihn jederzeit ändern.",
+      "Wir haben anhand Ihrer Haushaltsgröße bereits einen Richtwert vorausgewählt. Sie können ihn jederzeit ändern.",
     phase: "configuration",
   },
   {
     id: "roof_pitch",
-    title: "Welche Neigung hat dein Dach?",
+    title: "Welche Neigung hat Ihr Dach?",
     shortLabel: "Dachneigung",
     description:
       "Eine ungefähre Einschätzung reicht aus. Die exakte Dachneigung wird später bei der technischen Planung geprüft.",
@@ -61,15 +61,15 @@ export const photovoltaicWizardSteps = [
   },
   {
     id: "roof_material",
-    title: "Aus welchem Material besteht dein Dach?",
+    title: "Aus welchem Material besteht Ihr Dach?",
     shortLabel: "Dachmaterial",
     description:
-      "Wähle die Dacheindeckung, die deinem Gebäude am ehesten entspricht.",
+      "Wählen Sie die Dacheindeckung, die Ihrem Gebäude am ehesten entspricht.",
     phase: "configuration",
   },
   {
     id: "roof_orientation",
-    title: "Wie ist dein Dach hauptsächlich ausgerichtet?",
+    title: "Wie ist Ihr Dach hauptsächlich ausgerichtet?",
     shortLabel: "Ausrichtung",
     description:
       "Die Dachausrichtung beeinflusst, wann und wie viel Solarstrom erzeugt werden kann.",
@@ -77,7 +77,7 @@ export const photovoltaicWizardSteps = [
   },
   {
     id: "roof_renovation",
-    title: "Wann wurde dein Dach gebaut oder zuletzt saniert?",
+    title: "Wann wurde Ihr Dach gebaut oder zuletzt saniert?",
     shortLabel: "Dachalter",
     description:
       "Diese Angabe hilft uns bei der Vorbereitung der späteren technischen Prüfung.",
@@ -85,7 +85,7 @@ export const photovoltaicWizardSteps = [
   },
   {
     id: "future_consumption",
-    title: "Wird sich dein Stromverbrauch künftig erhöhen?",
+    title: "Wird sich Ihr Stromverbrauch künftig erhöhen?",
     shortLabel: "Mehrverbrauch",
     description:
       "Berücksichtige zum Beispiel ein Elektroauto, eine Wärmepumpe oder eine Klimaanlage.",
@@ -94,10 +94,10 @@ export const photovoltaicWizardSteps = [
   {
     id: "energy_solutions",
     title:
-      "Welche weiteren Energielösungen möchtest du berücksichtigen?",
+      "Welche weiteren Energielösungen möchten Sie berücksichtigen?",
     shortLabel: "Energielösungen",
     description:
-      "Wähle optional die Bereiche aus, die für dein Energieprojekt relevant sind.",
+      "Wählen Sie optional die Bereiche aus, die für Ihr Energieprojekt relevant sind.",
     phase: "configuration",
   },
   {
@@ -318,7 +318,7 @@ export const photovoltaicEnergySolutionOptions = [
     value: "batteryStorage",
     title: "Stromspeicher",
     description:
-      "Solarstrom auch abends und nachts nutzen. Der Speicherwunsch wird bereits in deiner PV-Empfehlung berücksichtigt.",
+      "Solarstrom auch abends und nachts nutzen. Der Speicherwunsch wird bereits in Ihrer PV-Empfehlung berücksichtigt.",
   },
   {
     value: "heatPump",
@@ -355,14 +355,14 @@ export const photovoltaicConfiguratorContent = {
   eyebrow: "Photovoltaik-Konfigurator",
 
   intro:
-    "Beantworte Schritt für Schritt einige kurze Fragen. Deine Angaben bleiben erhalten, wenn du innerhalb des Konfigurators zurückgehst.",
+    "Beantworten Sie Schritt für Schritt einige kurze Fragen. Ihre Angaben bleiben erhalten, wenn Sie innerhalb des Konfigurators zurückgehen.",
 
   consumptionHelp:
-    "Den tatsächlichen Jahresstromverbrauch findest du in der Regel auf deiner letzten Stromabrechnung.",
+    "Den tatsächlichen Jahresstromverbrauch finden Sie in der Regel auf Ihrer letzten Stromabrechnung.",
 
   tenant: {
-    title: "Für die Installation brauchst du die Zustimmung des Eigentümers.",
+    title: "Für die Installation brauchen Sie die Zustimmung des Eigentümers.",
     description:
-      "Sprich zunächst mit deinem Vermieter bzw. Eigentümer. Sobald eine Zustimmung vorliegt, unterstützen wir dich gerne bei der weiteren Planung.",
+      "Sprechen Sie zunächst mit Ihrem Vermieter bzw. Eigentümer. Sobald eine Zustimmung vorliegt, unterstützen wir Sie gerne bei der weiteren Planung.",
   },
 } as const;

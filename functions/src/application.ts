@@ -134,15 +134,15 @@ export const submitApplication = onCall(
       };
     }
 
-    const bucket = getStorage().bucket();
-    const remove = (path: string) => bucket.file(path).delete({ ignoreNotFound: true });
+    const remove = (path: string) =>
+      getStorage().bucket().file(path).delete({ ignoreNotFound: true });
     try {
       // Also cleans a previous interrupted attempt, using the SAME tracked paths.
       await removeApplicationDocuments(documents, remove);
       for (const [index, document] of documents.entries()) {
         const bytes = fileBytes[index];
         if (!bytes) throw new Error("Missing validated document bytes");
-        await bucket.file(document.storagePath).save(bytes, {
+        await getStorage().bucket().file(document.storagePath).save(bytes, {
           resumable: false,
           metadata: {
             contentType: document.contentType,

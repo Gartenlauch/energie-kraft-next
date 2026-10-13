@@ -63,7 +63,7 @@ export default function ConfiguratorLandingPage() {
               <h2 className="section-title mt-4">Wenige Fragen statt komplizierter Technik</h2>
 
               <p className="text-foreground/70 mt-5 leading-7">
-                Die Konfiguratoren liefern eine erste Orientierung auf Basis deiner Angaben. Die
+                Die Konfiguratoren liefern eine erste Orientierung auf Basis Ihrer Angaben. Die
                 tatsächliche technische Auslegung erfolgt anschließend anhand der konkreten
                 Gegebenheiten vor Ort.
               </p>
@@ -74,7 +74,7 @@ export default function ConfiguratorLandingPage() {
                 <span className="text-brand-secondary text-sm font-semibold">01</span>
                 <h3 className="text-brand-primary mt-3 text-lg font-semibold">Projekt auswählen</h3>
                 <p className="text-foreground/70 mt-2 leading-7">
-                  Starte mit Photovoltaik, Speicher, Klima, Wärmepumpe oder Wallbox.
+                  Starten Sie mit Photovoltaik, Speicher, Klima, Wärmepumpe oder Wallbox.
                 </p>
               </article>
 
@@ -84,7 +84,7 @@ export default function ConfiguratorLandingPage() {
                   Einfache Fragen beantworten
                 </h3>
                 <p className="text-foreground/70 mt-2 leading-7">
-                  Wir fragen nur Informationen ab, die für dein Projekt wirklich hilfreich sind.
+                  Wir fragen nur Informationen ab, die für Ihr Projekt wirklich hilfreich sind.
                 </p>
               </article>
 
@@ -94,7 +94,7 @@ export default function ConfiguratorLandingPage() {
                   Persönlich weiterplanen
                 </h3>
                 <p className="text-foreground/70 mt-2 leading-7">
-                  Deine Angaben können anschließend direkt für eine persönliche Beratung übernommen
+                  Ihre Angaben können anschließend direkt für eine persönliche Beratung übernommen
                   werden.
                 </p>
               </article>

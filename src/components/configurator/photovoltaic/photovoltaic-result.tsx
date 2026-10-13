@@ -41,9 +41,9 @@ export function PhotovoltaicResult({
       <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
       <ResultIntro
         id="photovoltaic-result-heading"
-        eyebrow="Deine erste Orientierung"
-        title="Deine Photovoltaik-Empfehlung"
-        description="Die empfohlene Anlage und ihre modellierte Wirkung auf deinen Strombedarf. Die endgültige Größe prüfen wir anhand deines Dachs und der Gegebenheiten vor Ort."
+        eyebrow="Ihre erste Orientierung"
+        title="Ihre Photovoltaik-Empfehlung"
+        description="Die empfohlene Anlage und ihre modellierte Wirkung auf Ihren Strombedarf. Die endgültige Größe prüfen wir anhand Ihres Dachs und der Gegebenheiten vor Ort."
       />
 
       <div className="bg-brand-navy mt-8 overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
@@ -79,8 +79,8 @@ export function PhotovoltaicResult({
         <div className="border-brand-secondary bg-surface mt-8 border-l-4 px-5 py-6 sm:px-7">
           <h2 className="text-brand-navy text-xl font-semibold">Individuelles Angebot erforderlich</h2>
           <p className="text-foreground/70 mt-3 max-w-3xl leading-7">
-            Dein Photovoltaikprojekt liegt oberhalb der Größe, die wir im Konfigurator standardisiert
-            modellieren. Für diese Anlagengröße erstellen wir dir gerne eine individuelle technische
+            Ihr Photovoltaikprojekt liegt oberhalb der Größe, die wir im Konfigurator standardisiert
+            modellieren. Für diese Anlagengröße erstellen wir Ihnen gerne eine individuelle technische
             und wirtschaftliche Auslegung.
           </p>
           <p className="text-foreground/70 mt-4 leading-7">
@@ -155,7 +155,7 @@ export function PhotovoltaicResult({
 
       {result.technicalReviewRecommended ? (
         <p className="border-brand-secondary text-foreground/70 mt-7 border-l-4 pl-5 leading-7">
-          Dein Dach erfordert eine besonders sorgfältige technische Prüfung. Daraus folgt nicht
+          Ihr Dach erfordert eine besonders sorgfältige technische Prüfung. Daraus folgt nicht
           automatisch, dass es ungeeignet ist.
         </p>
       ) : null}

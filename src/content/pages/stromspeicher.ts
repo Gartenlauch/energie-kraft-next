@@ -1,5 +1,17 @@
-﻿import { CONTACT_FORM_HREF } from "@/config/routes";
+﻿import { CONTACT_FORM_HREF, PUBLIC_ROUTES } from "@/config/routes";
 import type { PublicPageContent } from "@/types/content";
+
+export const storageFunctionVisual = {
+  desktopSrc: "/images/battery-storage/residential-storage-function-desktop.webp",
+  mobileSrc: "/images/battery-storage/residential-storage-function-mobile.webp",
+  desktopWidth: 1600,
+  desktopHeight: 1200,
+  mobileWidth: 1024,
+  mobileHeight: 1280,
+  alt: "Stromspeicher und Wallbox an der Außenwand eines Wohnhauses",
+};
+
+export const storageFunctionVideo = { src: "/videos/stromspeicher-loop.mp4" };
 
 export const stromspeicherProducts = [
   {
@@ -110,12 +122,12 @@ export const stromspeicherContent = {
     {
       id: "eigenverbrauch",
       eyebrow: "Mehr vom eigenen Solarstrom",
-      title: "Eigenverbrauch mit Batteriespeicher gezielt erhöhen",
+      title: "Eigenverbrauch mit Batterie\u00adspeicher gezielt erhöhen",
       text: [
         "Ohne Speicher fällt ein großer Teil der Solarstromerzeugung häufig in Tageszeiten, in denen im Gebäude weniger Energie benötigt wird. Gleichzeitig steigt der Verbrauch bei vielen Haushalten morgens und abends.",
         "Ein Batteriespeicher kann einen Teil dieser zeitlichen Verschiebung ausgleichen. Wie stark sich Eigenverbrauch und Netzbezug verändern, hängt von Photovoltaikanlage, Speichergröße und individuellem Verbrauchsverhalten ab.",
       ],
-      cta: { label: "Photovoltaikanlage planen", href: "/photovoltaik" },
+      cta: { label: "Photovoltaikanlage planen", href: PUBLIC_ROUTES.konfigurator.href },
       presentation: { surface: "blue", layout: "statement" },
     },
     {

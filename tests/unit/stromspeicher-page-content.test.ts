@@ -12,7 +12,7 @@ vi.mock("@/lib/faq/public-repository", () => ({
 import StromspeicherPage, { metadata } from "@/app/(site)/stromspeicher/page";
 import { PublicContentPage } from "@/app/(site)/_components/public-content-page";
 import { CONTACT_FORM_HREF } from "@/config/routes";
-import { stromspeicherContent, stromspeicherProducts } from "@/content/pages/stromspeicher";
+import { storageFunctionVideo, stromspeicherContent, stromspeicherProducts } from "@/content/pages/stromspeicher";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import nextConfig from "../../next.config";
 
@@ -20,6 +20,22 @@ describe("Residential storage migration", () => {
   let html: string;
   beforeAll(async () => {
     html = renderToStaticMarkup(await PublicContentPage(StromspeicherPage().props));
+  });
+
+  it("links the unchanged solar-planning CTA to the configurator landing page", () => {
+    const section = html.split('id="eigenverbrauch"')[1].split("</section>")[0];
+    expect(section).toContain('href="/konfigurator"');
+    expect(section).toContain("Photovoltaikanlage planen");
+    expect(section).not.toContain('href="/"');
+    expect(section).not.toContain('href="/photovoltaik"');
+  });
+
+  it("allows the headline to split only at Batterie-speicher without changing its wording", () => {
+    const section = html.split('id="eigenverbrauch"')[1].split("</section>")[0];
+    const heading = section.match(/<h2\b[^>]*>([\s\S]*?)<\/h2>/)!;
+    expect(heading[1]).toContain("Batterie\u00adspeicher");
+    expect(heading[1].replaceAll("\u00ad", "")).toBe("Eigenverbrauch mit Batteriespeicher gezielt erhöhen");
+    expect(heading[0]).toContain("hyphens:manual;overflow-wrap:normal");
   });
 
   it("preserves metadata, H1, signet and the existing permanent redirect", async () => {
@@ -105,5 +121,18 @@ describe("Residential storage migration", () => {
     expect(html).not.toMatch(/"@type":"(?:Product|Offer|AggregateRating|QAPage)"/);
     expect(html).toContain('"@type":"WebPage"');
     expect(html).not.toMatch(/(?:src|srcSet)="https:\/\/wwwstatic/);
+  });
+
+  it("keeps the video section filled before hydration and retains the moved backup image", () => {
+    const first = html.split('id="funktionsweise"')[1].split("</section>")[0];
+    const backup = html.split('id="ersatzstrom"')[1].split("</section>")[0];
+    for (const section of [first, backup]) {
+      expect(section).toContain("residential-storage-function-desktop.webp");
+      expect(section).toContain("residential-storage-function-mobile.webp");
+    }
+    expect(html).not.toContain("residential-storage-backup-");
+    expect(existsSync(`public${storageFunctionVideo.src}`)).toBe(true);
+    expect(first).toContain("data-loop-video");
+    expect(first).not.toContain("<video"); // SSR renders the still until the motion preference is known.
   });
 });

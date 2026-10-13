@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import type { ReactNode } from "react";
 
 import { MarketingFeaturePage } from "@/app/(site)/_components/marketing-feature-page";
@@ -26,12 +26,12 @@ export const metadata: Metadata = buildMetadata(content.seo);
 function SourceLink({ source }: { source: FundingSourceKey }) {
   const { label, href } = fundingSources[source];
   return (
-    <a
+    <Link
       href={href}
       className="text-brand-primary decoration-brand-primary/35 hover:decoration-brand-primary inline-flex min-h-11 items-center text-xs leading-5 font-semibold underline underline-offset-4"
     >
       {label} ↗
-    </a>
+    </Link>
   );
 }
 
@@ -94,12 +94,12 @@ function FundingOverview() {
             Stand Oktober 2026 · geprüft am{" "}
             <time dateTime={fundingReview.date}>{fundingReview.label}</time>
           </p>
-          <a
+          <Link
             href="#quellen"
             className="text-brand-primary inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
           >
             Primärquellen ansehen ↓
-          </a>
+          </Link>
         </div>
         <Reveal className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <div>
@@ -179,9 +179,9 @@ function TopicSection({ topic, index }: { topic: FundingTopic; index: number }) 
                   className="object-cover"
                 />
               </div>
-              <figcaption className="mt-3 text-xs text-[var(--text-subtle)]">
+              {topic.id !== "batteriespeicher" && <figcaption className="mt-3 text-xs text-[var(--text-subtle)]">
                 KI-generiertes, illustratives Motiv · kein Referenzprojekt
-              </figcaption>
+              </figcaption>}
             </figure>
           ) : (
             <div className="border-brand-primary/25 border-l-2 pl-7 lg:pl-10">
@@ -284,12 +284,12 @@ function RegionalFunding() {
               darunter fallen. Beantragung über die Hausbank; kein pauschaler privater
               Heimspeicher-Zuschuss.
             </p>
-            <a
+            <Link
               href={fundingSources.lfa.href}
               className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-white underline underline-offset-4"
             >
               LfA-Programm und Voraussetzungen ↗
-            </a>
+            </Link>
           </div>
           <div className="border-t border-white/35 pt-6">
             <h3 className="text-xl text-white">Alte Speicherförderung ist beendet</h3>
@@ -297,12 +297,12 @@ function RegionalFunding() {
               Das frühere 10.000-Häuser-Programm inklusive PV-Speicher-Programm ist abgeschlossen.
               Es ist keine aktuelle Antragsmöglichkeit.
             </p>
-            <a
+            <Link
               href={fundingSources.bavaria.href}
               className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-white underline underline-offset-4"
             >
               Abschlussmeldung des Freistaats Bayern ↗
-            </a>
+            </Link>
           </div>
         </Reveal>
       </div>
@@ -433,10 +433,6 @@ function Sources() {
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-xs leading-6 text-[var(--text-subtle)]">
-          Die drei Fotomotive dieser Seite sind KI-generierte Illustrationen. Sie zeigen keine
-          dokumentierten Energie-Kraft-Projekte.
-        </p>
       </div>
     </section>
   );

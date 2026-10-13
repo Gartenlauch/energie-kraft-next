@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import { BrandIntro, type BrandIntroVariant } from "@/components/marketing/brand-intro";
 
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
@@ -16,6 +16,7 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 import { CONTACT_FORM_HREF } from "@/config/routes";
 import { getPublicFaqEntriesByRoute } from "@/lib/faq/public-repository";
 import type { PublicPageContent } from "@/types/content";
+import { storageFunctionVisual } from "@/content/pages/stromspeicher";
 
 interface PublicContentPageProps {
   brandIntroVariant?: BrandIntroVariant | false;
@@ -100,29 +101,23 @@ const pageVisuals: Partial<Record<PublicPageContent["faqRouteKey"], PageVisual>>
 };
 
 const sectionVisuals: Partial<
-  Record<PublicPageContent["faqRouteKey"], Record<string, PageVisual>>
+  Record<PublicPageContent["faqRouteKey"], Partial<Record<string, PageVisual>>>
 > = {
   stromspeicher: {
-    funktionsweise: {
-      desktopSrc: "/images/battery-storage/residential-storage-function-desktop.webp",
-      mobileSrc: "/images/battery-storage/residential-storage-function-mobile.webp",
-      desktopWidth: 1600,
-      desktopHeight: 1200,
-      mobileWidth: 1024,
-      mobileHeight: 1280,
-      alt: "Stromspeicher und Wallbox an der Außenwand eines Wohnhauses",
-    },
-    ersatzstrom: {
-      desktopSrc: "/images/battery-storage/residential-storage-backup-desktop.webp",
-      mobileSrc: "/images/battery-storage/residential-storage-backup-mobile.webp",
-      desktopWidth: 1600,
-      desktopHeight: 1200,
-      mobileWidth: 1200,
-      mobileHeight: 1500,
-      alt: "Stromspeicher an einer Hauswand neben einem Carport",
-    },
+    ersatzstrom: storageFunctionVisual,
   },
   photovoltaik: {
+    monitoring: {
+      desktopSrc: "/images/photovoltaic/pv-monitoring-dashboard.webp",
+      mobileSrc: "/images/photovoltaic/pv-monitoring-dashboard.webp",
+      desktopWidth: 1448,
+      desktopHeight: 1086,
+      mobileWidth: 1448,
+      mobileHeight: 1086,
+      alt: "Beispielhaftes PV-Monitoring-Dashboard mit Erzeugung, Verbrauch, Speicherstand und Energieflüssen",
+      imagePresentation: "technical",
+      imageCaption: "Illustrative Monitoring-Ansicht mit Beispieldaten, keine Messwerte einer realen Anlage.",
+    },
     eigenverbrauch: {
       desktopSrc: "/images/battery-storage/residential-storage-feature-desktop.webp",
       mobileSrc: "/images/battery-storage/residential-storage-feature-mobile.webp",

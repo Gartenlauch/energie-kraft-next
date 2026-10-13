@@ -10,7 +10,7 @@ export const configuratorProducts = {
     title: "Photovoltaik",
     shortLabel: "PV-Anlage",
     description:
-      "Ermittle mit wenigen Angaben eine passende Größenordnung für deine Photovoltaikanlage.",
+      "Ermitteln Sie mit wenigen Angaben eine passende Größenordnung für Ihre Photovoltaikanlage.",
     href: "/konfigurator/photovoltaik",
     serviceHref: "/photovoltaik",
     availability: "next",
@@ -29,7 +29,7 @@ export const configuratorProducts = {
     title: "Stromspeicher",
     shortLabel: "Speicher",
     description:
-      "Finde heraus, welche Speicherlösung zu deinem Stromverbrauch und deiner Photovoltaikanlage passen kann.",
+      "Finden Sie heraus, welche Speicherlösung zu Ihrem Stromverbrauch und Ihrer Photovoltaikanlage passen kann.",
     href: "/konfigurator/stromspeicher",
     serviceHref: "/stromspeicher",
     availability: "planned",
@@ -48,7 +48,7 @@ export const configuratorProducts = {
     title: "Klimaanlage",
     shortLabel: "Klima",
     description:
-      "Bereite die wichtigsten Angaben für eine passende Klimatisierung deines Gebäudes vor.",
+      "Bereiten Sie die wichtigsten Angaben für eine passende Klimatisierung Ihres Gebäudes vor.",
     href: "/konfigurator/klimaanlage",
     serviceHref: "/klimaanlagen",
     availability: "planned",
@@ -86,7 +86,7 @@ export const configuratorProducts = {
     title: "Wallbox",
     shortLabel: "Wallbox",
     description:
-      "Bereite die grundlegenden Angaben für eine passende Ladelösung zu Hause vor.",
+      "Bereiten Sie die grundlegenden Angaben für eine passende Ladelösung zu Hause vor.",
     href: "/konfigurator/wallbox",
     serviceHref: "/wallbox",
     availability: "planned",
@@ -122,14 +122,14 @@ export const configuratorLandingContent = {
 
   hero: {
     eyebrow: "Energie passend zum Zuhause",
-    title: "Welche Energielösung passt zu deinem Zuhause?",
+    title: "Welche Energielösung passt zu Ihrem Zuhause?",
     description:
-      "Wähle dein Projekt aus und beantworte anschließend nur die Fragen, die für deine Situation relevant sind. Du erhältst eine erste Orientierung und kannst deine Angaben direkt für eine persönliche Beratung verwenden.",
+      "Wählen Sie Ihr Projekt aus und beantworten Sie anschließend nur die Fragen, die für Ihre Situation relevant sind. Sie erhalten eine erste Orientierung und können Ihre Angaben direkt für eine persönliche Beratung verwenden.",
   },
 
   house: {
-    eyebrow: "Dein Zuhause im Mittelpunkt",
-    title: "Starte dort, wo du Energie nutzen oder erzeugen möchtest",
+    eyebrow: "Ihr Zuhause im Mittelpunkt",
+    title: "Starten Sie dort, wo Sie Energie nutzen oder erzeugen möchten",
     description:
       "Photovoltaik, Speicher, Klimatisierung, Wärmepumpe und Wallbox können einzeln geplant oder später sinnvoll miteinander kombiniert werden.",
   },

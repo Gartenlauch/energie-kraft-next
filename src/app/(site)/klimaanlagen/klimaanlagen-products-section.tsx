@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 
 import { Reveal } from "@/components/marketing/reveal";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
@@ -72,14 +72,14 @@ export function KlimaanlagenProductsSection() {
                     </li>
                   ))}
                 </ul>
-                <a
+                <Link
                   href={product.source}
                   target="_blank"
                   rel="noreferrer"
                   className="text-brand-primary mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline underline-offset-4"
                 >
                   Produktinformationen bei Bosch <ArrowRightIcon className="size-4" />
-                </a>
+                </Link>
               </Reveal>
             </article>
           ))}

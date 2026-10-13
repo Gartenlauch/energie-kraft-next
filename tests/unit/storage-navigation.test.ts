@@ -12,6 +12,16 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { siteConfig } from "@/config/site";
 
 describe("Global footer navigation", () => {
+  it("reuses the central directions URL in the contact area with an accessible new-tab link", () => {
+    const html = renderToStaticMarkup(createElement(SiteFooter));
+    const contact = html.split("<address")[1].split("</address>")[0];
+    const href = siteConfig.contact.mapHref.replaceAll("&", "&amp;");
+    const link = [...contact.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map(match => match[0]).find(anchor => anchor.includes(href));
+    expect(link).toContain("Anfahrt planen");
+    expect(link).toContain('target="_blank"');
+    expect(link).toContain('rel="noopener noreferrer"');
+    expect(link).toContain("öffnet in neuem Tab");
+  });
   it("shows accessible Facebook and Instagram links between email and DGS membership", () => {
     const html = renderToStaticMarkup(createElement(SiteFooter));
     const emailPosition = html.indexOf(`href="${siteConfig.contact.emailHref}"`);
@@ -27,7 +37,7 @@ describe("Global footer navigation", () => {
         .find((anchor) => anchor.includes(`href="${escapedUrl}"`));
 
       expect(link).toBeDefined();
-      expect(link).toContain(`aria-label="Energie-Kraft Süd auf ${label}"`);
+      expect(link).toContain(`aria-label="Energie-Kraft Süd auf ${label} (öffnet in neuem Tab)"`);
       expect(link).toContain('target="_blank"');
       expect(link).toContain('rel="noopener noreferrer"');
       expect(link).toContain('aria-hidden="true"');

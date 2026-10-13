@@ -307,7 +307,7 @@ export function PhotovoltaicWizard() {
     const parsed = configuratorLeadInputSchema.safeParse(input);
 
     if (!parsed.success) {
-      setSubmissionError("Die Anfrage ist noch nicht vollständig. Bitte prüfe deine Angaben.");
+      setSubmissionError("Die Anfrage ist noch nicht vollständig. Bitte prüfen Sie Ihre Angaben.");
       return;
     }
 
@@ -322,7 +322,7 @@ export function PhotovoltaicWizard() {
     } catch {
       dispatch({ type: "SET_SUBMISSION", payload: { id: input.submissionId, status: "failed" } });
       setSubmissionError(
-        "Deine Anfrage konnte momentan nicht übermittelt werden. Bitte versuche es erneut.",
+        "Ihre Anfrage konnte momentan nicht übermittelt werden. Bitte versuchen Sie es erneut.",
       );
       submitInFlight.current = false;
       setIsSubmitting(false);
@@ -379,7 +379,7 @@ export function PhotovoltaicWizard() {
     if (!input) {
       return (
         <div role="alert" className="rounded-2xl border border-red-300 bg-red-50 p-6 text-red-800">
-          Die Anfrage konnte nicht vorbereitet werden. Bitte gehe zurück und prüfe deine Angaben.
+          Die Anfrage konnte nicht vorbereitet werden. Bitte gehen Sie zurück und prüfen Sie Ihre Angaben.
         </div>
       );
     }

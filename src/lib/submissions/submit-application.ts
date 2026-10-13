@@ -44,7 +44,7 @@ export async function submitApplication(input: ApplicationInput, files: readonly
     });
     const document = metadata[index];
     if (!document) throw new Error("Die Dateiauswahl ist ungültig.");
-    documents.push({ ...document, base64 });
+    documents.push({ ...document, base64, documentType: "attachment" });
   }
   const result = await submitApplicationCallable({ ...input, documents });
   return result.data;

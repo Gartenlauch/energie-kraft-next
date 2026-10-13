@@ -13,6 +13,7 @@ export const applicationFilesSchema = z
   .array(
     z
       .object({
+        documentType: z.enum(["resume", "attachment"]).default("attachment"),
         name: z.string().min(1).max(255),
         contentType: z.string().max(100),
         size: z.number().int().positive().max(APPLICATION_FILE_LIMITS.perFile),
@@ -138,6 +139,7 @@ export function planApplicationDocuments(
     const id = randomUUID();
     return {
       id,
+      documentType: file.documentType,
       name: sanitizeApplicationFilename(file.name),
       storagePath: `applications/${applicationId}/${id}`,
       size: file.size,

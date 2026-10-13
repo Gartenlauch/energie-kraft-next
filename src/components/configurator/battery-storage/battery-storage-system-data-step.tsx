@@ -39,11 +39,11 @@ function getAnnualConsumptionError(
   }
 
   if (value < 500) {
-    return "Bitte gib mindestens 500 kWh/Jahr ein.";
+    return "Bitte geben Sie mindestens 500 kWh/Jahr ein.";
   }
 
   if (value > 100_000) {
-    return "Bitte gib höchstens 100.000 kWh/Jahr ein.";
+    return "Bitte geben Sie höchstens 100.000 kWh/Jahr ein.";
   }
 
   return null;
@@ -57,11 +57,11 @@ function getPvPowerError(
   }
 
   if (value < 1) {
-    return "Bitte gib mindestens 1 kWp ein.";
+    return "Bitte geben Sie mindestens 1 kWp ein.";
   }
 
   if (value > 100) {
-    return "Bitte gib die Anlagenleistung in kWp ein, z. B. 4,5 oder 8,0 kWp – nicht in Watt.";
+    return "Bitte geben Sie die Anlagenleistung in kWp ein, z. B. 4,5 oder 8,0 kWp – nicht in Watt.";
   }
 
   return null;
@@ -138,8 +138,8 @@ export function BatteryStorageSystemDataStep({
         ) : (
           <p className="mt-2 text-sm leading-6 text-foreground/60">
             Zum Beispiel 3.500 kWh/Jahr.
-            Am besten verwendest du den Wert
-            aus deiner letzten Stromabrechnung.
+            Am besten verwenden Sie den Wert
+            aus Ihrer letzten Stromabrechnung.
           </p>
         )}
       </div>
@@ -195,7 +195,7 @@ export function BatteryStorageSystemDataStep({
           <p className="mt-2 text-sm leading-6 text-foreground/60">
             Bitte in kWp angeben, z. B.
             4,5 kWp oder 8 kWp. Bei einer
-            bestehenden Anlage findest du den
+            bestehenden Anlage finden Sie den
             Wert meist in den Anlagenunterlagen.
           </p>
         )}

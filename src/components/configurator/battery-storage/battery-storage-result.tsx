@@ -85,8 +85,8 @@ export function BatteryStorageResult({
       <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
       <ResultIntro
         id="battery-result-heading"
-        eyebrow="Deine erste Orientierung"
-        title="Deine Stromspeicher-Empfehlung"
+        eyebrow="Ihre erste Orientierung"
+        title="Ihre Stromspeicher-Empfehlung"
         description="Mehr eigenen Solarstrom später am Tag nutzen: Die Speichergröße und ihre Wirkung hängen von PV-Anlage, Verbrauch und technischer Einbindung ab."
       />
 

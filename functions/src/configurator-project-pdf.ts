@@ -20,7 +20,7 @@ export function getSolarPdfCopy(hasStorage: boolean) {
     investmentDetail: hasStorage ? "Photovoltaik + Stromspeicher" : "Photovoltaik",
     technicalIntro: hasStorage
       ? "Die Anlage erzeugt Strom. Der Speicher verschiebt einen Teil davon in Stunden mit höherem Bedarf."
-      : "Die Photovoltaikanlage erzeugt Strom für dein Zuhause und die Einspeisung ins Netz.",
+      : "Die Photovoltaikanlage erzeugt Strom für Ihr Zuhause und die Einspeisung ins Netz.",
     flowIntro: hasStorage
       ? "Die Wege der Energie in einem modellierten Jahr – direkt im Haus, über den Speicher und im Austausch mit dem Netz."
       : "Die Wege der Energie in einem modellierten Jahr – direkt im Haus und im Austausch mit dem Netz.",
@@ -291,15 +291,15 @@ function systemSymbol(doc: PDFKit.PDFDocument, type: ProductType | "home" | "gri
 function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload, reportDate: Date): void {
   photoWithTint(doc, "cover-home.jpg", 450);
   doc.save().rect(0, 450, doc.page.width, doc.page.height - 450).fill("#F8FAFD").restore();
-  text(doc, "Deine persönliche\nEnergieprojekt-Analyse", 48, 147, 485, 31, "bold", COLOR.white, 5);
-  text(doc, "Individuell geplant auf Basis deiner Angaben", 50, 255, 430, 11,
+  text(doc, "Ihre persönliche\nEnergieprojekt-Analyse", 48, 147, 485, 31, "bold", COLOR.white, 5);
+  text(doc, "Individuell geplant auf Basis Ihrer Angaben", 50, 255, 430, 11,
     "regular", "#DDECF7");
   text(doc, `${lead.contact.firstName} ${lead.contact.lastName}`, 50, 348, 365, 15,
     "semibold", COLOR.white);
   text(doc, `${lead.installation.postalCode} ${lead.installation.city}`, 50, 376, 280, 9,
     "regular", "#DDECF7");
   text(doc, date.format(reportDate), 50, 397, 280, 9, "regular", "#DDECF7");
-  eyebrow(doc, "Dein Energiesystem", LEFT, 480);
+  eyebrow(doc, "Ihr Energiesystem", LEFT, 480);
   const order: readonly ProductType[] = CONFIGURATOR_PRODUCT_ORDER;
   const selected = order.filter((item) => lead.products.includes(item));
   const step = WIDTH / selected.length;
@@ -321,7 +321,7 @@ function drawCover(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload, repor
 }
 
 function drawProject(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
-  page(doc, "Überblick", "Dein Energieprojekt",
+  page(doc, "Überblick", "Ihr Energieprojekt",
     "Die ausgewählten Lösungen bilden ein gemeinsames Projekt – mit unterschiedlichen Aufgaben und Kosten.");
   const eco = lead.economics;
   const totalText = eco.investmentBaseEuro === null
@@ -434,7 +434,7 @@ function drawEnergyFlow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
   const solar = lead.economics.solar;
   if (!solar) return;
   const storage = Boolean(product(lead, "battery_storage"));
-  page(doc, "Energiefluss", "So nutzt du deinen Solarstrom", getSolarPdfCopy(storage).flowIntro);
+  page(doc, "Energiefluss", "So nutzen Sie Ihren Solarstrom", getSolarPdfCopy(storage).flowIntro);
   const flow = solar.withStorage;
   // Paths are drawn first and each is a single vector segment with an attached arrowhead.
   arrow(doc, 297, 314, 297, 405, COLOR.blue);
@@ -446,7 +446,7 @@ function drawEnergyFlow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload):
   arrow(doc, 437, 475, 366, 475, COLOR.muted, true);
   flowNode(doc, 297, 235, 41, "Solaranlage", `${format(flow.generationKwh)} kWh/a`,
     COLOR.blue, "photovoltaic", 278, 154, true);
-  flowNode(doc, 297, 475, 65, "Dein Zuhause", `Strombedarf ${format(flow.demandKwh)} kWh/a`,
+  flowNode(doc, 297, 475, 65, "Ihr Zuhause", `Strombedarf ${format(flow.demandKwh)} kWh/a`,
     COLOR.navy, "home", 545, 155);
   if (storage) flowNode(doc, 112, 475, 43, "Stromspeicher",
     `${format(solar.storageUsableCapacityKwh)} kWh`, COLOR.cyan, "battery_storage", 521, 132);
@@ -475,7 +475,7 @@ function drawSolarSystem(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
   const pv = product(lead, "photovoltaic");
   const storage = product(lead, "battery_storage");
   const solar = lead.economics.solar;
-  page(doc, "Technik", "Dein Solarsystem", getSolarPdfCopy(Boolean(storage)).technicalIntro);
+  page(doc, "Technik", "Ihr Solarsystem", getSolarPdfCopy(Boolean(storage)).technicalIntro);
   if (pv) {
     imageCover(doc, "photovoltaic.jpg", LEFT, 195, 234, storage ? 211 : 279, "right");
     eyebrow(doc, "Photovoltaik", 297, 202, 256);
@@ -526,7 +526,7 @@ function drawSolarEconomics(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPaylo
   const solar = lead.economics.solar;
   if (!solar) return;
   const display = getSolarReturnDisplay(lead.economics)!;
-  page(doc, "Solarwirtschaftlichkeit", "So rechnet sich deine Solaranlage",
+  page(doc, "Solarwirtschaftlichkeit", "So rechnet sich Ihre Solaranlage",
     product(lead, "battery_storage")
       ? "Photovoltaik und Speicher werden als eine Solarinvestition betrachtet."
       : "Die Solaranlage wird über ihre Investition und ihre jährlichen Stromvorteile betrachtet.");
@@ -558,7 +558,7 @@ function drawSolarEconomics(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPaylo
       display.horizonResult!, 429, { valueSize: 22, color: COLOR.navy });
   }
   const compositionY = solar.paybackStatus === "unavailable_missing_investment" ? 500 : 508;
-  eyebrow(doc, "So entsteht dein finanzieller Vorteil", LEFT, compositionY);
+  eyebrow(doc, "So entsteht Ihr finanzieller Vorteil", LEFT, compositionY);
   const year = solar.annualCashflows[1];
   if (!year) return;
   const rows = [
@@ -599,8 +599,8 @@ function drawCashflow(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): v
   const points = lead.economics.projections;
   const solar = lead.economics.solar;
   if (!solar || solar.investmentEuro === null || points.length < 2) return;
-  page(doc, "Solarinvestition", "Entwicklung deiner Solarinvestition",
-    "Die Linie zeigt den kumulierten Geldwert deiner Solaranlage über den modellierten Zeitraum.");
+  page(doc, "Solarinvestition", "Entwicklung Ihrer Solarinvestition",
+    "Die Linie zeigt den kumulierten Geldwert Ihrer Solaranlage über den modellierten Zeitraum.");
   const chart = { x: LEFT, width: WIDTH };
   const plot = { x: chart.x + 82, y: 235, width: chart.width - 108, height: 346 };
   const values = points.map((point) => point.cumulativeCashFlowEuro);
@@ -698,7 +698,7 @@ function drawStorageComparison(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPa
   rect(doc, LEFT, 190, WIDTH, 83, COLOR.pale);
   text(doc, "Mehr eigenen Solarstrom selbst nutzen", 58, 206, WIDTH - 32, 17,
     "bold", COLOR.navy);
-  text(doc, "Der Speicher verschiebt Solarüberschüsse in Zeiten, in denen du sie brauchst.",
+  text(doc, "Der Speicher verschiebt Solarüberschüsse in Zeiten, in denen Sie sie brauchen.",
     58, 238, WIDTH - 32, 9, "regular", COLOR.ink);
   comparisonBar(doc, "Eigenverbrauch", before.selfConsumptionPercent,
     after.selfConsumptionPercent, " %", 100, 296, true);
@@ -719,7 +719,7 @@ function drawHeating(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   const heat = lead.economics.heating;
   const result = product(lead, "heat_pump")?.result;
   if (!heat || !result) return;
-  page(doc, "Wärme", "Was sparst du beim Heizen?",
+  page(doc, "Wärme", "Was sparen Sie beim Heizen?",
     "Die Betriebskosten werden mit dem angegebenen oder modellierten bisherigen Heizsystem verglichen.");
   const hasReference = heat.currentAnnualEuro !== null && heat.annualSavingEuro !== null;
   eyebrow(doc, hasReference ? "Modellierte Heizkostenersparnis" : "Heizkostenvergleich", LEFT, 198);
@@ -776,10 +776,10 @@ export function getComfortPdfCopy(hasClimate: boolean, hasWallbox: boolean) {
         ? "Die Klimaanlage ergänzt das Energieprojekt im Alltag. Ihre Investition ist Teil der Gesamtkosten."
         : "Die Wallbox ergänzt das Energieprojekt im Alltag. Ihre Investition ist Teil der Gesamtkosten.",
     closing: hasClimate && hasWallbox
-      ? "Klimaanlage und Wallbox ergänzen dein Energieprojekt um Komfort, bequemes Laden und moderne Infrastruktur."
+      ? "Klimaanlage und Wallbox ergänzen Ihr Energieprojekt um Komfort, bequemes Laden und moderne Infrastruktur."
       : hasClimate
-        ? "Die Klimaanlage ergänzt dein Energieprojekt um angenehme Raumtemperaturen und moderne Gebäudetechnik."
-        : "Die Wallbox ergänzt dein Energieprojekt um bequemes Laden zu Hause und passende Ladeinfrastruktur.",
+        ? "Die Klimaanlage ergänzt Ihr Energieprojekt um angenehme Raumtemperaturen und moderne Gebäudetechnik."
+        : "Die Wallbox ergänzt Ihr Energieprojekt um bequemes Laden zu Hause und passende Ladeinfrastruktur.",
   };
 }
 
@@ -814,7 +814,7 @@ function drawComfort(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
     eyebrow(doc, "Wallbox", 297, y + 7, 256);
     text(doc, "Bequem zuhause laden", 297, y + 32, 256, 16,
       "bold", COLOR.navy);
-    text(doc, "Das Fahrzeug ist im Alltag dort geladen, wo du wohnst. Die Ladeinfrastruktur wird passend zum Haus geplant.",
+    text(doc, "Das Fahrzeug ist im Alltag dort geladen, wo Sie wohnen. Die Ladeinfrastruktur wird passend zum Haus geplant.",
       297, y + 68, 256, 9, "regular", COLOR.ink, 3);
     valueLine(doc, "Gewählte Ladeleistung", `${format(wallbox.answers.chargingPowerKw)} kW`,
       y + 132, { x: 297, width: 256, valueSize: 16 });
@@ -828,7 +828,7 @@ function drawComfort(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
 
 function drawInvestment(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
   const eco = lead.economics;
-  page(doc, "Projektkosten", "Deine Investition im Überblick",
+  page(doc, "Projektkosten", "Ihre Investition im Überblick",
     "Alle ausgewählten Komponenten sind enthalten. Die Solarinvestition hat eine eigene Wirtschaftlichkeitsrechnung.");
   eyebrow(doc, "Gesamtinvestition", LEFT, 194);
   const complete = eco.investmentBaseEuro !== null;
@@ -967,13 +967,13 @@ function drawAssumptions(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload,
 function drawClosing(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): void {
   doc.addPage();
   photoWithTint(doc, "closing-solar.jpg", 365);
-  text(doc, "Der nächste Schritt zu\ndeinem Energieprojekt", 46, 143, 485, 28,
+  text(doc, "Der nächste Schritt zu\nIhrem Energieprojekt", 46, 143, 485, 28,
     "bold", COLOR.white, 5);
-  text(doc, "Deine Angaben sind die Grundlage für unsere fachliche Prüfung.", 47, 245, 430,
+  text(doc, "Ihre Angaben sind die Grundlage für unsere fachliche Prüfung.", 47, 245, 430,
     10, "regular", "#DDECF7");
   const steps = [
     { number: "01", title: "Angaben prüfen", body: "Wir betrachten die ausgewählten Lösungen als gemeinsames Energieprojekt." },
-    { number: "02", title: "Vor Ort prüfen", body: "Wir sehen uns die technischen Gegebenheiten und deine Anforderungen an." },
+    { number: "02", title: "Vor Ort prüfen", body: "Wir sehen uns die technischen Gegebenheiten und Ihre Anforderungen an." },
     { number: "03", title: "Individuell planen", body: "Danach erstellen wir die belastbare Auslegung und ein konkretes Angebot." },
   ];
   steps.forEach((step, index) => {
@@ -984,7 +984,7 @@ function drawClosing(doc: PDFKit.PDFDocument, lead: ConfiguratorLeadPayload): vo
   });
   rect(doc, LEFT, 584, WIDTH, 92, COLOR.soft);
   text(doc, "Energie-Kraft Süd", 60, 602, 475, 14, "semibold", COLOR.blue);
-  text(doc, `energie-kraft.de  ·  ${lead.contact.firstName}, deine Anfrage ist bei uns eingegangen.`,
+  text(doc, `energie-kraft.de  ·  ${lead.contact.firstName}, Ihre Anfrage ist bei uns eingegangen.`,
     60, 636, 475, 9, "regular", COLOR.ink);
   text(doc,
     "Die modellierten Projektpreise können vom späteren Angebot abweichen. Technische Details und Montagebedingungen werden vor Ort belastbar geprüft.",

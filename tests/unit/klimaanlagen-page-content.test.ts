@@ -22,6 +22,11 @@ describe("Klimaanlagen advisory and Bosch offering", () => {
     html = renderToStaticMarkup(await PublicContentPage(KlimaanlagenPage().props));
   });
 
+  it("mentions room heating in the transition season in the hero without an efficiency promise", () => {
+    const hero = html.split('class="premium-hero ')[1].split("</section>")[0];
+    expect(hero).toContain("Viele Modelle können in der Übergangszeit auch einzelne Räume bedarfsgerecht heizen.");
+  });
+
   it("preserves SEO, FAQ routing, H1 and brand signet", () => {
     expect(metadata.title).toEqual({
       absolute: "Klimaanlage kaufen & installieren | Energie-Kraft Süd",

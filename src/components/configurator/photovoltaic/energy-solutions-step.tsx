@@ -23,8 +23,8 @@ export function EnergySolutionsStep({
         <ConfiguratorStepSection
             headingId="photovoltaic-energy-solutions-heading"
             eyebrow="Photovoltaik-Konfigurator"
-            title="Welche weiteren Energielösungen möchtest du berücksichtigen?"
-            description="Wähle optional die Bereiche aus, die für dein Energieprojekt relevant sind."
+            title="Welche weiteren Energielösungen möchten Sie berücksichtigen?"
+            description="Wählen Sie optional die Bereiche aus, die für Ihr Energieprojekt relevant sind."
         >
             <SelectionGrid columns={2}>
                 {photovoltaicEnergySolutionOptions.map(
@@ -46,12 +46,12 @@ export function EnergySolutionsStep({
 
             <div className="mt-6 rounded-2xl border border-border-default bg-surface p-5">
                 <p className="leading-7 text-foreground/70">
-                    Wenn du mehrere Bereiche auswählst,
-                    führen wir dich nach der
+                    Wenn Sie mehrere Bereiche auswählen,
+                    führen wir Sie nach der
                     Photovoltaik-Konfiguration automatisch
                     nacheinander durch die ausgewählten
-                    Konfiguratoren. Danach ergänzt du einmal
-                    deine Kontaktdaten.
+                    Konfiguratoren. Danach ergänzen Sie einmal
+                    Ihre Kontaktdaten.
                 </p>
             </div>
         </ConfiguratorStepSection>

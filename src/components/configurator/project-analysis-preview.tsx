@@ -28,13 +28,13 @@ export function ProjectAnalysisPreview() {
     <section aria-labelledby="project-analysis-preview-heading" className="mt-7">
       <div className="bg-brand-navy overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
         <p className="text-sm font-semibold tracking-[0.15em] text-cyan-200 uppercase">
-          Dein Energieprojekt
+          Ihr Energieprojekt
         </p>
         <h2
           id="project-analysis-preview-heading"
           className="mt-2 max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl"
         >
-          Deine Lösungen im Zusammenhang
+          Ihre Lösungen im Zusammenhang
         </h2>
         <div className="mt-6 border-t border-white/20 pt-5">
           <p className="text-xs font-semibold tracking-[0.14em] text-cyan-200 uppercase">
@@ -145,10 +145,10 @@ export function ProjectAnalysisPreview() {
               </p>
               <p className="text-foreground/70 mt-2 text-sm leading-6">
                 {hasClimate && hasWallbox
-                  ? "Gezielte Kühlung und bequemes Laden zu Hause – abgestimmt auf dein Energiesystem."
+                  ? "Gezielte Kühlung und bequemes Laden zu Hause – abgestimmt auf Ihr Energiesystem."
                   : hasClimate
-                    ? "Gezielte Kühlung, abgestimmt auf deine Räume und dein Energiesystem."
-                    : "Bequemes Laden zu Hause, passend zu deinem Fahrzeug und deiner Installation."}
+                    ? "Gezielte Kühlung, abgestimmt auf Ihre Räume und Ihr Energiesystem."
+                    : "Bequemes Laden zu Hause, passend zu Ihrem Fahrzeug und Ihrer Installation."}
               </p>
             </div>
           </div>
@@ -182,11 +182,11 @@ export function ProjectAnalysisPreview() {
           KOSTENLOSE PERSÖNLICHE PROJEKTANALYSE
         </h3>
         <p className="text-foreground/70 mt-3 text-sm leading-6">
-          Hier im Browser erhältst du bereits eine kompakte Auswertung deiner Konfiguration mit den
+          Hier im Browser erhalten Sie bereits eine kompakte Auswertung Ihrer Konfiguration mit den
           wichtigsten Empfehlungen, Kosten und Einsparpotenzialen.
         </p>
         <p className="text-foreground/70 mt-2 text-sm leading-6">
-          Nach Eingabe deiner Kontaktdaten erstellen wir zusätzlich deine persönliche
+          Nach Eingabe Ihrer Kontaktdaten erstellen wir zusätzlich Ihre persönliche
           PDF-Projektanalyse mit detaillierter Wirtschaftlichkeitsberechnung, Energiefluss, Annahmen
           und den nächsten Planungsschritten.
         </p>

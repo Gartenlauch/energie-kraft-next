@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import type { ReactNode } from "react";
 import { MarketingFeaturePage } from "@/app/(site)/_components/marketing-feature-page";
 import { Reveal } from "@/components/marketing/reveal";
@@ -34,12 +34,12 @@ function TextLink({ href, children }: { href: string; children: ReactNode }) {
 function SourceLink({ source, dark = false }: { source: TariffSourceKey; dark?: boolean }) {
   const item = tariffSources[source];
   return (
-    <a
+    <Link
       href={item.href}
       className={`inline-flex min-h-11 items-center text-xs leading-6 font-semibold underline underline-offset-4 ${dark ? "text-white decoration-white/50" : "text-brand-primary decoration-brand-primary/35"}`}
     >
       {item.label} ↗
-    </a>
+    </Link>
   );
 }
 
@@ -47,10 +47,7 @@ function Introduction() {
   return (
     <section className="section-space bg-background" aria-labelledby="tarifwahl-heading">
       <div className="section-shell">
-        <p className="text-xs leading-6 text-[var(--text-subtle)]">
-          Hero: KI-generiertes, illustratives Motiv · kein Referenzprojekt
-        </p>
-        <Reveal className="mt-8 grid gap-7 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+        <Reveal className="grid gap-7 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
           <div>
             <p className="eyebrow">Technik & Tarif gemeinsam planen</p>
             <h2 id="tarifwahl-heading" className="section-title mt-4">
@@ -142,7 +139,7 @@ function TariffOverview() {
           className="border-border-strong mt-10 grid gap-x-12 border-t md:grid-cols-2"
         >
           {tariffModels.map((model) => (
-            <a
+            <Link
               key={model.id}
               href={`#${model.id}`}
               className="border-border-strong group flex min-w-0 items-center gap-4 border-b py-6"
@@ -155,7 +152,7 @@ function TariffOverview() {
                 </span>
               </span>
               <ArrowRightIcon className="text-brand-primary size-5 shrink-0 transition-transform group-hover:translate-x-1" />
-            </a>
+            </Link>
           ))}
         </nav>
       </div>

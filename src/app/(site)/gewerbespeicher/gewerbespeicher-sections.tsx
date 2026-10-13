@@ -1,3 +1,4 @@
+import { PublicLink as Link } from "@/components/ui/public-link";
 import Image from "next/image";
 
 import { Reveal } from "@/components/marketing/reveal";
@@ -109,15 +110,14 @@ export function CommercialStorageProductsSection() {
                     </div>
                   ))}
                 </dl>
-                <a
+                <Link
                   href={product.source}
                   target="_blank"
                   rel="noreferrer"
                   className="text-brand-primary mt-3 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
                 >
                   {product.sourceLabel}
-                  <span className="sr-only"> (öffnet in neuem Tab)</span>
-                </a>
+                </Link>
               </Reveal>
             </article>
           ))}
@@ -180,7 +180,7 @@ export function CommercialStorageEnergyManagementSection() {
               </dd>
             </div>
             <div className="border-border-strong border-t py-5">
-              <dt className="text-brand-primary font-semibold">FlexStack · sonnenPro EMS</dt>
+              <dt className="text-brand-primary font-semibold">sonnenPro Compact 261 · sonnenPro EMS</dt>
               <dd className="mt-2 text-sm leading-7 text-[var(--text-muted)]">
                 Laut sonnen unterstützt sonnenPro EMS die Nutzung von PV-Strom, die Reduktion von
                 Lastspitzen und die Steuerung von Verbrauchern. Die konkrete Betriebsstrategie wird

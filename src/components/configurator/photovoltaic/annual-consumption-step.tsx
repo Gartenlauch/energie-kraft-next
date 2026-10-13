@@ -23,8 +23,8 @@ export function AnnualConsumptionStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-consumption-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Wie hoch ist dein Jahresstromverbrauch?"
-      description="Wir haben anhand deiner Haushaltsgröße bereits einen Richtwert vorausgewählt. Du kannst ihn jederzeit ändern."
+      title="Wie hoch ist Ihr Jahresstromverbrauch?"
+      description="Wir haben anhand Ihrer Haushaltsgröße bereits einen Richtwert vorausgewählt. Sie können ihn jederzeit ändern."
     >
       <div className="max-w-xl">
         <NumericInputField
@@ -46,7 +46,7 @@ export function AnnualConsumptionStep({
           <p className="text-sm leading-6 text-foreground/70">
             Dieser Wert dient zunächst als Grundlage für die
             weitere Konfiguration. Im nächsten Abschnitt erfassen
-            wir die Angaben zu deinem Dach.
+            wir die Angaben zu Ihrem Dach.
           </p>
         </div>
       </div>

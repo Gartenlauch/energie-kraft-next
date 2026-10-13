@@ -59,7 +59,7 @@ const energyLinks: readonly NavigationLink[] = [
     label: "Gewerbespeicher",
     href: "/gewerbespeicher",
     description: "Erzeugung und Verbrauch im Betrieb besser aufeinander abstimmen.",
-    previewImage: "/images/battery-storage/battery-storage-feature-desktop.webp",
+    previewImage: "/images/navigation/commercial-storage-mega.webp",
     priority: "supporting",
   },
   {

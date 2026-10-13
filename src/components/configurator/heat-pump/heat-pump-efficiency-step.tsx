@@ -32,7 +32,7 @@ export function HeatPumpEfficiencyStep({
       </SelectionGrid>
 
       <p className="mt-5 text-sm leading-6 text-foreground/60">
-        Wenn du unsicher bist, ist eine JAZ von
+        Wenn Sie unsicher sind, ist eine JAZ von
         3,5 die bisherige Standardannahme unseres
         Wärmepumpen-Modells.
       </p>

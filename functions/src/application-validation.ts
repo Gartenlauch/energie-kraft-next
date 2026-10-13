@@ -6,10 +6,13 @@ const SALUTATION_VALUES = ["frau", "herr", "divers"] as const;
 // Server-side integrity allowlist mirroring the public catalog in src/content/jobs.ts.
 // Job titles are never trusted from the browser.
 export const APPLICATION_JOB_TITLES = {
-  elektriker: "Elektriker (w/m/d)",
+  elektriker: "Elektriker:in (w/m/d)",
   dachmonteur: "Dachmonteur:in (w/m/d)",
   "ausbildung-elektroniker-gebaeudetechnik": "Ausbildung Elektroniker:in Gebäudetechnik (w/m/d)",
 } as const;
+
+// Keep archived titles available for historical applications, but reject new submissions.
+export const INACTIVE_APPLICATION_JOB_IDS: readonly string[] = [];
 
 export const applicationPayloadSchema = z
   .object({
@@ -18,7 +21,8 @@ export const applicationPayloadSchema = z
       .string()
       .trim()
       .max(100)
-      .refine((value) => value in APPLICATION_JOB_TITLES),
+      .refine((value) => Object.prototype.hasOwnProperty.call(APPLICATION_JOB_TITLES, value) &&
+        !INACTIVE_APPLICATION_JOB_IDS.includes(value)),
     salutation: z.enum(SALUTATION_VALUES).optional(),
     firstName: z.string().trim().min(1).max(80),
     lastName: z.string().trim().min(1).max(80),

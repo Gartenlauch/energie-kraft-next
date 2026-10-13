@@ -32,8 +32,8 @@ export function HeatPumpFlowTemperatureStep({
       </SelectionGrid>
 
       <p className="mt-5 text-sm leading-6 text-foreground/60">
-        Wenn du die Vorlauftemperatur nicht genau
-        kennst, kann sie häufig an kalten Tagen an
+        Wenn Sie die Vorlauftemperatur nicht genau
+        kennen, kann sie häufig an kalten Tagen an
         der bestehenden Heizungsregelung abgelesen
         werden.
       </p>

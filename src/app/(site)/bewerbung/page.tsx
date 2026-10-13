@@ -5,7 +5,7 @@ import { ApplicationForm } from "@/components/forms/application-form";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { EditorialFeatureSection } from "@/components/marketing/marketing-sections";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
-import { getActiveJobOpening } from "@/content/jobs";
+import { getActiveJobOpening, jobOpenings } from "@/content/jobs";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
 
@@ -26,6 +26,7 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
   const parameters = await searchParams;
   const requestedJob = Array.isArray(parameters.stelle) ? parameters.stelle[0] : parameters.stelle;
   const initialJobId = requestedJob ? getActiveJobOpening(requestedJob)?.id : undefined;
+  const closedJob = jobOpenings.find((job) => job.slug === requestedJob && !job.active);
 
   return (
     <>
@@ -42,7 +43,7 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
         <SecondaryPageHeading
           eyebrow="Deine Bewerbung"
           title="Bring deine Erfahrung in die Energiewende ein."
-          description="Bewirb dich auf eine aktuelle Stelle oder wähle den passenden Ausbildungsweg. Deine Unterlagen kannst du direkt und privat mitsenden."
+          description="Bewirb dich auf eine aktuelle Stelle. Deinen Lebenslauf und weitere Unterlagen kannst du direkt und privat mitsenden."
           primaryCta={{ label: "Bewerbung ausfüllen", href: "#bewerbungsformular" }}
           secondaryCta={{ label: "Stellen ansehen", href: "/jobs#stellen" }}
         />
@@ -63,7 +64,15 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
                 serverseitig geprüft und sicher gespeichert.
               </p>
             </div>
-            <ApplicationForm initialJobId={initialJobId} />
+            <div>
+              {closedJob && (
+                <p role="status" className="mb-6 border-l-2 border-brand-primary pl-4 text-sm leading-7">
+                  Die Stelle „{closedJob.title}“ ist derzeit nicht ausgeschrieben. Wähle bitte eine
+                  aktuell offene Stelle aus.
+                </p>
+              )}
+              <ApplicationForm initialJobId={initialJobId} />
+            </div>
           </div>
         </section>
         <EditorialFeatureSection
@@ -71,7 +80,7 @@ export default async function ApplicationPage({ searchParams }: ApplicationPageP
           title="Persönlich zusammenarbeiten und gemeinsam etwas voranbringen"
           paragraphs={[
             "Gemeinsame Pausen, Gespräche mit Kolleg:innen und eine persönliche Arbeitsatmosphäre gehören für Energie-Kraft Süd genauso dazu wie technische Sorgfalt und Verantwortung.",
-            "Für die erste Kontaktaufnahme genügen die Angaben im Formular. Wenn du möchtest, ergänze deinen Lebenslauf, dein Anschreiben oder relevante Zeugnisse direkt bei der Bewerbung.",
+            "Für deine Bewerbung benötigen wir die Angaben im Formular. Wenn du möchtest, ergänze deinen Lebenslauf, dein Anschreiben oder relevante Zeugnisse direkt bei der Bewerbung.",
           ]}
           surface="soft"
           layout="statement"

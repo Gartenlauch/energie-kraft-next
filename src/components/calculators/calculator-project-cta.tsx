@@ -23,10 +23,10 @@ export function CalculatorProjectCta({ handoff }: { handoff: CalculatorHandoffDr
         <p className="text-sm font-semibold tracking-[0.12em] text-cyan-200 uppercase">
           Nächster Schritt
         </p>
-        <h3 className="mt-2 text-2xl font-semibold">Aus Orientierung wird dein Energieprojekt</h3>
+        <h3 className="mt-2 text-2xl font-semibold">Aus Orientierung wird Ihr Energieprojekt</h3>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-white/70">
-          Kompatible Eingaben werden als editierbarer Vorschlag übernommen. Nach Abschluss erhältst
-          du deine persönliche Projektanalyse als PDF.
+          Kompatible Eingaben werden als editierbarer Vorschlag übernommen. Nach Abschluss erhalten
+          Sie Ihre persönliche Projektanalyse als PDF.
         </p>
       </div>
       <Link

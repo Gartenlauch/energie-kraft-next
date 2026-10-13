@@ -93,7 +93,7 @@ export function getAnnualConsumptionValidationMessage(
   }
 
   if (!annualConsumptionKwhSchema.safeParse(value).success) {
-    return "Bitte gib einen Jahresverbrauch zwischen 500 und 100.000 kWh ein.";
+    return "Bitte geben Sie einen Jahresverbrauch zwischen 500 und 100.000 kWh ein.";
   }
 
   return undefined;
@@ -103,7 +103,7 @@ export function getFutureIncreaseValidationMessage(
   value: number,
 ): string | undefined {
   if (!futureIncreasePercentSchema.safeParse(value).success) {
-    return "Bitte gib eine Erhöhung zwischen 0 und 200 % ein.";
+    return "Bitte geben Sie eine Erhöhung zwischen 0 und 200 % ein.";
   }
 
   return undefined;

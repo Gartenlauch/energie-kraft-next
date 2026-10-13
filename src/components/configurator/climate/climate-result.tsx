@@ -46,9 +46,9 @@ export function ClimateResult({
       <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
       <ResultIntro
         id="climate-result-heading"
-        eyebrow="Deine erste Orientierung"
-        title="Deine Klimaanlagen-Orientierung"
-        description="Angenehme Temperaturen dort, wo du sie brauchst. Die empfohlene Lösung kühlt gezielt und wird passend zu deinen Räumen und deinem Energiesystem geplant."
+        eyebrow="Ihre erste Orientierung"
+        title="Ihre Klimaanlagen-Orientierung"
+        description="Angenehme Temperaturen dort, wo Sie sie brauchen. Die empfohlene Lösung kühlt gezielt und wird passend zu Ihren Räumen und Ihrem Energiesystem geplant."
       />
 
       <div className="bg-brand-navy mt-8 overflow-hidden rounded-[1.5rem] px-6 py-7 text-white sm:px-9 sm:py-9">
@@ -87,7 +87,7 @@ export function ClimateResult({
 
       {result.individualPlanningRecommended ? (
         <p className="border-brand-secondary text-foreground/70 mt-6 border-l-4 pl-5 leading-7">
-          Für deine Raumaufteilung empfehlen wir eine individuelle Mehrzonenplanung.
+          Für Ihre Raumaufteilung empfehlen wir eine individuelle Mehrzonenplanung.
         </p>
       ) : null}
       {reviewAdditionalSolutions ? <AdditionalEnergySolutions currentProduct="climate" /> : null}

@@ -44,14 +44,14 @@ export function NotesStep({
         <div className="mt-8">
           <TextareaField
             id="photovoltaic-notes"
-            label="Deine Anmerkungen"
+            label="Ihre Anmerkungen"
             value={text}
             onChange={onTextChange}
             maxLength={1_000}
-            helpText="Bitte beschreibe kurz, was wir bei deinem Projekt berücksichtigen sollen."
+            helpText="Bitte beschreiben Sie kurz, was wir bei Ihrem Projekt berücksichtigen sollen."
             error={
               textRequired
-                ? "Bitte ergänze deine Anmerkung."
+                ? "Bitte ergänzen Sie Ihre Anmerkung."
                 : undefined
             }
           />

@@ -33,8 +33,8 @@ export function ConfiguratorPlaceholder({
 
           <div className="mt-8 rounded-2xl border border-border-default bg-surface p-6">
             <p className="leading-7 text-foreground/70">
-              Bis zur Fertigstellung findest du auf unserer
-              Themenseite weitere Informationen und kannst jederzeit
+              Bis zur Fertigstellung finden Sie auf unserer
+              Themenseite weitere Informationen und können jederzeit
               eine persönliche Beratung anfragen.
             </p>
           </div>

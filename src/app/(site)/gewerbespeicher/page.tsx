@@ -8,6 +8,7 @@ import {
   CommercialStorageProductsSection,
   CommercialStorageEnergyManagementSection,
 } from "./gewerbespeicher-sections";
+import { CommercialLoadProfileChart } from "./commercial-load-profile-chart";
 
 const content = sprint8Pages.commercialStorage;
 
@@ -18,6 +19,7 @@ export default function CommercialStoragePage() {
     <Sprint8ContentPage
       brandIntroVariant="brand"
       content={content}
+      sectionHeadingContent={{ einsatz: <CommercialLoadProfileChart /> }}
       sectionOverrides={{
         anwendungen: <CommercialStorageApplicationsSection />,
         produkte: <CommercialStorageProductsSection />,

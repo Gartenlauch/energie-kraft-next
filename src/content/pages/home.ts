@@ -13,7 +13,7 @@ export const homeContent = {
     eyebrow: "Ihr PV Anbieter aus Bayern",
     title: "Energie intelligent planen und nachhaltig nutzen",
     description:
-      "Photovoltaik und Batteriespeicher sind unsere Stärke. Von Ainring bei Freilassing aus planen und realisieren wir passende Lösungen für private Haushalte und Unternehmen im Berchtesgadener Land, im Landkreis Traunstein und der angrenzenden Region – persönlich beraten und aus einer Hand umgesetzt.",
+      "Photovoltaik, Batteriespeicher, Wärmepumpen und Klimaanlagen sind unsere Stärke. Von Ainring bei Freilassing aus planen und realisieren wir passende Lösungen für private Haushalte und Unternehmen im Berchtesgadener Land, im Landkreis Traunstein und der angrenzenden Region – persönlich beraten und aus einer Hand umgesetzt.",
 
     primaryCta: {
       label: "Energieprojekt konfigurieren",

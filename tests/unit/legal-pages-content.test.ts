@@ -13,6 +13,7 @@ function articleText(html: string) {
   const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/)?.[1];
   expect(article).toBeDefined();
   return article!
+    .replace(/<span class="sr-only"> \(öffnet in neuem Tab\)<\/span>/g, "")
     .replace(/<[^>]+>/g, " ")
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')

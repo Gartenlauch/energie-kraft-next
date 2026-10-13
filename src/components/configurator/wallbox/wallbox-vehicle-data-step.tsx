@@ -144,21 +144,21 @@ export function WallboxVehicleDataStep({
     annualDrivingKm !== undefined &&
     (annualDrivingKm < 1_000 ||
       annualDrivingKm > 100_000)
-      ? "Bitte gib eine Fahrleistung zwischen 1.000 und 100.000 km/Jahr ein."
+      ? "Bitte geben Sie eine Fahrleistung zwischen 1.000 und 100.000 km/Jahr ein."
       : null;
 
   const consumptionError =
     vehicleConsumptionKwhPer100Km !== undefined &&
     (vehicleConsumptionKwhPer100Km < 8 ||
       vehicleConsumptionKwhPer100Km > 50)
-      ? "Bitte gib einen Fahrzeugverbrauch zwischen 8 und 50 kWh/100 km ein."
+      ? "Bitte geben Sie einen Fahrzeugverbrauch zwischen 8 und 50 kWh/100 km ein."
       : null;
 
   const batteryError =
     batteryCapacityKwh !== undefined &&
     (batteryCapacityKwh < 10 ||
       batteryCapacityKwh > 250)
-      ? "Bitte gib eine Batteriekapazität zwischen 10 und 250 kWh ein."
+      ? "Bitte geben Sie eine Batteriekapazität zwischen 10 und 250 kWh ein."
       : null;
 
   return (
@@ -184,7 +184,7 @@ export function WallboxVehicleDataStep({
         id="wallbox-vehicle-consumption"
         label="Fahrzeugverbrauch"
         unit="kWh/100 km"
-        helpText="Zum Beispiel 18 kWh/100 km. Den Wert findest du häufig in den Fahrzeugdaten."
+        helpText="Zum Beispiel 18 kWh/100 km. Den Wert finden Sie häufig in den Fahrzeugdaten."
         value={consumptionText}
         inputMode="decimal"
         error={consumptionError}

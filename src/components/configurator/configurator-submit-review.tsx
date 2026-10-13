@@ -270,11 +270,11 @@ export function ConfiguratorSubmitReview({
                     id="configurator-submit-heading"
                     className="mt-3 text-3xl font-semibold tracking-tight text-brand-primary sm:text-4xl"
                 >
-                    Möchtest du dein Energieprojekt absenden?
+                    Möchten Sie Ihr Energieprojekt absenden?
                 </h1>
 
                 <p className="mt-4 max-w-2xl text-lg leading-8 text-foreground/70">
-                    Prüfe die wichtigsten Angaben noch einmal.
+                    Prüfen Sie die wichtigsten Angaben noch einmal.
                     Alle ausgewählten Konfigurationen werden
                     gemeinsam als eine Anfrage übermittelt.
                 </p>
@@ -336,11 +336,11 @@ export function ConfiguratorSubmitReview({
 
                     <article className="rounded-xl border border-brand-accent-strong bg-surface p-6 md:col-span-2">
                         <h2 className="font-semibold text-brand-primary">
-                            Dein Energieprojekt
+                            Ihr Energieprojekt
                         </h2>
 
                         <p className="mt-2 text-sm leading-6 text-foreground/60">
-                            Diese Energielösungen gehören zu deiner
+                            Diese Energielösungen gehören zu Ihrer
                             gemeinsamen Konfiguration.
                         </p>
 

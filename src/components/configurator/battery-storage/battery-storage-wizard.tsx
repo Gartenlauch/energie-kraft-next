@@ -52,7 +52,7 @@ export function BatteryStorageWizard({ photovoltaicHandoff }: BatteryStorageWiza
         </h1>
 
         <p className="text-foreground/70 mt-2 leading-7">
-          Der aktuelle Schritt ist nicht verfügbar. Bitte starte den Stromspeicher-Konfigurator
+          Der aktuelle Schritt ist nicht verfügbar. Bitte starten Sie den Stromspeicher-Konfigurator
           erneut.
         </p>
       </div>
@@ -149,7 +149,7 @@ export function BatteryStorageWizard({ photovoltaicHandoff }: BatteryStorageWiza
           <p className="text-brand-secondary text-sm font-semibold">PV-Daten übernommen</p>
 
           <p className="text-foreground/70 mt-2 text-sm leading-6">
-            Verbrauch und empfohlene PV-Anlagenklasse stammen aus deiner vorherigen
+            Verbrauch und empfohlene PV-Anlagenklasse stammen aus Ihrer vorherigen
             Photovoltaik-Konfiguration.
           </p>
         </div>

@@ -1,8 +1,27 @@
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 
 import { Reveal } from "@/components/marketing/reveal";
 import { stromspeicherContent, stromspeicherProducts } from "@/content/pages/stromspeicher";
+import { storageFunctionVisual, storageFunctionVideo } from "@/content/pages/stromspeicher";
+import { DecorativeLoopVideo } from "@/components/media/decorative-loop-video";
+import { EditorialFeatureSection } from "@/components/marketing/marketing-sections";
+
+export function StorageFunctionSection() {
+  const section = getSection("funktionsweise");
+  return <EditorialFeatureSection
+    id={section.id}
+    eyebrow={section.eyebrow}
+    title={section.title}
+    paragraphs={section.text}
+    surface="white"
+    layout="image-left"
+    media={<DecorativeLoopVideo src={storageFunctionVideo.src} fallback={{
+      ...storageFunctionVisual,
+      sizes: "(max-width: 1023px) 100vw, 50vw",
+    }} />}
+  />;
+}
 
 function getSection(id: string) {
   return stromspeicherContent.sections.find((section) => section.id === id)!;
@@ -65,15 +84,14 @@ export function StorageProductsSection() {
                     </div>
                   ))}
                 </dl>
-                <a
+                <Link
                   href={product.source}
                   target="_blank"
                   rel="noreferrer"
                   className="text-brand-primary inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
                 >
                   Produktinformationen bei Sigenergy
-                  <span className="sr-only"> (öffnet in neuem Tab)</span>
-                </a>
+                </Link>
               </Reveal>
             </article>
           ))}
@@ -120,14 +138,14 @@ export function StorageEnergyManagementSection() {
               </li>
             ))}
           </ul>
-          <a
+          <Link
             href="https://www.sigenergy.com/de/products/mysigen-app"
             target="_blank"
             rel="noreferrer"
             className="text-brand-primary mt-6 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4"
           >
-            mySigen beim Hersteller entdecken<span className="sr-only"> (öffnet in neuem Tab)</span>
-          </a>
+            mySigen beim Hersteller entdecken
+          </Link>
         </Reveal>
         <Reveal>
           <figure className="mx-auto w-full max-w-[18rem]">

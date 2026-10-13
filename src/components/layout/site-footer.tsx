@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import { MarketingInvitation } from "@/components/layout/marketing-invitation";
 
 import { ArrowRightIcon, FacebookIcon, InstagramIcon, PhoneIcon } from "@/components/ui/icons";
@@ -64,13 +64,13 @@ export function SiteFooter() {
             Individuelle Lösungen für Photovoltaik, Stromspeicher, E-Mobilität, Wärmepumpen und
             Klimatisierung – persönlich geplant in Ainring.
           </p>
-          <a
+          <Link
             href={siteConfig.contact.phoneHref}
             className="text-brand-primary mt-6 inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
           >
             <PhoneIcon className="size-4" />
             {siteConfig.contact.phoneDisplay}
-          </a>
+          </Link>
         </div>
 
         <div>
@@ -115,16 +115,25 @@ export function SiteFooter() {
               {siteConfig.contact.address.postalCode} {siteConfig.contact.address.city}
             </p>
             <p>
-              <a
+              <Link
                 href={siteConfig.contact.emailHref}
                 className="text-brand-primary break-all underline-offset-4 hover:underline"
               >
                 {siteConfig.contact.email}
-              </a>
+              </Link>
+            </p>
+            <p>
+              <Link
+                href={siteConfig.contact.mapHref}
+                rel="noopener noreferrer"
+                className="text-brand-primary inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+              >
+                Anfahrt planen
+              </Link>
             </p>
           </address>
           <div className="mt-5 flex gap-3">
-            <a
+            <Link
               href={siteConfig.social.facebook}
               aria-label="Energie-Kraft Süd auf Facebook"
               target="_blank"
@@ -132,8 +141,8 @@ export function SiteFooter() {
               className="border-border-default text-brand-primary hover:border-brand-primary hover:bg-brand-primary flex size-11 items-center justify-center rounded-lg border transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
             >
               <FacebookIcon className="size-5" />
-            </a>
-            <a
+            </Link>
+            <Link
               href={siteConfig.social.instagram}
               aria-label="Energie-Kraft Süd auf Instagram"
               target="_blank"
@@ -141,7 +150,7 @@ export function SiteFooter() {
               className="border-border-default text-brand-primary hover:border-brand-primary hover:bg-brand-primary flex size-11 items-center justify-center rounded-lg border transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
             >
               <InstagramIcon className="size-5" />
-            </a>
+            </Link>
           </div>
           <Image
             src="/brand/certifications/dgs-mitglied.jpg"

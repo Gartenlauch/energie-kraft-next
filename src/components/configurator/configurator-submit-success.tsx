@@ -42,19 +42,19 @@ export function ConfiguratorSubmitSuccess({
           className="text-brand-navy mt-4 text-3xl leading-tight tracking-tight focus:outline-none sm:text-4xl"
         >
           {projectOverviewSent
-            ? "Deine Energieprojekt-Analyse ist unterwegs"
-            : "Deine Anfrage ist erfolgreich angekommen"}
+            ? "Ihre Energieprojekt-Analyse ist unterwegs"
+            : "Ihre Anfrage ist erfolgreich angekommen"}
         </h1>
 
         <p className="text-foreground/70 mt-5 max-w-2xl text-lg leading-8">
           {projectOverviewSent ? (
             <>
-              Wir haben deine Konfiguration erfolgreich erhalten. Du bekommst deine persönliche
+              Wir haben Ihre Konfiguration erfolgreich erhalten. Sie bekommen Ihre persönliche
               Ergebnisübersicht in wenigen Minuten per E-Mail.
             </>
           ) : (
             <>
-              Wir haben deine Konfiguration erfolgreich erhalten und gespeichert. Die
+              Wir haben Ihre Konfiguration erfolgreich erhalten und gespeichert. Die
               Energieprojekt-Analyse konnte momentan nicht automatisch per E-Mail bereitgestellt
               werden. Wir kümmern uns darum.
             </>

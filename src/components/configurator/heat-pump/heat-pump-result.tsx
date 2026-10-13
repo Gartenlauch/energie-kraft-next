@@ -45,8 +45,8 @@ export function HeatPumpResult({
       <ConfiguratorPhaseIndicator currentPhase="configuration" compact />
       <ResultIntro
         id="heat-pump-result-heading"
-        eyebrow="Deine erste Orientierung"
-        title="Deine Wärmepumpen-Orientierung"
+        eyebrow="Ihre erste Orientierung"
+        title="Ihre Wärmepumpen-Orientierung"
         description="Eine erste Einordnung von Leistung, Investition und laufenden Heizkosten. Die endgültige Auslegung erfordert eine Heizlastberechnung und Prüfung vor Ort."
       />
 

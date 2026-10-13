@@ -41,7 +41,7 @@ export function HeatPumpHeatedAreaStep({
   const error =
     value !== undefined &&
     (value < 20 || value > 5_000)
-      ? "Bitte gib eine beheizte Fläche zwischen 20 und 5.000 m² ein."
+      ? "Bitte geben Sie eine beheizte Fläche zwischen 20 und 5.000 m² ein."
       : null;
 
   return (

@@ -11,10 +11,10 @@ import type {
     [
       {
         id: "rooms",
-        title: "Welche Räume möchtest du klimatisieren?",
+        title: "Welche Räume möchten Sie klimatisieren?",
         shortLabel: "Räume",
         description:
-          "Gib die gesamte zu klimatisierende Fläche und die Anzahl der getrennten Räume oder Zonen an.",
+          "Geben Sie die gesamte zu klimatisierende Fläche und die Anzahl der getrennten Räume oder Zonen an.",
         phase: "configuration",
       },
       {

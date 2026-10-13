@@ -42,12 +42,12 @@ export function ClimateRoomsStep({
 
   const areaError =
     conditionedAreaM2 !== undefined && (conditionedAreaM2 < 10 || conditionedAreaM2 > 2_000)
-      ? "Bitte gib eine Fläche zwischen 10 und 2.000 m² ein."
+      ? "Bitte geben Sie eine Fläche zwischen 10 und 2.000 m² ein."
       : null;
 
   const roomError =
     roomCount !== undefined && (!Number.isInteger(roomCount) || roomCount < 1 || roomCount > 30)
-      ? "Bitte gib zwischen 1 und 30 getrennte Räume oder Zonen ein."
+      ? "Bitte geben Sie zwischen 1 und 30 getrennte Räume oder Zonen ein."
       : null;
 
   return (
@@ -146,7 +146,7 @@ export function ClimateRoomsStep({
       </div>
       {areaPrefilledFromHeatPump ? (
         <p id="climate-area-inherited" className="mt-4 text-sm font-medium text-cyan-700">
-          Fläche aus deiner Wärmepumpen-Konfiguration übernommen – weiterhin frei änderbar.
+          Fläche aus Ihrer Wärmepumpen-Konfiguration übernommen – weiterhin frei änderbar.
         </p>
       ) : null}
     </div>

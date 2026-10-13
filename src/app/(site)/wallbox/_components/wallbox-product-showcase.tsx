@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 
 import { Reveal } from "@/components/marketing/reveal";
 import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
@@ -23,20 +23,20 @@ export function WallboxProductShowcase({ section }: { section: ContentSection })
         </Reveal>
         <nav
           aria-label="Wallbox-Systeme im Überblick"
-          className="border-border-default mt-8 grid grid-cols-2 border-y lg:grid-cols-4"
+          className="border-border-default mt-8 grid grid-cols-2 border-y lg:grid-cols-5"
         >
           {wallboxProducts.map((product, index) => (
-            <a
+            <Link
               key={product.id}
               href={`#${product.id}`}
-              className="group text-brand-primary hover:bg-surface-soft focus-visible:bg-surface-soft flex min-h-16 items-center justify-between gap-3 px-3 py-4 transition-colors md:px-5"
+              className="group text-brand-primary hover:bg-surface-soft focus-visible:bg-surface-soft flex min-h-16 items-center justify-between gap-3 px-3 py-4 transition-colors last:col-span-2 md:px-5 lg:last:col-span-1"
             >
               <span className="text-sm font-semibold">
                 <span className="mr-2 text-[var(--text-subtle)]">0{index + 1}</span>
-                {product.brand}
+                {product.navigationLabel ?? product.brand}
               </span>
               <ArrowRightIcon className="size-4 shrink-0" />
-            </a>
+            </Link>
           ))}
         </nav>
       </div>
@@ -88,6 +88,16 @@ export function WallboxProductShowcase({ section }: { section: ContentSection })
                     </li>
                   ))}
                 </ul>
+                {product.specifications && (
+                  <dl className="mt-7 text-sm leading-6">
+                    {product.specifications.map(({ label, value }) => (
+                      <div key={label} className="border-border-default grid gap-1 border-t py-3 sm:grid-cols-[0.9fr_1.1fr] sm:gap-5">
+                        <dt className="text-brand-dark font-semibold">{label}</dt>
+                        <dd className="min-w-0 text-[var(--text-muted)]">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )}
                 {product.detail && (
                   <p className="mt-5 text-sm leading-7 text-[var(--text-muted)]">
                     {product.detail}
@@ -97,6 +107,15 @@ export function WallboxProductShowcase({ section }: { section: ContentSection })
                   <p className="mt-4 text-sm leading-7 text-[var(--text-muted)]">
                     {product.availabilityNote}
                   </p>
+                )}
+                {product.sources && (
+                  <div className="mt-5 flex flex-wrap gap-x-6">
+                    {product.sources.map(source => (
+                      <Link key={source.href} href={source.href} className="text-brand-primary inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">
+                        {source.label}
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </Reveal>
             </div>

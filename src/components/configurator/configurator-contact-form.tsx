@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 import { useEffect, useRef, useState } from "react";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
@@ -149,11 +149,11 @@ export function ConfiguratorContactForm({
           id="configurator-contact-heading"
           className="text-brand-navy mt-4 text-3xl leading-tight tracking-tight sm:text-4xl"
         >
-          Deine persönliche Projektanalyse ist vorbereitet.
+          Ihre persönliche Projektanalyse ist vorbereitet.
         </h1>
 
         <p className="text-foreground/70 mt-4 max-w-2xl text-lg leading-8">
-          Ergänze als letzten Schritt deine Kontaktdaten. Anschließend wird deine individuelle
+          Ergänzen Sie als letzten Schritt Ihre Kontaktdaten. Anschließend wird Ihre individuelle
           Analyse als PDF erstellt und per E-Mail bereitgestellt.
         </p>
 
@@ -257,7 +257,7 @@ export function ConfiguratorContactForm({
           aria-invalid={errors.installationAtResidence ? true : undefined}
         >
           <legend id="configurator-installation-label" className="text-brand-primary text-lg font-semibold">
-            Soll die Installation an deinem Wohnort erfolgen?
+            Soll die Installation an Ihrem Wohnort erfolgen?
           </legend>
 
           <div className="mt-5">

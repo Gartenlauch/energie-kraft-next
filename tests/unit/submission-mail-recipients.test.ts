@@ -79,6 +79,20 @@ const configurator = {
 } as ConfiguratorLeadPayload;
 
 describe("submission mail recipients", () => {
+  it.each([undefined, []])("builds application notifications without documents (%s)", (documents) => {
+    const input = {
+      applicationId: application.submissionId,
+      jobTitle: "Elektriker:in (w/m/d)",
+      receivedAt: "2026-09-24T12:00:00.000Z",
+      application,
+      documents,
+    };
+    const mail = buildApplicationInternalMail(input);
+    expect(mail.text).toContain("Unterlagen: 0");
+    expect(mail.html).toContain("Unterlagen (0)");
+    expect(mail.html).not.toContain("undefined");
+    expect(buildApplicationAutoReply(input).to).toBe(application.email);
+  });
   it("uses the one pre-launch recipient for every internal notification", () => {
     expect(INTERNAL_SUBMISSION_RECIPIENT).toBe("anfrage@energie-kraft.de");
     expect(buildContactLeadMail({ leadId: "lead-1", lead: contact }).to).toBe(

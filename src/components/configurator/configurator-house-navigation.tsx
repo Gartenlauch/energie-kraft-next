@@ -13,7 +13,7 @@ const hotspots = {
   photovoltaic: { x: 76, y: 39, description: "Auf dem Dach eigenen Solarstrom erzeugen." },
   battery_storage: { x: 59, y: 73, description: "Im Technikraum Solarstrom für später speichern." },
   climate: { x: 66, y: 59, description: "Im Wohnbereich für angenehme Temperaturen sorgen." },
-  heat_pump: { x: 45, y: 78, description: "Die Außeneinheit versorgt dein Zuhause mit Wärme." },
+  heat_pump: { x: 45, y: 78, description: "Die Außeneinheit versorgt Ihr Zuhause mit Wärme." },
   wallbox: { x: 81, y: 74, description: "Am Carport mit eigener Energie laden." },
 } satisfies Record<ConfiguratorType, { x: number; y: number; description: string }>;
 
@@ -34,7 +34,7 @@ export function ConfiguratorHouseNavigation({ products }: ConfiguratorHouseNavig
         <div className="house-navigation__caption" aria-hidden="true">
           <span className="eyebrow eyebrow-on-dark">Alles spielt zusammen</span>
           <p className="mt-4 max-w-[12ch] text-[clamp(1.8rem,3.2vw,3.1rem)] leading-tight font-bold text-white">
-            Dein Haus als Energiesystem.
+            Ihr Haus als Energiesystem.
           </p>
         </div>
         <nav aria-label="Energiekomponenten am Haus" className="house-hotspots">

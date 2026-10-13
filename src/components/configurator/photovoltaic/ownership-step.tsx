@@ -20,7 +20,7 @@ export function OwnershipStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-ownership-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Bist du Eigentümer oder Mieter?"
+      title="Sind Sie Eigentümer oder Mieter?"
       description="Für eine fest installierte Photovoltaikanlage ist die Zustimmung des Eigentümers erforderlich."
     >
       <SelectionGrid columns={2}>

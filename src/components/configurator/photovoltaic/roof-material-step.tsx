@@ -21,8 +21,8 @@ export function RoofMaterialStep({
     <ConfiguratorStepSection
       headingId="photovoltaic-roof-material-heading"
       eyebrow={photovoltaicConfiguratorContent.eyebrow}
-      title="Aus welchem Material besteht dein Dach?"
-      description="Wähle die Dacheindeckung, die deinem Gebäude am ehesten entspricht."
+      title="Aus welchem Material besteht Ihr Dach?"
+      description="Wählen Sie die Dacheindeckung, die Ihrem Gebäude am ehesten entspricht."
     >
       <SelectionGrid columns={3}>
         {photovoltaicRoofMaterialOptions.map((option) => (

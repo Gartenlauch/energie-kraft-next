@@ -1,4 +1,5 @@
-﻿import type { Metadata } from "next";
+import { PublicLink as Link } from "@/components/ui/public-link";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { headers } from "next/headers";
 
@@ -100,7 +101,7 @@ export default function GoogleReviewPage() {
           </p>
         </div>
 
-        <a
+        <Link
           href="https://g.page/r/CbQYaiCf6F9eEBM/review"
           className="button-primary mt-7 min-h-14 w-full gap-3 sm:w-auto"
           aria-describedby="google-review-hint"
@@ -116,7 +117,7 @@ export default function GoogleReviewPage() {
           >
             <path d="M5 12h14m-6-6 6 6-6 6" />
           </svg>
-        </a>
+        </Link>
         <p
           id="google-review-hint"
           className="mx-auto mt-4 max-w-sm text-xs leading-relaxed text-[var(--text-muted)] sm:text-sm"

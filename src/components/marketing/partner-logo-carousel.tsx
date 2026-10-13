@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ArrowRightIcon } from "@/components/ui/icons";
 
-const partners = [
+export const partners = [
   {
     name: "Fronius",
     src: "/brand/partners/Partner_fronius-249x69x0x0x249x69x1734284654.png",
@@ -65,6 +65,13 @@ const partners = [
     height: 48,
   },
   { name: "ABL", src: "/brand/partners/ABL_logo.svg", width: 75, height: 30 },
+  { name: "Krannich Solar", src: "/brand/partners/krannich-solar-logo.svg", width: 136, height: 48.4 },
+  {
+    name: "Siko",
+    src: "/brand/partners/Partner_siko-187x80x0x0x187x80x1734284654.jpg",
+    width: 187,
+    height: 80,
+  },
 ] as const;
 
 export function PartnerLogoCarousel() {

@@ -6,6 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ContactLeadForm } from "@/components/contact/contact-lead-form";
 import { ConfiguratorContactForm } from "@/components/configurator/configurator-contact-form";
 
+vi.mock("@/config/env/public", () => ({ publicEnv: {
+  NEXT_PUBLIC_CANONICAL_BASE_URL: "https://www.energie-kraft.de",
+} }));
+
 vi.mock("next/link", () => ({
   default: (props: ComponentProps<"a">) => createElement("a", props),
 }));

@@ -1,6 +1,6 @@
-import type { ComponentType, SVGProps } from "react";
+import type { ComponentType, SVGProps, ReactNode } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { PublicLink as Link } from "@/components/ui/public-link";
 
 import { ArtDirectedImage } from "@/components/media/art-directed-image";
 import { Reveal, type RevealVariant } from "@/components/marketing/reveal";
@@ -8,6 +8,7 @@ import { ArrowRightIcon, CheckIcon } from "@/components/ui/icons";
 import type { ReferenceGroup } from "@/content/reference-projects";
 
 interface MarketingImage {
+  flipHorizontal?: boolean;
   desktopSrc: string;
   mobileSrc: string;
   desktopWidth: number;
@@ -49,7 +50,7 @@ export function PremiumHeroSection({
 }: PremiumHeroSectionProps) {
   return (
     <section className="premium-hero bg-brand-navy relative isolate min-h-[43rem] overflow-hidden text-white lg:min-h-[calc(100svh-7rem)]">
-      <div className="absolute inset-0">
+      <div className={`absolute inset-0${image.flipHorizontal ? " -scale-x-100" : ""}`}>
         <ArtDirectedImage
           desktopSrc={image.desktopSrc}
           mobileSrc={image.mobileSrc}
@@ -299,6 +300,8 @@ interface EditorialFeatureSectionProps {
   image?: MarketingImage;
   imagePresentation?: "cover" | "technical";
   imageCaption?: string;
+  media?: ReactNode;
+  headingContent?: ReactNode;
 }
 
 export function EditorialFeatureSection({
@@ -316,6 +319,8 @@ export function EditorialFeatureSection({
   image,
   imagePresentation = "cover",
   imageCaption,
+  media,
+  headingContent,
 }: EditorialFeatureSectionProps) {
   const dark = surface === "blue";
   const surfaceClass = dark
@@ -323,7 +328,7 @@ export function EditorialFeatureSection({
     : surface === "soft"
       ? "bg-surface-soft"
       : "bg-background";
-  const hasImage = image && (layout === "image-left" || layout === "image-right");
+  const hasImage = (image || media) && (layout === "image-left" || layout === "image-right");
   const action = cta && !links?.some((link) => link.href === cta.href) ? cta : undefined;
 
   return (
@@ -334,7 +339,7 @@ export function EditorialFeatureSection({
       <div className={hasImage ? "editorial-image-grid" : "section-shell editorial-grid"}>
         {hasImage ? (
           <Reveal variant={layout === "image-left" ? "left" : "right"} className="editorial-media">
-            {imagePresentation === "technical" ? (
+            {media ? <div className="editorial-photo">{media}</div> : image && imagePresentation === "technical" ? (
               <figure className="editorial-technical-figure">
                 <Image
                   src={image.desktopSrc}
@@ -351,11 +356,11 @@ export function EditorialFeatureSection({
                   </figcaption>
                 ) : null}
               </figure>
-            ) : (
+            ) : image ? (
               <div className="editorial-photo">
                 <ArtDirectedImage {...image} sizes="(max-width: 1023px) 100vw, 50vw" />
               </div>
-            )}
+            ) : null}
           </Reveal>
         ) : null}
         <div className="editorial-heading">
@@ -363,7 +368,11 @@ export function EditorialFeatureSection({
             {eyebrow ? (
               <p className={dark ? "eyebrow eyebrow-on-dark" : "eyebrow"}>{eyebrow}</p>
             ) : null}
-            <h2 className={`section-title mt-4 ${dark ? "text-white" : ""}`}>{title}</h2>
+            <h2
+              className={`section-title mt-4 ${dark ? "text-white" : ""}`}
+              style={title.includes("\u00ad") ? { hyphens: "manual", overflowWrap: "normal" } : undefined}
+            >{title}</h2>
+            {headingContent}
           </Reveal>
         </div>
 
@@ -464,17 +473,7 @@ export function EditorialFeatureSection({
                 );
                 const className = `editorial-option group min-w-0 min-h-52 border-b p-6 transition-colors last:border-b-0 sm:border-b-0 sm:border-l sm:first:border-l-0 ${dark ? "border-white/30 hover:bg-white/8 focus-visible:bg-white/8" : "border-border-strong hover:bg-surface focus-visible:bg-surface"}`;
 
-                return link.external ? (
-                  <a
-                    key={`${link.href}-${index}`}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={className}
-                  >
-                    {content}
-                  </a>
-                ) : (
+                return (
                   <Link key={`${link.href}-${index}`} href={link.href} className={className}>
                     {content}
                   </Link>

@@ -13,6 +13,7 @@ import {
 
 const pdfBytes = Buffer.from("%PDF-1.7\n1 0 obj\n<<>>\nendobj\n%%EOF");
 const pdf = {
+  documentType: "resume" as const,
   name: "Lebenslauf.pdf",
   contentType: "application/pdf",
   size: pdfBytes.length,
@@ -59,10 +60,22 @@ function docx() {
 }
 
 describe("application document validation", () => {
+  it("accepts omitted documents, empty uploads and optional attachments", () => {
+    expect(validateApplicationFiles([])).toBeNull();
+    expect(applicationFilesSchema.parse(undefined)).toEqual([]);
+    expect(applicationFilesSchema.parse([])).toEqual([]);
+    expect(validateApplicationDocumentBytes([])).toEqual([]);
+    expect(planApplicationDocuments("test", [])).toEqual([]);
+    expect(applicationFilesSchema.safeParse([{ ...pdf, documentType: "attachment" }]).success).toBe(true);
+    expect(applicationFilesSchema.safeParse([pdf]).success).toBe(true);
+    const { documentType: _type, ...legacyDocument } = pdf;
+    expect(applicationFilesSchema.parse([legacyDocument])[0].documentType).toBe("attachment");
+  });
   it("accepts PDF bytes and a WordprocessingML DOCX, not generic ZIP", () => {
     expect(validateApplicationDocumentBytes([pdf])[0]).toEqual(pdfBytes);
     const bytes = docx();
     const word = {
+      documentType: "resume" as const,
       name: "CV.docx",
       contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       size: bytes.length,
@@ -103,7 +116,7 @@ describe("application document validation", () => {
   ])("accepts content signature for $name", ({ name, contentType, bytes }) => {
     expect(
       validateApplicationDocumentBytes([
-        { name, contentType, size: bytes.length, base64: bytes.toString("base64") },
+        { name, contentType, size: bytes.length, base64: bytes.toString("base64"), documentType: "resume" },
       ]),
     ).toHaveLength(1);
   });
