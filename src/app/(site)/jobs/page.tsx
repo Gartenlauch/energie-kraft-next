@@ -19,7 +19,7 @@ import { JobEditorialArticle } from "./job-editorial-article";
 const seo = {
   title: "Jobs & Karriere | Energie-Kraft Süd",
   description:
-    "Aktuelle Jobs bei Energie-Kraft Süd in Ainring: Elektriker:in, Dachmonteur:in und Ausbildung Elektroniker:in Gebäudetechnik.",
+    "Aktuelle Jobs bei Energie-Kraft Süd in Ainring: Elektriker:in, Dachmonteur:in, Servicetechniker:in für Photovoltaik und Speichersysteme sowie Ausbildung Elektroniker:in Gebäudetechnik.",
   canonicalPath: "/jobs",
 };
 
@@ -108,24 +108,24 @@ export default function JobsPage() {
                 </h2>
               </div>
               <p className="lead-copy lg:justify-self-end">
-                Ob Elektrotechnik, Dachmontage oder Ausbildung: Hier findest du die Aufgaben,
+                Ob Elektrotechnik, Dachmontage, technischer Service oder Ausbildung: Hier findest du die Aufgaben,
                 Anforderungen und Perspektiven der aktuell offenen Positionen.
               </p>
             </Reveal>
 
             <nav
               aria-label="Direkt zur offenen Stelle"
-              className="border-border-strong mt-12 grid border-y md:grid-cols-3"
+              className="border-border-strong mt-12 grid border-t md:grid-cols-2 md:gap-x-10"
             >
               {activeJobOpenings.map((job, index) => (
                 <a
                   key={job.id}
                   href={`#${job.id}`}
-                  className="group border-border-default flex min-h-24 items-center gap-5 border-b py-6 last:border-b-0 md:border-b-0 md:pr-8"
+                  className="group border-border-default flex min-h-24 items-center gap-5 border-b py-6 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-primary md:pr-8"
                 >
                   <span className="text-brand-primary text-xs tabular-nums">0{index + 1}</span>
-                  <span className="min-w-0 text-sm leading-6 font-semibold group-hover:underline">
-                    {job.title}{" "}
+                  <span className="min-w-0 text-sm leading-6 font-semibold [overflow-wrap:anywhere] group-hover:underline">
+                    {job.title}{"\u00a0"}
                     <ArrowRightIcon className="text-brand-primary ml-1 inline-block size-4 align-middle" />
                   </span>
                 </a>

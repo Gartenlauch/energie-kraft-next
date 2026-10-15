@@ -17,6 +17,11 @@ const jobVisuals: Record<string, { desktopSrc: string; mobileSrc: string; alt: s
     mobileSrc: "/images/jobs/job-rooftop-installer-mobile.webp",
     alt: "Symbolbild: Fachkraft montiert Photovoltaikmodule auf einem Dach",
   },
+  servicetechniker: {
+    desktopSrc: "/images/home-premium/service-maintenance-desktop.webp",
+    mobileSrc: "/images/home-premium/service-maintenance-mobile.webp",
+    alt: "Symbolbild: Servicetechniker bei der Diagnose an einem Wechselrichter mit Messgerät",
+  },
   "ausbildung-elektroniker-gebaeudetechnik": {
     desktopSrc: "/images/jobs/job-trainee-desktop.webp",
     mobileSrc: "/images/jobs/job-trainee-mobile.webp",
@@ -79,7 +84,7 @@ export function JobEditorialArticle({ job, index }: { job: JobOpening; index: nu
           <p className="eyebrow">Stelle 0{index + 1}</p>
           <h3
             id={`${job.id}-title`}
-            className="mt-4 max-w-3xl text-3xl leading-tight tracking-[-0.035em] sm:text-4xl xl:text-5xl"
+            className="mt-4 max-w-3xl text-3xl leading-tight tracking-[-0.035em] sm:text-4xl xl:text-5xl [overflow-wrap:anywhere]"
           >
             {job.title}
           </h3>
@@ -93,11 +98,13 @@ export function JobEditorialArticle({ job, index }: { job: JobOpening; index: nu
               <dt className="sr-only">Standort</dt>
               <dd className="font-semibold">{job.location}</dd>
             </div>
-            <div className="flex items-center gap-2">
-              <BriefcaseIcon className="text-brand-primary size-5 shrink-0" />
-              <dt className="sr-only">Beschäftigung</dt>
-              <dd className="font-semibold">{job.employmentType}</dd>
-            </div>
+            {job.employmentType ? (
+              <div className="flex items-center gap-2">
+                <BriefcaseIcon className="text-brand-primary size-5 shrink-0" />
+                <dt className="sr-only">Beschäftigung</dt>
+                <dd className="font-semibold">{job.employmentType}</dd>
+              </div>
+            ) : null}
           </dl>
 
           <div className="mt-9 space-y-9">

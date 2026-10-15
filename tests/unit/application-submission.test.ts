@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { applicationPayloadSchema } from "../../functions/src/application-validation";
+import { applicationPayloadSchema, getApplicationJobTitle } from "../../functions/src/application-validation";
 import { hasInvalidSubmissionSignals } from "../../functions/src/submission-security";
 import { attemptMailDelivery } from "../../functions/src/submission-workflow";
 import { parseApplicationInput } from "@/lib/validation/application";
@@ -44,6 +44,17 @@ describe("application submission", () => {
     const jobId = "ausbildung-elektroniker-gebaeudetechnik";
     expect(parseApplicationInput({ ...validApplication, jobId }).jobId).toBe(jobId);
     expect(applicationPayloadSchema.parse({ ...validApplication, jobId }).jobId).toBe(jobId);
+  });
+
+  it("accepts the service role with optional documents and resolves its authoritative title", () => {
+    const jobId = "servicetechniker";
+    const application = { ...validApplication, jobId };
+    expect(parseApplicationInput(application).jobId).toBe(jobId);
+    expect(applicationPayloadSchema.parse(application).documents).toEqual([]);
+    expect(applicationPayloadSchema.parse({ ...application, documents: [resume] }).jobId).toBe(jobId);
+    expect(getApplicationJobTitle(jobId)).toBe(
+      "Servicetechniker:in – Photovoltaik und Speichersysteme (m/w/d)",
+    );
   });
 
   it("rejects unknown jobs on client and server", () => {

@@ -12,7 +12,7 @@ describe("employee feedback catalogs", () => {
     expect(
       jobOpenings.find((job) => job.id === "ausbildung-elektroniker-gebaeudetechnik")?.active,
     ).toBe(true);
-    expect(activeJobOpenings).toHaveLength(3);
+    expect(activeJobOpenings).toHaveLength(4);
     expect(activeJobOpenings.filter((job) => job.id === "ausbildung-elektroniker-gebaeudetechnik")).toHaveLength(1);
     expect(activeJobOpenings.find((job) => job.id === "dachmonteur")?.title).toBe("Dachmonteur:in (w/m/d)");
     expect(activeJobOpenings.find((job) => job.id === "elektriker")?.title).toBe(

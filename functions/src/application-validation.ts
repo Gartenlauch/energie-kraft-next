@@ -8,6 +8,7 @@ const SALUTATION_VALUES = ["frau", "herr", "divers"] as const;
 export const APPLICATION_JOB_TITLES = {
   elektriker: "Elektriker:in (w/m/d)",
   dachmonteur: "Dachmonteur:in (w/m/d)",
+  servicetechniker: "Servicetechniker:in – Photovoltaik und Speichersysteme (m/w/d)",
   "ausbildung-elektroniker-gebaeudetechnik": "Ausbildung Elektroniker:in Gebäudetechnik (w/m/d)",
 } as const;
 

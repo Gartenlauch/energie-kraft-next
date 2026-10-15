@@ -108,6 +108,7 @@ const { database, bucket } = vi.hoisted(() => {
 });
 
 import { submitApplication } from "../../functions/src/application";
+import { sendApplicationInternalMail, sendApplicationAutoReply } from "../../functions/src/application-mail";
 import { deleteApplication, listApplications } from "@/lib/submissions/application-repository";
 import { GET as download } from "@/app/api/admin/applications/[applicationId]/documents/[documentId]/route";
 
@@ -169,6 +170,21 @@ describe("application upload persistence (mock infrastructure, no emails)", () =
     expect(state.records.has(input.submissionId)).toBe(false);
     expect(state.storageAccesses).toBe(0);
   });
+  it("assigns the service role to persistence, the admin list and both mail notifications", async () => {
+    const jobId = "servicetechniker";
+    const jobTitle = "Servicetechniker:in – Photovoltaik und Speichersysteme (m/w/d)";
+    const result = await submit({ ...input, jobId, documents: [] });
+    expect(result.ok).toBe(true);
+    expect(state.records.get(input.submissionId)).toMatchObject({ jobId, jobTitle, documents: [] });
+    expect((await listApplications())[0]).toMatchObject({ jobId, jobTitle, documents: [] });
+    for (const send of [sendApplicationInternalMail, sendApplicationAutoReply]) {
+      expect(send).toHaveBeenCalledWith(expect.objectContaining({
+        jobTitle,
+        application: expect.objectContaining({ jobId }),
+      }));
+    }
+  });
+
   it("reserves metadata before Storage, then mails; mail failure never loses files/data", async () => {
     state.failMail = true;
     const result = await submit();

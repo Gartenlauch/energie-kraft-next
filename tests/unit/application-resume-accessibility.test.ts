@@ -97,6 +97,25 @@ describe("optional application documents", () => {
     expect(container.textContent).toContain("Deine Bewerbung wurde erfolgreich übermittelt.");
   });
 
+  it("preselects and submits the service role without requiring documents", async () => {
+    act(() => root.render(createElement(ApplicationForm, {
+      initialJobId: "servicetechniker",
+      key: "service-role",
+    })));
+    const input = container.querySelector<HTMLSelectElement>("#application-job")!;
+    expect(input.value).toBe("servicetechniker");
+    expect(input.selectedOptions[0].textContent).toBe(
+      "Servicetechniker:in – Photovoltaik und Speichersysteme (m/w/d)",
+    );
+    expect(Array.from(input.options).filter((option) => option.value)).toHaveLength(4);
+    expect(container.querySelector<HTMLInputElement>("#application-documents")!.required).toBe(false);
+    fillApplication();
+    await submit();
+    expect(submitApplication).toHaveBeenCalledWith(
+      expect.objectContaining({ jobId: "servicetechniker" }), [],
+    );
+  });
+
   it("accepts the apprenticeship selection", async () => {
     const input = container.querySelector<HTMLSelectElement>("#application-job")!;
     expect(Array.from(input.options).filter((option) => option.value === "ausbildung-elektroniker-gebaeudetechnik")).toHaveLength(1);
