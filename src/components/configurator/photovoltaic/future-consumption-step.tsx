@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import { ConfiguratorStepSection } from "@/components/configurator/configurator-step-section";
 import { NumericInputField } from "@/components/configurator/numeric-input-field";
 import { SelectionCard } from "@/components/configurator/selection-card";
@@ -27,6 +31,8 @@ export function FutureConsumptionStep({
   projectedConsumptionKwh,
   onChange,
 }: FutureConsumptionStepProps) {
+  // Keep the editable text separate from the numeric value used by the wizard.
+  const [inputValue, setInputValue] = useState(() => String(futureIncreasePercent));
   const additionalConsumptionKwh =
     calculateAdditionalConsumptionKwh(
       annualConsumptionKwh,
@@ -53,9 +59,12 @@ export function FutureConsumptionStep({
               title={option.title}
               description={option.description}
               selected={
-                futureIncreasePercent === option.value
+                inputValue !== "" && futureIncreasePercent === option.value
               }
-              onSelect={() => onChange(option.value)}
+              onSelect={() => {
+                setInputValue(String(option.value));
+                onChange(option.value);
+              }}
             />
           ),
         )}
@@ -65,11 +74,10 @@ export function FutureConsumptionStep({
         <NumericInputField
           id="future-increase-percent"
           label="Eigene Angabe"
-          value={futureIncreasePercent}
-          onChange={(value) => {
-            if (value !== undefined) {
-              onChange(value);
-            }
+          value={inputValue}
+          onChange={(value, rawValue) => {
+            setInputValue(rawValue);
+            onChange(value ?? 0);
           }}
           min={0}
           max={200}

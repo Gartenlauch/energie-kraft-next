@@ -2,7 +2,7 @@ import { readdir, mkdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
-import { parseReferenceFilename, slugify, uniqueOutputStem } from "./reference-image-lib.mjs";
+import { isReferenceGroupDirectory, parseReferenceFilename, slugify, uniqueOutputStem } from "./reference-image-lib.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const source = path.join(root, "design-input", "reference-originals");
@@ -12,7 +12,7 @@ const capacityFormat = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 3
 const isRaster = (filename) => /\.(jpe?g|png|webp|tiff?)$/i.test(filename);
 const compare = (a, b) => a.localeCompare(b, "de", { numeric: true });
 const folders = (await readdir(source, { withFileTypes: true }))
-  .filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort(compare);
+  .filter(isReferenceGroupDirectory).map((entry) => entry.name).sort(compare);
 const groups = [];
 const skipped = [];
 const samples = [];

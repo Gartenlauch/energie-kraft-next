@@ -3,8 +3,8 @@
 interface NumericInputFieldProps {
   id: string;
   label: string;
-  value: number | undefined;
-  onChange: (value: number | undefined) => void;
+  value: number | string | undefined;
+  onChange: (value: number | undefined, rawValue: string) => void;
   min?: number;
   max?: number;
   step?: number;
@@ -56,7 +56,7 @@ export function NumericInputField({
             const rawValue = event.currentTarget.value;
 
             if (rawValue === "") {
-              onChange(undefined);
+              onChange(undefined, rawValue);
               return;
             }
 
@@ -66,6 +66,7 @@ export function NumericInputField({
               Number.isFinite(parsedValue)
                 ? parsedValue
                 : undefined,
+              rawValue,
             );
           }}
           className={[

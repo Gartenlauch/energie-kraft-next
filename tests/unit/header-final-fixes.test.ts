@@ -49,6 +49,8 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("Header route fallback", () => {
   it.each([
+    ["/", "/images/navigation/photovoltaic-mega-corrected.webp", "energy"],
+    ["/photovoltaik", "/images/navigation/photovoltaic-mega-corrected.webp", "energy"],
     [
       "/service-und-wartung/finanzierung-und-foerderung",
       "/images/finanzierung/photovoltaik-desktop.webp",

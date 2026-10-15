@@ -71,7 +71,10 @@ export function CommercialStorageProductsSection() {
             >
               <Reveal className={`min-w-0 ${index === 1 ? "lg:order-2" : ""}`}>
                 <figure>
-                  <div className="bg-surface-soft flex aspect-video items-center overflow-hidden">
+                  <div
+                    className="bg-surface-soft flex items-center overflow-hidden"
+                    style={{ aspectRatio: `${product.width} / ${product.height}` }}
+                  >
                     <Image
                       src={product.image}
                       width={product.width}

@@ -1,5 +1,12 @@
 import path from "node:path";
 
+// Reserved mixed-location import inbox, not a publishable location group.
+// Assign its images to reviewed location folders before running the importer.
+// All other directories remain subject to import and coverage checks.
+export function isReferenceGroupDirectory(entry) {
+  return entry.isDirectory() && entry.name !== "neue-referenzen";
+}
+
 const localityNames = new Map([
   ["kirchanschoering", "Kirchanschöring"],
   ["schoenau", "Schönau"],

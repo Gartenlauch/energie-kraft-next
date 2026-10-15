@@ -1338,8 +1338,7 @@ footer,
   border-top: 2px solid var(--brand-primary);
 }
 @media (max-width: 63.999rem) {
-  .house-navigation__caption,
-  .house-hotspots {
+  .house-navigation__caption {
     display: none;
   }
   .house-product-list {
@@ -1361,6 +1360,13 @@ footer,
 @media (max-width: 47.999rem) {
   .house-navigation__visual {
     aspect-ratio: 3 / 4;
+  }
+  .house-hotspot {
+    left: var(--hotspot-mobile-x);
+    top: var(--hotspot-mobile-y);
+  }
+  .house-hotspot__label {
+    width: min(16rem, 55vw);
   }
   .contact-topic-matrix {
     grid-template-columns: 1fr;

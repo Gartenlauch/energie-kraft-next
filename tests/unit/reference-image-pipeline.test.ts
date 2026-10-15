@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseReferenceFilename, slugify, uniqueOutputStem } from "../../scripts/reference-image-lib.mjs";
+import { isReferenceGroupDirectory, parseReferenceFilename, slugify, uniqueOutputStem } from "../../scripts/reference-image-lib.mjs";
 import { referenceGroups } from "@/content/reference-projects";
 import nextConfig from "../../next.config";
 
@@ -35,12 +35,20 @@ describe("reference image metadata", () => {
 });
 
 describe("generated reference routes", () => {
-  it("covers every source folder with a real cover and nonempty gallery", () => {
+  it("excludes only the reserved import inbox and keeps unknown location folders eligible", () => {
+    for (const name of ["Ainring", "Chieming", "neue-referenzen-weitere"]) {
+      expect(isReferenceGroupDirectory({ name, isDirectory: () => true })).toBe(true);
+    }
+    expect(isReferenceGroupDirectory({ name: "neue-referenzen", isDirectory: () => true })).toBe(false);
+    expect(isReferenceGroupDirectory({ name: "notes.txt", isDirectory: () => false })).toBe(false);
+  });
+
+  it("covers every source group folder with a real cover and nonempty gallery", () => {
     const sourceDirectory = path.join(process.cwd(), "design-input/reference-originals");
     // This local authoring source is intentionally unavailable in CI.
     if (existsSync(sourceDirectory)) {
       const sourceFolders = readdirSync(sourceDirectory, { withFileTypes: true })
-        .filter((entry) => entry.isDirectory()).map((entry) => slugify(entry.name)).sort();
+        .filter(isReferenceGroupDirectory).map((entry) => slugify(entry.name)).sort();
       expect(referenceGroups.map((group) => group.groupSlug).sort()).toEqual(sourceFolders);
     }
     for (const group of referenceGroups) {

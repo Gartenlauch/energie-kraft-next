@@ -31,10 +31,10 @@ const productImages = {
   photovoltaic: {
     desktopSrc: "/images/photovoltaic/photovoltaic-feature-desktop.webp",
     mobileSrc: "/images/photovoltaic/photovoltaic-feature-mobile.webp",
-    desktopWidth: 1600,
-    desktopHeight: 1200,
-    mobileWidth: 1200,
-    mobileHeight: 1500,
+    desktopWidth: 1448,
+    desktopHeight: 1086,
+    mobileWidth: 864,
+    mobileHeight: 1080,
     alt: "Fachgerechte Montage einer Photovoltaikanlage auf einem Hausdach",
   },
   battery: {

@@ -10,25 +10,25 @@ interface ConfiguratorHouseNavigationProps {
 }
 
 const hotspots = {
-  photovoltaic: { x: 76, y: 39, description: "Auf dem Dach eigenen Solarstrom erzeugen." },
-  battery_storage: { x: 59, y: 73, description: "Im Technikraum Solarstrom für später speichern." },
-  climate: { x: 66, y: 59, description: "Im Wohnbereich für angenehme Temperaturen sorgen." },
-  heat_pump: { x: 45, y: 78, description: "Die Außeneinheit versorgt Ihr Zuhause mit Wärme." },
-  wallbox: { x: 81, y: 74, description: "Am Carport mit eigener Energie laden." },
-} satisfies Record<ConfiguratorType, { x: number; y: number; description: string }>;
+  photovoltaic: { x: 78, y: 44, mobileX: 65, mobileY: 44, description: "Auf dem Dach eigenen Solarstrom erzeugen." },
+  battery_storage: { x: 61, y: 75, mobileX: 44, mobileY: 69, description: "Im Technikraum Solarstrom für später speichern." },
+  climate: { x: 71, y: 57, mobileX: 86, mobileY: 60, description: "Im Wohnbereich für angenehme Temperaturen sorgen." },
+  heat_pump: { x: 40, y: 79, mobileX: 30, mobileY: 85, description: "Die Außeneinheit versorgt Ihr Zuhause mit Wärme." },
+  wallbox: { x: 82, y: 67, mobileX: 60, mobileY: 70, description: "Am Carport mit eigener Energie laden." },
+} satisfies Record<ConfiguratorType, { x: number; y: number; mobileX: number; mobileY: number; description: string }>;
 
 export function ConfiguratorHouseNavigation({ products }: ConfiguratorHouseNavigationProps) {
   return (
     <div className="house-navigation mt-10">
       <div className="house-navigation__visual">
         <ArtDirectedImage
-          desktopSrc="/images/home-premium/hero-energy-home-desktop.webp"
-          mobileSrc="/images/home-premium/hero-energy-home-mobile.webp"
+          desktopSrc="/images/home-premium/configurator-energy-home-desktop.webp"
+          mobileSrc="/images/home-premium/configurator-energy-home-mobile.webp"
           desktopWidth={2000}
           desktopHeight={1200}
           mobileWidth={1200}
           mobileHeight={1600}
-          alt="Haus mit Photovoltaik auf dem Dach, Wärmepumpe im Garten und Wallbox am Carport"
+          alt="Haus mit Photovoltaik auf dem Dach, Klimaanlage am Balkon, Wärmepumpe im Garten und Wallbox am Carport"
           sizes="(max-width: 1023px) 100vw, 1280px"
         />
         <div className="house-navigation__caption" aria-hidden="true">
@@ -46,7 +46,12 @@ export function ConfiguratorHouseNavigation({ products }: ConfiguratorHouseNavig
                 href={product.href}
                 className={`house-hotspot ${spot.x > 70 ? "house-hotspot--right" : ""}`}
                 style={
-                  { "--hotspot-x": `${spot.x}%`, "--hotspot-y": `${spot.y}%` } as CSSProperties
+                  {
+                    "--hotspot-x": `${spot.x}%`,
+                    "--hotspot-y": `${spot.y}%`,
+                    "--hotspot-mobile-x": `${spot.mobileX}%`,
+                    "--hotspot-mobile-y": `${spot.mobileY}%`,
+                  } as CSSProperties
                 }
                 aria-label={`${product.title}: ${spot.description} Jetzt konfigurieren`}
               >

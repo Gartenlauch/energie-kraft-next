@@ -56,7 +56,7 @@ export const commercialStorageProducts = [
   {
     id: "sonnenpro-compact-261",
     manufacturer: "sonnen",
-    name: "sonnenPro Compact 261",
+    name: "sonnenPro Compact",
     description:
       "sonnenPro Compact 261 ist ein vorkonfigurierter Gewerbespeicher mit integriertem Wechselrichter. Das Plug-&-Play-Komplettsystem verbindet 125 kW Leistung mit 261 kWh Kapazität und unterstützt mit sonnenPro EMS Peak Shaving, PV-Eigenverbrauchsoptimierung und Lastmanagement.",
     image: "/images/commercial-storage/products/sonnenpro-compact-261.webp",
@@ -97,6 +97,33 @@ export const commercialStorageProducts = [
       { label: "Kühlung", text: "Flüssigkeitsgekühlt" },
       { label: "Monitoring", text: "Überwachung und Verwaltung über iSolarCloud" },
       { label: "Einbindung", text: "Parallele Einbindung mehrerer Einheiten laut Hersteller" },
+    ],
+  },
+  {
+    id: "sungrow-powerstack-st510cs-4h",
+    manufacturer: "Sungrow",
+    name: "PowerStack ST510CS-4H",
+    description:
+      "Der PowerStack ST510CS-4H ist ein flüssigkeitsgekühlter Batteriespeicher für Gewerbe und Industrie mit 125 kW AC-Nennleistung und 514 kWh Nennkapazität. Für gewerbliche PV-Anlagen kommt er zur zeitversetzten Nutzung von Solarstrom und zur Unterstützung des Lastmanagements infrage. Die Betriebsstrategie wird mit dem betrieblichen Energiemanagement abgestimmt.",
+    image: "/images/commercial-storage/products/Sungrow ST510CS.webp",
+    width: 1016,
+    height: 886,
+    alt: "Offizielle Produktdarstellung des Sungrow PowerStack ST510CS-4H",
+    imageCaption: "Produktdarstellung des Sungrow PowerStack ST510CS-4H. Systemausstattung je nach Konfiguration.",
+    source: "https://www.sungrowpower.com/uk/en/uk/en/powerstack/st510",
+    sourceLabel: "Produktinformationen bei Sungrow (Englisch)",
+    // Manufacturer datasheet, Version 1 EUR; checked 2026-10-15.
+    // https://info-support.sungrowpower.com/datasheet-material/38474add-fb82-49d4-9273-8c9d52d2d952.pdf
+    details: [
+      { label: "Leistung", text: "125 kW AC-Nennleistung" },
+      { label: "Kapazität", text: "514 kWh Nennkapazität" },
+      { label: "Zelltechnologie", text: "Lithium-Eisenphosphat (LFP)" },
+      { label: "Kühlung", text: "Intelligente Flüssigkeitskühlung" },
+      { label: "Aufstellung", text: "IP55; 2.152 × 2.470 × 1.610 mm (B × H × T); Gewicht ≤ 5.300 kg" },
+      { label: "Temperatur", text: "−30 bis +50 °C; Leistungsreduzierung oberhalb von 45 °C" },
+      { label: "Sicherheit", text: "Gas-, Rauch- und Wärmedetektoren, akustischer Alarm und Heißaerosol-Löscheinrichtung laut Hersteller" },
+      { label: "Monitoring", text: "iSolarCloud; Ethernet und Modbus TCP zur Kommunikation" },
+      { label: "Erweiterung", text: "Bis zu 25 Einheiten im Netzparallelbetrieb laut Hersteller; projektspezifische Einbindung erforderlich" },
     ],
   },
 ] as const;
@@ -150,9 +177,9 @@ export const commercialStorageContent: Sprint8PageContent = {
     {
       id: "produkte",
       eyebrow: "Unsere Gewerbespeicher",
-      title: "SigenStack, sonnenPro Compact 261 und Sungrow PowerStack",
+      title: "Gewerbespeicher von Sigenergy, sonnenPro und Sungrow",
       paragraphs: [
-        "Drei Systemkonzepte für gewerbliche Anforderungen. Auslegung und Ausstattung werden für den jeweiligen Betrieb geplant.",
+        "Vier Speichermodelle für gewerbliche Anforderungen: SigenStack, sonnenPro Compact 261 sowie Sungrow PowerStack ST255CS-2H und ST510CS-4H. Auslegung und Ausstattung werden für den jeweiligen Betrieb geplant.",
       ],
     },
     {
@@ -162,7 +189,7 @@ export const commercialStorageContent: Sprint8PageContent = {
       surface: "soft",
       paragraphs: [
         "Welche Lösung geeignet ist, hängt von Lastprofil, PV-Erzeugung, benötigter Leistung und Kapazität, Aufstellort, Erweiterungsbedarf und den Anforderungen an Energiemanagement und Infrastruktur ab. Diese Punkte werden projektspezifisch bewertet.",
-        "SigenStack verfolgt einen DC-gekoppelten Ansatz mit stapelbaren Batteriemodulen. sonnenPro Compact 261 ist ein vorkonfiguriertes Komplettsystem mit 125 kW Leistung, 261 kWh Kapazität und sonnenPro EMS; bis zu 10 Systeme lassen sich kaskadieren. Sungrow PowerStack kombiniert 125 kW AC-Nennleistung und 257 kWh Batteriekapazität mit Flüssigkeitskühlung und iSolarCloud zur Überwachung. Die Einbindung in die vorhandene oder geplante Anlage wird für alle drei Systeme technisch geprüft.",
+        "SigenStack verfolgt einen DC-gekoppelten Ansatz mit stapelbaren Batteriemodulen. sonnenPro Compact 261 ist ein vorkonfiguriertes Komplettsystem mit 125 kW Leistung, 261 kWh Kapazität und sonnenPro EMS; bis zu 10 Systeme lassen sich kaskadieren. Sungrow PowerStack bietet beim ST255CS-2H 257 kWh und beim ST510CS-4H 514 kWh bei jeweils 125 kW AC-Nennleistung, Flüssigkeitskühlung und iSolarCloud zur Überwachung. Die Einbindung in die vorhandene oder geplante Anlage wird für alle vier Modelle technisch geprüft.",
       ],
     },
     {
@@ -234,7 +261,7 @@ export const commercialStorageContent: Sprint8PageContent = {
     {
       id: "region",
       eyebrow: "Energie-Kraft Süd",
-      title: "Gewerbespeicher planen – regional und bei größeren Projekten in Bayern",
+      title: "Gewerbespeicher regional planen in ganz Bayern",
       surface: "white",
       paragraphs: [
         "Energie-Kraft Süd besteht seit über 20 Jahren. Von Ainring aus begleiten wir gewerbliche Energieprojekte im Berchtesgadener Land, im Landkreis Traunstein und der angrenzenden Region.",

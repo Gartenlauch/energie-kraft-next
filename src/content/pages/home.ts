@@ -53,7 +53,7 @@ export const homeSections = {
   photovoltaic: {
     id: "photovoltaik",
     eyebrow: "Photovoltaik für Ihr Zuhause",
-    title: "Ihr Dach. Ihr eigener Solarstrom.",
+    title: "Dein Dach. Dein Solarstrom.",
     description:
       "Wir planen und installieren Ihre Photovoltaikanlage passend zu Dachfläche, Stromverbrauch und den Möglichkeiten Ihres Gebäudes. Einen Batteriespeicher berücksichtigen wir auf Wunsch direkt bei der Planung. So entsteht eine aufeinander abgestimmte Lösung für die Erzeugung und Nutzung Ihres eigenen Solarstroms.",
     benefits: ["Individuell geplant", "Fachgerecht installiert"],

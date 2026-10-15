@@ -80,11 +80,11 @@ export function TeamOverview({ mode }: TeamOverviewProps) {
                 : "Ansprechpartner für Betrieb und Service"}
             </h2>
           </div>
-          <p className="lead-copy lg:justify-self-end">
-            {companyMode
-              ? "Führung, Montage, Service, Vertrieb und Verwaltung arbeiten entlang eines gemeinsamen Projektziels. Verantwortliche stellen wir persönlich vor; weitere Fachbereiche zeigen wir bewusst über ihre Funktion."
-              : "Technische Betreuung entsteht im Zusammenspiel von Service, Dachmontage, Vertrieb und Verwaltung. So kommt jedes Anliegen verlässlich in den passenden Fachbereich."}
-          </p>
+            <p className="lead-copy lg:justify-self-end">
+              {companyMode
+                ? "Führung, Montage, Service, Vertrieb und Verwaltung arbeiten entlang eines gemeinsamen Projektziels."
+                : "Technische Betreuung entsteht im Zusammenspiel von Service, Dachmontage, Vertrieb und Verwaltung. So kommt jedes Anliegen verlässlich in den passenden Fachbereich."}
+            </p>
         </Reveal>
 
         {companyMode ? (

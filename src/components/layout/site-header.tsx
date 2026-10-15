@@ -38,7 +38,7 @@ const energyLinks: readonly NavigationLink[] = [
     label: "Photovoltaik",
     href: "/photovoltaik",
     description: "Solarstrom passend zu Dach und Verbrauch planen.",
-    previewImage: "/images/photovoltaic/photovoltaic-feature-desktop.webp",
+   previewImage: "/images/navigation/photovoltaic-mega-corrected.webp",
     priority: "primary",
   },
   {
@@ -492,8 +492,8 @@ export function SiteHeader() {
             title="Energie als Gesamtsystem denken"
             intro="Photovoltaik, Speicher, Wärme und Mobilität – abgestimmt auf Ihr Gebäude."
             links={energyLinks}
-            imageSrc="/images/navigation/energy-solutions-mega.webp"
-            imageAlt="Modernes Wohnhaus mit Photovoltaikanlage in den bayerischen Voralpen"
+            imageSrc="/images/navigation/photovoltaic-mega-corrected.webp"
+            imageAlt="Montage von Solarmodulen auf einem Hausdach"
             openMenu={openMenu}
             setOpenMenu={setOpenMenu}
             pathname={pathname}

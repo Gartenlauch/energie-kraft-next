@@ -3,6 +3,9 @@ import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { imageConfigDefault } from "next/dist/shared/lib/image-config";
+import { ImageConfigContext } from "next/dist/shared/lib/image-config-context.shared-runtime";
+import nextConfig from "../../next.config";
 import { WallboxProductShowcase } from "@/app/(site)/wallbox/_components/wallbox-product-showcase";
 
 vi.mock("@/config/env/public", () => ({
@@ -60,7 +63,11 @@ describe("Wallbox relaunch content contracts", () => {
 
   it("renders the AC charger after DC with the verified specifications, supplied image and official sources", () => {
     const section = wallboxContent.sections.find((section) => section.id === "wallbox-produkte")!;
-    const html = renderToStaticMarkup(createElement(WallboxProductShowcase, { section }));
+    // Vitest does not inject next.config image options like the Next.js runtime.
+    const html = renderToStaticMarkup(createElement(ImageConfigContext.Provider, {
+      value: { ...imageConfigDefault, ...nextConfig.images },
+    }, createElement(WallboxProductShowcase, { section })));
+    expect(html).toContain("q=84");
     const order = [...html.matchAll(/<article[^>]*id="([^"]+)"/g)].map((match) => match[1]);
     expect(order).toEqual(wallboxProducts.map((product) => product.id));
     const ac = wallboxProducts.find((product) => product.id === "sigen-ev-ac")!;

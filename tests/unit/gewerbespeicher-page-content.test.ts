@@ -65,7 +65,7 @@ describe("Commercial storage page", () => {
     expect(PUBLIC_ROUTE_LIST.some((route) => route.href === content.seo.canonicalPath)).toBe(true);
   });
 
-  it("renders one H1, the signet and the full section order with all three product portraits", () => {
+  it("renders one H1, the signet and the full section order with all four product portraits", () => {
     expect(html.match(/<h1\b/g)).toHaveLength(1);
     expect(html).toContain("Energie speichern, Lastspitzen steuern und Eigenstrom besser nutzen");
     expect(html.match(/class="brand-intro /g)).toHaveLength(1);
@@ -78,6 +78,7 @@ describe("Commercial storage page", () => {
       "sigenstack",
       "sonnenpro-compact-261",
       "sungrow-powerstack",
+      "sungrow-powerstack-st510cs-4h",
       "entscheidung",
       "energiemanagement",
       "standort",
@@ -98,13 +99,14 @@ describe("Commercial storage page", () => {
           ? product.imageCaption
           : `Produktdarstellung von ${product.manufacturer}`,
       );
-      expect(existsSync(`public${product.image}`)).toBe(true);
+      if (product.image) expect(existsSync(`public${product.image}`)).toBe(true);
+      else expect(html).toContain("Media-Placeholder");
     }
   });
 
   it("replaces the old sonnen product with Compact 261 data and limits optional backup to a single system", () => {
     const compact = commercialStorageProducts.find((product) => product.id === "sonnenpro-compact-261")!;
-    expect(compact.name).toBe("sonnenPro Compact 261");
+    expect(compact.name).toBe("sonnenPro Compact");
     expect(compact.source).toBe("https://www.sonnen.pro/de-de/compact");
     expect(compact.image).toBe("/images/commercial-storage/products/sonnenpro-compact-261.webp");
     expect(compact.details).toEqual(expect.arrayContaining([
@@ -122,7 +124,7 @@ describe("Commercial storage page", () => {
   });
 
   it("presents Sungrow with verified manufacturer data and identifies its own visualization", () => {
-    expect(commercialStorageProducts).toHaveLength(3);
+    expect(commercialStorageProducts).toHaveLength(4);
     const sungrow = commercialStorageProducts.find((product) => product.id === "sungrow-powerstack")!;
     expect(sungrow.source).toBe(
       "https://www.sungrowpower.com/de/de/products/c-i-energy-storage-system/st255cs-2h",
@@ -136,8 +138,27 @@ describe("Commercial storage page", () => {
     ]);
     expect(html).toContain("Eigene Visualisierung nach der Produktform des Sungrow PowerStack ST255CS-2H");
     expect(html).toContain("PowerStack · iSolarCloud");
-    expect(html).toContain("Drei Systemkonzepte");
+    expect(html).toContain("Vier Speichermodelle");
+    expect(html).not.toMatch(/Drei Systemkonzepte|alle drei Systeme/);
     expect(html).not.toMatch(/Zwei modulare Systemkonzepte|für beide Systeme/);
+  });
+
+  it("adds the ST510CS-4H without substituting another model's image or capacity", () => {
+    const product = commercialStorageProducts.find((entry) => entry.id === "sungrow-powerstack-st510cs-4h")!;
+    expect(product.image).toBe("/images/commercial-storage/products/Sungrow ST510CS.webp");
+    expect(product.details).toEqual(expect.arrayContaining([
+      { label: "Leistung", text: "125 kW AC-Nennleistung" },
+      { label: "Kapazität", text: "514 kWh Nennkapazität" },
+      { label: "Zelltechnologie", text: "Lithium-Eisenphosphat (LFP)" },
+    ]));
+    const block = html.split('id="sungrow-powerstack-st510cs-4h"')[1].split("</article>")[0];
+    expect(block).toContain("Sungrow%20ST510CS.webp");
+    expect(block).toContain('width="1016" height="886"');
+    expect(block).toContain("aspect-ratio:1016 / 886");
+    expect(block).not.toContain("Media-Placeholder");
+    expect(block).not.toContain("sungrow-powerstack.webp");
+    expect(block).toContain("öffnet in neuem Tab");
+    expect(html).toContain("Gewerbespeicher regional planen in ganz Bayern");
   });
 
   it("renders the actual contact and B2B destinations in the hero and final CTA", () => {

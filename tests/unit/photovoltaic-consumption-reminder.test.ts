@@ -58,6 +58,15 @@ describe("PV reminder wizard interaction and persistence", () => {
     act(() => button!.click());
   };
   const saved = () => readConfiguratorState(window.sessionStorage)!;
+  const input = () => container.querySelector<HTMLInputElement>("#future-increase-percent")!;
+  const enterIncrease = (value: string) => {
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input(), value);
+      input().dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  };
+  const summary = (label: string) => Array.from(container.querySelectorAll("dt"))
+    .find((item) => item.textContent?.trim() === label)?.nextElementSibling?.textContent?.trim();
 
   beforeEach(async () => {
     vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -83,6 +92,59 @@ describe("PV reminder wizard interaction and persistence", () => {
     container.remove();
     window.sessionStorage.clear();
     vi.unstubAllGlobals();
+  });
+
+  it("allows deleting every digit after a preset and calculates with zero until re-entry", () => {
+    click("Verbrauch anpassen");
+    click("Deutliche Erhöhung");
+    expect(input().value).toBe("25");
+    expect(summary("Zusätzlicher Verbrauch")).toBe("1.000 kWh");
+    input().focus();
+    enterIncrease("2");
+    expect(input().value).toBe("2");
+    expect(summary("Zusätzlicher Verbrauch")).toBe("80 kWh");
+    enterIncrease("");
+    expect(input().value).toBe("");
+    expect(document.activeElement).toBe(input());
+    expect(summary("Zusätzlicher Verbrauch")).toBe("0 kWh");
+    expect(summary("Künftig berücksichtigt")).toBe("4.000 kWh");
+    expect(input().getAttribute("aria-invalid")).toBe("false");
+    expect(container.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(0);
+    expect(saved().household.futureIncreasePercent).toBe(0);
+    enterIncrease("37");
+    expect(input().value).toBe("37");
+    expect(summary("Zusätzlicher Verbrauch")).toBe("1.480 kWh");
+    expect(saved().household.projectedConsumptionKwh).toBe(5480);
+    click("Weiter");
+    click("Verbrauch anpassen");
+    expect(input().value).toBe("37");
+  });
+
+  it("retains raw input, validation, and all presets including zero after clearing", () => {
+    click("Verbrauch anpassen");
+    enterIncrease("037");
+    expect(input().value).toBe("037");
+    expect(saved().household.futureIncreasePercent).toBe(37);
+    enterIncrease("201");
+    expect(input().value).toBe("201");
+    expect(input().getAttribute("aria-invalid")).toBe("true");
+    const next = Array.from(container.querySelectorAll("button"))
+      .find((button) => button.textContent?.trim() === "Weiter");
+    expect(next?.disabled).toBe(true);
+    enterIncrease("");
+    for (const [title, value] of [
+      ["Keine Erhöhung", 0], ["Leichte Erhöhung", 10],
+      ["Deutliche Erhöhung", 25], ["Starke Erhöhung", 50],
+    ] as const) {
+      click(title);
+      expect(input().value).toBe(String(value));
+      expect(input().getAttribute("aria-invalid")).toBe("false");
+      expect(container.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(1);
+      expect(saved().household.futureIncreasePercent).toBe(value);
+      enterIncrease("");
+      expect(input().value).toBe("");
+      expect(saved().household.projectedConsumptionKwh).toBe(4000);
+    }
   });
 
   it("returns to step 9 and preserves every input and selected solution", () => {
