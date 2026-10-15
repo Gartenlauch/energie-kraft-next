@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { ReferenceGallery } from "@/components/marketing/reference-gallery";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
-import { getReferenceGroup, referenceGroups } from "@/content/reference-projects";
+import { getReferenceGroup, referenceGroups, type ReferenceGroup } from "@/content/reference-projects";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { buildBreadcrumbJsonLd, buildWebPageJsonLd } from "@/lib/seo/structured-data";
 
@@ -15,27 +15,31 @@ export function generateStaticParams() {
 }
 
 function title(name: string, slug: string) {
-  return `Photovoltaik-Referenzen ${slug === "traunstein" ? "im Raum" : "in"} ${name}`;
+  if (slug === "traunstein") return "Photovoltaik-Referenzen aus Traunstein und Umgebung";
+  if (slug === "weitere-referenzen-berchtesgadener-land") return "Photovoltaik-Referenzen aus dem Berchtesgadener Land";
+  return `Photovoltaik-Referenzen in ${name}`;
+}
+
+function groupSeo(group: ReferenceGroup) {
+  const area = group.groupSlug === "traunstein" ? "aus Traunstein und Umgebung" :
+    group.groupSlug === "weitere-referenzen-berchtesgadener-land" ? "aus dem Berchtesgadener Land" : `in ${group.groupName}`;
+  return {
+    title: `${title(group.groupName, group.groupSlug)} | Energie-Kraft Süd`,
+    description: `Bilder realisierter Photovoltaikanlagen ${area} aus dem regionalen Referenzarchiv von Energie-Kraft Süd.`,
+    canonicalPath: `/referenzen/${group.groupSlug}`,
+  };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const group = getReferenceGroup((await params).location);
   if (!group) return {};
-  return buildMetadata({
-    title: `${title(group.groupName, group.groupSlug)} | Energie-Kraft Süd`,
-    description: `Bilder realisierter Photovoltaikanlagen ${group.groupSlug === "traunstein" ? "im Raum" : "in"} ${group.groupName} aus dem regionalen Referenzarchiv von Energie-Kraft Süd.`,
-    canonicalPath: `/referenzen/${group.groupSlug}`,
-  });
+  return buildMetadata(groupSeo(group));
 }
 
 export default async function ReferenceGroupPage({ params }: Props) {
   const group = getReferenceGroup((await params).location);
   if (!group) notFound();
-  const seo = {
-    title: `${title(group.groupName, group.groupSlug)} | Energie-Kraft Süd`,
-    description: `Bilder realisierter Photovoltaikanlagen ${group.groupSlug === "traunstein" ? "im Raum" : "in"} ${group.groupName}.`,
-    canonicalPath: `/referenzen/${group.groupSlug}`,
-  };
+  const seo = groupSeo(group);
   return (
     <>
       <JsonLdScript data={buildWebPageJsonLd(seo)} />
@@ -48,7 +52,7 @@ export default async function ReferenceGroupPage({ params }: Props) {
             <h1 className="section-title mt-4 max-w-4xl">{title(group.groupName, group.groupSlug)}</h1>
           </div>
         </section>
-        <section className="section-space bg-background" aria-label={`Projektbilder aus ${group.groupName}`}>
+        <section className="section-space bg-background" aria-label={`Referenzbilder: ${group.groupName}`}>
           <div className="section-shell"><ReferenceGallery projects={group.projects} /></div>
         </section>
       </main>

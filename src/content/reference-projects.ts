@@ -9,9 +9,15 @@ export function getReferenceGroup(slug: string) {
   return referenceGroups.find((group) => group.groupSlug === slug);
 }
 
-export function formatReferenceCaption(project: ReferenceProject) {
+export interface ReferenceCaptionData {
+  actualLocation: string;
+  capacityKwp: number;
+  customerType?: "Privat" | "Gewerbe" | null;
+}
+
+export function formatReferenceCaption(project: ReferenceCaptionData) {
   const capacity = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 3 }).format(
     project.capacityKwp,
   );
-  return `${project.actualLocation} · ${capacity} kWp · ${project.customerType}`;
+  return [project.actualLocation, `${capacity} kWp`, project.customerType].filter(Boolean).join(" · ");
 }

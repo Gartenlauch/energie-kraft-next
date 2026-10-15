@@ -6,11 +6,11 @@ import { RowsPhotoAlbum } from "react-photo-album";
 import "react-photo-album/rows.css";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import { formatReferenceCaption, type ReferenceCaptionData } from "@/content/reference-projects";
 
-export interface GalleryProject {
+export interface GalleryProject extends ReferenceCaptionData {
   id: string;
   actualLocation: string;
-  customerType: "Privat" | "Gewerbe";
   capacityKwp: number;
   image: string;
   width: number;
@@ -18,9 +18,8 @@ export interface GalleryProject {
   alt: string;
 }
 
-const capacityFormat = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 3 });
 export function galleryCaption(project: GalleryProject) {
-  return `${project.actualLocation} · ${capacityFormat.format(project.capacityKwp)} kWp · ${project.customerType}`;
+  return formatReferenceCaption(project);
 }
 
 export function ReferenceGallery({ projects }: { projects: readonly GalleryProject[] }) {

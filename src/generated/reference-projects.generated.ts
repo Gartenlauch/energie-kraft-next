@@ -103,13 +103,24 @@ export const referenceGroups = [
         "width": 1024,
         "height": 768,
         "alt": "Photovoltaikanlage in Ainring mit 95,98 kWp, Gewerbeanlage"
+      },
+      {
+        "id": "ainring-gewerbe-425-5-kwp-ainring-01",
+        "group": "ainring",
+        "actualLocation": "Ainring",
+        "customerType": "Gewerbe",
+        "capacityKwp": 425.5,
+        "image": "/images/references/ainring/ainring-gewerbe-425-5-kwp-ainring-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Ainring mit 425,5 kWp, Gewerbeanlage"
       }
     ]
   },
   {
     "groupName": "Bad Reichenhall",
     "groupSlug": "bad-reichenhall",
-    "overviewImage": "/images/references/bad-reichenhall/privat-13-92-kwp-bad-reichenhall-01.webp",
+    "overviewImage": "/images/references/bad-reichenhall/privat-13-48-kwp-bad-reichenhall-01.webp",
     "projects": [
       {
         "id": "bad-reichenhall-privat-11-52-kwp-bad-reichenhall-01",
@@ -198,6 +209,61 @@ export const referenceGroups = [
         "width": 1600,
         "height": 1200,
         "alt": "Photovoltaikanlage in Bad Reichenhall mit 29,7 kWp, Gewerbeanlage"
+      },
+      {
+        "id": "bad-reichenhall-9-6-kwp-bad-reichenhall-01",
+        "group": "bad-reichenhall",
+        "actualLocation": "Bad Reichenhall",
+        "customerType": null,
+        "capacityKwp": 9.6,
+        "image": "/images/references/bad-reichenhall/bad-reichenhall-9-6-kwp-bad-reichenhall-01.webp",
+        "width": 2048,
+        "height": 1536,
+        "alt": "Photovoltaikanlage in Bad Reichenhall mit 9,6 kWp"
+      },
+      {
+        "id": "bad-reichenhall-11-52-kwp-bad-reichenhall-01",
+        "group": "bad-reichenhall",
+        "actualLocation": "Bad Reichenhall",
+        "customerType": null,
+        "capacityKwp": 11.52,
+        "image": "/images/references/bad-reichenhall/bad-reichenhall-11-52-kwp-bad-reichenhall-01.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Bad Reichenhall mit 11,52 kWp"
+      },
+      {
+        "id": "bad-reichenhall-21-12-kwp-bad-reichenhall-01",
+        "group": "bad-reichenhall",
+        "actualLocation": "Bad Reichenhall",
+        "customerType": null,
+        "capacityKwp": 21.12,
+        "image": "/images/references/bad-reichenhall/bad-reichenhall-21-12-kwp-bad-reichenhall-01.webp",
+        "width": 2040,
+        "height": 942,
+        "alt": "Photovoltaikanlage in Bad Reichenhall mit 21,12 kWp"
+      },
+      {
+        "id": "bad-reichenhall-54-kwp-bad-reichenhall-01",
+        "group": "bad-reichenhall",
+        "actualLocation": "Bad Reichenhall",
+        "customerType": null,
+        "capacityKwp": 54,
+        "image": "/images/references/bad-reichenhall/bad-reichenhall-54-kwp-bad-reichenhall-01.webp",
+        "width": 2000,
+        "height": 900,
+        "alt": "Photovoltaikanlage in Bad Reichenhall mit 54 kWp"
+      },
+      {
+        "id": "bad-reichenhall-10-56-kwp-bad-reichenhall-01",
+        "group": "bad-reichenhall",
+        "actualLocation": "Bad Reichenhall",
+        "customerType": null,
+        "capacityKwp": 10.56,
+        "image": "/images/references/bad-reichenhall/bad-reichenhall-10-56-kwp-bad-reichenhall-01.webp",
+        "width": 2400,
+        "height": 1798,
+        "alt": "Photovoltaikanlage in Bad Reichenhall mit 10,56 kWp"
       }
     ]
   },
@@ -218,17 +284,6 @@ export const referenceGroups = [
         "alt": "Photovoltaikanlage in Berchtesgaden mit 7 kWp, Privatanlage"
       },
       {
-        "id": "berchtesgaden-privat-9-6-kwp-schoenau-01",
-        "group": "berchtesgaden",
-        "actualLocation": "Schönau",
-        "customerType": "Privat",
-        "capacityKwp": 9.6,
-        "image": "/images/references/berchtesgaden/privat-9-6-kwp-schoenau-01.webp",
-        "width": 1200,
-        "height": 1600,
-        "alt": "Photovoltaikanlage in Schönau mit 9,6 kWp, Privatanlage"
-      },
-      {
         "id": "berchtesgaden-privat-16-56-kwp-berchtesgaden-01",
         "group": "berchtesgaden",
         "actualLocation": "Berchtesgaden",
@@ -238,17 +293,6 @@ export const referenceGroups = [
         "width": 2040,
         "height": 1530,
         "alt": "Photovoltaikanlage in Berchtesgaden mit 16,56 kWp, Privatanlage"
-      },
-      {
-        "id": "berchtesgaden-privat-17-kwp-schoenau-01",
-        "group": "berchtesgaden",
-        "actualLocation": "Schönau",
-        "customerType": "Privat",
-        "capacityKwp": 17,
-        "image": "/images/references/berchtesgaden/privat-17-kwp-schoenau-01.webp",
-        "width": 1200,
-        "height": 800,
-        "alt": "Photovoltaikanlage in Schönau mit 17 kWp, Privatanlage"
       },
       {
         "id": "berchtesgaden-privat-18-75-kwp-berchtesgaden-01",
@@ -293,17 +337,6 @@ export const referenceGroups = [
         "width": 1200,
         "height": 800,
         "alt": "Photovoltaikanlage in Berchtesgaden mit 43 kWp, Privatanlage"
-      },
-      {
-        "id": "berchtesgaden-gewerbe-10-56-kwp-schoenau-am-koenigssee-01",
-        "group": "berchtesgaden",
-        "actualLocation": "Schönau am Königssee",
-        "customerType": "Gewerbe",
-        "capacityKwp": 10.56,
-        "image": "/images/references/berchtesgaden/gewerbe-10-56-kwp-schoenau-am-koenigssee-01.webp",
-        "width": 1200,
-        "height": 800,
-        "alt": "Photovoltaikanlage in Schönau am Königssee mit 10,56 kWp, Gewerbeanlage"
       },
       {
         "id": "berchtesgaden-gewerbe-32-4-kwp-berchtesgaden-01",
@@ -544,7 +577,7 @@ export const referenceGroups = [
   {
     "groupName": "Kirchanschöring",
     "groupSlug": "kirchanschoering",
-    "overviewImage": "/images/references/kirchanschoering/privat-60-03-kwp-kirchanschoering-01.webp",
+    "overviewImage": "/images/references/kirchanschoering/kirchanschoering-29-97-kwp-kirchanschoering-01.webp",
     "projects": [
       {
         "id": "kirchanschoering-privat-10-kwp-kirchanschoering-01",
@@ -567,6 +600,28 @@ export const referenceGroups = [
         "width": 1200,
         "height": 801,
         "alt": "Photovoltaikanlage in Kirchanschöring mit 60,03 kWp, Privatanlage"
+      },
+      {
+        "id": "kirchanschoering-29-97-kwp-kirchanschoering-01",
+        "group": "kirchanschoering",
+        "actualLocation": "Kirchanschöring",
+        "customerType": null,
+        "capacityKwp": 29.97,
+        "image": "/images/references/kirchanschoering/kirchanschoering-29-97-kwp-kirchanschoering-01.webp",
+        "width": 2000,
+        "height": 1500,
+        "alt": "Photovoltaikanlage in Kirchanschöring mit 29,97 kWp"
+      },
+      {
+        "id": "kirchanschoering-gewerbe-54-37-kwp-kirchanschoering-01",
+        "group": "kirchanschoering",
+        "actualLocation": "Kirchanschöring",
+        "customerType": "Gewerbe",
+        "capacityKwp": 54.37,
+        "image": "/images/references/kirchanschoering/kirchanschoering-gewerbe-54-37-kwp-kirchanschoering-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Kirchanschöring mit 54,37 kWp, Gewerbeanlage"
       }
     ]
   },
@@ -662,13 +717,46 @@ export const referenceGroups = [
         "width": 2040,
         "height": 942,
         "alt": "Photovoltaikanlage in Laufen mit 24,96 kWp, Gewerbeanlage"
+      },
+      {
+        "id": "laufen-51-84-kwp-laufen-01",
+        "group": "laufen",
+        "actualLocation": "Laufen",
+        "customerType": null,
+        "capacityKwp": 51.84,
+        "image": "/images/references/laufen/laufen-51-84-kwp-laufen-01.webp",
+        "width": 640,
+        "height": 480,
+        "alt": "Photovoltaikanlage in Laufen mit 51,84 kWp"
+      },
+      {
+        "id": "laufen-4-4-kwp-laufen-01",
+        "group": "laufen",
+        "actualLocation": "Laufen",
+        "customerType": null,
+        "capacityKwp": 4.4,
+        "image": "/images/references/laufen/laufen-4-4-kwp-laufen-01.webp",
+        "width": 2040,
+        "height": 1530,
+        "alt": "Photovoltaikanlage in Laufen mit 4,4 kWp"
+      },
+      {
+        "id": "laufen-gewerbe-21-44-kwp-laufen-01",
+        "group": "laufen",
+        "actualLocation": "Laufen",
+        "customerType": "Gewerbe",
+        "capacityKwp": 21.44,
+        "image": "/images/references/laufen/laufen-gewerbe-21-44-kwp-laufen-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Laufen mit 21,44 kWp, Gewerbeanlage"
       }
     ]
   },
   {
     "groupName": "Piding",
     "groupSlug": "piding",
-    "overviewImage": "/images/references/piding/gewerbe-58-kwp-piding-01.webp",
+    "overviewImage": "/images/references/piding/piding-21-16-kwp-anger-aufham-01.webp",
     "projects": [
       {
         "id": "piding-privat-11-kwp-piding-01",
@@ -691,90 +779,156 @@ export const referenceGroups = [
         "width": 2040,
         "height": 1536,
         "alt": "Photovoltaikanlage in Piding mit 58 kWp, Gewerbeanlage"
+      },
+      {
+        "id": "piding-21-16-kwp-anger-aufham-01",
+        "group": "piding",
+        "actualLocation": "Anger-Aufham",
+        "customerType": null,
+        "capacityKwp": 21.16,
+        "image": "/images/references/piding/piding-21-16-kwp-anger-aufham-01.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Anger-Aufham mit 21,16 kWp"
+      },
+      {
+        "id": "piding-14-72-kwp-piding-01",
+        "group": "piding",
+        "actualLocation": "Piding",
+        "customerType": null,
+        "capacityKwp": 14.72,
+        "image": "/images/references/piding/piding-14-72-kwp-piding-01.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Piding mit 14,72 kWp"
       }
     ]
   },
   {
-    "groupName": "Reit-im-Winkl",
+    "groupName": "Reit im Winkl",
     "groupSlug": "reit-im-winkl",
     "overviewImage": "/images/references/reit-im-winkl/privat-24-kwp-reit-im-winkl-01.webp",
     "projects": [
       {
-        "id": "reit-im-winkl-privat-8-kwp-marquartstein-01",
-        "group": "reit-im-winkl",
-        "actualLocation": "Marquartstein",
-        "customerType": "Privat",
-        "capacityKwp": 8,
-        "image": "/images/references/reit-im-winkl/privat-8-kwp-marquartstein-01.webp",
-        "width": 1200,
-        "height": 800,
-        "alt": "Photovoltaikanlage in Marquartstein mit 8 kWp, Privatanlage"
-      },
-      {
         "id": "reit-im-winkl-privat-12-kwp-reit-im-winkl-01",
         "group": "reit-im-winkl",
-        "actualLocation": "Reit-im-Winkl",
+        "actualLocation": "Reit im Winkl",
         "customerType": "Privat",
         "capacityKwp": 12,
         "image": "/images/references/reit-im-winkl/privat-12-kwp-reit-im-winkl-01.webp",
         "width": 1200,
         "height": 800,
-        "alt": "Photovoltaikanlage in Reit-im-Winkl mit 12 kWp, Privatanlage"
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 12 kWp, Privatanlage"
       },
       {
         "id": "reit-im-winkl-privat-18-kwp-reit-im-winkl-01",
         "group": "reit-im-winkl",
-        "actualLocation": "Reit-im-Winkl",
+        "actualLocation": "Reit im Winkl",
         "customerType": "Privat",
         "capacityKwp": 18,
         "image": "/images/references/reit-im-winkl/privat-18-kwp-reit-im-winkl-01.webp",
         "width": 1200,
         "height": 800,
-        "alt": "Photovoltaikanlage in Reit-im-Winkl mit 18 kWp, Privatanlage"
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 18 kWp, Privatanlage"
       },
       {
         "id": "reit-im-winkl-privat-24-kwp-reit-im-winkl-01",
         "group": "reit-im-winkl",
-        "actualLocation": "Reit-im-Winkl",
+        "actualLocation": "Reit im Winkl",
         "customerType": "Privat",
         "capacityKwp": 24,
         "image": "/images/references/reit-im-winkl/privat-24-kwp-reit-im-winkl-01.webp",
         "width": 2400,
         "height": 1800,
-        "alt": "Photovoltaikanlage in Reit-im-Winkl mit 24 kWp, Privatanlage"
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 24 kWp, Privatanlage"
       },
       {
         "id": "reit-im-winkl-privat-29-7-kwp-reit-im-winkl-01",
         "group": "reit-im-winkl",
-        "actualLocation": "Reit-im-Winkl",
+        "actualLocation": "Reit im Winkl",
         "customerType": "Privat",
         "capacityKwp": 29.7,
         "image": "/images/references/reit-im-winkl/privat-29-7-kwp-reit-im-winkl-01.webp",
         "width": 2400,
         "height": 1800,
-        "alt": "Photovoltaikanlage in Reit-im-Winkl mit 29,7 kWp, Privatanlage"
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 29,7 kWp, Privatanlage"
       },
       {
         "id": "reit-im-winkl-privat-39-36-kwp-reit-im-winkl-01",
         "group": "reit-im-winkl",
-        "actualLocation": "Reit-im-Winkl",
+        "actualLocation": "Reit im Winkl",
         "customerType": "Privat",
         "capacityKwp": 39.36,
         "image": "/images/references/reit-im-winkl/privat-39-36-kwp-reit-im-winkl-01.webp",
         "width": 2400,
         "height": 1798,
-        "alt": "Photovoltaikanlage in Reit-im-Winkl mit 39,36 kWp, Privatanlage"
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 39,36 kWp, Privatanlage"
       },
       {
         "id": "reit-im-winkl-privat-72-21-kwp-reit-im-winkl-01",
         "group": "reit-im-winkl",
-        "actualLocation": "Reit-im-Winkl",
+        "actualLocation": "Reit im Winkl",
         "customerType": "Privat",
         "capacityKwp": 72.21,
         "image": "/images/references/reit-im-winkl/privat-72-21-kwp-reit-im-winkl-01.webp",
         "width": 1600,
         "height": 720,
-        "alt": "Photovoltaikanlage in Reit-im-Winkl mit 72,21 kWp, Privatanlage"
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 72,21 kWp, Privatanlage"
+      },
+      {
+        "id": "reit-im-winkl-8-64-kwp-reit-im-winkl-01",
+        "group": "reit-im-winkl",
+        "actualLocation": "Reit im Winkl",
+        "customerType": null,
+        "capacityKwp": 8.64,
+        "image": "/images/references/reit-im-winkl/reit-im-winkl-8-64-kwp-reit-im-winkl-01.webp",
+        "width": 1200,
+        "height": 1600,
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 8,64 kWp"
+      },
+      {
+        "id": "reit-im-winkl-17-28-kwp-reit-im-winkl-01",
+        "group": "reit-im-winkl",
+        "actualLocation": "Reit im Winkl",
+        "customerType": null,
+        "capacityKwp": 17.28,
+        "image": "/images/references/reit-im-winkl/reit-im-winkl-17-28-kwp-reit-im-winkl-01.webp",
+        "width": 1536,
+        "height": 2048,
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 17,28 kWp"
+      },
+      {
+        "id": "reit-im-winkl-40-48-kwp-reit-im-winkl-01",
+        "group": "reit-im-winkl",
+        "actualLocation": "Reit im Winkl",
+        "customerType": null,
+        "capacityKwp": 40.48,
+        "image": "/images/references/reit-im-winkl/reit-im-winkl-40-48-kwp-reit-im-winkl-01.webp",
+        "width": 2400,
+        "height": 1800,
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 40,48 kWp"
+      },
+      {
+        "id": "reit-im-winkl-17-28-kwp-reit-im-winkl-02",
+        "group": "reit-im-winkl",
+        "actualLocation": "Reit im Winkl",
+        "customerType": null,
+        "capacityKwp": 17.28,
+        "image": "/images/references/reit-im-winkl/reit-im-winkl-17-28-kwp-reit-im-winkl-02.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 17,28 kWp"
+      },
+      {
+        "id": "reit-im-winkl-40-48-kwp-reit-im-winkl-02",
+        "group": "reit-im-winkl",
+        "actualLocation": "Reit im Winkl",
+        "customerType": null,
+        "capacityKwp": 40.48,
+        "image": "/images/references/reit-im-winkl/reit-im-winkl-40-48-kwp-reit-im-winkl-02.webp",
+        "width": 2400,
+        "height": 1798,
+        "alt": "Photovoltaikanlage in Reit im Winkl mit 40,48 kWp"
       }
     ]
   },
@@ -892,6 +1046,28 @@ export const referenceGroups = [
         "width": 2400,
         "height": 1800,
         "alt": "Photovoltaikanlage in Saaldorf-Surheim mit 202,295 kWp, Gewerbeanlage"
+      },
+      {
+        "id": "saaldorf-surheim-18-4-kwp-saaldorf-surheim-01",
+        "group": "saaldorf-surheim",
+        "actualLocation": "Saaldorf-Surheim",
+        "customerType": null,
+        "capacityKwp": 18.4,
+        "image": "/images/references/saaldorf-surheim/saaldorf-surheim-18-4-kwp-saaldorf-surheim-01.webp",
+        "width": 720,
+        "height": 720,
+        "alt": "Photovoltaikanlage in Saaldorf-Surheim mit 18,4 kWp"
+      },
+      {
+        "id": "saaldorf-surheim-9-66-kwp-saaldorf-surheim-01",
+        "group": "saaldorf-surheim",
+        "actualLocation": "Saaldorf-Surheim",
+        "customerType": null,
+        "capacityKwp": 9.66,
+        "image": "/images/references/saaldorf-surheim/saaldorf-surheim-9-66-kwp-saaldorf-surheim-01.webp",
+        "width": 2400,
+        "height": 1350,
+        "alt": "Photovoltaikanlage in Saaldorf-Surheim mit 9,66 kWp"
       }
     ]
   },
@@ -914,10 +1090,21 @@ export const referenceGroups = [
     ]
   },
   {
-    "groupName": "Traunstein",
+    "groupName": "Traunstein & Umgebung",
     "groupSlug": "traunstein",
     "overviewImage": "/images/references/traunstein/privat-9-6-kwp-nussdorf-01.webp",
     "projects": [
+      {
+        "id": "reit-im-winkl-privat-8-kwp-marquartstein-01",
+        "group": "traunstein",
+        "actualLocation": "Marquartstein",
+        "customerType": "Privat",
+        "capacityKwp": 8,
+        "image": "/images/references/reit-im-winkl/privat-8-kwp-marquartstein-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Marquartstein mit 8 kWp, Privatanlage"
+      },
       {
         "id": "traunstein-privat-9-6-kwp-nussdorf-01",
         "group": "traunstein",
@@ -928,6 +1115,28 @@ export const referenceGroups = [
         "width": 2040,
         "height": 1152,
         "alt": "Photovoltaikanlage in Nußdorf mit 9,6 kWp, Privatanlage"
+      },
+      {
+        "id": "traunstein-privat-10-kwp-waging-01",
+        "group": "traunstein",
+        "actualLocation": "Waging",
+        "customerType": "Privat",
+        "capacityKwp": 10,
+        "image": "/images/references/traunstein/privat-10-kwp-waging-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Waging mit 10 kWp, Privatanlage"
+      },
+      {
+        "id": "traunstein-privat-10-56-kwp-inzell-01",
+        "group": "traunstein",
+        "actualLocation": "Inzell",
+        "customerType": "Privat",
+        "capacityKwp": 10.56,
+        "image": "/images/references/traunstein/privat-10-56-kwp-inzell-01.webp",
+        "width": 1599,
+        "height": 1242,
+        "alt": "Photovoltaikanlage in Inzell mit 10,56 kWp, Privatanlage"
       },
       {
         "id": "traunstein-privat-10-56-kwp-schnaitsee-01",
@@ -952,8 +1161,186 @@ export const referenceGroups = [
         "alt": "Photovoltaikanlage in Ruhpolding mit 12 kWp, Privatanlage"
       },
       {
-        "id": "traunstein-gewerbe-6-kwp-teisendorf-01",
+        "id": "traunstein-6-9-kwp-traunreut-01",
         "group": "traunstein",
+        "actualLocation": "Traunreut",
+        "customerType": null,
+        "capacityKwp": 6.9,
+        "image": "/images/references/traunstein/traunstein-6-9-kwp-traunreut-01.webp",
+        "width": 1530,
+        "height": 2040,
+        "alt": "Photovoltaikanlage in Traunreut mit 6,9 kWp"
+      },
+      {
+        "id": "traunstein-gewerbe-24-79-kwp-siegsdorf-01",
+        "group": "traunstein",
+        "actualLocation": "Siegsdorf",
+        "customerType": "Gewerbe",
+        "capacityKwp": 24.79,
+        "image": "/images/references/traunstein/traunstein-gewerbe-24-79-kwp-siegsdorf-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Siegsdorf mit 24,79 kWp, Gewerbeanlage"
+      }
+    ]
+  },
+  {
+    "groupName": "Chieming",
+    "groupSlug": "chieming",
+    "overviewImage": "/images/references/chieming/chieming-14-4-kwp-chieming-01.webp",
+    "projects": [
+      {
+        "id": "chieming-10-8-kwp-chieming-01",
+        "group": "chieming",
+        "actualLocation": "Chieming",
+        "customerType": null,
+        "capacityKwp": 10.8,
+        "image": "/images/references/chieming/chieming-10-8-kwp-chieming-01.webp",
+        "width": 2000,
+        "height": 1500,
+        "alt": "Photovoltaikanlage in Chieming mit 10,8 kWp"
+      },
+      {
+        "id": "chieming-14-4-kwp-chieming-01",
+        "group": "chieming",
+        "actualLocation": "Chieming",
+        "customerType": null,
+        "capacityKwp": 14.4,
+        "image": "/images/references/chieming/chieming-14-4-kwp-chieming-01.webp",
+        "width": 2040,
+        "height": 1530,
+        "alt": "Photovoltaikanlage in Chieming mit 14,4 kWp"
+      },
+      {
+        "id": "chieming-18-kwp-hart-chieming-01",
+        "group": "chieming",
+        "actualLocation": "Hart (Chieming)",
+        "customerType": null,
+        "capacityKwp": 18,
+        "image": "/images/references/chieming/chieming-18-kwp-hart-chieming-01.webp",
+        "width": 2040,
+        "height": 1530,
+        "alt": "Photovoltaikanlage in Hart (Chieming) mit 18 kWp"
+      }
+    ]
+  },
+  {
+    "groupName": "Fridolfing",
+    "groupSlug": "fridolfing",
+    "overviewImage": "/images/references/fridolfing/fridolfing-24-kwp-fridolfing-01.webp",
+    "projects": [
+      {
+        "id": "fridolfing-24-kwp-fridolfing-01",
+        "group": "fridolfing",
+        "actualLocation": "Fridolfing",
+        "customerType": null,
+        "capacityKwp": 24,
+        "image": "/images/references/fridolfing/fridolfing-24-kwp-fridolfing-01.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Fridolfing mit 24 kWp"
+      },
+      {
+        "id": "fridolfing-24-kwp-fridolfing-02",
+        "group": "fridolfing",
+        "actualLocation": "Fridolfing",
+        "customerType": null,
+        "capacityKwp": 24,
+        "image": "/images/references/fridolfing/fridolfing-24-kwp-fridolfing-02.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Fridolfing mit 24 kWp"
+      }
+    ]
+  },
+  {
+    "groupName": "Schönau am Königssee",
+    "groupSlug": "schoenau-am-koenigssee",
+    "overviewImage": "/images/references/berchtesgaden/gewerbe-10-56-kwp-schoenau-am-koenigssee-01.webp",
+    "projects": [
+      {
+        "id": "berchtesgaden-privat-9-6-kwp-schoenau-01",
+        "group": "schoenau-am-koenigssee",
+        "actualLocation": "Schönau am Königssee",
+        "customerType": "Privat",
+        "capacityKwp": 9.6,
+        "image": "/images/references/berchtesgaden/privat-9-6-kwp-schoenau-01.webp",
+        "width": 1200,
+        "height": 1600,
+        "alt": "Photovoltaikanlage in Schönau am Königssee mit 9,6 kWp, Privatanlage"
+      },
+      {
+        "id": "berchtesgaden-privat-17-kwp-schoenau-01",
+        "group": "schoenau-am-koenigssee",
+        "actualLocation": "Schönau am Königssee",
+        "customerType": "Privat",
+        "capacityKwp": 17,
+        "image": "/images/references/berchtesgaden/privat-17-kwp-schoenau-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Schönau am Königssee mit 17 kWp, Privatanlage"
+      },
+      {
+        "id": "berchtesgaden-gewerbe-10-56-kwp-schoenau-am-koenigssee-01",
+        "group": "schoenau-am-koenigssee",
+        "actualLocation": "Schönau am Königssee",
+        "customerType": "Gewerbe",
+        "capacityKwp": 10.56,
+        "image": "/images/references/berchtesgaden/gewerbe-10-56-kwp-schoenau-am-koenigssee-01.webp",
+        "width": 1200,
+        "height": 800,
+        "alt": "Photovoltaikanlage in Schönau am Königssee mit 10,56 kWp, Gewerbeanlage"
+      },
+      {
+        "id": "schoenau-am-koenigssee-9-6-kwp-schoenau-am-koenigssee-01",
+        "group": "schoenau-am-koenigssee",
+        "actualLocation": "Schönau am Königssee",
+        "customerType": null,
+        "capacityKwp": 9.6,
+        "image": "/images/references/schoenau-am-koenigssee/schoenau-am-koenigssee-9-6-kwp-schoenau-am-koenigssee-01.webp",
+        "width": 2040,
+        "height": 1530,
+        "alt": "Photovoltaikanlage in Schönau am Königssee mit 9,6 kWp"
+      }
+    ]
+  },
+  {
+    "groupName": "Seeon-Seebruck",
+    "groupSlug": "seeon-seebruck",
+    "overviewImage": "/images/references/seeon-seebruck/seeon-seebruck-13-5-kwp-truchtlaching-01.webp",
+    "projects": [
+      {
+        "id": "seeon-seebruck-17-76-kwp-seeon-seebruck-01",
+        "group": "seeon-seebruck",
+        "actualLocation": "Seeon-Seebruck",
+        "customerType": null,
+        "capacityKwp": 17.76,
+        "image": "/images/references/seeon-seebruck/seeon-seebruck-17-76-kwp-seeon-seebruck-01.webp",
+        "width": 1200,
+        "height": 1600,
+        "alt": "Photovoltaikanlage in Seeon-Seebruck mit 17,76 kWp"
+      },
+      {
+        "id": "seeon-seebruck-13-5-kwp-truchtlaching-01",
+        "group": "seeon-seebruck",
+        "actualLocation": "Truchtlaching",
+        "customerType": null,
+        "capacityKwp": 13.5,
+        "image": "/images/references/seeon-seebruck/seeon-seebruck-13-5-kwp-truchtlaching-01.webp",
+        "width": 1500,
+        "height": 2000,
+        "alt": "Photovoltaikanlage in Truchtlaching mit 13,5 kWp"
+      }
+    ]
+  },
+  {
+    "groupName": "Weitere Referenzen im Berchtesgadener Land",
+    "groupSlug": "weitere-referenzen-berchtesgadener-land",
+    "overviewImage": "/images/references/weitere-referenzen-berchtesgadener-land/weitere-referenzen-berchtesgadener-land-20-7-kwp-bischofswiesen-01.webp",
+    "projects": [
+      {
+        "id": "traunstein-gewerbe-6-kwp-teisendorf-01",
+        "group": "weitere-referenzen-berchtesgadener-land",
         "actualLocation": "Teisendorf",
         "customerType": "Gewerbe",
         "capacityKwp": 6,
@@ -963,26 +1350,26 @@ export const referenceGroups = [
         "alt": "Photovoltaikanlage in Teisendorf mit 6 kWp, Gewerbeanlage"
       },
       {
-        "id": "traunstein-privat-10-kwp-waging-01",
-        "group": "traunstein",
-        "actualLocation": "Waging",
-        "customerType": "Privat",
-        "capacityKwp": 10,
-        "image": "/images/references/traunstein/privat-10-kwp-waging-01.webp",
-        "width": 1200,
-        "height": 800,
-        "alt": "Photovoltaikanlage in Waging mit 10 kWp, Privatanlage"
+        "id": "weitere-referenzen-berchtesgadener-land-16-8-kwp-bayerisch-gmain-01",
+        "group": "weitere-referenzen-berchtesgadener-land",
+        "actualLocation": "Bayerisch Gmain",
+        "customerType": null,
+        "capacityKwp": 16.8,
+        "image": "/images/references/weitere-referenzen-berchtesgadener-land/weitere-referenzen-berchtesgadener-land-16-8-kwp-bayerisch-gmain-01.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Bayerisch Gmain mit 16,8 kWp"
       },
       {
-        "id": "traunstein-privat-10-56-kwp-inzell-01",
-        "group": "traunstein",
-        "actualLocation": "Inzell",
-        "customerType": "Privat",
-        "capacityKwp": 10.56,
-        "image": "/images/references/traunstein/privat-10-56-kwp-inzell-01.webp",
-        "width": 1599,
-        "height": 1242,
-        "alt": "Photovoltaikanlage in Inzell mit 10,56 kWp, Privatanlage"
+        "id": "weitere-referenzen-berchtesgadener-land-20-7-kwp-bischofswiesen-01",
+        "group": "weitere-referenzen-berchtesgadener-land",
+        "actualLocation": "Bischofswiesen",
+        "customerType": null,
+        "capacityKwp": 20.7,
+        "image": "/images/references/weitere-referenzen-berchtesgadener-land/weitere-referenzen-berchtesgadener-land-20-7-kwp-bischofswiesen-01.webp",
+        "width": 1600,
+        "height": 1200,
+        "alt": "Photovoltaikanlage in Bischofswiesen mit 20,7 kWp"
       }
     ]
   }

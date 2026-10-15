@@ -39,7 +39,7 @@ export default function ReferencesPage() {
               return (
                 <Link key={group.groupSlug} href={`/referenzen/${group.groupSlug}`} className="group block min-w-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-primary)]">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-[0.35rem] bg-surface-soft">
-                    <Image src={cover.image} alt={cover.alt} fill priority={index < 3} sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 48vw, 32vw" className="object-cover transition-transform duration-700 motion-reduce:transition-none group-hover:scale-[1.035] group-focus-visible:scale-[1.035]" />
+                    <Image src={cover.image} alt={cover.alt} fill priority={index < 3} sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) 48vw, 32vw" className={`${cover.width < cover.height ? "object-contain" : "object-cover"} transition-transform duration-700 motion-reduce:transition-none group-hover:scale-[1.035] group-focus-visible:scale-[1.035]`} />
                   </div>
                   <div className="border-border-default mt-4 flex items-center justify-between gap-3 border-b pb-4">
                     <h2 className="text-xl font-semibold tracking-tight text-brand-dark md:text-2xl">{group.groupName}</h2>
