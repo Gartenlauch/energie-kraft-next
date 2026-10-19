@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FIREBASE_EMULATOR_PROJECT_ID, FIREBASE_PRODUCTION_PROJECT_ID } from "@/config/firebase";
 
 vi.mock("server-only", () => ({}));
+vi.mock("next/font/local", () => ({ default: () => ({ variable: "test-font" }) }));
 
 const publicFixture = {
   NEXT_PUBLIC_SITE_ENV: "local",
@@ -72,6 +73,7 @@ describe("Site identity and validated environment boundary", () => {
       expect(publicEnv.useFirebaseEmulators).toBe(emulators === "true");
       expect(publicEnv.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID).toBeUndefined();
       expect(siteConfig).toEqual({ ...siteIdentity, canonicalBaseUrl: url.replace(/\/$/, "") });
+      await expect(import("@/app/layout")).resolves.toHaveProperty("default");
     },
   );
 
@@ -105,6 +107,9 @@ describe("Site identity and validated environment boundary", () => {
   ])("retains the existing public configuration error for %j", async (overrides) => {
     setPublicEnv(overrides);
     await expect(import("@/config/site")).rejects.toThrow(
+      "Ungültige öffentliche Environment-Konfiguration",
+    );
+    await expect(import("@/app/layout")).rejects.toThrow(
       "Ungültige öffentliche Environment-Konfiguration",
     );
   });

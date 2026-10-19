@@ -1,7 +1,6 @@
 import NextLink from "next/link";
 import type { ComponentProps } from "react";
 
-import { siteConfig } from "@/config/site";
 import { isExternalWebLink, newTabRel } from "@/lib/navigation/link-behavior";
 
 type PublicLinkProps = ComponentProps<typeof NextLink>;
@@ -23,7 +22,9 @@ export function PublicLink({
         (href.host
           ? `${href.protocol ?? "https:"}//${href.host}${href.pathname ?? ""}`
           : (href.pathname ?? "")));
-  const external = isExternalWebLink(url, siteConfig.canonicalBaseUrl);
+  // The server root layout validates this same NEXT_PUBLIC value via publicEnv.
+  // Read it directly here so client consumers do not import the Zod validator.
+  const external = isExternalWebLink(url, process.env.NEXT_PUBLIC_CANONICAL_BASE_URL!);
   const resolvedTarget = download ? target : external ? "_blank" : target;
   const opensNewTab = resolvedTarget === "_blank";
   const attributes = {

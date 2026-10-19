@@ -1,17 +1,79 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { isExternalWebLink } from "@/lib/navigation/link-behavior";
 import { PublicLink } from "@/components/ui/public-link";
+import { CustomerReviewsSection } from "@/components/marketing/customer-reviews-section";
 
-vi.mock("@/config/env/public", () => ({
-  publicEnv: {
-    NEXT_PUBLIC_CANONICAL_BASE_URL: "https://www.energie-kraft.de",
-  },
-}));
+vi.mock("@/config/env/public", () => {
+  throw new Error("PublicLink must not load the environment validator");
+});
 const base = "https://www.energie-kraft.de";
+beforeEach(() => vi.stubEnv("NEXT_PUBLIC_CANONICAL_BASE_URL", base));
+afterEach(() => vi.unstubAllEnvs());
 
 describe("public link policy", () => {
+  it("renders review, author and provider links without importing validation", () => {
+    const html = renderToStaticMarkup(createElement(CustomerReviewsSection, {
+      reviews: [{
+        id: "test-review", provider: "google", author: "Test Reviewer", rating: 5,
+        text: "Fixture only", publishedAt: "2026-10-01T12:00:00Z",
+        authorUrl: "https://maps.google.com/test-author",
+        sourceUrl: "https://maps.google.com/test-review",
+      }],
+      summaries: [{
+        provider: "google", averageRating: 5, totalReviews: 1,
+        sourceUrl: "https://maps.google.com/test-overview",
+        writeReviewUrl: "https://maps.google.com/test-write",
+      }],
+    }));
+    const links = html.match(/<a\b[^>]*>/g) ?? [];
+    // Four review/author actions plus the three existing Google policy links.
+    expect(links).toHaveLength(7);
+    for (const link of links) {
+      expect(link).toContain('target="_blank"');
+      expect(link).toContain('rel="noopener noreferrer"');
+    }
+  });
+  it.each([
+    "http://localhost:3000/",
+    "https://review.energie-kraft.de/",
+    "https://www.energie-kraft.de/",
+  ])("uses the configured origin %s without the environment validator", (canonical) => {
+    vi.stubEnv("NEXT_PUBLIC_CANONICAL_BASE_URL", canonical);
+    const href = new URL("kontakt", canonical).href;
+    const html = renderToStaticMarkup(createElement(PublicLink, { href }, "Kontakt"));
+    expect(html).not.toContain('target="_blank"');
+    expect(html).toContain(`href="${href}"`);
+    const external = renderToStaticMarkup(
+      createElement(PublicLink, { href: "//example.org/info", target: "_self", rel: "nofollow noopener" }, "Quelle"),
+    );
+    expect(external).toContain('target="_blank"');
+    expect(external).toContain('rel="nofollow noopener"');
+  });
+
+  it("preserves the existing review-domain rule when production is canonical", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicLink, { href: "https://review.energie-kraft.de/kontakt" }, "Kontakt"),
+    );
+    expect(html).toContain('target="_blank"');
+  });
+
+  it.each([
+    { pathname: "/kontakt", query: { source: "test" }, hash: "formular" },
+    { protocol: "https:", host: "www.energie-kraft.de", pathname: "/kontakt" },
+  ])("preserves internal URL objects %j", (href) => {
+    expect(renderToStaticMarkup(createElement(PublicLink, { href }, "Kontakt"))).not.toContain('target="_blank"');
+  });
+
+  it("handles external URL objects and preserves explicit internal targets", () => {
+    expect(renderToStaticMarkup(createElement(PublicLink, {
+      href: { protocol: "https:", host: "example.org", pathname: "/info" },
+    }, "Quelle"))).toContain('target="_blank"');
+    expect(renderToStaticMarkup(createElement(PublicLink, {
+      href: "/kontakt", target: "_self", rel: "author",
+    }, "Kontakt"))).toContain('target="_self" rel="author"');
+  });
   it.each([
     "/kontakt",
     "../kontakt",

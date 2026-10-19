@@ -4,6 +4,9 @@ import type { ReactNode } from "react";
 
 import { isSearchIndexingEnabled } from "@/config/search-indexing";
 
+// Validate configuration on the server, including routes with client-side PublicLink consumers.
+import "@/config/env/public";
+
 import "./globals.css";
 
 const montserrat = localFont({
