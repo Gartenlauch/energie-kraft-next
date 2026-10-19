@@ -14,9 +14,6 @@ const harness = vi.hoisted(() => ({
   refs: [] as Array<{ current: unknown }>,
   setMobile: vi.fn(),
 }));
-vi.mock("@/config/env/public", () => ({
-  publicEnv: { NEXT_PUBLIC_CANONICAL_BASE_URL: "https://www.energie-kraft.de" },
-}));
 vi.mock("next/navigation", () => ({ usePathname: () => harness.pathname }));
 vi.mock("react", async (importOriginal) => ({
   ...(await importOriginal<typeof ReactModule>()),
@@ -54,6 +51,13 @@ afterEach(() => {
 });
 
 describe("Header route fallback", () => {
+  it("preserves the public company name and phone without an environment mock", () => {
+    const html = renderToStaticMarkup(createElement(SiteHeader));
+    expect(html).toContain('aria-label="Energie-Kraft Süd – Startseite"');
+    expect(html).toContain('href="tel:+498654771610"');
+    expect(html).toContain("+49 (0) 8654 77161-0");
+  });
+
   it.each([
     ["/", "/images/navigation/photovoltaic-mega-corrected.webp", "energy"],
     ["/photovoltaik", "/images/navigation/photovoltaic-mega-corrected.webp", "energy"],

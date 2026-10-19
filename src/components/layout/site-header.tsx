@@ -12,7 +12,7 @@ import {
   MenuIcon,
   PhoneIcon,
 } from "@/components/ui/icons";
-import { siteConfig } from "@/config/site";
+import { siteIdentity } from "@/config/site-identity";
 
 type MegaMenuKey = "energy" | "service";
 
@@ -473,17 +473,17 @@ export function SiteHeader() {
             Energielösungen aus Ainring · persönlich geplant
           </p>
           <a
-            href={siteConfig.contact.phoneHref}
+            href={siteIdentity.contact.phoneHref}
             className="flex min-h-9 items-center gap-2 font-semibold transition hover:text-cyan-200"
           >
             <PhoneIcon className="size-3.5" />
-            {siteConfig.contact.phoneDisplay}
+            {siteIdentity.contact.phoneDisplay}
           </a>
         </div>
       </div>
 
       <div className="section-shell relative flex h-[4.75rem] items-center justify-between gap-5">
-        <Link href="/" aria-label={`${siteConfig.name} – Startseite`} className="shrink-0">
+        <Link href="/" aria-label={`${siteIdentity.name} – Startseite`} className="shrink-0">
           <Image
             src="/brand/energie-kraft/energie-kraft-logo.svg"
             alt="Energie-Kraft Süd"
@@ -604,11 +604,11 @@ export function SiteHeader() {
                 Angebot konfigurieren
               </Link>
               <a
-                href={siteConfig.contact.phoneHref}
+                href={siteIdentity.contact.phoneHref}
                 className="inline-flex min-h-13 items-center justify-center gap-2 rounded-[var(--radius-md)] border border-white/25 px-5 py-3 text-sm font-semibold text-white"
               >
                 <PhoneIcon className="size-4" />
-                {siteConfig.contact.phoneDisplay}
+                {siteIdentity.contact.phoneDisplay}
               </a>
             </div>
           </nav>

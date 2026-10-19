@@ -11,6 +11,8 @@ interface MarketingImage {
   flipHorizontal?: boolean;
   desktopSrc: string;
   mobileSrc: string;
+  mobileAvifSrcSet?: string;
+  mobileSizes?: string;
   desktopWidth: number;
   desktopHeight: number;
   mobileWidth: number;
@@ -54,6 +56,8 @@ export function PremiumHeroSection({
         <ArtDirectedImage
           desktopSrc={image.desktopSrc}
           mobileSrc={image.mobileSrc}
+          mobileAvifSrcSet={image.mobileAvifSrcSet}
+          mobileSizes={image.mobileSizes}
           desktopWidth={image.desktopWidth}
           desktopHeight={image.desktopHeight}
           mobileWidth={image.mobileWidth}
@@ -189,6 +193,8 @@ export function SplitFeatureSection({
       <ArtDirectedImage
         desktopSrc={image.desktopSrc}
         mobileSrc={image.mobileSrc}
+        mobileAvifSrcSet={image.mobileAvifSrcSet}
+        mobileSizes={image.mobileSizes}
         desktopWidth={image.desktopWidth}
         desktopHeight={image.desktopHeight}
         mobileWidth={image.mobileWidth}

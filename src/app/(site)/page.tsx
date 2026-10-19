@@ -31,6 +31,8 @@ const productImages = {
   photovoltaic: {
     desktopSrc: "/images/photovoltaic/photovoltaic-feature-desktop.webp",
     mobileSrc: "/images/photovoltaic/photovoltaic-feature-mobile.webp",
+    mobileAvifSrcSet:
+      "/images/photovoltaic/photovoltaic-feature-mobile-432.avif 432w, /images/photovoltaic/photovoltaic-feature-mobile-864.avif 864w",
     desktopWidth: 1448,
     desktopHeight: 1086,
     mobileWidth: 864,
@@ -40,6 +42,8 @@ const productImages = {
   battery: {
     desktopSrc: "/images/battery-storage/residential-storage-feature-desktop.webp",
     mobileSrc: "/images/battery-storage/residential-storage-feature-mobile.webp",
+    mobileAvifSrcSet:
+      "/images/battery-storage/residential-storage-feature-mobile-432.avif 432w, /images/battery-storage/residential-storage-feature-mobile-864.avif 864w, /images/battery-storage/residential-storage-feature-mobile-1200.avif 1200w",
     desktopWidth: 1600,
     desktopHeight: 1200,
     mobileWidth: 1200,
@@ -103,6 +107,10 @@ export default async function HomePage() {
           image={{
             desktopSrc: "/images/home-premium/hero-energy-home-desktop.webp",
             mobileSrc: "/images/home-premium/hero-energy-home-mobile.webp",
+            mobileAvifSrcSet:
+              "/images/home-premium/hero-energy-home-mobile-840.avif 840w, /images/home-premium/hero-energy-home-mobile-1200.avif 1200w",
+            // Covering the tall mobile hero needs more source pixels than 100vw.
+            mobileSizes: "840px",
             desktopWidth: 2000,
             desktopHeight: 1200,
             mobileWidth: 1200,

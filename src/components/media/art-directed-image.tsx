@@ -1,6 +1,8 @@
 interface ArtDirectedImageProps {
   desktopSrc: string;
   mobileSrc: string;
+  mobileAvifSrcSet?: string;
+  mobileSizes?: string;
   desktopWidth: number;
   desktopHeight: number;
   mobileWidth: number;
@@ -14,6 +16,8 @@ interface ArtDirectedImageProps {
 export function ArtDirectedImage({
   desktopSrc,
   mobileSrc,
+  mobileAvifSrcSet,
+  mobileSizes,
   desktopWidth,
   desktopHeight,
   mobileWidth,
@@ -32,6 +36,16 @@ export function ArtDirectedImage({
         width={desktopWidth}
         height={desktopHeight}
       />
+      {mobileAvifSrcSet ? (
+        <source
+          media="(max-width: 767px)"
+          type="image/avif"
+          srcSet={mobileAvifSrcSet}
+          sizes={mobileSizes ?? sizes}
+          width={mobileWidth}
+          height={mobileHeight}
+        />
+      ) : null}
       <source
         media="(max-width: 767px)"
         srcSet={mobileSrc}

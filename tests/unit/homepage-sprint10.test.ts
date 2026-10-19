@@ -45,6 +45,20 @@ describe("Sprint 10 rendered homepage", () => {
     html = renderToStaticMarkup(await HomePage());
   });
 
+  it("offers responsive AVIF only for the three selected mobile motifs", () => {
+    const sources = [...html.matchAll(/<source\b[^>]*type="image\/avif"[^>]*>/g)].map(([s]) => s);
+    expect(sources).toHaveLength(3);
+    expect(sources.every((s) => s.includes('media="(max-width: 767px)"'))).toBe(true);
+    expect(sources[0]).toContain("hero-energy-home-mobile-840.avif 840w");
+    expect(sources[0]).toContain("hero-energy-home-mobile-1200.avif 1200w");
+    expect(sources[0]).toContain('sizes="840px"');
+    expect(sources[1]).toContain("photovoltaic-feature-mobile-432.avif 432w");
+    expect(sources[1]).toContain("photovoltaic-feature-mobile-864.avif 864w");
+    expect(sources[2]).toContain("residential-storage-feature-mobile-432.avif 432w");
+    expect(sources[2]).toContain("residential-storage-feature-mobile-864.avif 864w");
+    expect(sources[2]).toContain("residential-storage-feature-mobile-1200.avif 1200w");
+  });
+
   it("preserves the exact title, canonical, hero H1 and actual PV anchor", () => {
     expect(metadata.title).toEqual({ absolute: "Ihr PV Anbieter aus Bayern | Energie-Kraft Süd" });
     expect(metadata.openGraph?.title).toBe(homeContent.seo.title);
