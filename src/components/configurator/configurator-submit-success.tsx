@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { ConfiguratorPhaseIndicator } from "@/components/configurator/configurator-phase-indicator";
-import { clearSubmittedConfiguratorProject } from "@/lib/configurator/project-reset";
+import { useConfigurator } from "@/lib/configurator/configurator-context";
 import { useSuccessFocus } from "@/hooks/use-success-focus";
 
 interface ConfiguratorSubmitSuccessProps {
@@ -19,14 +19,9 @@ export function ConfiguratorSubmitSuccess({
   reportStatus,
   customerMailStatus,
 }: ConfiguratorSubmitSuccessProps) {
+  const { reset } = useConfigurator();
   const successHeadingRef = useSuccessFocus<HTMLHeadingElement>();
   const projectOverviewSent = reportStatus === "generated" && customerMailStatus === "accepted";
-
-  function handleRestart() {
-    clearSubmittedConfiguratorProject(window.sessionStorage);
-    // Der Seitenwechsel lädt die aktuelle Modellversion für das neue Projekt.
-    window.location.replace("/konfigurator");
-  }
 
   return (
     <>
@@ -70,11 +65,11 @@ export function ConfiguratorSubmitSuccess({
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button type="button" onClick={handleRestart} className="button-primary">
+          <Link href="/konfigurator" onClick={reset} className="button-primary">
             Neue Konfiguration starten
-          </button>
+          </Link>
 
-          <Link href="/konfigurator" className="button-secondary">
+          <Link href="/konfigurator" onClick={reset} className="button-secondary">
             Zur Konfigurator-Übersicht
           </Link>
         </div>

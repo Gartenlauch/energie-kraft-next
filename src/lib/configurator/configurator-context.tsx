@@ -44,7 +44,11 @@ export function ConfiguratorProvider({ children, settings }: ConfiguratorProvide
   useEffect(() => {
     let cancelled = false;
 
-    const persistedState = readConfiguratorState(window.sessionStorage);
+    let persistedState = readConfiguratorState(window.sessionStorage);
+    if (persistedState?.submission.status === "submitted") {
+      clearSubmittedConfiguratorProject(window.sessionStorage);
+      persistedState = null;
+    }
     const calculatorHandoff = readCalculatorHandoff(window.sessionStorage);
 
     queueMicrotask(() => {
@@ -85,6 +89,8 @@ export function ConfiguratorProvider({ children, settings }: ConfiguratorProvide
   }, [isHydrated, state]);
 
   function reset() {
+    // The departing route must not remount and persist its product before navigation.
+    setIsHydrated(false);
     clearSubmittedConfiguratorProject(window.sessionStorage);
 
     dispatch({
@@ -101,7 +107,9 @@ export function ConfiguratorProvider({ children, settings }: ConfiguratorProvide
         isHydrated,
       }}
     >
-      {children}
+      {isHydrated ? children : (
+        <p role="status" className="text-brand-primary p-8">Konfiguration wird geladen …</p>
+      )}
     </ConfiguratorContext.Provider>
   );
 }

@@ -122,7 +122,7 @@ describe("configurator state", () => {
 
       /*
        * Danach beginnt der Benutzer eine
-       * neue PV-Konfiguration.
+       * weitere PV-Konfiguration im offenen Projekt.
        */
     state = configuratorReducer(state, {
       type: "SET_ACTIVE_CONFIGURATOR",
@@ -131,7 +131,7 @@ describe("configurator state", () => {
     });
 
     expect(state.journey.entryPoint).toBe("heat_pump");
-    expect(state.journey.selectedProducts).toEqual(["heat_pump"]);
+    expect(state.journey.selectedProducts).toEqual(["photovoltaic", "heat_pump"]);
     state = configuratorReducer(state, { type: "RESET" });
     state = configuratorReducer(state, { type: "SET_ACTIVE_CONFIGURATOR", payload: "photovoltaic" });
     expect(state.journey.selectedProducts).toEqual(["photovoltaic"]);

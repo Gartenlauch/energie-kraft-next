@@ -228,6 +228,13 @@ function reduceConfiguratorState(
         ...state,
 
           activeConfigurator: action.payload,
+          // Opening another product extends an open project; only an explicit
+          // restart clears it. Keep the request scope aligned with the route.
+          interests: action.payload && state.journey.entryPoint &&
+            action.payload !== state.journey.entryPoint
+            ? { ...state.interests, [action.payload === "battery_storage" ? "batteryStorage" :
+                action.payload === "heat_pump" ? "heatPump" : action.payload]: true }
+            : state.interests,
 
         journey: {
           ...state.journey,
