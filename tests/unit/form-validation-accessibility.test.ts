@@ -122,6 +122,29 @@ function renderConfig(overrides = {}, onContinue = vi.fn()) {
 
 describe("contact validation accessibility", () => {
   beforeEach(() => act(() => root.render(createElement(ContactLeadForm))));
+  it("marks required fields, the radio group and conditional phone without requiring every interest", () => {
+    for (const id of ["first-name", "last-name", "email", "postal-code", "city", "message", "privacy"]) {
+      expect(element(`#contact-${id}`).getAttribute("aria-required")).toBe("true");
+    }
+    for (const id of ["company", "building-type", "ownership", "website"]) {
+      expect(element(`#contact-${id}`).hasAttribute("aria-required")).toBe(false);
+    }
+    expect(element('[role="radiogroup"]').getAttribute("aria-required")).toBe("true");
+    expect(element('[role="group"][aria-label="Anliegen"]').getAttribute("aria-describedby")).toBe("contact-interests-help");
+    expect(element("#contact-interests-help").textContent).toContain("Mindestens ein Anliegen ist erforderlich");
+    for (const input of container.querySelectorAll('[role="group"] input[type="checkbox"]')) {
+      expect(input.hasAttribute("aria-required")).toBe(false);
+      expect(input.hasAttribute("required")).toBe(false);
+    }
+    expect(element("#contact-phone").getAttribute("aria-required")).toBe("false");
+    click('input[name="preferredContact"][value="telefon"]');
+    expect(element("#contact-phone").getAttribute("aria-required")).toBe("true");
+    click('input[name="preferredContact"][value="email"]');
+    expect(element("#contact-phone").getAttribute("aria-required")).toBe("false");
+    expect(element<HTMLFormElement>("form").noValidate).toBe(true);
+    expect(container.querySelectorAll("[required]")).toHaveLength(0);
+  });
+
   it("focuses the first invalid field in DOM order and clears only the edited field without moving focus", () => {
     submitContact();
     expect(document.activeElement).toBe(element("#contact-first-name"));

@@ -418,6 +418,7 @@ export function ContactLeadForm() {
 
                 <input
                   id="contact-first-name"
+                  aria-required="true"
                   type="text"
                   autoComplete="given-name"
                   value={formValues.firstName}
@@ -460,6 +461,7 @@ export function ContactLeadForm() {
 
                 <input
                   id="contact-last-name"
+                  aria-required="true"
                   type="text"
                   autoComplete="family-name"
                   value={formValues.lastName}
@@ -528,6 +530,7 @@ export function ContactLeadForm() {
 
                 <input
                   id="contact-email"
+                  aria-required="true"
                   type="email"
                   autoComplete="email"
                   value={formValues.email}
@@ -563,11 +566,12 @@ export function ContactLeadForm() {
                   htmlFor="contact-phone"
                   className="block text-sm font-semibold"
                 >
-                  Telefon
+                  Telefon{formValues.preferredContact === "telefon" ? " *" : ""}
                 </label>
 
                 <input
                   id="contact-phone"
+                  aria-required={formValues.preferredContact === "telefon"}
                   type="tel"
                   autoComplete="tel"
                   value={formValues.phone}
@@ -609,11 +613,14 @@ export function ContactLeadForm() {
             </legend>
 
             <p id="contact-interests-help" className="text-foreground/65 mt-2 text-sm leading-6">
-              Mehrfachauswahl möglich.
+              Mindestens ein Anliegen ist erforderlich. Mehrfachauswahl möglich.
             </p>
 
             <div
               className="mt-6 grid gap-3 sm:grid-cols-2"
+              role="group"
+              aria-label="Anliegen"
+              aria-describedby="contact-interests-help"
             >
               {contactFormContent.interests.map(
                 (interest) => {
@@ -675,6 +682,7 @@ export function ContactLeadForm() {
 
                 <input
                   id="contact-postal-code"
+                  aria-required="true"
                   type="text"
                   inputMode="text"
                   autoComplete="postal-code"
@@ -718,6 +726,7 @@ export function ContactLeadForm() {
 
                 <input
                   id="contact-city"
+                  aria-required="true"
                   type="text"
                   autoComplete="address-level2"
                   value={formValues.city}
@@ -856,6 +865,7 @@ export function ContactLeadForm() {
 
               <textarea
                 id="contact-message"
+                aria-required="true"
                 rows={6}
                 value={formValues.message}
                 aria-invalid={
@@ -893,6 +903,7 @@ export function ContactLeadForm() {
               <div
                 className="mt-3 grid gap-3 sm:grid-cols-3"
                 role="radiogroup"
+                aria-required="true"
                 aria-labelledby="contact-preference-label"
                 aria-invalid={fieldErrors.preferredContact ? true : undefined}
               >
@@ -949,6 +960,7 @@ export function ContactLeadForm() {
               <input
                 type="checkbox"
                 id="contact-privacy"
+                aria-required="true"
                 aria-invalid={fieldErrors.privacyAccepted ? true : undefined}
                 aria-describedby={fieldErrors.privacyAccepted ? "contact-privacy-error" : undefined}
                 checked={formValues.privacyAccepted}

@@ -88,7 +88,7 @@ export function DecorativeLoopVideo({ src, fallback }: DecorativeLoopVideoProps)
           {playing && (
             <button
               type="button"
-              className="text-brand-navy pointer-events-none absolute right-4 bottom-4 min-h-11 bg-white px-4 text-sm opacity-0 focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="text-brand-navy absolute right-4 bottom-4 min-h-11 bg-white px-4 text-sm focus-visible:outline-2 focus-visible:outline-offset-4"
               onClick={() => setPaused((current) => !current)}
             >
               {paused ? "Animation abspielen" : "Animation pausieren"}

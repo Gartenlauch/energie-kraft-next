@@ -103,15 +103,14 @@ describe("decorative storage video", () => {
     expect(container.querySelector("video")).toBeNull();
     expect(container.querySelector("img")).not.toBeNull();
   });
-  it("keeps the pause control visually hidden until keyboard focus and preserves manual pause", async () => {
+  it("keeps pause available to pointer and keyboard users and preserves manual pause", async () => {
     render("/videos/storage.webm");
     const video = container.querySelector("video")!;
     const pause = vi.mocked(video.pause);
     act(() => video.dispatchEvent(new Event("playing")));
     const button = container.querySelector("button")!;
-    expect(button.className).toContain("opacity-0");
-    expect(button.className).toContain("focus-visible:opacity-100");
-    expect(button.className).toContain("pointer-events-none");
+    expect(button.className).not.toContain("opacity-0");
+    expect(button.className).not.toContain("pointer-events-none");
     button.focus();
     expect(document.activeElement).toBe(button);
     act(() => button.click());

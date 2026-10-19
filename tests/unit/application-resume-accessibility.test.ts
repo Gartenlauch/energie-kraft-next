@@ -77,6 +77,46 @@ function fillApplication() {
 }
 
 describe("optional application documents", () => {
+  it("names the qualification field and distinguishes required fields from optional inputs", () => {
+    const experience = container.querySelector<HTMLTextAreaElement>("#application-experience")!;
+    expect(experience.labels?.[0].textContent).toContain("Qualifikation & Erfahrung");
+    expect(experience.getAttribute("aria-describedby")).toBe("application-experience-hint");
+    expect(container.querySelector("#application-experience-hint")!.textContent).toContain("10 Zeichen");
+    for (const id of ["job", "firstName", "lastName", "street", "postalCode", "city", "email", "phone", "experience"]) {
+      expect(container.querySelector(`#application-${id}`)!.getAttribute("aria-required")).toBe("true");
+    }
+    expect(container.querySelector('input[type="checkbox"]')!.getAttribute("aria-required")).toBe("true");
+    for (const id of ["salutation", "documents", "website"]) {
+      expect(container.querySelector(`#application-${id}`)!.hasAttribute("aria-required")).toBe(false);
+    }
+    expect(container.querySelector("form")!.noValidate).toBe(true);
+    expect(container.querySelectorAll("[required]")).toHaveLength(0);
+  });
+
+  it("keeps the ten-character qualification minimum and associates its error alongside the hint", async () => {
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => frames.push(callback));
+    fillApplication();
+    const experience = container.querySelector<HTMLTextAreaElement>("#application-experience")!;
+    for (const value of ["123456789", "1234567890"]) {
+      act(() => {
+        Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")!.set!.call(experience, value);
+        experience.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      await submit();
+      act(() => frames.splice(0).forEach((callback) => callback(0)));
+      if (value.length === 9) {
+        expect(submitApplication).not.toHaveBeenCalled();
+        expect(experience.getAttribute("aria-invalid")).toBe("true");
+        expect(experience.getAttribute("aria-describedby")).toBe("application-experience-hint application-experience-error");
+        expect(container.querySelector("#application-experience-error")!.textContent).toContain("10 Zeichen");
+        expect(document.activeElement).toBe(experience);
+      }
+    }
+    expect(submitApplication).toHaveBeenCalledOnce();
+    expect(submitApplication).toHaveBeenCalledWith(expect.objectContaining({ qualificationExperience: "1234567890" }), []);
+  });
+
   it("submits without files and has no separate required resume field", async () => {
     fillApplication();
     expect(container.querySelector("#application-resume")).toBeNull();

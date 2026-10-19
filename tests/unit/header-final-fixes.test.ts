@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { createElement } from "react";
 import { existsSync } from "node:fs";
 import type * as ReactModule from "react";
@@ -45,7 +46,12 @@ beforeEach(() => {
   harness.mobile = false;
   harness.setMobile.mockClear();
 });
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  document.body.innerHTML = "";
+  document.body.style.overflow = "";
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("Header route fallback", () => {
   it.each([
@@ -98,18 +104,41 @@ describe("Header route fallback", () => {
 });
 
 describe("Mobile menu desktop transition (mocked DOM lifecycle)", () => {
+  it("includes the close toggle and the panel inside the same modal dialog", () => {
+    harness.mobile = true;
+    const html = renderToStaticMarkup(createElement(SiteHeader));
+    const dialog = document.createElement("div");
+    dialog.innerHTML = html;
+    const modal = dialog.querySelector('[role="dialog"][aria-modal="true"]')!;
+    expect(modal.tagName).toBe("DIV");
+    expect(modal.parentElement!.tagName).toBe("HEADER");
+    expect(modal.contains(dialog.querySelector('[aria-controls="mobile-navigation"]'))).toBe(true);
+    expect(modal.contains(dialog.querySelector("#mobile-navigation"))).toBe(true);
+  });
+
   it("closes on xl, transfers focus and releases lock/listeners on cleanup", () => {
     harness.mobile = true;
     SiteHeader();
-    const desktopFocus = vi.fn();
-    const panelFocus = vi.fn();
-    const activeElement = {};
-    harness.refs[0].current = { focus: vi.fn() };
-    harness.refs[1].current = {
-      contains: (element: unknown) => element === activeElement,
-      querySelector: () => ({ focus: panelFocus }),
-    };
-    harness.refs[2].current = { querySelector: () => ({ focus: desktopFocus }) };
+    document.body.innerHTML = '<a id="skip" href="#main">Skip</a><header><div id="dialog"><nav><button id="desktop">Desktop</button></nav><a id="logo" href="/">Logo</a><button id="toggle">Close</button><div id="panel"><button id="first">Energy</button><a id="last" href="/kontakt">Contact</a></div></div></header><main id="main"><input /></main><aside></aside>';
+    const dialog = document.querySelector<HTMLDivElement>("#dialog")!;
+    const panel = document.querySelector<HTMLElement>("#panel")!;
+    const first = document.querySelector<HTMLButtonElement>("#first")!;
+    const last = document.querySelector<HTMLAnchorElement>("#last")!;
+    const logo = document.querySelector<HTMLAnchorElement>("#logo")!;
+    const toggle = document.querySelector<HTMLButtonElement>("#toggle")!;
+    const main = document.querySelector("main")!;
+    const aside = document.querySelector("aside")!;
+    main.inert = false;
+    aside.inert = true;
+    for (const element of [logo, toggle, first, last]) {
+      vi.spyOn(element, "getClientRects").mockReturnValue([{}] as unknown as DOMRectList);
+    }
+    const desktopFocus = vi.spyOn(document.querySelector<HTMLButtonElement>("#desktop")!, "focus");
+    const panelFocus = vi.spyOn(first, "focus");
+    harness.refs[0].current = toggle;
+    harness.refs[1].current = panel;
+    harness.refs[2].current = document.querySelector("nav");
+    harness.refs[3].current = dialog;
     let onResize = () => {};
     const query = {
       matches: false,
@@ -118,29 +147,28 @@ describe("Mobile menu desktop transition (mocked DOM lifecycle)", () => {
       }),
       removeEventListener: vi.fn(),
     };
-    const body = { style: { overflow: "auto" } };
-    const removeKey = vi.fn();
+    document.body.style.overflow = "auto";
+    const removeKey = vi.spyOn(document, "removeEventListener");
     let onFrame = () => {};
-    vi.stubGlobal("document", {
-      body,
-      activeElement,
-      addEventListener: vi.fn(),
-      removeEventListener: removeKey,
-    });
     const matchMedia = vi.fn(() => query);
-    vi.stubGlobal("window", {
-      matchMedia,
-      requestAnimationFrame: (fn: () => void) => {
-        onFrame = fn;
-        return 1;
-      },
-      cancelAnimationFrame: vi.fn(),
+    vi.stubGlobal("matchMedia", matchMedia);
+    vi.stubGlobal("requestAnimationFrame", (fn: () => void) => {
+      onFrame = fn;
+      return 1;
     });
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
     const cleanup = harness.effects[0]();
     expect(matchMedia).toHaveBeenCalledWith("(min-width: 80rem)");
-    expect(body.style.overflow).toBe("hidden");
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(main.inert).toBe(true);
     onFrame();
     expect(panelFocus).toHaveBeenCalledOnce();
+    logo.focus();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, cancelable: true }));
+    expect(document.activeElement).toBe(last);
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", cancelable: true }));
+    expect(document.activeElement).toBe(logo);
+    first.focus();
     onResize();
     expect(harness.setMobile).not.toHaveBeenCalled();
     query.matches = true;
@@ -148,7 +176,9 @@ describe("Mobile menu desktop transition (mocked DOM lifecycle)", () => {
     expect(harness.setMobile).toHaveBeenCalledWith(false);
     expect(desktopFocus).toHaveBeenCalledOnce();
     cleanup?.();
-    expect(body.style.overflow).toBe("auto");
+    expect(document.body.style.overflow).toBe("auto");
+    expect(main.inert).toBe(false);
+    expect(aside.inert).toBe(true);
     expect(removeKey).toHaveBeenCalledWith("keydown", expect.any(Function));
     expect(query.removeEventListener).toHaveBeenCalledWith("change", onResize);
     harness.mobile = false;
@@ -156,6 +186,6 @@ describe("Mobile menu desktop transition (mocked DOM lifecycle)", () => {
     harness.effects = [];
     SiteHeader();
     expect(harness.effects[0]()).toBeUndefined();
-    expect(body.style.overflow).toBe("auto");
+    expect(document.body.style.overflow).toBe("auto");
   });
 });

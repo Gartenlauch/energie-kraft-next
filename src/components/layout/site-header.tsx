@@ -380,6 +380,7 @@ export function SiteHeader() {
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const mobilePanelRef = useRef<HTMLDivElement>(null);
   const desktopNavRef = useRef<HTMLElement>(null);
+  const mobileDialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!mobileOpen) {
@@ -397,21 +398,17 @@ export function SiteHeader() {
         return;
       }
 
-      const panel = mobilePanelRef.current;
-      const toggle = mobileButtonRef.current;
+      const dialog = mobileDialogRef.current;
 
-      if (!panel || !toggle) {
+      if (!dialog) {
         return;
       }
 
-      const focusable = [
-        toggle,
-        ...Array.from(
-          panel.querySelectorAll<HTMLElement>(
-            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-          ),
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ),
-      ];
+      ).filter((element) => element.getClientRects().length > 0 && !element.closest("[inert]"));
       const first = focusable[0];
       const last = focusable.at(-1);
 
@@ -440,6 +437,14 @@ export function SiteHeader() {
     document.addEventListener("keydown", handleKeyDown);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // The header contains both the close control and the mobile panel.
+    const header = mobileDialogRef.current?.closest("header");
+    const background = Array.from(header?.parentElement?.children ?? [])
+      .filter((element): element is HTMLElement =>
+        element instanceof HTMLElement && element !== header,
+      )
+      .map((element) => ({ element, wasInert: element.inert }));
+    background.forEach(({ element }) => { element.inert = true; });
     const focusFrame = window.requestAnimationFrame(() => {
       if (desktopViewport.matches) closeOnDesktop();
       else mobilePanelRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
@@ -449,12 +454,19 @@ export function SiteHeader() {
       desktopViewport.removeEventListener("change", closeOnDesktop);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
+      background.forEach(({ element, wasInert }) => { element.inert = wasInert; });
       window.cancelAnimationFrame(focusFrame);
     };
   }, [mobileOpen]);
 
   return (
     <header className="border-border-default/80 bg-background/96 sticky top-0 z-50 border-b shadow-[var(--shadow-sm)] backdrop-blur-xl">
+      <div
+        ref={mobileDialogRef}
+        role={mobileOpen ? "dialog" : undefined}
+        aria-modal={mobileOpen ? true : undefined}
+        aria-label={mobileOpen ? "Mobile Hauptnavigation" : undefined}
+      >
       <div className="border-border-default/70 bg-brand-navy hidden border-b text-white lg:block">
         <div className="section-shell flex min-h-9 items-center justify-between gap-6 text-xs">
           <p className="font-medium tracking-wide text-white/72">
@@ -546,9 +558,6 @@ export function SiteHeader() {
         <div
           ref={mobilePanelRef}
           id="mobile-navigation"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile Hauptnavigation"
           className="bg-brand-navy fixed inset-x-0 top-[4.75rem] h-[calc(100dvh-4.75rem)] overflow-y-auto lg:top-[7rem] lg:h-[calc(100dvh-7rem)] xl:hidden"
         >
           <nav aria-label="Mobile Hauptnavigation" className="section-shell py-5">
@@ -605,6 +614,7 @@ export function SiteHeader() {
           </nav>
         </div>
       ) : null}
+      </div>
     </header>
   );
 }

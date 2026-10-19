@@ -217,6 +217,7 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
             </label>
             <select
               id="application-job"
+              aria-required="true"
               value={values.jobId}
               aria-invalid={errors.jobId ? true : undefined}
               aria-describedby={errors.jobId ? "application-job-error" : undefined}
@@ -271,6 +272,7 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
               </label>
               <input
                 id={`application-${key}`}
+                aria-required="true"
                 type={type}
                 autoComplete={autoComplete}
                 value={values[key]}
@@ -287,17 +289,21 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
 
       <fieldset disabled={isSubmitting} className="border-border-default mt-10 border-t pt-8">
         <legend className="text-2xl font-bold">
-          <span className="form-section-number">02</span> Qualifikation & Erfahrung
+          <span className="form-section-number">02</span> Qualifikation & Erfahrung *
         </legend>
         <p
           id="application-experience-hint"
           className="mt-3 text-sm leading-6 text-[var(--text-muted)]"
         >
           Beschreibe kurz deine Ausbildung, relevante Berufserfahrung und was dich an der Stelle
-          interessiert. Unterlagen kannst du unten ergänzen.
+          interessiert. Mindestens 10 Zeichen. Unterlagen kannst du unten ergänzen.
         </p>
+        <label htmlFor="application-experience" className="sr-only">
+          Qualifikation & Erfahrung
+        </label>
         <textarea
           id="application-experience"
+          aria-required="true"
           rows={8}
           value={values.qualificationExperience}
           aria-invalid={errors.qualificationExperience ? true : undefined}
@@ -429,6 +435,7 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
         <label className="flex min-h-11 cursor-pointer items-start gap-3 text-sm leading-6">
           <input
             type="checkbox"
+            aria-required="true"
             checked={values.privacyAccepted}
             aria-invalid={errors.privacyAccepted ? true : undefined}
             aria-describedby={errors.privacyAccepted ? "application-privacy-error" : undefined}
