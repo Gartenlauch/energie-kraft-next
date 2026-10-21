@@ -3,11 +3,9 @@ import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import { IncomingMessage } from "node:http";
 import { Socket } from "node:net";
 import { readFileSync } from "node:fs";
-import { headers } from "next/headers";
 import { matchHas } from "next/dist/shared/lib/router/utils/prepare-destination";
 import { resolveSitemap } from "next/dist/build/webpack/loaders/metadata/resolve-route-data";
 
-vi.mock("next/headers", () => ({ headers: vi.fn() }));
 vi.mock("next/font/local", () => ({ default: () => ({ variable: "font-montserrat" }) }));
 vi.mock("@/config/env/public", () => ({ publicEnv: { isProduction: true } }));
 vi.mock("@/lib/faq/public-repository", () => ({
@@ -27,7 +25,6 @@ import { generateMetadata } from "@/app/layout";
 import sitemap from "@/app/sitemap";
 import {
   isSearchIndexingEnabled,
-  isSearchIndexingEnabledForHost,
   SEARCH_NO_INDEX_DIRECTIVE,
 } from "@/config/search-indexing";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -121,9 +118,7 @@ describe("search indexing launch guard", () => {
 
     vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
     expect(await responseHeaders("www.energie-kraft.de")).toEqual([]);
-    expect(await responseHeaders("review.energie-kraft.de")).toEqual([
-      { key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE },
-    ]);
+    expect(await responseHeaders("review.energie-kraft.de")).toEqual([]);
   });
 
   it.each([
@@ -132,8 +127,8 @@ describe("search indexing launch guard", () => {
     ["/kontakt", true],
     ["/konfigurator", true],
     ["/admin/leads", true],
-    ["/google-bewertung", false],
-    ["/images/google-bewertung/google-bewertung-share-v2.jpg", false],
+    ["/google-bewertung", true],
+    ["/images/google-bewertung/google-bewertung-share-v2.jpg", true],
     ["/brand/energie-kraft/eksued-logo-website.svg", true],
     ["/google-bewertung/extra", true],
     ["/google-bewertung-extra", true],
@@ -178,97 +173,40 @@ describe("search indexing launch guard", () => {
   });
 });
 
-describe("host-specific indexing, headers, metadata and robots", () => {
-  const hosts = [
-    ["www.energie-kraft.de", true],
-    ["WWW.ENERGIE-KRAFT.DE", true],
-    ["www.energie-kraft.de:443", true],
-    ["review.energie-kraft.de", false],
-    ["energie-kraft.de", false],
-    ["energie-kraft-next--preview.europe-west4.hosted.app", false],
-    ["energie-kraft-next--energie-kraft-next.europe-west4.hosted.app", false],
-    ["energie-kraft-next.web.app", false],
-    ["energie-kraft-next.firebaseapp.com", false],
-    ["preview.web.app", false],
-    ["service.run.app", false],
-    ["localhost:3000", false],
-    ["127.0.0.1:3000", false],
-    ["www.energie-kraft.de.evil.example", false],
-    ["wwwXenergie-kraftXde", false],
-    ["www.energie-kraft.de,review.energie-kraft.de", false],
-    ["www.energie-kraft.de:3000", false],
-    ["https://www.energie-kraft.de", false],
-    ["www.energie-kraft.de.", false],
-    [null, false],
-  ] as const;
-
-  it.each(hosts)("keeps the request policy consistent for %s", async (host, allowed) => {
-    vi.stubEnv("NEXT_PUBLIC_SITE_ENV", "production");
-    vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
-    vi.mocked(headers).mockResolvedValue(
-      new Headers({
-        ...(host === null ? {} : { host }),
-        "x-forwarded-proto": "https",
-        "x-forwarded-host": "www.energie-kraft.de",
-        forwarded: "host=www.energie-kraft.de;proto=https",
-      }),
-    );
-    expect(isSearchIndexingEnabledForHost(host)).toBe(allowed);
-    const root = await generateMetadata();
-    expect(root.robots).toEqual(
-      allowed
-        ? undefined
-        : {
-            index: false,
-            follow: false,
-            noarchive: true,
-            nosnippet: true,
+describe("single-switch indexing, headers, metadata and robots", () => {
+  it.each([undefined, "false", "FALSE", "TRUE", " true ", "", "1", "true"])(
+    "uses only the exact switch value across hosts and environments (%s)",
+    async (flag) => {
+      vi.stubEnv("SEARCH_INDEXING_ENABLED", flag);
+      const allowed = flag === "true";
+      for (const siteEnv of ["production", "local", "ci", undefined]) {
+        vi.stubEnv("NEXT_PUBLIC_SITE_ENV", siteEnv);
+        expect((await generateMetadata()).robots).toEqual(
+          allowed ? undefined : {
+            index: false, follow: false, noarchive: true, nosnippet: true,
           },
-    );
-    const result = await robots();
-    expect(result.sitemap).toBe(allowed ? "https://www.energie-kraft.de/sitemap.xml" : undefined);
-    expect(result.host).toBe(allowed ? "https://www.energie-kraft.de" : undefined);
-    expect(await responseHeaders(host, "/", "www.energie-kraft.de")).toEqual(
-      allowed ? [] : [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
-    );
-    // Next replaces a parent's robots whenever the child owns that key,
-    // including when its value is undefined. Assert the inheritance contract.
-    const page = buildMetadata({
-      title: "Kontakt",
-      description: "Kontakt",
-      canonicalPath: "/kontakt",
-    });
-    expect(page).not.toHaveProperty("robots");
-    expect(page.alternates?.canonical).toBe("https://www.energie-kraft.de/kontakt");
-  });
-
-  it.each([null, "http", "https,http", "http,https", "HTTPS", "https "])(
-    "fails closed for an unverified HTTPS transport (%s)",
-    async (protocol) => {
-      vi.stubEnv("NEXT_PUBLIC_SITE_ENV", "production");
-      vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
-      // Preserve raw values, including whitespace, for the policy/matcher parity check.
-      const requestHeaders = new Map([
-        ["host", "www.energie-kraft.de"],
-        ["forwarded", "host=www.energie-kraft.de;proto=https"],
-        ...(protocol === null ? [] : ([["x-forwarded-proto", protocol]] as [string, string][])),
-      ]);
-      vi.mocked(headers).mockResolvedValue(
-        requestHeaders as unknown as Awaited<ReturnType<typeof headers>>,
-      );
-      expect((await generateMetadata()).robots).toMatchObject({ index: false });
-      expect(await robots()).not.toHaveProperty("sitemap");
-      expect(
-        await responseHeaders("www.energie-kraft.de", "/", undefined, protocol),
-      ).toContainEqual({
-        key: "X-Robots-Tag",
-        value: SEARCH_NO_INDEX_DIRECTIVE,
-      });
+        );
+        const result = await robots();
+        expect(result.sitemap).toBe(allowed ? "https://www.energie-kraft.de/sitemap.xml" : undefined);
+        expect(result.host).toBe(allowed ? "https://www.energie-kraft.de" : undefined);
+        for (const [host, protocol] of [
+          ["www.energie-kraft.de", "https"],
+          ["review.energie-kraft.de", "https"],
+          ["energie-kraft-next--energie-kraft-next.europe-west4.hosted.app", "https"],
+          ["internal.run.app", null],
+          ["localhost:3000", "http"],
+          [null, "https,http"],
+        ]) {
+          expect(await responseHeaders(host, "/photovoltaik", "spoof.example", protocol)).toEqual(
+            allowed ? [] : [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
+          );
+        }
+      }
     },
   );
 
-  it("retains privacy, wizard and admin exclusions after launch", async () => {
-    vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
+  it.each(["false", "true"])("retains privacy, wizard and admin exclusions with indexing %s", async (flag) => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", flag);
     expect(privacyMetadata.robots).toMatchObject({ index: false });
     for (const product of Object.values(configuratorProducts)) {
       expect(buildMetadata(product.seo).robots).toMatchObject({ index: false });
@@ -285,50 +223,6 @@ describe("host-specific indexing, headers, metadata and robots", () => {
     expect(
       urls.some((path) => path.startsWith("/admin") || path.startsWith("/konfigurator/")),
     ).toBe(false);
-  });
-
-  it.each([undefined, "false", "TRUE", " true "])(
-    "requires explicit production approval (%s)",
-    async (flag) => {
-      vi.stubEnv("NEXT_PUBLIC_SITE_ENV", "production");
-      vi.stubEnv("SEARCH_INDEXING_ENABLED", flag);
-      vi.mocked(headers).mockResolvedValue(new Headers({ host: "www.energie-kraft.de" }));
-      expect(isSearchIndexingEnabledForHost("www.energie-kraft.de")).toBe(false);
-      expect((await generateMetadata()).robots).toMatchObject({ index: false });
-      expect(await robots()).not.toHaveProperty("sitemap");
-      expect(await responseHeaders("www.energie-kraft.de")).toContainEqual({
-        key: "X-Robots-Tag",
-        value: SEARCH_NO_INDEX_DIRECTIVE,
-      });
-    },
-  );
-
-  it.each(["local", "ci", undefined])(
-    "never releases local/CI environments (%s)",
-    async (siteEnv) => {
-      vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
-      vi.stubEnv("NEXT_PUBLIC_SITE_ENV", siteEnv);
-      expect(isSearchIndexingEnabledForHost("www.energie-kraft.de")).toBe(false);
-      expect(await responseHeaders("www.energie-kraft.de")).toContainEqual({
-        key: "X-Robots-Tag",
-        value: SEARCH_NO_INDEX_DIRECTIVE,
-      });
-    },
-  );
-
-  it("keeps preview assets and social pages noindex even when production sharing is exempt", async () => {
-    vi.stubEnv("SEARCH_INDEXING_ENABLED", "false");
-    for (const path of [
-      "/google-bewertung",
-      "/images/google-bewertung/google-bewertung-share-v2.jpg",
-      "/sitemap.xml",
-      "/robots.txt",
-    ]) {
-      expect(await responseHeaders("review.energie-kraft.de", path)).toContainEqual({
-        key: "X-Robots-Tag",
-        value: SEARCH_NO_INDEX_DIRECTIVE,
-      });
-    }
   });
 
   it("does not change sitemap URLs or production canonicals with the launch flag", async () => {

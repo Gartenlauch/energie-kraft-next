@@ -31,7 +31,8 @@ env:
       - RUNTIME
 
   - variable: SEARCH_INDEXING_ENABLED
-    # Prepared after local host-isolation QA; activation requires a manual rollout.
+    # Roll out only after review is removed, hosted.app is disabled and apex redirects to www.
+    # Direct Cloud Run access must remain blocked; this flag does not distinguish hosts.
     value: "true"
     availability:
       - BUILD

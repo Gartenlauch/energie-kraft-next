@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
-import { isSearchIndexingEnabledForRequest } from "@/config/search-indexing";
+import { isSearchIndexingEnabled } from "@/config/search-indexing";
 
 // Validate configuration on the server, including routes with client-side PublicLink consumers.
 import "@/config/env/public";
@@ -34,7 +33,6 @@ const montserrat = localFont({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
   return {
     title: {
       default: "Energie-Kraft Süd",
@@ -42,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description:
       "Individuelle Lösungen für Photovoltaik, Stromspeicher, Wallboxen, Klimaanlagen und Wärmepumpen.",
-    robots: isSearchIndexingEnabledForRequest(requestHeaders)
+    robots: isSearchIndexingEnabled()
       ? undefined
       : {
           index: false,

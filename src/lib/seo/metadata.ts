@@ -25,7 +25,7 @@ export function buildMetadata({
     },
 
     // Omit the key entirely when allowed: robots: undefined would erase the
-    // request-specific noindex inherited from the root layout in Next.js.
+    // global noindex inherited from the root layout in Next.js.
     ...(shouldNoIndex
       ? {
           robots: {

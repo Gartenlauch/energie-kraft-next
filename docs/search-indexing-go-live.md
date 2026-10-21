@@ -1,26 +1,31 @@
-# Indexierungsfreigabe für den manuellen Go-live-Rollout
+# Indexierungsfreigabe – Sprint 12.9d
 
-Stand: 21.10.2026. Kein Deployment, keine DNS- oder Domainänderung.
+Stand: 21.10.2026. Keine Bereitstellung oder Domain-/DNS-Änderung durchgeführt.
 
-`apphosting.yaml` enthält nach erfolgreicher lokaler Prüfung `SEARCH_INDEXING_ENABLED="true"` für BUILD und RUNTIME. Erst ein späterer manueller Rollout aktiviert diese Konfiguration auf dem Backend.
+## Ein globaler Schalter
 
-Indexierung setzt gleichzeitig den exakten Schalterwert `true`, `NEXT_PUBLIC_SITE_ENV=production`, den tatsächlichen Host `www.energie-kraft.de` und das HTTPS-Protokoll voraus. DNS-Hostnamen sind ohne Beachtung der Groß-/Kleinschreibung geprüft, optional ist der HTTPS-Standardport 443 erlaubt. `Forwarded` und `X-Forwarded-Host` können keinen fremden Host freigeben. HTTP sowie fehlende oder mehrdeutige Protokollwerte bleiben gesperrt. Bei TLS-Terminierung liefert die Plattform `x-forwarded-proto`; diese muss den externen Transport korrekt wiedergeben.
+`isSearchIndexingEnabled()` wertet ausschließlich `SEARCH_INDEXING_ENABLED` aus. Nur der exakte String `"true"` gibt öffentliche Seiten frei. Alle anderen Werte einschließlich fehlender Konfiguration setzen globale Noindex-Header und Noindex-Metadaten. Es gibt keine Host-, Forwarded-Header-, Protokoll- oder `NEXT_PUBLIC_SITE_ENV`-Prüfung für diese Entscheidung und keine Ausnahme vom globalen Header für die Bewertungsseite oder deren Bild.
 
-Review, der konkrete App-Hosting-Host, Firebase Hosting, sonstige Preview-Adressen, Apex und localhost erhalten weiterhin `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet` und HTML-Noindex. Umgebungen mit `NEXT_PUBLIC_SITE_ENV=local`/`ci` oder fehlendem Wert bleiben auch bei vorgegebenem Produktionshost gesperrt.
+Bei Freigabe entfallen die globalen Noindex-Header und -Metadaten. Individuelle Noindex-Regeln für Datenschutz, Admin einschließlich Anmeldung, Produkt-Konfiguratoren und Bewertungsaufruf bleiben erhalten. robots.txt bewirbt bei Freigabe die Produktions-Sitemap; Canonicals und Sitemap-URLs bleiben auf `https://www.energie-kraft.de`. Redirects und Tracking bleiben unverändert.
 
-Auf dem erlaubten Produktionshost enthalten öffentliche Seiten keine globale Noindex-Metadaten oder Noindex-Header. Seitenspezifische Sperren bleiben bestehen: Datenschutz, Admin einschließlich Anmeldung, Produkt-Konfiguratoren und Google-Bewertungsaufruf. Die Sitemap enthält diese ausgeschlossenen Seiten nicht. Die permanent umgeleitete Wartungs-Unterseite behält ebenfalls ihre ursprüngliche Metadata-Entscheidung.
+`apphosting.yaml` enthält `SEARCH_INDEXING_ENABLED="true"` für BUILD und RUNTIME. Beide müssen denselben Wert verwenden: Next.js erzeugt die Header-Regeln beim Build. Änderungen des Schalters benötigen daher einen neuen Build mit anschließendem Rollout.
 
-robots.txt erlaubt öffentliches Crawling, damit Bots auch auf gesperrten Hosts Noindex erkennen können, und sperrt `/admin/`. Nur auf dem freigegebenen HTTPS-Host werden Produktionshost und Sitemap beworben. Canonicals und Sitemap-URLs verwenden weiterhin ausschließlich `https://www.energie-kraft.de`. Indexierungsentscheidungen verwenden keine Consent-Cookies oder Analytics-/Marketing-Freigaben.
+## Verbindliche Voraussetzung vor dem Rollout
 
-## Durchgeführte Prüfungen
+Der vereinfachte Code unterscheidet bewusst keine Domains. Solange andere Domains dieselbe Anwendung ausliefern, darf dieser Stand mit aktiviertem Schalter nicht produktiv veröffentlicht werden.
 
-- `npm run test -- tests/unit/search-indexing.test.ts tests/unit/legacy-final-redirects.test.ts`: 60 Tests bestanden. Einschließlich tatsächlicher Next.js-Header-Matcher, Host-/Umgebungs-/Protokoll-Isolation, ausgeschlossener Metadata, Canonicals und Sitemap-XML mit einem gemockten FAQ-Katalog (43 URLs). Kein produktiver FAQ-Datenbestand abgefragt.
-- `node scripts/search-indexing-http-qa.mjs`: genau ein lokaler Produktionsbuild einschließlich TypeScript erfolgreich; anschließend 22 HTTP-Prüffälle bestanden. 12 Host-/Protokollvarianten mit tatsächlichen HTML-Metadaten, Headern, Canonicals und robots.txt, drei ausgeschlossene Seiten und sieben finale 308-Redirects; zusätzlich Admin-Weiterleitung zur Anmeldung geprüft. Alle HTTP-Anfragen ohne Consent-Cookie. Nachweise: `artifacts/search-indexing-qa/http-results.json`.
-- Sitemap-Generator und Next.js-XML-Serialisierung gezielt getestet; der Produktionsbuild stellt `/sitemap.xml` als dynamische Route bereit. Kein HTTP-Abruf des produktiven FAQ-Katalogs Bestandteil dieser Prüfung.
-- ESLint für die geänderten TypeScript-/JavaScript-Dateien und `git diff --check` erfolgreich. Abschließend den YAML-Schalterwert `true` und Verfügbarkeit für BUILD/RUNTIME geprüft.
+Vorher separat auf Plattformebene erledigen und prüfen:
 
-Alle vorhandenen Redirect-Einträge in `next.config.ts` bleiben unverändert. Der vorhandene finale Redirect-Test deckt die sieben zuletzt abgeglichenen Altpfade und Schleifenfreiheit ab. Ein separat als Sprint 12.8 bezeichneter Abgleich ist im Repository nicht dokumentiert; dieser externe Nachweis kann daher nicht als geprüft bestätigt werden.
+- `review.energie-kraft.de` aus der produktiven Zuordnung entfernen.
+- Die technische App-Hosting-Standarddomain `energie-kraft-next--energie-kraft-next.europe-west4.hosted.app` deaktivieren.
+- Direkten Cloud-Run-Zugriff gesperrt halten.
+- `energie-kraft.de` permanent auf `https://www.energie-kraft.de` weiterleiten; dabei Pfad und Query erhalten.
+- Sicherstellen, dass keine weiteren Preview-/Alternativdomains denselben produktiven Inhalt ausliefern und HTTPS auf Plattformebene durchgesetzt wird.
 
-## Vor der manuellen Domainumschaltung
+Individuelle Seitensperren und diese Domainvoraussetzungen werden durch den globalen Schalter nicht ersetzt.
 
-Auf dem später bereitgestellten Release Host-/HTTPS-Weitergabe und die sichtbaren Antworten erneut prüfen: www über HTTPS ohne globale Noindex-Sperre, Review/Firebase weiterhin gesperrt, korrekte Canonicals sowie robots.txt und sitemap.xml. Eine falsch weitergegebene Host-/Protokollangabe schließt die Indexierung sicher, kann aber die gewünschte Freigabe verhindern. Die lokale Prüfung belegt den Code; sie ersetzt keine Abnahme der späteren Plattform-/Domainkonfiguration.
+## Gezielte lokale Prüfung
+
+`node scripts/search-indexing-http-qa.mjs` startet für beide Schalterstellungen echte lokale Next.js-Server in einer temporären Quellkopie. Die echten Seiten, Layouts, Metadaten und Header-/Redirect-Regeln bleiben unverändert. FAQ- und Bewertungsdatenadapter erhalten leere Testfixtures, der Settings-Datenadapter liefert die bestehenden Konfigurator-Standardwerte. Produktive Firebase-Daten werden nicht abgefragt. Die Prüfung umfasst HTTP-Header, gerenderte HTML-Metadaten, Startseite, Produktseiten, individuelle Ausschlüsse, robots.txt, Sitemap, Canonicals und bestehende Redirects. Die Ergebnisse und Serverlogs liegen im ausgegebenen temporären Verzeichnis; vorhandene Repository-Artefakte werden nicht überschrieben.
+
+Diese lokale Prüfung ersetzt nicht die Kontrolle der später separat vorgenommenen Plattform- und Domainbereinigung.

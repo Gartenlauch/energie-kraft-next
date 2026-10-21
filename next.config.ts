@@ -3,7 +3,6 @@ import type { NextConfig } from "next";
 import {
   isSearchIndexingEnabled,
   SEARCH_NO_INDEX_DIRECTIVE,
-  SEARCH_PRODUCTION_HOST_PATTERN,
 } from "./src/config/search-indexing";
 
 const nextConfig: NextConfig = {
@@ -109,28 +108,13 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
-    const hostGuard = {
-      source: "/:path(.*)",
-      // Inspect the real HTTP Host, not x-forwarded-host or Forwarded.
-      missing: [{ type: "header" as const, key: "host", value: SEARCH_PRODUCTION_HOST_PATTERN }],
-      headers: [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
-    };
-    const protocolGuard = {
-      source: "/:path(.*)",
-      has: [{ type: "header" as const, key: "host", value: SEARCH_PRODUCTION_HOST_PATTERN }],
-      missing: [{ type: "header" as const, key: "x-forwarded-proto", value: "https" }],
-      headers: [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
-    };
-    if (isSearchIndexingEnabled() && process.env.NEXT_PUBLIC_SITE_ENV === "production") {
-      return [hostGuard, protocolGuard];
+    if (isSearchIndexingEnabled()) {
+      return [];
     }
 
     return [
       {
-        // Only these exact social-preview paths bypass the global header.
-        // The review page retains its own noindex, follow HTML metadata.
-        source:
-          "/:path((?!google-bewertung$|images/google-bewertung/google-bewertung-share-v2\\.jpg$).*)",
+        source: "/:path(.*)",
         headers: [
           {
             key: "X-Robots-Tag",
@@ -138,8 +122,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      hostGuard,
-      protocolGuard,
     ];
   },
 };
