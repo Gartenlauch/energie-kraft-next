@@ -33,12 +33,10 @@ describe("consent boundary", () => {
     expect(googleConsentSignals(["marketing"]).ad_personalization).toBe("denied");
     expect(googleConsentSignals(["personalization"]).ad_personalization).toBe("denied");
     expect(googleConsentSignals(["marketing", "personalization"]).ad_personalization).toBe(
-      "granted",
+      "denied",
     );
     expect(googleConsentSignals(["googleReviews"])).toEqual(googleConsentSignals([]));
-    expect(Object.values(googleConsentSignals(CONSENT_CATEGORIES))).toEqual(
-      Array(4).fill("granted"),
-    );
+    expect(googleConsentSignals(CONSENT_CATEGORIES)).toEqual(googleConsentSignals(["analytics"]));
   });
 
   it("accepts the library record including its timestamps and null custom data", () => {
@@ -52,6 +50,7 @@ describe("consent boundary", () => {
     "null",
     "[]",
     JSON.stringify({ ...record, revision: 0 }),
+    JSON.stringify({ ...record, revision: 1 }),
     JSON.stringify({ ...record, expirationTime: now }),
     JSON.stringify({ ...record, expirationTime: now + CONSENT_LIFETIME_MS * 2 }),
     JSON.stringify({ ...record, lastConsentTimestamp: "invalid" }),
@@ -69,14 +68,21 @@ describe("consent boundary", () => {
     "localhost",
     "127.0.0.1",
     "energie-kraft.de",
-    "www.energie-kraft.de",
     "preview.web.app",
     "preview.firebaseapp.com",
     "preview.hosted.app",
     "evil.energie-kraft.de",
     "energie-kraft.de.attacker.invalid",
-  ])("blocks all unapproved hosts including production: %s", (host) => {
+  ])("blocks unapproved hosts: %s", (host) => {
     expect(isTrackingHostAllowed(host)).toBe(false);
-    expect(canUseTracking(host)).toBe(false);
+    expect(canUseTracking(host, "https:", "production")).toBe(false);
+  });
+
+  it("allows only HTTPS production, independently of indexing", () => {
+    expect(canUseTracking("www.energie-kraft.de", "https:", "production")).toBe(true);
+    expect(canUseTracking("www.energie-kraft.de", "http:", "production")).toBe(false);
+    for (const env of ["local", "ci", "preview", ""]) {
+      expect(canUseTracking("www.energie-kraft.de", "https:", env)).toBe(false);
+    }
   });
 });

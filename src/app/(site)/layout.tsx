@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ConsentManager } from "@/components/consent/consent-manager";
+import { GoogleAnalytics } from "@/components/consent/google-analytics";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteOrganizationJsonLd } from "@/components/seo/site-organization-json-ld";
 
@@ -21,6 +22,9 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       {children}
       <SiteFooter />
       <ConsentManager />
+      <Suspense fallback={null}>
+        <GoogleAnalytics />
+      </Suspense>
     </>
   );
 }

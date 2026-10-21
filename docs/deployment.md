@@ -27,8 +27,9 @@ Before any production deployment, explicitly verify and record:
 - `functions/.secret.local` supplies local Functions secrets where needed and must not be committed.
 - Firebase/Cloud secrets must be provisioned explicitly for production; documentation must contain names and purpose only, never values.
 - `apphosting.yaml` currently references `GOOGLE_PLACES_API_KEY` as a runtime secret and contains non-secret Place/profile configuration. This is configuration intent, not deployment evidence.
-- `SEARCH_INDEXING_ENABLED=false` is the required pre-launch production state. It is independent of `NEXT_PUBLIC_SITE_ENV=production`, so the application can use the real production Firebase project while returning global `noindex` protection.
-- Only set `SEARCH_INDEXING_ENABLED=true` after the custom production domain has been connected and verified, and the site has been approved for launch. The value must be available during both build and runtime.
+- `apphosting.yaml` now prepares `SEARCH_INDEXING_ENABLED=true` for the next explicitly authorized manual production rollout, after successful local host-isolation QA. The value is available during build and runtime; this repository change does not activate a deployed release.
+- Indexing additionally requires `NEXT_PUBLIC_SITE_ENV=production`, the raw HTTP Host `www.energie-kraft.de` (case-insensitive, optional port 443) and exactly `x-forwarded-proto=https` from the TLS-terminating platform. Review, Firebase/preview, apex, local and non-HTTPS requests remain `noindex`. Missing or ambiguous protocol values fail closed. Do not grant indexing using `Forwarded` or `X-Forwarded-Host`.
+- Before cutover, verify that App Hosting preserves the original Host and supplies the external protocol correctly. Keep page-specific exclusions. See [indexing release evidence](search-indexing-go-live.md).
 
 ## Verification gate
 

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
 
-import { isSearchIndexingEnabledForHost } from "@/config/search-indexing";
+import { isSearchIndexingEnabledForRequest } from "@/config/search-indexing";
 import { siteConfig } from "@/config/site";
 
 export const dynamic = "force-dynamic";
@@ -31,5 +31,5 @@ export function buildRobots(searchIndexingEnabled: boolean): MetadataRoute.Robot
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const requestHeaders = await headers();
-  return buildRobots(isSearchIndexingEnabledForHost(requestHeaders.get("host")));
+  return buildRobots(isSearchIndexingEnabledForRequest(requestHeaders));
 }

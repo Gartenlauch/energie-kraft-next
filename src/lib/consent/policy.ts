@@ -1,6 +1,6 @@
 export const CONSENT_STORAGE_KEY = "ek_consent";
-export const CONSENT_REVISION = 1;
-// Provisional: requires specialist approval before launch.
+// GA4 activation requires a new explicit decision; revision 1 never enabled tracking.
+export const CONSENT_REVISION = 2;
 export const CONSENT_LIFETIME_DAYS = 180;
 export const CONSENT_LIFETIME_MS = CONSENT_LIFETIME_DAYS * 86_400_000;
 export const CONSENT_CATEGORIES = [
@@ -12,16 +12,24 @@ export const CONSENT_CATEGORIES = [
 ] as const;
 export type ConsentCategory = (typeof CONSENT_CATEGORIES)[number];
 
-// Deliberately closed. Enabling tracking requires a separate reviewed change to BOTH.
-export const TRACKING_ENABLED = false;
-export const TRACKING_HOST_ALLOWLIST: readonly string[] = [];
+export const TRACKING_ENABLED = true;
+export const TRACKING_HOST_ALLOWLIST: readonly string[] = ["www.energie-kraft.de"];
 
 export function isTrackingHostAllowed(hostname: string): boolean {
   return TRACKING_HOST_ALLOWLIST.includes(hostname.toLowerCase());
 }
 
-export function canUseTracking(hostname: string): boolean {
-  return TRACKING_ENABLED && isTrackingHostAllowed(hostname);
+export function canUseTracking(
+  hostname: string,
+  protocol: string,
+  siteEnv = process.env.NEXT_PUBLIC_SITE_ENV,
+): boolean {
+  return (
+    TRACKING_ENABLED &&
+    siteEnv === "production" &&
+    protocol === "https:" &&
+    isTrackingHostAllowed(hostname)
+  );
 }
 
 export function googleConsentSignals(categories: readonly ConsentCategory[]) {
@@ -29,12 +37,9 @@ export function googleConsentSignals(categories: readonly ConsentCategory[]) {
     categories.includes(category) ? ("granted" as const) : ("denied" as const);
   return {
     analytics_storage: granted("analytics"),
-    ad_storage: granted("marketing"),
-    ad_user_data: granted("marketing"),
-    ad_personalization:
-      categories.includes("marketing") && categories.includes("personalization")
-        ? ("granted" as const)
-        : ("denied" as const),
+    ad_storage: "denied" as const,
+    ad_user_data: "denied" as const,
+    ad_personalization: "denied" as const,
   };
 }
 

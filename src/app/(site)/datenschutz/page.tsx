@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { LegalPage } from "@/app/(site)/_components/legal/legal-page";
 import { LegalSection } from "@/app/(site)/_components/legal/legal-section";
 import { siteConfig } from "@/config/site";
@@ -343,20 +343,83 @@ export default function DatenschutzPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="10. GA4 und Google Ads deaktiviert" documentLayout>
+      <LegalSection
+        title="10. Google Analytics 4 und deaktiviertes Google-Ads-Webtracking"
+        documentLayout
+      >
         <p>
-          Google Analytics 4 und Google-Ads-Webtracking sind auf dieser Website technisch
-          deaktiviert, auch nach einer entsprechenden Auswahl in den Cookie-Einstellungen. Es
-          werden darüber keine Google-Tags geladen, keine
-          Seitenaufruf-/Conversion-Ereignisse und keine cookielosen Tracking-Pings versendet. Die
-          Einwilligungsverwaltung lädt selbst keine Google-Skripte. Allein die Kategorie
-          „Google-Bewertungen“ steuert derzeit zusätzliche externe Inhalte; siehe Abschnitt 8.
+          Auf https://www.energie-kraft.de verwenden wir nach Ihrer ausdrücklichen Einwilligung in
+          „Statistik – Google Analytics 4“ den Statistikdienst Google Analytics 4. Anbieter ist
+          Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland; zu den möglichen
+          Empfängern gehört auch Google LLC in den USA. Wir werten Seitenaufrufe aus, um die Nutzung
+          unserer Website zu verstehen und ihre Inhalte zu verbessern. Rechtsgrundlage ist Art. 6
+          Abs. 1 lit. a DSGVO; für das Speichern und Auslesen von Analytics-Cookies gilt § 25 Abs. 1
+          TDDDG.
         </p>
         <p>
-          Die Auswahlmöglichkeiten für Statistik, Marketing und personalisierte Werbung lösen
-          aktuell keine entsprechende Messung oder Werbung aus. Ihre Auswahl wird nur lokal
-          vermerkt. Sie ist keine vorweggenommene Einwilligung für später neu eingeführte
-          Verarbeitungen.
+          Wir setzen den Basic Consent Mode ein: Vor Ihrer Zustimmung werden keine Analytics-Skripte
+          geladen und auch keine cookielosen Analytics-Pings versendet. Nach Zustimmung werden
+          insbesondere aufgerufene öffentliche Seiten, Zeitpunkte, Cookie-Kennungen sowie Browser-,
+          Geräte- und technische Verbindungsdaten verarbeitet. Dabei wird Ihre IP-Adresse technisch
+          an Google übermittelt; nach Anbieterangaben wird sie in Google Analytics 4 nicht
+          protokolliert oder gespeichert. URL-Abfrageparameter, URL-Fragmente und Formulareingaben
+          übergeben wir nicht als Ereignisdaten. Wir verwenden keine User-ID und aktivieren keine
+          Google-Signals- oder Werbepersonalisierungsfunktionen.
+        </p>
+        <p>
+          Die von unserer Einbindung gesetzten Cookies „_ga“ und „_ga_…“ sind höchstens{" "}
+          {CONSENT_LIFETIME_DAYS} Tage ab ihrer Erstellung gültig; die Laufzeit wird nicht bei jedem
+          Seitenaufruf verlängert. Für nutzer- und ereignisbezogene Daten bei Google ist die
+          Aufbewahrungseinstellung der bestehenden Property maßgeblich; Google löscht diese Daten
+          nach Ablauf der eingestellten Frist. Aggregierte Standardberichte unterliegen dieser
+          Einstellung nicht. Eine Cookie-Laufzeit ist daher keine Zusage einer gleichen
+          serverseitigen Löschfrist.
+        </p>
+        <p>
+          Eine Verarbeitung außerhalb der EU beziehungsweise des EWR, insbesondere in den USA, ist
+          möglich. Google veröffentlicht für seine Auftragsverarbeitungsdienste
+          Datenschutzbedingungen und Regelungen zu internationalen Übermittlungen einschließlich
+          Standardvertragsklauseln. Daraus folgt keine ausschließliche Speicherung innerhalb der EU.
+          Informationen des Anbieters finden Sie in den{" "}
+          <a
+            className="underline"
+            href="https://business.safety.google/adsprocessorterms/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Datenverarbeitungsbedingungen
+          </a>
+          , der{" "}
+          <a
+            className="underline"
+            href="https://policies.google.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google-Datenschutzerklärung
+          </a>{" "}
+          und den{" "}
+          <a
+            className="underline"
+            href="https://support.google.com/analytics/answer/7667196?hl=de"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Informationen zur Datenaufbewahrung
+          </a>
+          .
+        </p>
+        <p>
+          Sie können Statistik jederzeit über „Cookie-Einstellungen“ im Footer ablehnen oder
+          widerrufen. Dann beenden wir die Messung und entfernen die für unsere Website erreichbaren
+          Analytics-Cookies. Bereits übermittelte Daten werden dadurch nicht rückwirkend gelöscht.
+          Die übrige Website und die gesonderte Freigabe für Google-Bewertungen bleiben unabhängig
+          nutzbar. Frühere Entscheidungen aus der noch deaktivierten Statistik-Kategorie gelten
+          nicht als Einwilligung in diese Messung; wir fragen Ihre Auswahl erneut ab.
+        </p>
+        <p>
+          Google-Ads-Webtracking, Conversion-Tracking, Remarketing und personalisierte Werbung
+          bleiben technisch deaktiviert, auch bei Auswahl der entsprechenden Kategorien.
         </p>
       </LegalSection>
 
@@ -429,7 +492,7 @@ export default function DatenschutzPage() {
         <p>
           Eine Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Die
           Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt. Für
-          Google-Bewertungen nutzen Sie dazu „Cookie-Einstellungen“ im Footer. Für Ihre weiteren
+          Google Analytics und Google-Bewertungen nutzen Sie dazu „Cookie-Einstellungen“ im Footer. Für Ihre weiteren
           Anliegen wenden Sie sich an die Kontaktdaten in Abschnitt 1, insbesondere an unseren
           Datenschutzbeauftragten. Wir beantworten Anträge grundsätzlich innerhalb eines Monats;
           über eine gesetzlich zulässige Verlängerung informieren wir Sie innerhalb dieser Frist.

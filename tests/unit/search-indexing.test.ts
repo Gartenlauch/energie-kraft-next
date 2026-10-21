@@ -2,8 +2,10 @@
 import { getPathMatch } from "next/dist/shared/lib/router/utils/path-match";
 import { IncomingMessage } from "node:http";
 import { Socket } from "node:net";
+import { readFileSync } from "node:fs";
 import { headers } from "next/headers";
 import { matchHas } from "next/dist/shared/lib/router/utils/prepare-destination";
+import { resolveSitemap } from "next/dist/build/webpack/loaders/metadata/resolve-route-data";
 
 vi.mock("next/headers", () => ({ headers: vi.fn() }));
 vi.mock("next/font/local", () => ({ default: () => ({ variable: "font-montserrat" }) }));
@@ -29,12 +31,20 @@ import {
   SEARCH_NO_INDEX_DIRECTIVE,
 } from "@/config/search-indexing";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { configuratorProducts } from "@/content/configurators/landing";
+import { metadata as privacyMetadata } from "@/app/(site)/datenschutz/page";
 import nextConfig from "../../next.config";
 
-async function responseHeaders(host: string | null, path = "/", forwardedHost?: string) {
+async function responseHeaders(
+  host: string | null,
+  path = "/",
+  forwardedHost?: string,
+  protocol: string | null = "https",
+) {
   const request = new IncomingMessage(new Socket());
   request.headers = {
     ...(host === null ? {} : { host }),
+    ...(protocol === null ? {} : { "x-forwarded-proto": protocol }),
     ...(forwardedHost
       ? { "x-forwarded-host": forwardedHost, forwarded: `host=${forwardedHost}` }
       : {}),
@@ -176,6 +186,9 @@ describe("host-specific indexing, headers, metadata and robots", () => {
     ["review.energie-kraft.de", false],
     ["energie-kraft.de", false],
     ["energie-kraft-next--preview.europe-west4.hosted.app", false],
+    ["energie-kraft-next--energie-kraft-next.europe-west4.hosted.app", false],
+    ["energie-kraft-next.web.app", false],
+    ["energie-kraft-next.firebaseapp.com", false],
     ["preview.web.app", false],
     ["service.run.app", false],
     ["localhost:3000", false],
@@ -195,6 +208,7 @@ describe("host-specific indexing, headers, metadata and robots", () => {
     vi.mocked(headers).mockResolvedValue(
       new Headers({
         ...(host === null ? {} : { host }),
+        "x-forwarded-proto": "https",
         "x-forwarded-host": "www.energie-kraft.de",
         forwarded: "host=www.energie-kraft.de;proto=https",
       }),
@@ -226,6 +240,51 @@ describe("host-specific indexing, headers, metadata and robots", () => {
     });
     expect(page).not.toHaveProperty("robots");
     expect(page.alternates?.canonical).toBe("https://www.energie-kraft.de/kontakt");
+  });
+
+  it.each([null, "http", "https,http", "http,https", "HTTPS", "https "])(
+    "fails closed for an unverified HTTPS transport (%s)",
+    async (protocol) => {
+      vi.stubEnv("NEXT_PUBLIC_SITE_ENV", "production");
+      vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
+      // Preserve raw values, including whitespace, for the policy/matcher parity check.
+      const requestHeaders = new Map([
+        ["host", "www.energie-kraft.de"],
+        ["forwarded", "host=www.energie-kraft.de;proto=https"],
+        ...(protocol === null ? [] : ([["x-forwarded-proto", protocol]] as [string, string][])),
+      ]);
+      vi.mocked(headers).mockResolvedValue(
+        requestHeaders as unknown as Awaited<ReturnType<typeof headers>>,
+      );
+      expect((await generateMetadata()).robots).toMatchObject({ index: false });
+      expect(await robots()).not.toHaveProperty("sitemap");
+      expect(
+        await responseHeaders("www.energie-kraft.de", "/", undefined, protocol),
+      ).toContainEqual({
+        key: "X-Robots-Tag",
+        value: SEARCH_NO_INDEX_DIRECTIVE,
+      });
+    },
+  );
+
+  it("retains privacy, wizard and admin exclusions after launch", async () => {
+    vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
+    expect(privacyMetadata.robots).toMatchObject({ index: false });
+    for (const product of Object.values(configuratorProducts)) {
+      expect(buildMetadata(product.seo).robots).toMatchObject({ index: false });
+    }
+    for (const file of [
+      "src/app/(admin)/admin/layout.tsx",
+      "src/app/(admin-auth)/admin/login/page.tsx",
+    ]) {
+      expect(readFileSync(file, "utf8")).toMatch(/robots:\s*\{\s*index: false/);
+    }
+    const urls = (await sitemap()).map(({ url }) => new URL(url).pathname);
+    expect(urls).not.toContain("/datenschutz");
+    expect(urls).not.toContain("/google-bewertung");
+    expect(
+      urls.some((path) => path.startsWith("/admin") || path.startsWith("/konfigurator/")),
+    ).toBe(false);
   });
 
   it.each([undefined, "false", "TRUE", " true "])(
@@ -287,5 +346,9 @@ describe("host-specific indexing, headers, metadata and robots", () => {
         url: "https://www.energie-kraft.de/faq/photovoltaik/stabile-frage",
       }),
     );
+    const xml = resolveSitemap(before);
+    expect(xml).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"');
+    expect(xml.match(/<loc>/g)).toHaveLength(before.length);
+    expect(xml).toContain("<loc>https://www.energie-kraft.de/photovoltaik</loc>");
   });
 });

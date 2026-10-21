@@ -31,7 +31,8 @@ env:
       - RUNTIME
 
   - variable: SEARCH_INDEXING_ENABLED
-    value: "false"
+    # Prepared after local host-isolation QA; activation requires a manual rollout.
+    value: "true"
     availability:
       - BUILD
       - RUNTIME

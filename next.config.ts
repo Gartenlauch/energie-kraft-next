@@ -115,8 +115,14 @@ const nextConfig: NextConfig = {
       missing: [{ type: "header" as const, key: "host", value: SEARCH_PRODUCTION_HOST_PATTERN }],
       headers: [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
     };
+    const protocolGuard = {
+      source: "/:path(.*)",
+      has: [{ type: "header" as const, key: "host", value: SEARCH_PRODUCTION_HOST_PATTERN }],
+      missing: [{ type: "header" as const, key: "x-forwarded-proto", value: "https" }],
+      headers: [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
+    };
     if (isSearchIndexingEnabled() && process.env.NEXT_PUBLIC_SITE_ENV === "production") {
-      return [hostGuard];
+      return [hostGuard, protocolGuard];
     }
 
     return [
@@ -133,6 +139,7 @@ const nextConfig: NextConfig = {
         ],
       },
       hostGuard,
+      protocolGuard,
     ];
   },
 };

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
-import { isSearchIndexingEnabledForHost } from "@/config/search-indexing";
+import { isSearchIndexingEnabledForRequest } from "@/config/search-indexing";
 
 // Validate configuration on the server, including routes with client-side PublicLink consumers.
 import "@/config/env/public";
@@ -42,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description:
       "Individuelle Lösungen für Photovoltaik, Stromspeicher, Wallboxen, Klimaanlagen und Wärmepumpen.",
-    robots: isSearchIndexingEnabledForHost(requestHeaders.get("host"))
+    robots: isSearchIndexingEnabledForRequest(requestHeaders)
       ? undefined
       : {
           index: false,

@@ -65,7 +65,7 @@ export function ConsentManager() {
               consentModal: {
                 title: "Cookie-Einstellungen",
                 description:
-                  "Notwendige Dienste sichern diese Website. Google-Bewertungen mit externen Autorenbildern erlauben Sie freiwillig. Statistik und Werbung bleiben deaktiviert. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ im Footer ändern oder widerrufen.",
+                  "Notwendige Dienste sichern diese Website. Google Analytics 4 zur statistischen Auswertung und Google-Bewertungen mit externen Autorenbildern erlauben Sie freiwillig. Werbung bleibt deaktiviert. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ im Footer ändern oder widerrufen.",
                 acceptAllBtn: "Alle akzeptieren",
                 acceptNecessaryBtn: "Nur notwendige",
                 showPreferencesBtn: "Einstellungen",
@@ -81,7 +81,7 @@ export function ConsentManager() {
                   {
                     title: "Sie entscheiden",
                     description:
-                      "Alle optionalen Kategorien sind zunächst ausgeschaltet. Zum Widerruf deaktivieren Sie die betreffende Kategorie und speichern Ihre Auswahl oder wählen „Alle ablehnen“. Statistik- und Werbedienste werden aktuell auch nach Zustimmung nicht aktiviert.",
+                      "Alle optionalen Kategorien sind zunächst ausgeschaltet. Zum Widerruf deaktivieren Sie die betreffende Kategorie und speichern Ihre Auswahl oder wählen „Alle ablehnen“. Marketing und personalisierte Werbung bleiben technisch deaktiviert.",
                   },
                   {
                     title: "Notwendige Dienste",
@@ -92,7 +92,7 @@ export function ConsentManager() {
                   {
                     title: "Statistik – Google Analytics 4",
                     description:
-                      "Vorgesehen zur Auswertung der Website-Nutzung, etwa besuchter Seiten und Interaktionen. Dabei können Nutzungs- und Geräteinformationen an Google übermittelt werden. Erlaubt keine Werbung oder Werbepersonalisierung. Derzeit technisch deaktiviert.",
+                      "Wertet nach Ihrer Zustimmung Seitenaufrufe auf www.energie-kraft.de aus. Google Ireland Limited erhält dabei Cookie-Kennungen sowie Nutzungs-, Browser- und Geräteinformationen; eine Verarbeitung in den USA ist möglich. Analytics-Cookies sind höchstens 180 Tage gültig. Ohne Zustimmung werden keine Analytics-Skripte geladen und keine Tracking-Pings gesendet. Erlaubt keine Werbung oder Werbepersonalisierung.",
                     linkedCategory: "analytics",
                   },
                   {
@@ -114,8 +114,8 @@ export function ConsentManager() {
                     linkedCategory: "googleReviews",
                   },
                   {
-                    title: "Vorläufiger Stand – fachliche Freigabe ausstehend",
-                    description: `Die Auswahl wird vorläufig ${CONSENT_LIFETIME_DAYS} Tage in diesem Browser gespeichert, einschließlich Version und Zeitstempeln, ohne Formularwerte. Speicherdauer, Wortlaut und rechtliche Zuordnung müssen vor dem Produktionsstart fachlich freigegeben werden. Weitere Informationen: <a href="${LEGAL_ROUTES.datenschutz.href}">Datenschutz</a>.`,
+                    title: "Speicherung Ihrer Auswahl",
+                    description: `Ihre Auswahl wird ${CONSENT_LIFETIME_DAYS} Tage in diesem Browser gespeichert, einschließlich Version und Zeitstempeln, ohne Formularwerte. Weitere Informationen: <a href="${LEGAL_ROUTES.datenschutz.href}">Datenschutz</a>.`,
                   },
                 ],
               },

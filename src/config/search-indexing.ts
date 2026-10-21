@@ -3,7 +3,7 @@ export const SEARCH_NO_INDEX_DIRECTIVE = "noindex, nofollow, noarchive, nosnippe
 export const SEARCH_PRODUCTION_HOST = "www.energie-kraft.de";
 
 // Shared by Next's raw Host-header matcher and request-time metadata/robots.
-// Only the canonical HTTPS authority is eligible, never a forwarded header.
+// Never use a forwarded host to grant indexing permission.
 export const SEARCH_PRODUCTION_HOST_PATTERN =
   SEARCH_PRODUCTION_HOST.split("")
     .map((character) =>
@@ -31,5 +31,14 @@ export function isSearchIndexingEnabledForHost(
     siteEnv === "production" &&
     host !== null &&
     productionHost.test(host)
+  );
+}
+
+export function isSearchIndexingEnabledForRequest(requestHeaders: Pick<Headers, "get">): boolean {
+  // App Hosting terminates TLS; Next supplies this header from the transport
+  // when the proxy has not supplied it. Missing/ambiguous protocols fail closed.
+  return (
+    requestHeaders.get("x-forwarded-proto") === "https" &&
+    isSearchIndexingEnabledForHost(requestHeaders.get("host"))
   );
 }

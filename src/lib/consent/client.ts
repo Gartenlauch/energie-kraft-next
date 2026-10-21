@@ -9,6 +9,7 @@ import {
 } from "./policy";
 
 export const CONSENT_CHANGE_EVENT = "ek:consent-change";
+export const CONSENT_BEFORE_CHANGE_EVENT = "ek:consent-before-change";
 
 export function readConsent() {
   if (typeof window === "undefined") return null;
@@ -36,26 +37,37 @@ export function hasGoogleReviewsConsent(): boolean {
 
 export function getEffectiveGoogleConsent() {
   return googleConsentSignals(
-    typeof window !== "undefined" && canUseTracking(window.location.hostname)
+    typeof window !== "undefined" &&
+      canUseTracking(window.location.hostname, window.location.protocol)
       ? (readConsent()?.categories ?? [])
       : [],
   );
 }
 
-/** Local consent commands only. No script loader, config, event or network transport. */
-export function publishConsent(command: "default" | "update") {
+/** The one gtag-compatible queue, shared by the consent manager and the GA4 adapter. */
+export function enqueueGoogleCommand(...args: unknown[]) {
   const target = window as Window & { dataLayer?: unknown[] };
   target.dataLayer ??= [];
-  // gtag-compatible native arguments object; no Google code is loaded.
-  function enqueue(...args: unknown[]) {
-    void args;
-    // eslint-disable-next-line prefer-rest-params
-    target.dataLayer!.push(arguments);
+  void args;
+  // eslint-disable-next-line prefer-rest-params
+  target.dataLayer.push(arguments);
+}
+
+let defaultPublished = false;
+
+export function ensureGoogleConsentDefault() {
+  if (defaultPublished) return;
+  defaultPublished = true;
+  enqueueGoogleCommand("consent", "default", googleConsentSignals([]));
+}
+
+/** Disable consumers synchronously BEFORE a denied update reaches a loaded tag. */
+export function publishConsent(command: "default" | "update") {
+  window.dispatchEvent(new Event(CONSENT_BEFORE_CHANGE_EVENT));
+  if (command === "default") ensureGoogleConsentDefault();
+  else {
+    ensureGoogleConsentDefault();
+    enqueueGoogleCommand("consent", command, getEffectiveGoogleConsent());
   }
-  enqueue(
-    "consent",
-    command,
-    command === "default" ? googleConsentSignals([]) : getEffectiveGoogleConsent(),
-  );
   window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT));
 }
