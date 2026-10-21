@@ -4,7 +4,6 @@ import { isSearchIndexingEnabled } from "@/config/search-indexing";
 import { siteConfig } from "@/config/site";
 import { buildCanonicalUrl } from "@/lib/seo/canonical";
 
-
 export function buildMetadata({
   title,
   description,
@@ -25,14 +24,18 @@ export function buildMetadata({
       canonical: canonicalUrl,
     },
 
-    robots: shouldNoIndex
+    // Omit the key entirely when allowed: robots: undefined would erase the
+    // request-specific noindex inherited from the root layout in Next.js.
+    ...(shouldNoIndex
       ? {
-          index: false,
-          follow: false,
-          noarchive: true,
-          nosnippet: true,
+          robots: {
+            index: false,
+            follow: false,
+            noarchive: true,
+            nosnippet: true,
+          },
         }
-      : undefined,
+      : {}),
 
     openGraph: {
       type: "website",

@@ -11,7 +11,7 @@ import {
   buildContactLeadMail,
 } from "../../functions/src/contact-lead-mail";
 import type { ContactLeadPayload } from "../../functions/src/contact-lead-validation";
-import { INTERNAL_SUBMISSION_RECIPIENT } from "../../functions/src/mailgun";
+import { APPLICATION_SUBMISSION_RECIPIENT, INTERNAL_SUBMISSION_RECIPIENT } from "../../functions/src/mailgun";
 import {
   buildReferralInternalMail,
   buildReferrerConfirmation,
@@ -93,8 +93,9 @@ describe("submission mail recipients", () => {
     expect(mail.html).not.toContain("undefined");
     expect(buildApplicationAutoReply(input).to).toBe(application.email);
   });
-  it("uses the one pre-launch recipient for every internal notification", () => {
-    expect(INTERNAL_SUBMISSION_RECIPIENT).toBe("anfrage@energie-kraft.de");
+  it("routes customer inquiries and applications to their dedicated recipients", () => {
+    expect(INTERNAL_SUBMISSION_RECIPIENT).toBe("anfragen@energie-kraft.de");
+    expect(APPLICATION_SUBMISSION_RECIPIENT).toBe("bewerbung@energie-kraft.de");
     expect(buildContactLeadMail({ leadId: "lead-1", lead: contact }).to).toBe(
       INTERNAL_SUBMISSION_RECIPIENT,
     );
@@ -105,7 +106,7 @@ describe("submission mail recipients", () => {
         receivedAt: "2026-09-24T12:00:00.000Z",
         application,
       }).to,
-    ).toBe(INTERNAL_SUBMISSION_RECIPIENT);
+    ).toBe(APPLICATION_SUBMISSION_RECIPIENT);
     expect(
       buildReferralInternalMail({
         referralId: referral.submissionId,
@@ -116,6 +117,40 @@ describe("submission mail recipients", () => {
     expect(buildConfiguratorLeadMail({ leadId: "EK-00001", lead: configurator }).to).toBe(
       INTERNAL_SUBMISSION_RECIPIENT,
     );
+  });
+
+  it.each(["photovoltaic", "battery_storage", "heat_pump"] as const)(
+    "routes %s inquiries only to the customer inquiry mailbox",
+    (product) => {
+      const mail = buildConfiguratorLeadMail({
+        leadId: "EK-00001",
+        lead: { ...configurator, products: [product], journey: { ...configurator.journey, entryPoint: product } },
+      });
+      expect(mail.to).toBe("anfragen@energie-kraft.de");
+      expect(mail).not.toHaveProperty("cc");
+      expect(mail).not.toHaveProperty("bcc");
+    },
+  );
+
+  it("keeps internal reply-to addresses and application confirmations correctly separated", () => {
+    const input = {
+      applicationId: application.submissionId,
+      jobTitle: "Elektriker:in",
+      receivedAt: "2026-09-24T12:00:00.000Z",
+      application,
+    };
+    const contactMail = buildContactLeadMail({ leadId: "lead-1", lead: contact });
+    const applicationMail = buildApplicationInternalMail(input);
+    expect(contactMail.replyTo).toBe(contact.email);
+    expect(applicationMail.replyTo).toBe(application.email);
+    expect(buildApplicationAutoReply(input)).toMatchObject({
+      to: application.email,
+      replyTo: "bewerbung@energie-kraft.de",
+    });
+    for (const mail of [contactMail, applicationMail, buildApplicationAutoReply(input)]) {
+      expect(mail).not.toHaveProperty("cc");
+      expect(mail).not.toHaveProperty("bcc");
+    }
   });
 
   it("sends contact confirmation to the requester with a reference", () => {

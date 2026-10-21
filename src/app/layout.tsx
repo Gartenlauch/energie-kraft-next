@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
-import { isSearchIndexingEnabled } from "@/config/search-indexing";
+import { isSearchIndexingEnabledForHost } from "@/config/search-indexing";
 
 // Validate configuration on the server, including routes with client-side PublicLink consumers.
 import "@/config/env/public";
@@ -32,22 +33,25 @@ const montserrat = localFont({
   fallback: ["Arial", "sans-serif"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Energie-Kraft Süd",
-    template: "%s | Energie-Kraft Süd",
-  },
-  description:
-    "Individuelle Lösungen für Photovoltaik, Stromspeicher, Wallboxen, Klimaanlagen und Wärmepumpen.",
-  robots: isSearchIndexingEnabled()
-    ? undefined
-    : {
-        index: false,
-        follow: false,
-        noarchive: true,
-        nosnippet: true,
-      },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  return {
+    title: {
+      default: "Energie-Kraft Süd",
+      template: "%s | Energie-Kraft Süd",
+    },
+    description:
+      "Individuelle Lösungen für Photovoltaik, Stromspeicher, Wallboxen, Klimaanlagen und Wärmepumpen.",
+    robots: isSearchIndexingEnabledForHost(requestHeaders.get("host"))
+      ? undefined
+      : {
+          index: false,
+          follow: false,
+          noarchive: true,
+          nosnippet: true,
+        },
+  };
+}
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -55,7 +59,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="de" className={montserrat.variable} data-scroll-behavior="smooth" >
+    <html lang="de" className={montserrat.variable} data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

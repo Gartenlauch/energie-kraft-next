@@ -1,0 +1,143 @@
+#cc-main {
+  --cc-font-family: var(--font-montserrat), Arial, sans-serif;
+  --cc-primary-color: #182e4c;
+  --cc-secondary-color: #526178;
+  --cc-bg: #fffffe;
+  --cc-btn-primary-bg: #005ca9;
+  --cc-btn-primary-color: #ffffff;
+  --cc-btn-primary-border-color: #005ca9;
+  --cc-btn-primary-hover-bg: #182e4c;
+  --cc-btn-primary-hover-color: #ffffff;
+  --cc-btn-primary-hover-border-color: #182e4c;
+  --cc-btn-secondary-bg: #e9edf8;
+  --cc-btn-secondary-color: #182e4c;
+  --cc-btn-secondary-border-color: #e9edf8;
+  --cc-toggle-on-bg: #005ca9;
+  --cc-cookie-category-block-bg: #f5f7fc;
+  --cc-cookie-category-block-hover-bg: #e9edf8;
+  --cc-modal-border-radius: 1rem;
+  --cc-btn-border-radius: 0.5rem;
+}
+
+#cc-main .cm__title,
+#cc-main .pm__title {
+  color: #091433;
+}
+#cc-main .cm__btn,
+#cc-main .pm__btn,
+#cc-main .pm__close-btn {
+  min-height: 44px;
+}
+#cc-main .cm__desc,
+#cc-main .pm__section-desc {
+  line-height: 1.7;
+}
+#cc-main :focus-visible {
+  outline: 3px solid #007fa8;
+  outline-offset: 3px;
+}
+
+/* Banner only: keep the existing preferences dialog and its tokens unchanged. */
+#cc-main .cm.cm--bar {
+  --cc-bg: #091433;
+  --cc-primary-color: #ffffff;
+  --cc-secondary-color: #e9edf8;
+  --cc-btn-primary-bg: #fffffe;
+  --cc-btn-primary-color: #091433;
+  --cc-btn-primary-border-color: #fffffe;
+  --cc-btn-primary-hover-bg: #e9edf8;
+  --cc-btn-primary-hover-color: #091433;
+  --cc-btn-primary-hover-border-color: #e9edf8;
+  --cc-btn-secondary-bg: #091433;
+  --cc-btn-secondary-color: #ffffff;
+  --cc-btn-secondary-border-color: #e9edf8;
+  --cc-btn-secondary-hover-bg: #182e4c;
+  --cc-btn-secondary-hover-color: #ffffff;
+  --cc-btn-secondary-hover-border-color: #ffffff;
+  --cc-footer-bg: #091433;
+  --cc-footer-color: #e9edf8;
+  --cc-footer-border-color: #526178;
+  border-top: 3px solid #0da1d1;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  width: 100%;
+}
+
+#cc-main .cm--bar .cm__body,
+#cc-main .cm--bar .cm__links {
+  max-width: 80rem;
+}
+
+#cc-main .cm--bar .cm__body {
+  flex: none;
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+#cc-main .cm--bar .cm__texts {
+  padding: 0;
+}
+
+#cc-main .cm--bar .cm__title {
+  color: #ffffff;
+  font-size: 1.25rem;
+  padding: 0;
+}
+
+#cc-main .cm--bar .cm__desc {
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+
+#cc-main .cm--bar .cm__btns {
+  gap: 0.75rem;
+  justify-content: flex-start;
+  padding: 1.25rem 0 0;
+}
+
+#cc-main .cm--bar .cm__btn-group {
+  gap: 0.75rem;
+}
+
+#cc-main .cm--bar .cm__btn + .cm__btn,
+#cc-main .cm--bar .cm__btn-group + .cm__btn-group {
+  margin: 0;
+}
+
+#cc-main .cm--bar .cm__btn {
+  min-height: 48px;
+  padding: 0.75rem 1.25rem;
+}
+
+#cc-main .cm--bar :focus-visible {
+  outline-color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  #cc-main .cm--bar .cm__texts {
+    padding-top: 1.25rem;
+  }
+
+  #cc-main .cm--bar .cm__btns {
+    border-top-color: #526178;
+    padding-block: 1rem;
+  }
+
+  #cc-main .cm--bar .cm__btn + .cm__btn,
+  #cc-main .cm--bar .cm__btn-group + .cm__btn-group {
+    margin: 0;
+  }
+
+  #cc-main .cm--bar .cm__footer {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cc-main,
+  #cc-main * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

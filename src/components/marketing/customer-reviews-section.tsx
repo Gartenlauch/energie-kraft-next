@@ -2,11 +2,18 @@
 
 import { PublicLink as Link } from "@/components/ui/public-link";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { acceptCategory } from "vanilla-cookieconsent";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import { getVisibleGoogleReviews } from "@/lib/reviews/display";
-import type { CustomerReview, ReviewCollection } from "@/lib/reviews/types";
+import type { CustomerReview, ReviewCollection, ReviewSummary } from "@/lib/reviews/types";
+import { LEGAL_ROUTES } from "@/config/legal-routes";
+import {
+  hasGoogleReviewsConsent,
+  readConsent,
+  subscribeToConsentChanges,
+} from "@/lib/consent/client";
 
 const number = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 1 });
 const date = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
@@ -56,9 +63,61 @@ function ReviewCard({ review }: { review: CustomerReview }) {
   </article>;
 }
 
-export function CustomerReviewsSection({ reviews, summaries }: ReviewCollection) {
-  const summary = summaries.find((entry) => entry.provider === "google" && Number.isFinite(entry.averageRating) && entry.averageRating >= 1 && entry.averageRating <= 5 && Number.isInteger(entry.totalReviews) && entry.totalReviews > 0);
-  const visible = getVisibleGoogleReviews(reviews);
+// The server always renders the placeholder, so HTML/preloads never expose author images.
+const noServerConsent = () => false;
+
+export function CustomerReviewsSection(collection: ReviewCollection) {
+  const summary = collection.summaries.find((entry) => entry.provider === "google" && Number.isFinite(entry.averageRating) && entry.averageRating >= 1 && entry.averageRating <= 5 && Number.isInteger(entry.totalReviews) && entry.totalReviews > 0);
+  const visible = getVisibleGoogleReviews(collection.reviews);
+  const allowed = useSyncExternalStore(
+    subscribeToConsentChanges,
+    hasGoogleReviewsConsent,
+    noServerConsent,
+  );
+  const focusAfterActivation = useRef(false);
+  useEffect(() => {
+    if (allowed && focusAfterActivation.current) {
+      focusAfterActivation.current = false;
+      document.getElementById("customer-reviews-heading")?.focus({ preventScroll: true });
+    }
+  }, [allowed]);
+
+  if (!summary || !visible.length) return null;
+  if (allowed) return <GoogleReviewsContent summary={summary} visible={visible} />;
+
+  return <section className="section-space bg-surface-soft" aria-labelledby="customer-reviews-heading">
+    <div className="section-shell">
+      <p className="eyebrow">Kundenbewertungen</p>
+      <h2 id="customer-reviews-heading" className="section-title mt-4">Das sagen unsere Kunden</h2>
+      <div className="border-border-default mt-9 grid gap-6 border-y py-8 md:mt-12 md:grid-cols-[1fr_auto] md:items-center md:gap-12 md:py-10">
+        <div className="max-w-2xl">
+          <h3 className="text-xl font-semibold text-brand-dark">Google-Bewertungen mit Ihrer Zustimmung</h3>
+          <p id="google-reviews-consent-description" className="mt-3 leading-7 text-brand-dark">
+            Wenn Sie die Bewertungen aktivieren, werden Rezensionen einschließlich Autorenbildern
+            angezeigt. Ihr Browser lädt die Bilder direkt von Google. Dabei werden Ihre IP-Adresse
+            und technische Verbindungsdaten an Google übermittelt; eine Verarbeitung außerhalb der
+            EU ist möglich. Die Freigabe gilt nur für Google-Bewertungen. Sie können sie jederzeit
+            über „Cookie-Einstellungen“ im Footer widerrufen.
+          </p>
+          <Link href={LEGAL_ROUTES.datenschutz.href} className="text-brand-primary mt-3 inline-flex min-h-11 items-center underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4">Informationen zum Datenschutz</Link>
+        </div>
+        <button
+          type="button"
+          aria-describedby="google-reviews-consent-description"
+          className="button-primary w-full focus-visible:outline-2 focus-visible:outline-offset-4 md:w-auto"
+          onClick={() => {
+            focusAfterActivation.current = true;
+            acceptCategory([...(readConsent()?.categories ?? ["necessary"]), "googleReviews"]);
+          }}
+        >
+          Google-Bewertungen aktivieren
+        </button>
+      </div>
+    </div>
+  </section>;
+}
+
+function GoogleReviewsContent({ summary, visible }: { summary: ReviewSummary; visible: readonly CustomerReview[] }) {
   const [emblaRef, embla] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps" });
   const [position, setPosition] = useState(0);
   const [count, setCount] = useState(0);
@@ -73,12 +132,10 @@ export function CustomerReviewsSection({ reviews, summaries }: ReviewCollection)
     embla.on("select", update).on("reInit", update);
     return () => { cancelAnimationFrame(frame); embla.off("select", update).off("reInit", update); };
   }, [embla, update]);
-  if (!summary || !visible.length) return null;
-
   return <section className="section-space bg-surface-soft" aria-labelledby="customer-reviews-heading">
     <div className="section-shell">
       <p className="eyebrow">Kundenbewertungen</p>
-      <h2 id="customer-reviews-heading" className="section-title mt-4">Das sagen unsere Kunden</h2>
+      <h2 id="customer-reviews-heading" tabIndex={-1} className="section-title mt-4 focus-visible:outline-2 focus-visible:outline-offset-4">Das sagen unsere Kunden</h2>
       <div className="border-border-default mt-9 flex flex-wrap items-center justify-between gap-x-10 gap-y-6 border-y py-7 md:mt-12">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-3">
           <div className="flex flex-col items-start">

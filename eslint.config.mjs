@@ -27,6 +27,7 @@ export default defineConfig([
   },
 
   globalIgnores([
+    "artifacts/**",
     ".next/**",
     "coverage/**",
     "functions/lib/**",

@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
 
-import { isSearchIndexingEnabled } from "@/config/search-indexing";
+import { isSearchIndexingEnabledForHost } from "@/config/search-indexing";
 import { siteConfig } from "@/config/site";
 
-export function buildRobots(
-  searchIndexingEnabled: boolean,
-): MetadataRoute.Robots {
+export const dynamic = "force-dynamic";
+
+export function buildRobots(searchIndexingEnabled: boolean): MetadataRoute.Robots {
   if (!searchIndexingEnabled) {
     return {
       rules: {
@@ -28,6 +29,7 @@ export function buildRobots(
   };
 }
 
-export default function robots(): MetadataRoute.Robots {
-  return buildRobots(isSearchIndexingEnabled());
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const requestHeaders = await headers();
+  return buildRobots(isSearchIndexingEnabledForHost(requestHeaders.get("host")));
 }

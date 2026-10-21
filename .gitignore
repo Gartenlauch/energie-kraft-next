@@ -12,6 +12,15 @@
 
 # testing
 /coverage
+# Generated performance diagnostics, QA reports and release evidence
+/artifacts/sprint11-4a-diagnosis/
+/artifacts/sprint11-4c-client-qa/
+/artifacts/sprint11-4e-diagnosis/
+/artifacts/sprint11-6c-consent/
+/artifacts/sprint12-4-google-reviews-consent/
+/artifacts/sprint12-5-release/
+/artifacts/google-bewertung-check-all.log
+/artifacts/google-bewertung-*-check-all.log
 
 # next.js
 /.next/

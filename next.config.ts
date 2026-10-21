@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
-import { isSearchIndexingEnabled, SEARCH_NO_INDEX_DIRECTIVE } from "./src/config/search-indexing";
+import {
+  isSearchIndexingEnabled,
+  SEARCH_NO_INDEX_DIRECTIVE,
+  SEARCH_PRODUCTION_HOST_PATTERN,
+} from "./src/config/search-indexing";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -105,8 +109,14 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
-    if (isSearchIndexingEnabled()) {
-      return [];
+    const hostGuard = {
+      source: "/:path(.*)",
+      // Inspect the real HTTP Host, not x-forwarded-host or Forwarded.
+      missing: [{ type: "header" as const, key: "host", value: SEARCH_PRODUCTION_HOST_PATTERN }],
+      headers: [{ key: "X-Robots-Tag", value: SEARCH_NO_INDEX_DIRECTIVE }],
+    };
+    if (isSearchIndexingEnabled() && process.env.NEXT_PUBLIC_SITE_ENV === "production") {
+      return [hostGuard];
     }
 
     return [
@@ -122,6 +132,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      hostGuard,
     ];
   },
 };

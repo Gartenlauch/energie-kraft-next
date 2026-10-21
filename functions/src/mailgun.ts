@@ -13,9 +13,11 @@ const MAILGUN_DOMAIN =
 const MAILGUN_API_URL =
   "https://api.eu.mailgun.net";
 
-// PRE-LAUNCH: change only this value to anfragen@energie-kraft.de at final domain go-live.
 export const INTERNAL_SUBMISSION_RECIPIENT =
-  "anfrage@energie-kraft.de";
+  "anfragen@energie-kraft.de";
+
+export const APPLICATION_SUBMISSION_RECIPIENT =
+  "bewerbung@energie-kraft.de";
 
 export const LEAD_MAIL_FROM =
   "Energie-Kraft Website <website@notify.energie-kraft.de>";

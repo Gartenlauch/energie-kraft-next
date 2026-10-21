@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ConsentSettingsButton } from "@/components/consent/consent-settings-button";
 import { PublicLink as Link } from "@/components/ui/public-link";
 import { MarketingInvitation } from "@/components/layout/marketing-invitation";
 
@@ -169,7 +170,8 @@ export function SiteFooter() {
             © {currentYear} {siteConfig.legalName}
           </p>
           <nav aria-label="Rechtliche Informationen">
-            <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <li><ConsentSettingsButton /></li>
               {LEGAL_ROUTE_LIST.map((route) => (
                 <li key={route.href}>
                   <Link
