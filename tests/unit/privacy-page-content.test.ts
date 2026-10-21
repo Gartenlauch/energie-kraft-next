@@ -30,9 +30,15 @@ describe("Privacy publication copy", () => {
     expect(text).not.toMatch(editorialNotes);
     expect(JSON.stringify(metadata)).not.toMatch(editorialNotes);
     expect(text).toContain("Stand: 21. Oktober 2026");
-    expect(text).toContain("10. GA4 und Google Ads deaktiviert");
+    expect(text).toContain("10. Google Analytics 4 und deaktiviertes Google-Ads-Webtracking");
     expect(text).toContain(
-      "Google Analytics 4 und Google-Ads-Webtracking sind auf dieser Website technisch deaktiviert",
+      "nach Ihrer ausdrücklichen Einwilligung in „Statistik – Google Analytics 4“ den Statistikdienst Google Analytics 4",
+    );
+    expect(text).toContain(
+      "Vor Ihrer Zustimmung werden keine Analytics-Skripte geladen und auch keine cookielosen Analytics-Pings versendet",
+    );
+    expect(text).toContain(
+      "Google-Ads-Webtracking, Conversion-Tracking, Remarketing und personalisierte Werbung bleiben technisch deaktiviert, auch bei Auswahl der entsprechenden Kategorien.",
     );
   });
 
