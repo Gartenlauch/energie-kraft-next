@@ -2,13 +2,14 @@
 import { LegalPage } from "@/app/(site)/_components/legal/legal-page";
 import { LegalSection } from "@/app/(site)/_components/legal/legal-section";
 import { siteConfig } from "@/config/site";
+import { CONSENT_LIFETIME_DAYS } from "@/lib/consent/policy";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { SeoContent } from "@/types/content";
 
 const seo = {
   title: "Datenschutz | Energie-Kraft Süd",
   description:
-    "Freigabeentwurf der Datenschutzerklärung für die neue Website von Energie-Kraft Süd.",
+    "Informationen zum Umgang mit personenbezogenen Daten auf der Website von Energie-Kraft Süd und zu Ihren Datenschutzrechten.",
   canonicalPath: "/datenschutz",
 } satisfies SeoContent;
 
@@ -18,23 +19,11 @@ export default function DatenschutzPage() {
   return (
     <LegalPage
       seo={seo}
-      eyebrow="Rechtliche Informationen · Freigabeentwurf"
+      eyebrow="Rechtliche Informationen"
       title="Datenschutzerklärung"
       documentLayout
-      description="Entwurf vom 20. Oktober 2026 für die neue Next.js-/Firebase-Website. Vor Veröffentlichung sind die gekennzeichneten Angaben und die tatsächliche Produktionskonfiguration fachlich beziehungsweise rechtlich freizugeben."
+      description="Stand: 21. Oktober 2026. Diese Informationen erläutern, wie wir personenbezogene Daten beim Besuch unserer Website und bei der Nutzung ihrer Funktionen verarbeiten."
     >
-      <aside className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-6">
-        <h2 className="text-xl font-semibold">
-          Entwurf – nicht zur Produktionsveröffentlichung freigegeben
-        </h2>
-        <p className="mt-3">
-          Dieser Text beschreibt den geprüften Entwicklungsstand und enthält Vorschläge für
-          Rechtsgrundlagen und Löschregeln. Die markierten Freigabepunkte, Anbieterangaben und die
-          Einbindung von Google-Bewertungen müssen vor dem Go-live fachlich geklärt werden. Eine
-          rechtliche Freigabe liegt mit diesem Entwurf nicht vor.
-        </p>
-      </aside>
-
       <LegalSection title="1. Verantwortlicher und Kontakt" documentLayout>
         <address className="not-italic">
           {siteConfig.legalName}
@@ -68,191 +57,199 @@ export default function DatenschutzPage() {
 
       <LegalSection title="2. Website-Betrieb und Sicherheit" documentLayout>
         <p>
-          Die neue Website verwendet Firebase App Hosting und Cloud-Funktionen aus der
-          Google-Cloud-/Firebase-Infrastruktur. Beim Abruf werden technisch erforderliche
-          Verbindungsdaten verarbeitet. Dazu können IP-Adresse, Zeitpunkt, angefragte Adresse,
-          Browser- und Geräteinformationen sowie Fehler- und Sicherheitsdaten gehören. Dies dient
-          der Auslieferung, Fehlerbehebung und Absicherung der Website.
+          Wir betreiben die Website mit Google Cloud und Firebase App Hosting. Beim Aufruf werden
+          Verbindungsdaten verarbeitet, insbesondere Ihre IP-Adresse, Zeitpunkt und Ziel des
+          Zugriffs sowie Browser- und Geräteinformationen. Hinzu kommen technische Fehler- und
+          Sicherheitsprotokolle. Wir benötigen diese Daten, um Inhalte auszuliefern, Störungen zu
+          beheben und Missbrauch sowie unbefugte Zugriffe abzuwehren.
         </p>
         <p>
-          Schriftarten und allgemeine Website-Bilder werden aus den Website-Ressourcen geladen. Für
-          Google-Autorenbilder gilt Abschnitt 8. Externe Karten- und Social-Media-Links öffnen den
-          jeweiligen Anbieter erst bei Aufruf; ein Kartenlink allein bettet keine Karte ein.
+          Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse ist ein
+          verfügbarer und sicherer Websitebetrieb. Ohne die erforderlichen Verbindungsdaten kann
+          die Website nicht bereitgestellt werden. Protokolldaten dürfen nur so lange gespeichert
+          werden, wie sie für die Fehleranalyse und Absicherung erforderlich sind; bei einem
+          konkreten Sicherheitsvorfall können notwendige Nachweise länger benötigt werden.
         </p>
         <p>
-          <strong>Vor Veröffentlichung bestätigen:</strong> produktive Protokollierung, Datenfelder
-          und Zugriffe sowie Löschfristen einschließlich CDN-/Cloud-Logs und Sicherungen.
-          Vorgeschlagene Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: unser Interesse an einem
-          verfügbaren, gegen Missbrauch und unbefugte Zugriffe geschützten Webangebot.
-          Erforderlichkeit und Interessenabwägung sind zu dokumentieren.
+          Schriftarten und allgemeine Website-Bilder werden mit der Website bereitgestellt. Für
+          Autorenbilder im Bewertungsbereich gilt Abschnitt 8. Karten und soziale Netzwerke sind
+          verlinkt; beim bloßen Seitenbesuch wird darüber keine Karte oder Social-Media-Einbettung
+          geladen. Erst beim Öffnen eines solchen Links besuchen Sie den jeweiligen Anbieter.
         </p>
       </LegalSection>
 
       <LegalSection title="3. Kontakt- und Konfiguratoranfragen" documentLayout>
         <p>
-          Wir verarbeiten die von Ihnen übermittelten Kontaktangaben und Nachrichten sowie Angaben
-          zu Standort, Gebäude, Eigentumssituation und Energielösungen, soweit im jeweiligen
-          Formular abgefragt. Im Konfigurator kommen Auswahl, Berechnungsannahmen und
-          Projektergebnisse hinzu. Dies dient der Bearbeitung Ihrer Anfrage und der Vorbereitung
-          einer Beratung beziehungsweise eines Angebots.
+          Wenn Sie uns kontaktieren, verarbeiten wir Ihre Kontaktangaben, Ihr Anliegen und Ihre
+          Nachricht. Für Anfragen zu Photovoltaik, Stromspeichern, Klimaanlagen, Wärmepumpen und
+          Wallboxen kommen die von Ihnen angegebenen Projektinformationen hinzu, etwa zu Standort,
+          Gebäude, Eigentum, Energieverbrauch und gewünschter Ausstattung. Konfiguratorergebnisse
+          und Berechnungsannahmen werden bei einer übermittelten Anfrage mitgespeichert, damit wir
+          Ihr Projekt nachvollziehen und eine Beratung oder ein Angebot vorbereiten können.
         </p>
         <p>
-          Anfragen werden serverseitig validiert und in Firestore gespeichert.
-          Übermittlungskennungen und Statusinformationen unterstützen die Zuordnung und verhindern
-          doppelte Verarbeitung bei Wiederholungsversuchen. Berechtigte interne Personen können
-          Anfragen bearbeiten, Projekt-PDFs erzeugen und Weiterleitungen auslösen. Interne
-          Benachrichtigungen gehen an anfragen@energie-kraft.de; Eingangsbestätigungen an die
-          angegebene Kontaktadresse.
+          Im Kontaktformular sind Name, E-Mail-Adresse, Postleitzahl, Ort, Anliegen, Nachricht und
+          gewünschter Kontaktweg anzugeben. Die Telefonnummer ist nur bei gewünschtem telefonischem
+          Kontakt erforderlich; Firma, Gebäudeart und Eigentumssituation sind freiwillig. Bei einer
+          Konfiguratoranfrage sind Name, E-Mail-Adresse, Installationsadresse und die abgefragten
+          Projektangaben erforderlich. Telefonnummer und ergänzende Anmerkungen sind dort
+          freiwillig. Ohne die jeweiligen Pflichtangaben lässt sich das Onlineformular nicht
+          absenden; Sie können uns auch über die Kontaktdaten in Abschnitt 1 erreichen.
         </p>
         <p>
-          Erforderliche Angaben sind im Formular kenntlich gemacht. Ohne diese Angaben ist die
-          jeweilige Anfrage nicht vollständig bearbeitbar. Eine Bestätigung der Datenschutzhinweise
-          bestimmt für sich allein keine Rechtsgrundlage.
+          Wir speichern die Anfrage und ihren Bearbeitungsstand und senden Eingangsbestätigungen
+          beziehungsweise interne Benachrichtigungen per E-Mail. Berechtigte Mitarbeitende können
+          daraus Projektunterlagen erstellen und diese zur Bearbeitung weitergeben. Technische
+          Prüfungen und Übermittlungskennungen helfen, automatisierten Missbrauch und doppelte
+          Verarbeitung zu vermeiden. Empfänger und Speicherdauer erläutern die Abschnitte 6, 7
+          und 11.
         </p>
         <p>
-          Wenn Sie für sich eine Beratung, ein Angebot oder eine Vertragsleistung anfragen, ist Art.
-          6 Abs. 1 lit. b DSGVO die vorgeschlagene Rechtsgrundlage. Sonstige allgemeine Nachrichten
-          und die Kommunikation mit Ansprechpersonen eines Unternehmens sind nach Art. 6 Abs. 1 lit.
-          f DSGVO gesondert zu bewerten; unser Interesse ist die sachgerechte Bearbeitung des
-          jeweiligen Anliegens. Für gesetzlich aufzubewahrende Unterlagen gilt Abschnitt 11.
+          Soweit Sie selbst eine Beratung, ein Angebot oder eine Vertragsleistung anfragen, ist
+          Art. 6 Abs. 1 lit. b DSGVO die Rechtsgrundlage. Allgemeine geschäftliche Nachrichten und
+          die Kommunikation mit Ansprechpersonen eines Unternehmens bearbeiten wir auf Grundlage
+          von Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist die Beantwortung Ihres
+          Anliegens und die Pflege der betreffenden Geschäftsbeziehung.
         </p>
         <p>
-          <strong>Vor Veröffentlichung bestätigen:</strong> diese zweckbezogene Zuordnung und
-          Interessenabwägung, berechtigte Empfänger und Weiterleitungen sowie die Löschregel in
-          Abschnitt 11 einschließlich Postfächern und heruntergeladenen Projekt-PDFs.
+          Die Bestätigung der Datenschutzhinweise im Formular ist keine pauschale Einwilligung in
+          die Verarbeitung Ihrer Daten und keine Werbeeinwilligung.
         </p>
       </LegalSection>
 
       <LegalSection title="4. Bewerbungen und Dateiuploads" documentLayout>
         <p>
-          Wir verarbeiten die ausgewählte Stelle, Anrede soweit angegeben, Namen, Anschrift,
-          E-Mail-Adresse, Telefonnummer, Qualifikation und Erfahrung sowie freiwillig hochgeladene
-          Unterlagen. Dateien können weitere personenbezogene Angaben enthalten. Bitte übermitteln
-          Sie nur für die Bewerbung erforderliche Informationen.
+          Wir verarbeiten Ihre Angaben, um Ihre Bewerbung zu prüfen, mit Ihnen zu kommunizieren und
+          über eine Einstellung zu entscheiden. Das Onlineformular verlangt die ausgewählte Stelle,
+          Namen, Anschrift, E-Mail-Adresse, Telefonnummer und Angaben zu Qualifikation und Erfahrung.
+          Anrede und hochgeladene Bewerbungsunterlagen sind freiwillig. Ohne Pflichtangaben kann die
+          Onlinebewerbung nicht abgesendet werden. Bei Fragen zum Bewerbungsweg können Sie uns über
+          Abschnitt 1 kontaktieren.
         </p>
         <p>
-          Bewerbungsangaben werden in Firestore, Dateien im geschützten Firebase Storage
-          gespeichert. Unterlagen sind über die Anwendung nur nach Prüfung einer internen
-          Zugriffsberechtigung abrufbar. Interne Benachrichtigungen gehen an
-          bewerbung@energie-kraft.de, Eingangsbestätigungen an Ihre Bewerbungsadresse.
-          Bewerbungsdateien werden in diesem Benachrichtigungsablauf nicht als E-Mail-Anhang
-          versendet.
+          Rechtsgrundlage für die auf Ihre Bewerbung hin erforderlichen vorvertraglichen Maßnahmen
+          ist Art. 6 Abs. 1 lit. b DSGVO. Die Kenntnisnahme dieser Hinweise ist keine gesonderte
+          Einwilligung. Bitte übermitteln Sie nur für die Stelle relevante Informationen und
+          vermeiden Sie nicht benötigte sensible Angaben, etwa zur Gesundheit oder Religion.
+          Soweit besondere Daten zur Erfüllung arbeitsrechtlicher Pflichten erforderlich sind,
+          gelten zusätzlich Art. 9 Abs. 2 lit. b DSGVO und die einschlägigen arbeitsrechtlichen
+          Vorschriften, gegebenenfalls § 26 Abs. 3 BDSG. Für die notwendige Sicherung von
+          Rechtsansprüchen kann Art. 9 Abs. 2 lit. f DSGVO einschlägig sein. Ein freiwilliger Upload
+          allein ist keine ausdrückliche Einwilligung in die Verarbeitung besonderer Daten.
         </p>
         <p>
-          Für die Entscheidung über eine Einstellung ist § 26 Abs. 1 Satz 1 und Abs. 8 Satz 2 BDSG
-          in Verbindung mit Art. 88 DSGVO vorgesehen; Art. 6 Abs. 1 lit. b DSGVO ist für
-          erforderliche vorvertragliche Maßnahmen ebenfalls zu prüfen. Die Kenntnisnahme der
-          Datenschutzhinweise ist keine pauschale Einwilligung. Besondere Daten, etwa
-          Gesundheitsangaben, benötigen zusätzlich eine passende Ausnahme nach Art. 9 Abs. 2 DSGVO,
-          beispielsweise bei notwendiger Erfüllung arbeitsrechtlicher Pflichten in Verbindung mit §
-          26 Abs. 3 BDSG. Freiwilliges Hochladen allein ersetzt diese Prüfung nicht.
+          Ihre Bewerbung und Unterlagen werden geschützt gespeichert. Zugriff erhalten die mit
+          Auswahl und Personalbearbeitung befassten Personen sowie technische Dienstleister, soweit
+          dies für ihre Aufgaben erforderlich ist. Sie erhalten eine Eingangsbestätigung;
+          zuständige Mitarbeitende werden intern benachrichtigt. Hochgeladene Bewerbungsdateien
+          werden in diesem Benachrichtigungsablauf nicht als E-Mail-Anhang versendet.
         </p>
         <p>
-          <strong>Löschvorschlag – vor Veröffentlichung freizugeben:</strong> Bei einer Absage
-          sollen Ihre Bewerbungsdaten grundsätzlich sechs Monate nach dem dokumentierten Zugang der
-          Absage gelöscht werden. Innerhalb dieses Zeitraums sollen nur die zur Verteidigung
-          möglicher Rechtsansprüche erforderlichen Daten eingeschränkt zugänglich aufbewahrt werden
-          (vorgeschlagen: Art. 6 Abs. 1 lit. f DSGVO). Die Fristen für mögliche
-          Diskriminierungsansprüche nach § 15 Abs. 4 AGG und § 61b ArbGG begründen diesen Vorschlag,
-          aber keine gesetzliche Pflicht, jede Bewerbung sechs Monate zu speichern.
+          Nach einer Absage beträgt die Aufbewahrungsfrist höchstens sechs Monate ab dem
+          dokumentierten Zugang der Absage, soweit die Daten zur Verteidigung gegen mögliche
+          Rechtsansprüche erforderlich sind. Rechtsgrundlage ist insoweit Art. 6 Abs. 1 lit. f
+          DSGVO; unser berechtigtes Interesse ist die Rechtsverteidigung, insbesondere bei
+          Ansprüchen nach dem Allgemeinen Gleichbehandlungsgesetz. Es besteht keine gesetzliche
+          Pflicht, jede Bewerbung sechs Monate aufzubewahren.
         </p>
         <p>
-          Bei einer Rücknahme soll die Löschung grundsätzlich nach Abschluss der Bearbeitung
-          erfolgen; eine weitere Aufbewahrung setzt einen dokumentierten Grund voraus. Bei einem
-          konkreten Rechtsstreit können erforderliche Nachweise bis zu dessen Abschluss und zum
-          Wegfall des Sicherungszwecks länger aufbewahrt werden. Für eingestellte Personen sind nur
-          erforderliche Angaben in die Personalverwaltung zu übernehmen; dort gelten gesonderte
-          Regeln. Ein Bewerberpool würde eine gesonderte freiwillige Einwilligung und Frist
-          benötigen.
-        </p>
-        <p>
-          <strong>Noch offen:</strong> Freigabe der Sechsmonatsfrist innerhalb des vorgegebenen
-          Prüfrahmens von drei bis sechs Monaten, dokumentierter Fristbeginn, zuständige Personen
-          und Löschung in allen beteiligten Systemen. Eine manuelle Löschfunktion für Bewerbung und
-          zugeordnete Dateien besteht; eine automatische fristgesteuerte Löschung ist nicht
-          nachgewiesen.
+          Bei einer Rücknahme endet die Speicherung mit dem Abschluss der Bearbeitung, soweit kein
+          dokumentierter Aufbewahrungsgrund verbleibt. Bei einem konkreten Rechtsstreit können
+          erforderliche Nachweise bis zu dessen Abschluss und dem Wegfall des Sicherungszwecks
+          länger aufbewahrt werden. Bei Einstellung werden nur die für das Beschäftigungsverhältnis
+          erforderlichen Angaben in die Personalverwaltung übernommen; darüber informieren wir
+          gesondert. Für die Löschung von Kopien gilt ergänzend Abschnitt 11.
         </p>
       </LegalSection>
 
       <LegalSection title="5. Kundenempfehlungen" documentLayout>
         <p>
-          Bei „Kunden werben Kunden“ verarbeiten wir Namen und E-Mail-Adresse der empfehlenden
-          Person sowie Namen, Kontaktdaten und Anschrift der empfohlenen Person. Das Formular
-          verlangt die Bestätigung, dass diese Person mit der Weitergabe einverstanden ist. Daten
-          werden serverseitig gespeichert; Benachrichtigungen können an die interne Bearbeitung und
-          die beteiligten Personen versendet werden.
+          Im Formular „Kunden werben Kunden“ werden Anrede, Name und E-Mail-Adresse der
+          empfehlenden Person sowie Anrede, Name, E-Mail-Adresse und Anschrift der empfohlenen
+          Person abgefragt. Deren Telefonnummer ist freiwillig. Ohne die Pflichtangaben und die
+          verlangten Bestätigungen lässt sich das Formular nicht absenden. Die Angaben werden zur
+          Zuordnung und Bearbeitung der Empfehlung und einer möglichen Prämie gespeichert. Der
+          Ablauf sieht interne Benachrichtigungen sowie E-Mails an beide beteiligten Personen vor.
         </p>
         <p>
-          Für die Bearbeitung gegenüber der empfehlenden Person kommt Art. 6 Abs. 1 lit. b DSGVO in
-          Betracht, soweit sie selbst an der Empfehlungsaktion teilnimmt. Die Daten der empfohlenen
-          Person stammen von der empfehlenden Person, nicht aus einer eigenen Anfrage. Die
-          Bestätigung im Formular ist noch kein hinreichender Nachweis einer informierten
-          Einwilligung dieser dritten Person nach Art. 6 Abs. 1 lit. a DSGVO. Ein berechtigtes
-          Interesse nach lit. f erfordert eine gesonderte Abwägung und rechtfertigt nicht
-          automatisch eine werbliche Kontaktaufnahme.
+          Für die vertragliche Teilnahme der empfehlenden Person an der Aktion ist Art. 6 Abs. 1
+          lit. b DSGVO einschlägig. Die Angaben der empfohlenen Person stammen dagegen von der
+          empfehlenden Person; sie sind keine eigene Anfrage der empfohlenen Person.
         </p>
         <p>
-          <strong>Vor Veröffentlichung klären:</strong> rechtmäßige Weitergabe, Nachweis und Umfang
-          einer Einwilligung sowie zulässiger Kontaktweg, insbesondere nach § 7 UWG. Die empfohlene
-          Person ist nach Art. 14 DSGVO unter anderem über Datenquelle, Datenkategorien, Zweck und
-          Rechtsgrundlage zu informieren: grundsätzlich spätestens innerhalb eines Monats, bei
-          früherer Kontaktaufnahme bereits dann, bei früherer Weitergabe spätestens zu diesem
-          Zeitpunkt. Der bestehende E-Mail-Hinweis mit Quellenangabe und Datenschutzlink muss dafür
-          vervollständigt und seine Bereitstellung abgesichert werden. Ohne tragfähige Grundlage
-          dürfen die Daten nicht für die Akquise verwendet werden; nicht erforderliche Daten sind zu
-          löschen. Die Frist für abgeschlossene Empfehlungen ist noch freizugeben.
+          Für Werbung per E-Mail oder Telefon gelten zusätzlich die Anforderungen des § 7 UWG.
+          Insbesondere ist eine vorherige ausdrückliche Einwilligung für Werbe-E-Mails und für
+          Werbeanrufe gegenüber Verbrauchern erforderlich, soweit keine gesetzliche Ausnahme
+          greift. Eine datenschutzrechtliche Einwilligung richtet sich nach Art. 6 Abs. 1 lit. a
+          DSGVO. Auch eine Empfehlungsnachricht kann Werbung sein. Wenn Sie uns empfohlen wurden,
+          haben Sie nach Art. 14 DSGVO Anspruch auf Informationen über die konkrete Datenquelle
+          und die Verarbeitung: spätestens innerhalb eines Monats, bei früherer Kontaktaufnahme
+          bereits beim ersten Kontakt oder bei früherer Offenlegung spätestens zu diesem Zeitpunkt.
+        </p>
+        <p>
+          Die Speicherdauer richtet sich nach dem Abschluss der Bearbeitung und einer möglichen
+          Prämienabrechnung. Nur dafür erforderliche Nachweise
+          sowie gesetzlich aufzubewahrende Belege dürfen darüber hinaus gespeichert werden;
+          Abschnitt 11 erläutert die gesetzlichen Fristen. Entfällt der Aufbewahrungszweck, sind
+          die Daten zu löschen.
         </p>
       </LegalSection>
 
       <LegalSection title="6. Firebase und interner Zugang" documentLayout>
         <p>
-          Firestore speichert Anfragen, Bewerbungen, Empfehlungen und Bearbeitungsinformationen.
-          Firebase Storage dient privaten Bewerbungsunterlagen und internen Profilbildern. Firebase
-          Authentication verwaltet interne Benutzeranmeldungen; geschützte Sitzungen und Rollen
-          begrenzen den Adminzugriff. Für öffentliche Anfragen ist kein Benutzerkonto erforderlich.
+          Für die Bearbeitung der in den Abschnitten 3 bis 5 beschriebenen Vorgänge setzen wir
+          Google Cloud und Firebase ein: Cloud Functions zur Verarbeitung der Übermittlungen,
+          Firestore zur Speicherung der Vorgänge und Firebase Storage für Bewerbungsunterlagen und
+          interne Profilbilder. Die eingesetzten Dienste erhalten die jeweils zur Bereitstellung
+          ihrer Funktion erforderlichen Daten.
         </p>
         <p>
-          Eine europäische Region einzelner Ressourcen ist keine Zusage, dass sämtliche Dienste,
-          Supportzugriffe oder Authentifizierungs- und Sicherheitsdaten ausschließlich in der EU
-          verarbeitet werden.
+          Firebase Authentication dient ausschließlich der Anmeldung interner Benutzer. Dabei
+          werden Anmelde- und Kontodaten sowie technische Verbindungs- und Sicherheitsdaten
+          verarbeitet. Nach den Anbieterinformationen wird Firebase Authentication in Rechenzentren
+          in den USA betrieben. Berechtigungen begrenzen den Zugang zur internen Verwaltung. Für
+          eine öffentliche Anfrage oder Bewerbung benötigen Sie kein Benutzerkonto.
         </p>
         <p>
-          <strong>Vor Veröffentlichung bestätigen:</strong> Google-Vertragspartei,
-          Auftragsverarbeitung und Unterauftragnehmer, tatsächliche Regionen je Dienst, Aufbewahrung
-          der internen Konten und Profile sowie Drittlandübermittlungen und deren tatsächlich
-          geltende Garantien. Die Zugangssicherung ist auf Art. 6 Abs. 1 lit. f DSGVO zu prüfen; für
-          interne Beschäftigtendaten zusätzlich auf § 26 BDSG.
+          Die Rechtsgrundlage für die Geschäftsvorgänge richtet sich nach den vorstehenden
+          Abschnitten. Zugangsschutz und die Nachvollziehbarkeit interner Bearbeitung beruhen auf
+          Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist der Schutz vertraulicher
+          Vorgänge vor unbefugtem Zugriff. Soweit interne Kontodaten zur Durchführung eines
+          Beschäftigungsverhältnisses erforderlich sind, gilt Art. 6 Abs. 1 lit. b DSGVO.
         </p>
         <p>
-          Das interne Sitzungscookie „__session“ ist auf fünf Tage begrenzt. Bei Abmeldung wird es
-          entfernt und die weitere Token-Erneuerung widerrufen. Der Anmeldedienst speichert außerdem
-          den Anmeldestatus lokal im Browser. Sitzungsablauf und Abmeldung löschen weder das
-          Benutzerkonto noch die gespeicherten Geschäftsvorgänge.
+          Das interne Sitzungscookie „__session“ ist höchstens fünf Tage gültig und wird bei
+          Abmeldung entfernt. Zusätzlich hält Firebase den Anmeldestatus im lokalen Browserspeicher
+          über das Schließen des Browsers hinaus vor; die Abmeldung beendet auch diesen Status.
+          Die Fünftagesfrist des Cookies gilt nicht für diesen zusätzlichen Speicher. Konten,
+          Rollen und Profile sind nur so lange vorzuhalten, wie sie für den berechtigten internen
+          Zugang oder notwendige Nachweise benötigt werden. Abmeldung und Sitzungsablauf löschen
+          keine Geschäftsvorgänge. Für Anbieter und internationale Verarbeitung gilt Abschnitt 11.
         </p>
       </LegalSection>
 
-      <LegalSection title="7. Mailgun EU und E-Mail-Verarbeitung" documentLayout>
+      <LegalSection title="7. E-Mail-Verarbeitung und Mailgun" documentLayout>
         <p>
-          Systemnachrichten werden über den EU-API-Endpunkt von Mailgun und notify.energie-kraft.de
-          versendet. Verarbeitet werden insbesondere Empfängeradresse, Absender, Betreff, Inhalt,
-          gegebenenfalls zugehörige Projektunterlagen sowie Versand- und Fehlerdaten.
-          Provider-Annahme bedeutet noch keine Zustellung. Ein EU-Endpunkt garantiert nicht
-          ausschließlich europäische Verarbeitung aller beteiligten Systeme; auch die anschließenden
-          Postfächer sind zu berücksichtigen.
+          Für Eingangsbestätigungen und vorgangsbezogene Benachrichtigungen verwenden wir Mailgun,
+          einen Dienst von Sinch Email, über dessen EU-Endpunkt. Verarbeitet werden Absender- und
+          Empfängeradressen, Betreff, Nachrichteninhalt, gegebenenfalls Projektunterlagen sowie
+          Versand- und Fehlerdaten. Zur anschließenden Bearbeitung werden Nachrichten auch in
+          unseren Unternehmenspostfächern verarbeitet. Diese enthalten ebenfalls personenbezogene
+          Daten aus Anfragen und Bewerbungen.
         </p>
         <p>
-          Die Rechtsgrundlage folgt dem jeweiligen Nachrichtenzweck, etwa einer angefragten Beratung
-          oder einer Bewerbung; der Versanddienst schafft keine eigene pauschale Rechtsgrundlage.
-          Die Löschung eines Vorgangs in der Website entfernt keine E-Mail-Kopien bei Mailgun oder
-          in Empfängerpostfächern.
+          Rechtsgrundlage ist dieselbe wie für den jeweiligen Vorgang: insbesondere Art. 6 Abs. 1
+          lit. b DSGVO für eigene Beratungsanfragen und Bewerbungen oder lit. f für allgemeine
+          geschäftliche Kommunikation. Unsere dabei verfolgten Interessen sind in den Abschnitten 3
+          und 4 erläutert. Gesetzliche Aufbewahrungspflichten richten sich nach Abschnitt 11.
+          E-Mail-Versand ist keine gesonderte Erlaubnis für Werbung; für Empfehlungen gilt Abschnitt 5.
         </p>
         <p>
-          <strong>Vor Veröffentlichung bestätigen:</strong> Mailgun-Vertragspartei,
-          Auftragsverarbeitung, Nachrichten-/Logspeicherung, internationale Übermittlungen,
-          Löschfristen und anbieterseitige Öffnungs-/Klickmessung. Auch der tatsächliche Einsatz von
-          Microsoft 365 für die Unternehmenspostfächer, zugehörige Verträge, Speicherorte,
-          Archivierungs- und Löschregeln ist zu bestätigen. Eine Öffnungs-/Klickmessung ist durch
-          diesen Entwurf nicht freigegeben.
+          Die Löschung eines Websitevorgangs entfernt keine E-Mail-Kopien beim Versanddienst oder
+          in Postfächern. Für diese gelten eigene Löschprozesse nach dem jeweiligen
+          Bearbeitungszweck und etwaigen gesetzlichen Pflichten. Der EU-Endpunkt ist keine Zusage,
+          dass alle beteiligten Systeme ausschließlich innerhalb der EU verarbeiten. Weitere
+          Informationen zu Empfängern und Übermittlungen enthält Abschnitt 11.
         </p>
       </LegalSection>
 
@@ -262,10 +259,9 @@ export default function DatenschutzPage() {
           „Google-Bewertungen“ zeigen wir Bewertungstexte, Autorenangaben, Profilbilder,
           Bewertungswerte, Zeitangaben und Quellenlinks von Google an. Die Anwendung führt keinen
           eigenen dauerhaften Rezensionenspeicher. Die Datenquelle dieser Autorenangaben ist Google
-          Places. Server-API-Abruf und Bildabruf durch Ihren Browser sind getrennte Datenflüsse. Für
-          die Darstellung der öffentlich bereitgestellten Rezensionen ist Art. 6 Abs. 1 lit. f DSGVO
-          mit einer Abwägung unseres Informationsinteresses und der Rechte der bewertenden Personen
-          zu prüfen; Informationspflichten nach Art. 14 DSGVO sind gesondert zu bewerten.
+          Places. Für die Darstellung der öffentlich bereitgestellten Rezensionen gilt Art. 6
+          Abs. 1 lit. f DSGVO unter Abwägung unseres Interesses, über Kundenerfahrungen zu
+          informieren, und der Rechte der bewertenden Personen.
         </p>
         <p>
           Ohne Ihre Einwilligung erscheint ein Platzhalter; Ihr Browser ruft keine externen
@@ -273,9 +269,9 @@ export default function DatenschutzPage() {
           entsprechenden Kategorie in den Cookie-Einstellungen oder „Alle akzeptieren“ geben Sie die
           Darstellung frei. Anschließend lädt Ihr Browser Autorenbilder direkt von Google. Dabei
           werden Ihre IP-Adresse und technische Verbindungsdaten übermittelt; eine Verarbeitung
-          außerhalb der EU ist möglich. Vorgesehene Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO
-          und, soweit Speicher- oder Zugriffsvorgänge auf Ihrem Gerät stattfinden, § 25 Abs. 1
-          TDDDG.
+          außerhalb der EU ist möglich. Rechtsgrundlage für diese Übermittlung ist Art. 6 Abs. 1
+          lit. a DSGVO und, soweit Speicher- oder Zugriffsvorgänge auf Ihrem Gerät stattfinden,
+          § 25 Abs. 1 TDDDG.
         </p>
         <p>
           Sie können Ihre Einwilligung jederzeit über „Cookie-Einstellungen“ im Footer widerrufen.
@@ -305,130 +301,165 @@ export default function DatenschutzPage() {
           </a>
           .
         </p>
-        <p>
-          <strong>Vor Veröffentlichung bestätigen:</strong> Anbieter-/Vertragskonstellation,
-          rechtliche Freigabe der beschriebenen Verarbeitung, internationale Übermittlungen sowie
-          Google-Vorgaben zu Attribution, Bildauslieferung und Caching.
-        </p>
       </LegalSection>
 
       <LegalSection title="9. Lokale Speicherung und Consent" documentLayout>
         <p>
-          Die lokal eingebundene Bibliothek „vanilla-cookieconsent“ speichert die Auswahl unter
-          ek_consent im Local Storage dieses Browsers. Enthalten sind Kategorien, zufällige
-          Consent-Kennung, Revision, Sprache sowie Zeit- und Ablaufangaben. Formularinhalte werden
-          dort nicht abgelegt; ein serverseitiges Consent-Profil wird dafür nicht angelegt.
+          Unsere lokal eingebundene Einwilligungsverwaltung „vanilla-cookieconsent“ speichert Ihre
+          Auswahl im Local Storage, einem Speicher Ihres Browsers. Der Eintrag „ek_consent“ enthält
+          Ihre Kategorienauswahl, eine zufällige Kennung, die Fassung der Abfrage sowie Sprach-,
+          Zeit- und Ablaufangaben. Formularinhalte gehören nicht dazu. Die Auswahl wird hierfür
+          nicht als serverseitiges Besucherprofil gespeichert; es ist kein externer Consent-Dienst
+          eingebunden.
         </p>
         <p>
-          Konfiguriert sind derzeit 180 Tage Gültigkeit ab letzter Auswahländerung; diese Dauer
-          benötigt fachliche Freigabe. Fehlerhafte oder abgelaufene Einträge führen zur erneuten
-          Abfrage. Über „Cookie-Einstellungen“ im Footer können Sie die Auswahl ändern oder
-          widerrufen. Dies macht vergangene Übermittlungen nicht rückgängig. Für Google-Bewertungen
-          gilt die gesonderte Einwilligung in Abschnitt 8.
+          Die Auswahl ist für {CONSENT_LIFETIME_DAYS} Tage ab der letzten Auswahländerung gültig.
+          Fehlerhafte oder abgelaufene Einträge werden nicht als Freigabe berücksichtigt und führen
+          zur erneuten Abfrage. Über „Cookie-Einstellungen“ im Footer können Sie Ihre Auswahl
+          jederzeit ändern oder widerrufen. Der Widerruf berührt nicht die Rechtmäßigkeit der bis
+          dahin auf Grundlage der Einwilligung erfolgten Verarbeitung. Die Freigabe für
+          Google-Bewertungen ist freiwillig; bei Ablehnung bleibt die übrige Website nutzbar.
         </p>
         <p>
-          Unabhängig davon verwendet der Konfigurator Session Storage für Projektentwürfe,
-          Rechnerübergaben und Wiederaufnahme bei fehlgeschlagener Übermittlung. Bei ausdrücklichem
-          Neustart und beim erneuten Laden des Konfigurators mit einem als erfolgreich übermittelt
-          gespeicherten Projekt wird der Entwurf entfernt. Dies ist keine zeitgesteuerte Löschung
-          der serverseitigen Anfrage. Interne Anmeldungen verwenden die in Abschnitt 6 beschriebenen
-          Mechanismen.
+          Der Konfigurator nutzt unabhängig davon Session Storage für Ihre Projektentwürfe,
+          technische Eingaben einschließlich eigener Anmerkungen und Ergebnisse sowie für
+          Übergaben aus den Rechnern. So können Sie Ihr Projekt innerhalb derselben Tabsitzung
+          fortsetzen, auch nach einer fehlgeschlagenen Übermittlung. Bei einem ausdrücklichen
+          Neustart oder beim erneuten Laden eines als erfolgreich übermittelt gespeicherten
+          Projekts wird dieser Entwurf entfernt. Der Speicher ist an die Browsersitzung gebunden;
+          Funktionen zur Sitzungswiederherstellung können ihn erhalten. Es gibt keine zusätzliche
+          feste Löschfrist in Tagen. Der lokale Entwurf ist von der gespeicherten Anfrage bei uns
+          zu unterscheiden. Für interne Anmeldespeicher gilt Abschnitt 6.
         </p>
         <p>
-          <strong>Rechtliche Zuordnung zur Freigabe:</strong> Für die unbedingt erforderliche
-          Speicherung der Datenschutzentscheidung, die angeforderte Konfiguratorfunktion und die
-          interne Zugangssicherung kommt § 25 Abs. 2 Nr. 2 TDDDG in Betracht. Darüber hinausgehende
+          Für die unbedingt erforderliche Speicherung Ihrer Datenschutzentscheidung, die von Ihnen
+          angeforderte Konfiguratorfunktion und die interne Anmeldung gilt § 25 Abs. 2 Nr. 2
+          TDDDG. Darüber hinausgehende
           Speicherzugriffe benötigen grundsätzlich eine Einwilligung nach § 25 Abs. 1 TDDDG.
-          Personenbezogene Folgeverarbeitungen benötigen zusätzlich eine DSGVO-Rechtsgrundlage: für
-          die Verwaltung der Auswahl ist Art. 6 Abs. 1 lit. c in Verbindung mit Art. 7 Abs. 1 DSGVO
-          zu prüfen, für den Konfigurator Abschnitt 3 und für den Zugang Abschnitt 6.
-          Erforderlichkeit, Consent-Wortlaut und die vorläufigen 180 Tage sowie das vollständige
-          produktive Speicherinventar sind noch zu bestätigen.
+          Soweit die Verwaltung der Auswahl personenbezogene Daten umfasst, dient sie der
+          Umsetzung Ihrer Entscheidung und dem Nachweis einer Einwilligung nach Art. 6 Abs. 1
+          lit. c in Verbindung mit Art. 7 Abs. 1 DSGVO. Für Projekt- und Anmeldedaten gelten
+          zusätzlich die Rechtsgrundlagen in den Abschnitten 3 und 6.
         </p>
       </LegalSection>
 
       <LegalSection title="10. GA4 und Google Ads deaktiviert" documentLayout>
         <p>
-          GA4- und Google-Ads-Webtracking sind in der neuen Website technisch deaktiviert, auch nach
-          Zustimmung. Es werden darüber keine Google-Tags geladen, keine
+          Google Analytics 4 und Google-Ads-Webtracking sind auf dieser Website technisch
+          deaktiviert, auch nach einer entsprechenden Auswahl in den Cookie-Einstellungen. Es
+          werden darüber keine Google-Tags geladen, keine
           Seitenaufruf-/Conversion-Ereignisse und keine cookielosen Tracking-Pings versendet. Die
-          lokale Consent-Schnittstelle lädt selbst keine Google-Skripte. Autorenbilder sind hiervon
-          unabhängig.
+          Einwilligungsverwaltung lädt selbst keine Google-Skripte. Allein die Kategorie
+          „Google-Bewertungen“ steuert derzeit zusätzliche externe Inhalte; siehe Abschnitt 8.
         </p>
         <p>
-          Eine spätere Aktivierung benötigt eine gesonderte technische und fachliche Freigabe sowie
-          eine Aktualisierung dieser Informationen und des Consent-Verfahrens. Diese Aussage
-          betrifft die neue Website, nicht die bisherige WordPress-Installation oder externe
-          Werbekonten.
+          Die Auswahlmöglichkeiten für Statistik, Marketing und personalisierte Werbung lösen
+          aktuell keine entsprechende Messung oder Werbung aus. Ihre Auswahl wird nur lokal
+          vermerkt. Sie ist keine vorweggenommene Einwilligung für später neu eingeführte
+          Verarbeitungen.
         </p>
       </LegalSection>
 
       <LegalSection title="11. Empfänger und Aufbewahrung" documentLayout>
         <p>
-          Zugriff erhalten die für den jeweiligen Vorgang berechtigten internen Personen und
-          eingesetzten technischen Dienstleister. Die Verarbeitungsvorgänge und offenen
-          Anbieterangaben sind oben beschrieben. Weitere Empfänger oder Übermittlungen werden nicht
-          unterstellt.
+          Empfänger sind die für Ihren Vorgang zuständigen Personen in Beratung, Projektbearbeitung
+          beziehungsweise Personalverwaltung sowie die erforderlichen Stellen der IT-Verwaltung.
+          Technische Empfänger sind die eingesetzten Hosting-, Datenbank-, Speicher-, Anmelde- und
+          E-Mail-Dienstleister. Die Leistungen von Google Cloud/Firebase und Mailgun sind in den
+          Abschnitten 2, 6 und 7 beschrieben. Gesetzlich erforderliche Offenlegungen können
+          insbesondere Finanzbehörden oder Gerichte betreffen.
         </p>
         <p>
-          Wir dürfen Daten nur so lange speichern, wie sie für ihren Zweck erforderlich sind (Art. 5
-          Abs. 1 lit. e DSGVO). Entfällt der Zweck, sind sie nach Maßgabe des Art. 17 DSGVO zu
-          löschen, soweit keine gesetzliche Pflicht oder notwendige Sicherung von Rechtsansprüchen
-          entgegensteht. Für die Aufbewahrung wegen gesetzlicher Pflichten gilt Art. 6 Abs. 1 lit. c
-          DSGVO; für erforderliche Nachweise zur Rechtsverteidigung ist lit. f gesondert abzuwägen.
+          Bei Cloud- und E-Mail-Diensten können auch Verarbeitungen oder Zugriffe außerhalb der EU
+          und des Europäischen Wirtschaftsraums, insbesondere in den USA, stattfinden. Eine
+          europäische Speicherregion oder ein EU-Endpunkt schließt dies nicht aus. Für solche
+          Übermittlungen gelten zusätzlich die Anforderungen der Art. 44 ff. DSGVO.
         </p>
         <p>
-          <strong>Vorschlag für unverbindliche Anfragen und Konfiguratorprojekte:</strong> sechs
-          Monate nach abschließender Bearbeitung ohne Vertrag löschen, wenn keine weitere Beratung
-          vereinbart ist und kein anderer dokumentierter Aufbewahrungsgrund besteht. Dies ist eine
-          noch freizugebende betriebliche Frist, kein gesetzlicher Standard. Zugehörige PDFs,
-          E-Mail-Kopien und Bearbeitungsvermerke sind einzubeziehen. Für Bewerbungen gilt der
-          gesonderte Vorschlag in Abschnitt 4; für Empfehlungen ist die Frist noch offen.
+          Unverbindliche Kontakt- und Konfiguratoranfragen ohne Vertragsabschluss sind sechs Monate
+          nach abschließender Bearbeitung zu löschen, sofern kein anderer dokumentierter
+          Aufbewahrungsgrund besteht. Dies ist eine betriebliche Frist, keine gesetzliche
+          Mindestaufbewahrung. Nicht mehr erforderliche Angaben sind gegebenenfalls früher zu
+          löschen. Für Bewerbungen gilt Abschnitt 4, für Empfehlungen Abschnitt 5.
         </p>
         <p>
+          Für gesetzlich aufzubewahrende Unterlagen gilt Art. 6 Abs. 1 lit. c DSGVO.
           Nur tatsächlich aufbewahrungspflichtige Unterlagen unterliegen den gesetzlichen Fristen:
           Handels- und Geschäftsbriefe grundsätzlich sechs Jahre, Rechnungen und Buchungsbelege acht
           Jahre, Handelsbücher und Jahresabschlüsse zehn Jahre (§ 257 HGB, § 147 AO, § 14b UStG).
           Die Fristen beginnen grundsätzlich mit dem Ende des jeweils gesetzlich maßgeblichen
-          Kalenderjahres. Sonderfälle und gesetzliche Verlängerungen sind zu beachten. Das bedeutet
+          Kalenderjahres. In gesetzlichen Sonderfällen können längere Fristen gelten. Das bedeutet
           keine pauschale Aufbewahrung aller Kundendaten für diese Zeiträume.
         </p>
         <p>
-          Die regelmäßige Verjährung nach §§ 195, 199 BGB beträgt grundsätzlich drei Jahre und
-          beginnt regelmäßig mit Jahresende unter den dort genannten Voraussetzungen. Sie ist keine
-          allgemeine Speicherpflicht; nur zur Sicherung konkreter Rechtsansprüche erforderliche
-          Daten dürfen entsprechend länger aufbewahrt werden. Bei laufenden Verfahren ist der
-          weitere Bedarf gesondert zu prüfen.
+          Für die notwendige Geltendmachung oder Verteidigung von Rechtsansprüchen können einzelne
+          Nachweise über den normalen Bearbeitungszweck hinaus benötigt werden. Grundlage ist
+          Art. 6 Abs. 1 lit. f DSGVO und unser Interesse an der Rechtsdurchsetzung beziehungsweise
+          Rechtsverteidigung. Eine mögliche Verjährungsfrist rechtfertigt keine pauschale
+          Verlängerung für sämtliche Vorgangsdaten. Bei laufenden Verfahren richtet sich die
+          weitere Speicherung nach dem konkreten Nachweisbedarf.
         </p>
         <p>
-          <strong>Vor Veröffentlichung festlegen:</strong> Fristen und Verantwortlichkeiten für
-          Empfehlungen, Cloud-/Hosting-Logs, interne Konten und Profile, Mailgun, Postfächer und
-          Sicherungen. Manuelle Löschfunktionen ersetzen noch keinen vollständigen Löschprozess über
-          alle Systeme. Für Geschäftsdaten wird kein automatischer Fristenlauf zugesagt.
-          Sicherungskopien benötigen begrenzte Aufbewahrung und einen Ablauf, der nach einer
-          Wiederherstellung bereits veranlasste Löschungen erneut berücksichtigt. Die 180 Tage der
-          Consent-Auswahl sind keine Aufbewahrungsfrist für Geschäftsdaten.
+          Die Fristen betreffen auch zugehörige Bearbeitungsvermerke, Projektunterlagen, E-Mails und
+          eigene Downloadkopien. Sicherungs- und Wiederherstellungskopien können einer gesonderten
+          technischen Restaufbewahrung unterliegen. Die Gültigkeit der Consent-Auswahl nach
+          Abschnitt 9 ist keine Aufbewahrungsfrist für Geschäftsdaten.
         </p>
       </LegalSection>
 
       <LegalSection title="12. Ihre Rechte" documentLayout>
         <p>
-          Nach Maßgabe der gesetzlichen Voraussetzungen bestehen Rechte auf Auskunft, Berichtigung,
-          Löschung, Einschränkung und Datenübertragbarkeit. Soweit die Verarbeitung auf Einwilligung
-          beruht, können Sie diese für die Zukunft widerrufen. Bei berechtigten Interessen besteht
-          unter den Voraussetzungen des Art. 21 DSGVO ein Widerspruchsrecht; gegen Direktwerbung
-          können Sie jederzeit widersprechen. Sie können sich bei einer Datenschutzaufsichtsbehörde
-          beschweren und uns über Abschnitt 1 kontaktieren.
+          Sie können von uns Auskunft über Ihre personenbezogenen Daten und eine Kopie verlangen
+          sowie unrichtige Daten berichtigen lassen. Unter den gesetzlichen Voraussetzungen haben
+          Sie Anspruch auf Löschung oder Einschränkung der Verarbeitung. Daten, die Sie uns
+          bereitgestellt haben und die wir auf Grundlage einer Einwilligung oder eines Vertrags
+          automatisiert verarbeiten, können Sie in einem gängigen maschinenlesbaren Format erhalten
+          und, soweit technisch machbar, direkt an einen anderen Verantwortlichen übermitteln
+          lassen.
         </p>
         <p>
-          Eine ausschließlich automatisierte Entscheidung über Vertragsabschluss oder Einstellung
-          ist in den geprüften Website-Abläufen nicht implementiert. Konfiguratorberechnungen dienen
-          der Projektorientierung.
+          <strong>Ihr Widerspruchsrecht:</strong> Verarbeiten wir Daten aufgrund berechtigter
+          Interessen, können Sie aus Gründen Ihrer besonderen Situation widersprechen. Wir
+          verarbeiten diese Daten dann nicht weiter, es sei denn, wir weisen zwingende
+          schutzwürdige Gründe nach, die Ihre Interessen, Rechte und Freiheiten überwiegen, oder
+          benötigen die Daten für Rechtsansprüche. Gegen eine Verarbeitung für Direktwerbung
+          einschließlich damit verbundenen Profilings können Sie jederzeit ohne Angabe von Gründen
+          widersprechen; sie wird dann für diese Zwecke beendet.
         </p>
         <p>
-          <strong>Vor Veröffentlichung bestätigen:</strong> zuständige Aufsichtsbehörde und deren
-          Beschwerdekontakt, interner Ablauf für Betroffenenrechte und nachgelagerte Prozesse
-          außerhalb der Website.
+          Eine Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Die
+          Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt. Für
+          Google-Bewertungen nutzen Sie dazu „Cookie-Einstellungen“ im Footer. Für Ihre weiteren
+          Anliegen wenden Sie sich an die Kontaktdaten in Abschnitt 1, insbesondere an unseren
+          Datenschutzbeauftragten. Wir beantworten Anträge grundsätzlich innerhalb eines Monats;
+          über eine gesetzlich zulässige Verlängerung informieren wir Sie innerhalb dieser Frist.
+        </p>
+        <p>
+          Sie haben außerdem das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren,
+          insbesondere an Ihrem Aufenthaltsort, Arbeitsplatz oder am Ort eines vermuteten
+          Verstoßes. Für unser privatwirtschaftliches Unternehmen ist grundsätzlich zuständig:
+        </p>
+        <address className="not-italic">
+          Bayerisches Landesamt für Datenschutzaufsicht (BayLDA)
+          <br />
+          Promenade 18
+          <br />
+          91522 Ansbach
+          <br />
+          <a
+            className="underline"
+            href="https://www.lda.bayern.de/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.lda.bayern.de
+          </a>
+        </address>
+        <p>
+          Im Rahmen dieser Website treffen wir keine ausschließlich automatisierten Entscheidungen
+          einschließlich Profiling, die Ihnen gegenüber rechtliche Wirkung entfalten oder Sie
+          ähnlich erheblich beeinträchtigen. Die Konfiguratoren dienen der unverbindlichen
+          Projektorientierung und entscheiden weder über einen Vertrag noch über eine Einstellung.
         </p>
       </LegalSection>
     </LegalPage>

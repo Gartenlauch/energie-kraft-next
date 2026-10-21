@@ -34,7 +34,7 @@ export const applicationInputSchema = z
       .trim()
       .min(10, "Bitte beschreibe deine Qualifikation oder Erfahrung mit mindestens 10 Zeichen.")
       .max(5_000, "Der Text darf maximal 5.000 Zeichen lang sein."),
-    privacyAccepted: z.boolean().refine((value) => value, "Bitte stimme der Datenverarbeitung zu."),
+    privacyAccepted: z.boolean().refine((value) => value, "Bitte bestätige die Datenschutzhinweise."),
     website: z.string().trim().max(200).optional(),
     formStartedAt: z.number().int().positive().optional(),
   })

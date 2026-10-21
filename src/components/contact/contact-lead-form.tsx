@@ -988,9 +988,7 @@ export function ContactLeadForm() {
                 >
                   Datenschutzhinweise
                 </Link>{" "}
-                zur Kenntnis genommen und stimme der
-                Verarbeitung meiner Angaben zur Bearbeitung
-                meiner Anfrage zu. *
+                zur Kenntnis genommen. *
               </span>
             </label>
 

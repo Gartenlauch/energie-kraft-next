@@ -447,8 +447,7 @@ export function ApplicationForm({ initialJobId }: { initialJobId?: string }) {
             <Link href="/datenschutz" className="text-brand-primary underline">
               Datenschutzerklärung
             </Link>{" "}
-            zur Kenntnis genommen und stimme der elektronischen Verarbeitung meiner Daten zum Zweck
-            der Bewerbung zu. *
+            zur Kenntnis genommen. *
           </span>
         </label>
         <FieldError id="application-privacy-error" message={errors.privacyAccepted} />

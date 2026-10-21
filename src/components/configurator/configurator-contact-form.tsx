@@ -380,7 +380,7 @@ export function ConfiguratorContactForm({
               >
                 Datenschutzhinweise
               </Link>{" "}
-              gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung der Anfrage zu. *
+              zur Kenntnis genommen. *
             </span>
           </label>
 

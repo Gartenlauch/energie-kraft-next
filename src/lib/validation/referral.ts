@@ -40,7 +40,7 @@ export const referralInputSchema = z
     submissionId: z.string().uuid("Die Übermittlungs-ID ist ungültig."),
     referrer: referralStepOneSchema,
     referredCustomer: referralStepTwoSchema,
-    privacyAccepted: z.boolean().refine((value) => value, "Bitte stimmen Sie der Datenverarbeitung zu."),
+    privacyAccepted: z.boolean().refine((value) => value, "Bitte bestätigen Sie die Datenschutzhinweise."),
     referredPersonPermissionConfirmed: z
       .boolean()
       .refine((value) => value, "Bitte bestätigen Sie das Einverständnis der empfohlenen Person."),

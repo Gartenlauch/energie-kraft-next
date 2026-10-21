@@ -556,7 +556,7 @@ export function ReferralForm() {
                   <Link href="/datenschutz" className="text-brand-primary underline">
                     Datenschutzerklärung
                   </Link>{" "}
-                  zur Kenntnis genommen und stimme der elektronischen Verarbeitung der Angaben zu.
+                  zur Kenntnis genommen.
                   Ich bestätige, dass ich das Einverständnis der empfohlenen Person eingeholt habe
                   und ihre Daten für diese Anfrage verarbeitet werden dürfen. *
                 </span>
