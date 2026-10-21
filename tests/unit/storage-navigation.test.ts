@@ -1,6 +1,6 @@
 ﻿import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const location = vi.hoisted(() => ({ pathname: "/stromspeicher" }));
 vi.mock("next/navigation", () => ({ usePathname: () => location.pathname }));
@@ -10,6 +10,10 @@ vi.mock("@/config/env/public", () => ({
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { siteConfig } from "@/config/site";
+
+// Keep PublicLink's direct environment access aligned with the siteConfig fixture.
+beforeEach(() => vi.stubEnv("NEXT_PUBLIC_CANONICAL_BASE_URL", siteConfig.canonicalBaseUrl));
+afterEach(() => vi.unstubAllEnvs());
 
 describe("Global footer navigation", () => {
   it("reuses the central directions URL in the contact area with an accessible new-tab link", () => {

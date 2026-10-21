@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { imageConfigDefault } from "next/dist/shared/lib/image-config";
@@ -18,6 +18,10 @@ import { selectPublicFaqEntriesForRoute } from "../../src/lib/faq/public-selecti
 import { buildFaqPageJsonLd } from "../../src/lib/seo/faq-json-ld";
 
 const importDocument = JSON.parse(readFileSync(resolve("docs/wallbox-faq-import.json"), "utf8"));
+
+// PublicLink reads this value directly instead of importing the environment validator.
+beforeEach(() => vi.stubEnv("NEXT_PUBLIC_CANONICAL_BASE_URL", "https://www.energie-kraft.de"));
+afterEach(() => vi.unstubAllEnvs());
 
 describe("Wallbox relaunch content contracts", () => {
   it("preserves metadata, calculator and historical entities without offers", () => {

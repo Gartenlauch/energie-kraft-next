@@ -1,10 +1,16 @@
-import { createElement } from "react";
+// @vitest-environment jsdom
+import { act, createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as CookieConsent from "vanilla-cookieconsent";
 import { isExternalWebLink } from "@/lib/navigation/link-behavior";
 import { PublicLink } from "@/components/ui/public-link";
 import { CustomerReviewsSection } from "@/components/marketing/customer-reviews-section";
+import { ConsentManager } from "@/components/consent/consent-manager";
+import type { ReviewCollection } from "@/lib/reviews/types";
 
+vi.mock("embla-carousel-react", () => ({ default: () => [() => {}, undefined] }));
 vi.mock("@/config/env/public", () => {
   throw new Error("PublicLink must not load the environment validator");
 });
@@ -13,8 +19,8 @@ beforeEach(() => vi.stubEnv("NEXT_PUBLIC_CANONICAL_BASE_URL", base));
 afterEach(() => vi.unstubAllEnvs());
 
 describe("public link policy", () => {
-  it("renders review, author and provider links without importing validation", () => {
-    const html = renderToStaticMarkup(createElement(CustomerReviewsSection, {
+  describe("review links and consent", () => {
+    const collection: ReviewCollection = {
       reviews: [{
         id: "test-review", provider: "google", author: "Test Reviewer", rating: 5,
         text: "Fixture only", publishedAt: "2026-10-01T12:00:00Z",
@@ -26,14 +32,72 @@ describe("public link policy", () => {
         sourceUrl: "https://maps.google.com/test-overview",
         writeReviewUrl: "https://maps.google.com/test-write",
       }],
-    }));
-    const links = html.match(/<a\b[^>]*>/g) ?? [];
-    // Four review/author actions plus the three existing Google policy links.
-    expect(links).toHaveLength(7);
-    for (const link of links) {
-      expect(link).toContain('target="_blank"');
-      expect(link).toContain('rel="noopener noreferrer"');
-    }
+    };
+    let container: HTMLDivElement;
+    let root: Root;
+
+    beforeEach(() => {
+      vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
+      localStorage.clear();
+      container = document.createElement("div");
+      document.body.append(container);
+      root = createRoot(container);
+    });
+
+    afterEach(() => {
+      act(() => root.unmount());
+      container.remove();
+      CookieConsent.reset(true);
+      localStorage.clear();
+      vi.unstubAllGlobals();
+    });
+
+    it("renders only the internal privacy link in server HTML without consent", () => {
+      const html = renderToStaticMarkup(createElement(CustomerReviewsSection, collection));
+      const links = html.match(/<a\b[^>]*>/g) ?? [];
+      expect(links).toHaveLength(1);
+      expect(links[0]).toContain('href="/datenschutz"');
+      expect(links[0]).not.toContain('target="_blank"');
+      expect(html).toContain("Google-Bewertungen aktivieren");
+      expect(html).not.toMatch(/maps\.google\.com|Test Reviewer|Fixture only/);
+    });
+
+    it("renders all seven secure review links only after Google reviews consent without importing validation", async () => {
+      await act(async () => root.render(createElement("div", null,
+        createElement(ConsentManager),
+        createElement(CustomerReviewsSection, collection),
+      )));
+      const reviewLinks = () => Array.from(container.querySelectorAll<HTMLAnchorElement>(
+        '[aria-labelledby="customer-reviews-heading"] a',
+      ));
+      act(() => CookieConsent.acceptCategory([]));
+      expect(reviewLinks().map((link) => link.getAttribute("href"))).toEqual(["/datenschutz"]);
+      expect(reviewLinks()[0].target).toBe("");
+      expect(container.querySelector("blockquote")).toBeNull();
+
+      act(() => CookieConsent.acceptCategory(["necessary", "googleReviews"]));
+      const links = reviewLinks();
+      // Four review/author actions plus the three existing Google policy links.
+      expect(links).toHaveLength(7);
+      expect(links.map((link) => link.href)).toEqual(expect.arrayContaining([
+        "https://maps.google.com/test-author",
+        "https://maps.google.com/test-review",
+        "https://maps.google.com/test-overview",
+        "https://maps.google.com/test-write",
+        "https://support.google.com/contributionpolicy/answer/7400114",
+        "https://maps.google.com/help/terms_maps.html",
+        "https://policies.google.com/privacy",
+      ]));
+      for (const link of links) {
+        expect(link.target).toBe("_blank");
+        expect(link.rel).toBe("noopener noreferrer");
+        expect(link.textContent).toContain("öffnet in neuem Tab");
+      }
+
+      act(() => CookieConsent.acceptCategory([]));
+      expect(reviewLinks().map((link) => link.getAttribute("href"))).toEqual(["/datenschutz"]);
+      expect(container.querySelector("blockquote")).toBeNull();
+    });
   });
   it.each([
     "http://localhost:3000/",
