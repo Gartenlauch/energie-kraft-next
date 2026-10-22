@@ -38,10 +38,10 @@ export const wallboxProducts: readonly WallboxProduct[] = [
       height: 758,
     },
     availabilityNote:
-      "Die vollständige Integration und Steuerung über die sonnen App kündigt sonnen für Oktober 2026 an. Wir prüfen den Freigabe- und Softwarestand sowie die Kompatibilität Ihrer sonnenBatterie vor der Umsetzung.",
+      "Ob die Integration und Steuerung über die sonnen App für Ihre Anlage verfügbar und freigegeben ist, prüfen wir im Einzelfall. Eine dauerhafte Softwareunterstützung oder künftige Freigaben können wir derzeit nicht zusagen. Auch Lieferbarkeit und Kompatibilität Ihrer sonnenBatterie klären wir vor einem Angebot.",
     note: {
       title: "Hinweis zum sonnenHome Charger 2",
-      text: "Der sonnenHome Charger 2 ist nicht mehr erhältlich. Wenn Sie nach einem Preis oder einer Kaufmöglichkeit für den sonnen Charger 2 suchen: Für neue sonnen-Systeme setzen wir auf den Alfen Eve Single Plus DE als aktuelle Ladelösung im sonnenSystem. Ein Angebot richtet sich nach der passenden Systemkonfiguration und Installation.",
+      text: "Der sonnenHome Charger 2 ist nicht mehr erhältlich. Wenn Sie nach einem Preis oder einer Kaufmöglichkeit für den sonnen Charger 2 suchen: Ob der Alfen Eve Single Plus DE für Ihr sonnenSystem infrage kommt, prüfen wir anhand der Lieferbarkeit, des Freigabe- und Softwarestands sowie der passenden Systemkonfiguration und Installation.",
     },
   },
   {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SonnenServiceNotice } from "@/components/marketing/sonnen-service-notice";
 
 import { Sprint8ContentPage } from "@/app/(site)/_components/sprint8-content-page";
 import { sprint8Pages } from "@/content/sprint8-pages";
@@ -19,6 +20,7 @@ export default function CommercialStoragePage() {
     <Sprint8ContentPage
       brandIntroVariant="brand"
       content={content}
+      afterHero={<SonnenServiceNotice variant="commercial" />}
       sectionHeadingContent={{ einsatz: <CommercialLoadProfileChart /> }}
       sectionOverrides={{
         anwendungen: <CommercialStorageApplicationsSection />,

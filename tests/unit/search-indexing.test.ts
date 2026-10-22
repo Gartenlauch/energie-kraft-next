@@ -230,7 +230,7 @@ describe("single-switch indexing, headers, metadata and robots", () => {
     const before = await sitemap();
     vi.stubEnv("SEARCH_INDEXING_ENABLED", "true");
     expect(await sitemap()).toEqual(before);
-    expect(before).toHaveLength(43); // 24 configured + 17 reference groups + FAQ hub + fixture detail.
+    expect(before).toHaveLength(44); // 25 configured + 17 reference groups + FAQ hub + fixture detail.
     expect(before.every(({ url }) => new URL(url).origin === "https://www.energie-kraft.de")).toBe(
       true,
     );

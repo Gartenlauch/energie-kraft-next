@@ -49,6 +49,7 @@ export const PUBLIC_ROUTE_KEYS = [
   "bewerbung",
   "kunden-werben-kunden",
   "stromspeicher",
+  "sonnen-insolvenz",
   "wallbox",
   "klimaanlagen",
   "waermepumpen",
@@ -308,6 +309,15 @@ export const PUBLIC_ROUTES = {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+  },
+
+  "sonnen-insolvenz": {
+    key: "sonnen-insolvenz",
+    href: "/sonnen-insolvenz",
+    label: "sonnen Insolvenz",
+    faqRouteKey: "stromspeicher",
+    navigation: { header: false, footer: false },
+    sitemap: { changeFrequency: "weekly", priority: 0.7 },
   },
 
   wallbox: {

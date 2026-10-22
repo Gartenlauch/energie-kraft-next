@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SonnenServiceNotice } from "@/components/marketing/sonnen-service-notice";
 import Link from "next/link";
 
 import { FaqJsonLd } from "@/components/faq/faq-json-ld";
@@ -132,6 +133,8 @@ export default async function HomePage() {
             proportion="image-wide"
             surface="white"
           />
+
+          <SonnenServiceNotice variant="home" />
 
           <SplitFeatureSection
             {...homeSections.battery}

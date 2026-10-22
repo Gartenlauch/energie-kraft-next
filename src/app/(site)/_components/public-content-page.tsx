@@ -22,6 +22,7 @@ interface PublicContentPageProps {
   brandIntroVariant?: BrandIntroVariant | false;
   content: PublicPageContent;
   beforeFaq?: ReactNode;
+  afterHero?: ReactNode;
   sectionOverrides?: Readonly<Record<string, ReactNode>>;
 }
 
@@ -222,6 +223,7 @@ export async function PublicContentPage({
   brandIntroVariant = false,
   content,
   beforeFaq,
+  afterHero,
   sectionOverrides,
 }: PublicContentPageProps) {
   const faqs = await getPublicFaqEntriesByRoute(content.faqRouteKey);
@@ -273,6 +275,8 @@ export async function PublicContentPage({
         ) : null}
 
         {brandIntroVariant && <BrandIntro variant={brandIntroVariant} />}
+
+        {afterHero}
 
         {content.faqRouteKey === "kontakt" && beforeFaq}
 

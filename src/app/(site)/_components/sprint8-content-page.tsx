@@ -6,6 +6,7 @@ import type { BrandIntroVariant } from "@/components/marketing/brand-intro";
 export function Sprint8ContentPage({
   content,
   afterSections,
+  afterHero,
   sectionOverrides,
   sectionHeadingContent,
   heroImageFlipHorizontal,
@@ -13,6 +14,7 @@ export function Sprint8ContentPage({
 }: {
   content: Sprint8PageContent;
   afterSections?: ReactNode;
+  afterHero?: ReactNode;
   sectionOverrides?: Readonly<Record<string, ReactNode>>;
   sectionHeadingContent?: Readonly<Record<string, ReactNode>>;
   heroImageFlipHorizontal?: boolean;
@@ -40,6 +42,7 @@ export function Sprint8ContentPage({
       sectionHeadingContent={sectionHeadingContent}
       heroImageFlipHorizontal={heroImageFlipHorizontal}
       afterSections={afterSections}
+      afterHero={afterHero}
       ctaTitle={content.ctaTitle}
       ctaLabel={content.ctaLabel}
       ctaHref={content.ctaHref}

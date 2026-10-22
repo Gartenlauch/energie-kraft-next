@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SonnenServiceNotice } from "@/components/marketing/sonnen-service-notice";
 import Link from "next/link";
 
 import { MarketingFeaturePage } from "@/app/(site)/_components/marketing-feature-page";
@@ -290,6 +291,7 @@ export default function ServicePage() {
   return (
     <MarketingFeaturePage
       brandIntroVariant="brand"
+      afterHero={<SonnenServiceNotice variant="service" />}
       seo={seo}
       breadcrumbLabel="Service & Wartung"
       eyebrow="Service & Wartung"

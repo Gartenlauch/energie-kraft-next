@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SonnenServiceNotice } from "@/components/marketing/sonnen-service-notice";
 
 import { PublicContentPage } from "@/app/(site)/_components/public-content-page";
 import { stromspeicherContent } from "@/content";
@@ -14,6 +15,7 @@ export default function StromspeicherPage() {
     <PublicContentPage
       brandIntroVariant="brand"
       content={stromspeicherContent}
+      afterHero={<SonnenServiceNotice variant="storage" />}
       sectionOverrides={{
         funktionsweise: <StorageFunctionSection key="funktionsweise" />,
         speicherprodukte: <StorageProductsSection key="speicherprodukte" />,
