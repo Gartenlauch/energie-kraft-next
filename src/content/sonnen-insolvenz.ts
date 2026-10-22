@@ -43,7 +43,7 @@ export const sonnenInformation = {
       id: "technische-stoerungen",
       title: "Wer hilft bei technischen Störungen meiner sonnenBatterie?",
       paragraphs: [
-        "Energie-Kraft Süd bleibt Ihr Ansprechpartner für den sonnenBatterie Service. Unsere eigene Serviceabteilung bleibt bestehen. Das gilt für Anliegen zu bestehenden Speichern ebenso wie zu sonnen-Wallboxen.",
+        "Energie-Kraft Süd bleibt Ihr Ansprechpartner für den sonnenBatterie Service. Das gilt für Anliegen zu bestehenden Speichern ebenso wie zu sonnen-Wallboxen.",
         "Unsere Serviceabteilung ist weiterhin für unsere Bestandskunden erreichbar. Wir betreuen vorrangig sonnen-Anlagen, die von Energie-Kraft Süd installiert oder bereits betreut wurden. Ob darüber hinaus Unterstützung möglich ist, prüfen wir abhängig vom jeweiligen Anliegen und unseren verfügbaren Kapazitäten.",
         "Halten Sie Modell, Seriennummer, Installationsdatum und die genaue Fehlermeldung bereit. Fotos der Anzeige und vorhandene Betriebsdaten helfen bei der Einordnung. Wir stimmen den nächsten Prüfschritt mit Ihnen ab. Reparaturumfang, benötigte Teile, Termin und mögliche Kosten werden für den Einzelfall geklärt.",
       ],
@@ -61,7 +61,6 @@ export const sonnenInformation = {
       title: "Was passiert mit der Garantie meiner sonnenBatterie nach der Insolvenz?",
       paragraphs: [
         "Herstellergarantie und gesetzliche Gewährleistung sind unterschiedliche Ansprüche. Eine sonnen Garantie richtet sich gegen den in Ihren Garantiebedingungen genannten Garantiegeber und nach den dort geregelten Voraussetzungen. Der Insolvenzantrag allein beantwortet nicht, wie ein konkreter Garantiefall abgewickelt wird. Die tatsächliche Erfüllung durch den Hersteller ist derzeit nicht abschließend gesichert.",
-        "Gesetzliche Mängelrechte bestehen grundsätzlich gegenüber Ihrem Verkäufer beziehungsweise dem verantwortlichen Vertragspartner. Die Insolvenz des Herstellers beseitigt diese Ansprüche gegen einen anderen Vertragspartner nicht automatisch. Welche Rechte und Fristen gelten, hängt unter anderem vom Vertrag, der Leistung und dem konkreten Mangel ab.",
         "Sichern Sie Rechnung, Vertrag, Inbetriebnahmeprotokoll und Garantieunterlagen. Melden Sie einen Mangel zeitnah schriftlich bei Ihrem Vertragspartner. Wir unterstützen bei der technischen Dokumentation, übernehmen damit aber keine Herstellergarantie. Für die rechtliche Prüfung individueller Ansprüche helfen eine Verbraucherzentrale oder eine anwaltliche Beratung.",
       ],
     },

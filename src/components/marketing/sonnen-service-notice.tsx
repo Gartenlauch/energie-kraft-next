@@ -6,7 +6,7 @@ import { sonnenInformation } from "@/content/sonnen-insolvenz";
 
 const notices = {
   storage: {
-    title: "Ihre sonnenBatterie. Unser Service bleibt.",
+    title: "Ihre sonnenBatterie.",
     text: "Informationen zur sonnen-Insolvenz und Unterstützung für private Bestandsanlagen durch Energie-Kraft Süd.",
   },
   commercial: {
@@ -15,7 +15,7 @@ const notices = {
   },
   service: {
     title: "sonnen Insolvenz: Wir bleiben für Sie da.",
-    text: "Unsere eigene Serviceabteilung bleibt bestehen. Für bestehende sonnenBatterien und Wallboxen ist Energie-Kraft Süd weiterhin Ihr Ansprechpartner.",
+    text: "Für bestehende sonnenBatterien und Wallboxen ist Energie-Kraft Süd weiterhin Ihr Ansprechpartner.",
   },
 };
 

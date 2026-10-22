@@ -135,13 +135,9 @@ export default function SonnenInsolvenzPage() {
               aria-labelledby="service-heading"
               className="bg-brand-primary self-start rounded-xl p-7 text-white md:p-8"
             >
-              <p className="text-xs font-bold tracking-widest uppercase">Energie-Kraft Süd</p>
-              <h2
-                id="service-heading"
-                className="mt-4 text-2xl leading-snug font-semibold text-white"
-              >
-                Unsere eigene Serviceabteilung bleibt bestehen.
-              </h2>
+              <p id="service-heading" className="text-xs font-bold tracking-widest uppercase">
+                Energie-Kraft Süd
+              </p>
               <p className="mt-5 leading-7">
                 Wir sind weiterhin Ansprechpartner für Ihre bestehende sonnenBatterie und Wallbox –
                 mit mehr als zehn Jahren Erfahrung in Verkauf, Installation und Betreuung.
