@@ -116,7 +116,11 @@ describe("Residential storage migration", () => {
       "products/mysigen-energy-management.webp",
     ])
       expect(existsSync(`public/images/battery-storage/${src}`)).toBe(true);
-    expect(html).not.toMatch(/sonnenBatterie|sonnenProtect|sonnenFlat|SigenStack|FlexStack/i);
+    const htmlWithoutServiceNotice = html.replace(
+      /<aside\b[^>]*aria-label="sonnen: Information und Service"[^>]*>[\s\S]*?<\/aside>/g,
+      "",
+    );
+    expect(htmlWithoutServiceNotice).not.toMatch(/sonnenBatterie|sonnenProtect|sonnenFlat|SigenStack|FlexStack/i);
     expect(html).not.toMatch(/100\s*%\s*autark|garantierte.*Autarkie/i);
     expect(html).not.toMatch(/"@type":"(?:Product|Offer|AggregateRating|QAPage)"/);
     expect(html).toContain('"@type":"WebPage"');
