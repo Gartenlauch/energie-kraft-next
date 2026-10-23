@@ -30,7 +30,7 @@ describe("sonnen service information", () => {
     expect(html.match(new RegExp(`href="${CONTACT_FORM_HREF}"`, "g"))).toHaveLength(2);
     expect(html.split("</header>")[0]).not.toContain(`href="${CONTACT_FORM_HREF}"`);
     expect(html).toContain(
-      "Unsere Serviceabteilung ist weiterhin für unsere Bestandskunden erreichbar.",
+      "Energie-Kraft Süd bleibt Ihr Ansprechpartner für den sonnenBatterie Service.",
     );
     expect(html).toContain(
       "prüfen wir abhängig vom jeweiligen Anliegen und unseren verfügbaren Kapazitäten.",
