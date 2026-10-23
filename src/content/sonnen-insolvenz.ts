@@ -44,7 +44,7 @@ export const sonnenInformation = {
       title: "Wer hilft bei technischen Störungen meiner sonnenBatterie?",
       paragraphs: [
         "Energie-Kraft Süd bleibt Ihr Ansprechpartner für den sonnenBatterie Service. Das gilt für Anliegen zu bestehenden Speichern ebenso wie zu sonnen-Wallboxen.",
-        "Unsere Serviceabteilung ist weiterhin für unsere Bestandskunden erreichbar. Wir betreuen vorrangig sonnen-Anlagen, die von Energie-Kraft Süd installiert oder bereits betreut wurden. Ob darüber hinaus Unterstützung möglich ist, prüfen wir abhängig vom jeweiligen Anliegen und unseren verfügbaren Kapazitäten.",
+        "Wir betreuen vorrangig sonnen-Anlagen, die von Energie-Kraft Süd installiert oder bereits betreut wurden. Ob darüber hinaus Unterstützung möglich ist, prüfen wir abhängig vom jeweiligen Anliegen und unseren verfügbaren Kapazitäten.",
         "Halten Sie Modell, Seriennummer, Installationsdatum und die genaue Fehlermeldung bereit. Fotos der Anzeige und vorhandene Betriebsdaten helfen bei der Einordnung. Wir stimmen den nächsten Prüfschritt mit Ihnen ab. Reparaturumfang, benötigte Teile, Termin und mögliche Kosten werden für den Einzelfall geklärt.",
       ],
     },
