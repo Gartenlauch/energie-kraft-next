@@ -21,6 +21,7 @@ interface ContactFormValues {
   company: string;
   email: string;
   phone: string;
+  street: string;
   postalCode: string;
   city: string;
   interests: ContactInterest[];
@@ -42,6 +43,7 @@ type TextFieldName =
   | "company"
   | "email"
   | "phone"
+  | "street"
   | "postalCode"
   | "city"
   | "message"
@@ -53,6 +55,7 @@ const CONTACT_LEAD_FIELD_NAMES = [
   "company",
   "email",
   "phone",
+  "street",
   "postalCode",
   "city",
   "interests",
@@ -83,6 +86,7 @@ function createInitialFormValues(): ContactFormValues {
     company: "",
     email: "",
     phone: "",
+    street: "",
     postalCode: "",
     city: "",
     interests: [],
@@ -120,6 +124,7 @@ function createContactLeadInput(
         }
       : {}),
 
+    street: values.street,
     postalCode: values.postalCode,
     city: values.city,
 
@@ -672,6 +677,32 @@ export function ContactLeadForm() {
             />
 
             <div className="mt-7 grid min-w-0 gap-6 md:grid-cols-[0.6fr_1.4fr]">
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="contact-street"
+                  className="block text-sm font-semibold"
+                >
+                  Straße und Hausnummer *
+                </label>
+
+                <input
+                  id="contact-street"
+                  name="street"
+                  type="text"
+                  required
+                  aria-required="true"
+                  autoComplete="street-address"
+                  maxLength={150}
+                  value={formValues.street}
+                  aria-invalid={fieldErrors.street ? true : undefined}
+                  aria-describedby={fieldErrors.street ? "contact-street-error" : undefined}
+                  onChange={(event) => handleTextChange("street", event.currentTarget.value)}
+                  className={`${inputClassName} mt-2 ${fieldErrors.street ? "border-red-600" : ""}`}
+                />
+
+                <FieldError id="contact-street-error" message={fieldErrors.street} />
+              </div>
+
               <div>
                 <label
                   htmlFor="contact-postal-code"

@@ -54,6 +54,7 @@ export interface ContactLeadInput {
   email: string;
   phone?: string;
 
+  street: string;
   postalCode: string;
   city: string;
 
@@ -99,6 +100,8 @@ export interface ContactLeadDocument {
   };
 
   location: {
+    /** Optional for leads submitted before the street field was introduced. */
+    street?: string | null;
     postalCode: string;
     city: string;
   };

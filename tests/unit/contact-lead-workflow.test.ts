@@ -57,6 +57,7 @@ vi.mock("../../functions/src/mailgun", () => ({
 }));
 
 import { submitContactLead } from "../../functions/src/contact-lead";
+import { sendContactLeadMail } from "../../functions/src/contact-lead-mail";
 
 const input = {
   firstName: "Erika",
@@ -81,6 +82,17 @@ beforeEach(() => {
 });
 
 describe("contact lead mail workflow", () => {
+  it("persists the normalized street and passes it to mail generation", async () => {
+    await submitContactLead.run({ data: { ...input, street: "  Musterstraße 12  " } } as Parameters<typeof submitContactLead.run>[0]);
+    expect(state.record?.location).toEqual({ street: "Musterstraße 12", postalCode: "83404", city: "Ainring" });
+    expect(sendContactLeadMail).toHaveBeenCalledWith(expect.objectContaining({ lead: expect.objectContaining({ street: "Musterstraße 12" }) }));
+  });
+
+  it("continues to save legacy submissions without street", async () => {
+    await submit();
+    expect(state.record?.location).toEqual({ street: null, postalCode: "83404", city: "Ainring" });
+  });
+
   it("keeps the saved lead and records customer success when internal mail fails", async () => {
     state.failInternal = true;
 

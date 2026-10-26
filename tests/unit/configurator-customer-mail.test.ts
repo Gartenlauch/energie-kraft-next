@@ -23,5 +23,6 @@ describe("configurator customer email", () => {
     expect(mail.attachments).toEqual(
       expect.arrayContaining([expect.objectContaining({ filename: "analyse.pdf", data: pdf })]),
     );
+    expect(mail.attachments?.some((attachment) => attachment.filename.endsWith(".txt"))).toBe(false);
   });
 });

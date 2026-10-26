@@ -4,6 +4,7 @@ import {
   } from "./mailgun";
   
   import type { ContactLeadPayload } from "./contact-lead-validation";
+  import { createInquiryTextAttachment, renderInquiryText } from "./inquiry-text-attachment";
   
   function escapeHtml(value: string): string {
     return value
@@ -98,6 +99,7 @@ import {
   
   Standort
   --------
+  Straße und Hausnummer: ${lead.street ?? "Keine Angabe"}
   PLZ: ${lead.postalCode}
   Ort: ${lead.city}
   
@@ -156,6 +158,10 @@ import {
   
       <table cellpadding="6" cellspacing="0">
         <tr>
+          <td><strong>Straße und Hausnummer</strong></td>
+          <td>${optionalText(lead.street)}</td>
+        </tr>
+        <tr>
           <td><strong>PLZ</strong></td>
           <td>${escapeHtml(lead.postalCode)}</td>
         </tr>
@@ -207,6 +213,28 @@ import {
         "Neue Website-Anfrage – Energie-Kraft",
       text,
       html,
+      attachments: [createInquiryTextAttachment("Kontaktanfrage.txt", renderInquiryText(
+        "KONTAKTANFRAGE – ENERGIE-KRAFT SÜD",
+        [
+          { heading: "Kontaktdaten", rows: [
+            ["Vorname", lead.firstName],
+            ["Nachname", lead.lastName],
+            ["Firma", lead.company?.trim() || "Keine Angabe"],
+            ["E-Mail", lead.email],
+            ["Telefon", lead.phone?.trim() || "Keine Angabe"],
+            ["Straße und Hausnummer", lead.street ?? "Keine Angabe"],
+            ["PLZ", lead.postalCode],
+            ["Ort", lead.city],
+          ] },
+          { heading: "Projekt", rows: [
+            ["Interessierte Produkte", interests],
+            ["Gebäudetyp", buildingType],
+            ["Nutzung / Eigentum", ownership],
+          ] },
+          { heading: "Nachricht", paragraph: lead.message },
+          { heading: "Kontaktaufnahme", rows: [["Bevorzugter Kontaktweg", preferredContact]] },
+        ],
+      ))],
     };
   }
 

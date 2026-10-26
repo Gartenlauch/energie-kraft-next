@@ -39,6 +39,12 @@ export const contactLeadInputSchema = z
       .max(40, "Die Telefonnummer ist zu lang.")
       .optional(),
 
+    street: z
+      .string()
+      .trim()
+      .min(3, "Bitte geben Sie Straße und Hausnummer ein.")
+      .max(150, "Straße und Hausnummer sind zu lang."),
+
     postalCode: z
       .string()
       .trim()

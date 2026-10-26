@@ -6,19 +6,11 @@ import {
   INTERNAL_SUBMISSION_RECIPIENT,
   sendMailgunMail,
 } from "./mailgun";
-
-interface MailSection {
-  heading: string;
-
-  rows?: readonly (
-    readonly [
-      string,
-      string,
-    ]
-  )[];
-
-  paragraph?: string;
-}
+import {
+  createInquiryTextAttachment,
+  renderInquiryText,
+  type InquiryTextSection as MailSection,
+} from "./inquiry-text-attachment";
 
 interface ConfiguratorMailContent {
   title: string;
@@ -1410,6 +1402,16 @@ ${leadId}
     text,
 
     html,
+    attachments: [createInquiryTextAttachment(
+      "Konfiguratoranfrage.txt",
+      renderInquiryText(
+        "KONFIGURATORANFRAGE – ENERGIE-KRAFT SÜD",
+        allSections.map((section) => ({
+          ...section,
+          rows: section.rows?.filter(([label]) => label !== "Modellversion"),
+        })),
+      ),
+    )],
   };
 }
 

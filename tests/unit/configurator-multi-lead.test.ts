@@ -4,6 +4,7 @@ import {
     it,
 } from "vitest";
 import { configuratorLeadPayloadSchema } from "../../functions/src/configurator-lead-validation";
+import { buildConfiguratorLeadMail } from "../../functions/src/configurator-lead-mail";
 
 import {
     buildBatteryStorageConfiguratorResult,
@@ -313,6 +314,71 @@ function createMultiConfiguratorState() {
         },
     );
 }
+
+describe("KPLUS configurator attachments", () => {
+    it.each(["photovoltaic", "battery_storage", "heat_pump", "climate", "wallbox", "combined"] as const)(
+        "includes the complete mail content for %s without recalculating results",
+        (variant) => {
+            const state = createMultiConfiguratorState();
+            state.notes = { hasNotes: true, text: "Bitte prüfen.\n\nDachzugang über die Südseite." };
+            if (variant !== "combined") {
+                state.activeConfigurator = variant;
+                state.journey = { ...state.journey, entryPoint: variant, selectedProducts: [variant], completedProducts: [variant] };
+                state.results = {};
+                state.interests = {
+                    photovoltaic: variant === "photovoltaic", batteryStorage: variant === "battery_storage",
+                    heatPump: variant === "heat_pump", climate: variant === "climate", wallbox: variant === "wallbox",
+                };
+                switch (variant) {
+                    case "photovoltaic":
+                        state.results.photovoltaic = buildPhotovoltaicConfiguratorResult(state)!;
+                        break;
+                    case "battery_storage":
+                        state.batteryStorage = { ...state.batteryStorage, annualConsumptionKwh: 4000, pvPowerKwp: 8 };
+                        state.results.batteryStorage = buildBatteryStorageConfiguratorResult(state)!;
+                        break;
+                    case "heat_pump":
+                        state.results.heatPump = buildHeatPumpConfiguratorResult(state)!;
+                        break;
+                    case "climate":
+                        state.results.climate = buildClimateConfiguratorResult(state)!;
+                        break;
+                    case "wallbox":
+                        state.results.wallbox = buildWallboxConfiguratorResult(state)!;
+                        break;
+                }
+            }
+            const lead = configuratorLeadPayloadSchema.parse(buildConfiguratorLeadInput(state, {
+                firstName: "Erika", lastName: "Müller", email: "erika@example.test", phone: "",
+                installationAtResidence: false, street: "Musterstraße 12", postalCode: "83404", city: "Ainring",
+                privacyAccepted: true, website: "",
+            }, Date.now()));
+            // Deliberately use a saved value unlike the calculation fixture.
+            lead.economics.investmentBaseEuro = 123456;
+            const before = JSON.stringify(lead);
+            const mail = buildConfiguratorLeadMail({ leadId: "PRIVATE-TECHNICAL-ID", lead });
+            const [attachment] = mail.attachments;
+            const text = attachment.data.toString("utf8");
+            expect(attachment).toMatchObject({ filename: "Konfiguratoranfrage.txt", contentType: "text/plain; charset=utf-8" });
+            expect(text).toContain("Müller");
+            expect(text).toContain("Musterstraße 12");
+            expect(text).toContain("Am Wohnort: Nein");
+            expect(text).toContain("Telefon: Keine Angabe");
+            expect(text).toContain("Gesamtinvestition: 123.456");
+            expect(text).not.toMatch(/PRIVATE-TECHNICAL-ID|Modellversion:|<[^>]+>|\t|(?<!\r)\n|\r(?!\n)/);
+            const decode = (value: string) => value.replace(/&(amp|lt|gt|quot|#039);/g, (entity) => ({ "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#039;": "'" })[entity]!);
+            for (const row of mail.html.matchAll(/<tr>\s*<td><strong>(.*?)<\/strong><\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/gs)) {
+                if (row[1] !== "Modellversion") {
+                    expect(text).toContain(`${decode(row[1])}: ${decode(row[2])}`);
+                }
+            }
+            if (variant === "photovoltaic" || variant === "combined") {
+                expect(text).toContain("Bitte prüfen.\r\n\r\nDachzugang über die Südseite.");
+            }
+            expect(JSON.stringify(lead)).toBe(before);
+        },
+    );
+});
 
 describe(
     "multi configurator lead",

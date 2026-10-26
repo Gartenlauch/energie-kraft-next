@@ -16,6 +16,7 @@ import { mailgunSendingKey, sendMailgunMail } from "./mailgun.js";
 import { buildConfiguratorLeadMail } from "./configurator-lead-mail.js";
 import { buildContactLeadMail } from "./contact-lead-mail.js";
 import type { ContactLeadPayload } from "./contact-lead-validation.js";
+import { createInquiryTextAttachment } from "./inquiry-text-attachment.js";
 import { checkStaffClaim, requireStaffCaller } from "./admin-authorization.js";
 
 const id = z
@@ -157,7 +158,7 @@ export async function handleAdminGenerateLeadReport(
   };
 }
 
-export function buildForwardedLeadMail(data: DocumentData, idValue: string) {
+export function buildForwardedLeadMail(data: DocumentData, idValue: string, message?: string) {
   const reference = data.publicReference ?? idValue;
   const content = data.type === "configurator"
     ? buildConfiguratorLeadMail({ leadId: reference, lead: storedPayload(data) })
@@ -165,6 +166,7 @@ export function buildForwardedLeadMail(data: DocumentData, idValue: string) {
       firstName: data.contact?.firstName ?? "", lastName: data.contact?.lastName ?? "",
       company: data.contact?.company ?? undefined, email: data.contact?.email ?? "",
       phone: data.contact?.phone ?? undefined, postalCode: data.location?.postalCode ?? "",
+      street: data.location?.street ?? undefined,
       city: data.location?.city ?? "", interests: data.project?.interests ?? [],
       buildingType: data.project?.buildingType ?? undefined, ownership: data.project?.ownership ?? undefined,
       preferredContact: data.preferredContact ?? "egal", message: data.message ?? "",
@@ -172,7 +174,11 @@ export function buildForwardedLeadMail(data: DocumentData, idValue: string) {
     } as ContactLeadPayload });
   const date = toDate(data.createdAt);
   const dateText = date ? new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Berlin" }).format(date) : "Nicht verfügbar";
-  return { reference, text: `Eingegangen: ${dateText}\n\n${content.text}`,
+  const attachment = createInquiryTextAttachment(
+    data.type === "configurator" ? "Konfiguratoranfrage.txt" : "Kontaktanfrage.txt",
+    `Eingegangen: ${dateText}\n\n${content.attachments[0].data.toString("utf8").replace(/^\uFEFF/, "")}${message ? `\n\nINTERNE NACHRICHT\n\n${message}` : ""}`,
+  );
+  return { reference, attachments: [attachment], text: `Eingegangen: ${dateText}\n\n${content.text}`,
     html: `<p><strong>Eingegangen:</strong> ${escapeHtml(dateText)}</p>${content.html}` };
 }
 export async function handleAdminForwardLead(
@@ -189,7 +195,7 @@ export async function handleAdminForwardLead(
   const snapshot = await reference.get();
   if (!snapshot.exists) throw new HttpsError("not-found", "Anfrage nicht gefunden.");
   const data = snapshot.data()!;
-  const summary = buildForwardedLeadMail(data, snapshot.id);
+  const summary = buildForwardedLeadMail(data, snapshot.id, input.data.message);
   const report = data.type === "configurator" ? await createPdf(data, snapshot.id) : null;
   const note = input.data.message ? `\n\nInterne Nachricht:\n${input.data.message}` : "";
   await send({
@@ -198,13 +204,12 @@ export async function handleAdminForwardLead(
     subject: `Weitergeleitete Anfrage · ${summary.reference}`,
     text: `Energie-Kraft Admin-Weiterleitung\n\n${summary.text}${note}`,
     html: `${summary.html}${input.data.message ? `<h3>Interne Nachricht</h3><p>${escapeHtml(input.data.message).replace(/\n/g, "<br />")}</p>` : ""}`,
-    ...(report
-      ? {
-          attachments: [
-            { filename: report.filename, data: report.buffer, contentType: "application/pdf" },
-          ],
-        }
-      : {}),
+    attachments: [
+      ...summary.attachments,
+      ...(report ? [
+        { filename: report.filename, data: report.buffer, contentType: "application/pdf" },
+      ] : []),
+    ],
   });
   await reference
     .collection("activities")

@@ -110,6 +110,7 @@ export const submitContactLead = onCall(
       },
 
       location: {
+        street: optionalValue(input.street),
         postalCode: input.postalCode,
         city: input.city,
       },

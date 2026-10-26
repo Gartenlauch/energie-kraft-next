@@ -131,6 +131,13 @@ export function ContactLeadCard({
                 </div>
               ) : null}
 
+              {lead.location.street ? (
+                <div>
+                  <dt className="text-slate-500">Straße und Hausnummer</dt>
+                  <dd className="font-medium text-slate-900">{lead.location.street}</dd>
+                </div>
+              ) : null}
+
               <div>
                 <dt className="text-slate-500">
                   Ort

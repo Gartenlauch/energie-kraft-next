@@ -40,6 +40,10 @@ export const contactLeadPayloadSchema = z
 
     phone: z.string().trim().max(40).optional(),
 
+    // Old, already loaded contact forms do not send street during rollout.
+    // If supplied, validate it as strictly as the new required client field.
+    street: z.string().trim().min(3).max(150).optional(),
+
     postalCode: z
       .string()
       .trim()
