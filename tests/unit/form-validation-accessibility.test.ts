@@ -88,6 +88,7 @@ function fillContact() {
     "first-name": "Erika",
     "last-name": "Mustermann",
     email: "erika@example.test",
+    street: "Testweg 1",
     "postal-code": "83404",
     city: "Ainring",
     message: "Bitte beraten Sie mich zu meinem Projekt.",
@@ -123,7 +124,7 @@ function renderConfig(overrides = {}, onContinue = vi.fn()) {
 describe("contact validation accessibility", () => {
   beforeEach(() => act(() => root.render(createElement(ContactLeadForm))));
   it("marks required fields, the radio group and conditional phone without requiring every interest", () => {
-    for (const id of ["first-name", "last-name", "email", "postal-code", "city", "message", "privacy"]) {
+    for (const id of ["first-name", "last-name", "email", "street", "postal-code", "city", "message", "privacy"]) {
       expect(element(`#contact-${id}`).getAttribute("aria-required")).toBe("true");
     }
     for (const id of ["company", "building-type", "ownership", "website"]) {
@@ -142,7 +143,9 @@ describe("contact validation accessibility", () => {
     click('input[name="preferredContact"][value="email"]');
     expect(element("#contact-phone").getAttribute("aria-required")).toBe("false");
     expect(element<HTMLFormElement>("form").noValidate).toBe(true);
-    expect(container.querySelectorAll("[required]")).toHaveLength(0);
+    expect(Array.from(container.querySelectorAll("[required]"))).toEqual([
+      element("#contact-street"),
+    ]);
   });
 
   it("focuses the first invalid field in DOM order and clears only the edited field without moving focus", () => {
@@ -178,6 +181,26 @@ describe("contact validation accessibility", () => {
     click("#contact-privacy");
     expect(element("#contact-privacy").hasAttribute("aria-invalid")).toBe(false);
     expect(container.querySelector("#contact-privacy-error")).toBeNull();
+  });
+  it("requires street with an accessible error and focuses it before privacy", () => {
+    fillContact();
+    fill("contact-street", "");
+    click('input[type="checkbox"]');
+    submitContact();
+    const street = element("#contact-street");
+    expect(document.activeElement).toBe(street);
+    expectError("#contact-street", "contact-street-error");
+    expect(element("#contact-street-error").textContent).toBe(
+      "Bitte geben Sie Straße und Hausnummer ein.",
+    );
+    fill("contact-street", "Testweg 1");
+    flushFocus();
+    expect(document.activeElement).toBe(street);
+    expect(street.hasAttribute("aria-invalid")).toBe(false);
+    expect(street.hasAttribute("aria-describedby")).toBe(false);
+    expect(container.querySelector("#contact-street-error")).toBeNull();
+    submitContact();
+    expect(document.activeElement).toBe(element("#contact-privacy"));
   });
   it("includes optional company validation and conditional phone validation", () => {
     fillContact();
