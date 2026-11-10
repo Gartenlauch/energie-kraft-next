@@ -3,7 +3,7 @@
 import {
   enqueueGoogleCommand,
   ensureGoogleConsentDefault,
-  getEffectiveGoogleConsent,
+  ensureGoogleConsentUpdate,
 } from "./client";
 
 type GoogleTagWindow = Window & {
@@ -63,8 +63,7 @@ export function ensureGoogleTag(
   }
   if (!state.initialized) {
     // No measurement commands while loading; callbacks recheck current consent.
-    ensureGoogleConsentDefault();
-    enqueueGoogleCommand("consent", "update", getEffectiveGoogleConsent());
+    ensureGoogleConsentUpdate();
     enqueueGoogleCommand("js", new Date());
     state.initialized = true;
   }

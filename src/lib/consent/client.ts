@@ -54,11 +54,22 @@ export function enqueueGoogleCommand(...args: unknown[]) {
 }
 
 let defaultPublished = false;
+let lastGoogleConsentUpdate: string | undefined;
 
 export function ensureGoogleConsentDefault() {
   if (defaultPublished) return;
   defaultPublished = true;
   enqueueGoogleCommand("consent", "default", googleConsentSignals([]));
+}
+
+/** One update per effective state, shared by the manager and delayed tag loading. */
+export function ensureGoogleConsentUpdate() {
+  ensureGoogleConsentDefault();
+  const consent = getEffectiveGoogleConsent();
+  const signature = JSON.stringify(consent);
+  if (signature === lastGoogleConsentUpdate) return;
+  enqueueGoogleCommand("consent", "update", consent);
+  lastGoogleConsentUpdate = signature;
 }
 
 /** Disable consumers synchronously BEFORE a denied update reaches a loaded tag. */
@@ -67,9 +78,8 @@ export function publishConsent(command: "default" | "update") {
   // after revocation instead of sending a denied update/cookieless Ads ping.
   if (!window.dispatchEvent(new Event(CONSENT_BEFORE_CHANGE_EVENT, { cancelable: true }))) return;
   if (command === "default") ensureGoogleConsentDefault();
-  else {
-    ensureGoogleConsentDefault();
-    enqueueGoogleCommand("consent", command, getEffectiveGoogleConsent());
-  }
+  else ensureGoogleConsentUpdate();
+  // Reviews, expiry handling and other local consumers still need notifications
+  // when their category changes without changing the four Google signals.
   window.dispatchEvent(new Event(CONSENT_CHANGE_EVENT));
 }

@@ -192,6 +192,71 @@ describe("Google Ads Basic Consent Mode", () => {
     ]);
   });
 
+  it("deduplicates consent updates from the manager and delayed tag initialization", () => {
+    setConsent();
+    client.publishConsent("default");
+    client.publishConsent("update");
+    ads.syncGoogleAds();
+    for (let index = 0; index < 72; index++) client.publishConsent("update");
+    loaded();
+    expect(
+      commands().filter(([cmd, type]) => cmd === "consent" && type === "default"),
+    ).toHaveLength(1);
+    expect(commands().filter(([cmd, type]) => cmd === "consent" && type === "update")).toHaveLength(
+      1,
+    );
+    expect(commands().find(([cmd]) => cmd === "config")?.[1]).toBe("AW-10796681126");
+  });
+
+  it("notifies local consumers when reviews change without repeating Google's state", () => {
+    setConsent();
+    client.publishConsent("update");
+    const changed = vi.fn();
+    const unsubscribe = client.subscribeToConsentChanges(changed);
+    setConsent(["necessary", "marketing", "googleReviews"]);
+    client.publishConsent("update");
+    expect(changed).toHaveBeenCalledOnce();
+    expect(client.hasGoogleReviewsConsent()).toBe(true);
+    expect(commands().filter(([cmd, type]) => cmd === "consent" && type === "update")).toHaveLength(
+      1,
+    );
+    unsubscribe();
+  });
+
+  it("publishes actual changes and expiry while keeping repeated refreshes silent", () => {
+    setConsent();
+    client.publishConsent("update");
+    setConsent(["necessary", "analytics", "marketing"]);
+    client.publishConsent("update");
+    client.publishConsent("update");
+    const expired = JSON.parse(dom.window.localStorage.getItem(policy.CONSENT_STORAGE_KEY)!);
+    expired.expirationTime = Date.now() - 1;
+    dom.window.localStorage.setItem(policy.CONSENT_STORAGE_KEY, JSON.stringify(expired));
+    client.publishConsent("update");
+    const updates = commands().filter(([cmd, type]) => cmd === "consent" && type === "update");
+    expect(updates).toHaveLength(3);
+    expect(updates.map((entry) => entry[2])).toEqual([
+      policy.googleConsentSignals(["marketing"]),
+      policy.googleConsentSignals(["analytics", "marketing"]),
+      policy.googleConsentSignals([]),
+    ]);
+    expect(commands()[0].slice(0, 2)).toEqual(["consent", "default"]);
+  });
+
+  it("does not remember a revoked state when a consumer cancels publishing for reload", () => {
+    setConsent();
+    client.publishConsent("update");
+    const cancel = (event: Event) => event.preventDefault();
+    dom.window.addEventListener(client.CONSENT_BEFORE_CHANGE_EVENT, cancel);
+    setConsent(["necessary"]);
+    client.publishConsent("update");
+    dom.window.removeEventListener(client.CONSENT_BEFORE_CHANGE_EVENT, cancel);
+    client.publishConsent("update");
+    const updates = commands().filter(([cmd, type]) => cmd === "consent" && type === "update");
+    expect(updates).toHaveLength(2);
+    expect(updates[1][2]).toEqual(policy.googleConsentSignals([]));
+  });
+
   it.each(["contact", "heatPump"] as const)("sends %s once after the tag loads", (kind) => {
     setConsent();
     acknowledge(leadId, kind);

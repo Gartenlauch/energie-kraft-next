@@ -26,6 +26,35 @@ afterEach(() => {
 });
 
 describe("prepared Ads consent integration", () => {
+  it("does not republish unchanged consent on focus and visibility changes", async () => {
+    const now = Date.now();
+    localStorage.setItem(
+      CONSENT_STORAGE_KEY,
+      JSON.stringify({
+        revision: 3,
+        categories: ["necessary", "marketing"],
+        consentId: "synthetic",
+        consentTimestamp: new Date(now).toISOString(),
+        lastConsentTimestamp: new Date(now).toISOString(),
+        expirationTime: now + CONSENT_LIFETIME_MS,
+        services: {},
+        data: null,
+      }),
+    );
+    await act(async () => root.render(createElement(ConsentManager)));
+    // Simulate switching between the website and debugging tabs without changing consent.
+    for (let index = 0; index < 36; index++) {
+      window.dispatchEvent(new Event("focus"));
+      document.dispatchEvent(new Event("visibilitychange"));
+    }
+    const commands = ((Reflect.get(window, "dataLayer") ?? []) as ArrayLike<unknown>[]).map(
+      (entry) => Array.from(entry),
+    );
+    expect(
+      commands.filter(([command, name]) => command === "consent" && name === "update"),
+    ).toHaveLength(1);
+  });
+
   it("invalidates previous decisions and asks for explicit consent with revised copy", async () => {
     const now = Date.now();
     localStorage.setItem(
