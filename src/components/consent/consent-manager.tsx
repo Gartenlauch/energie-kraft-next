@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import * as CookieConsent from "vanilla-cookieconsent";
 import { LEGAL_ROUTES } from "@/config/legal-routes";
+import { GOOGLE_ADS_ENABLED } from "@/config/google-ads";
 import { publishConsent, readConsent } from "@/lib/consent/client";
 import { CONSENT_LIFETIME_DAYS, CONSENT_REVISION, CONSENT_STORAGE_KEY } from "@/lib/consent/policy";
 import "vanilla-cookieconsent/dist/cookieconsent.css";
@@ -65,7 +66,9 @@ export function ConsentManager() {
               consentModal: {
                 title: "Cookie-Einstellungen",
                 description:
-                  "Notwendige Dienste sichern diese Website. Google Analytics 4 zur statistischen Auswertung und Google-Bewertungen mit externen Autorenbildern erlauben Sie freiwillig. Werbung bleibt deaktiviert. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ im Footer ändern oder widerrufen.",
+                  GOOGLE_ADS_ENABLED
+                    ? "Notwendige Dienste sichern diese Website. Google Analytics 4, Google Ads zur Messung erfolgreich gesendeter Anfragen und Google-Bewertungen mit externen Autorenbildern erlauben Sie freiwillig und getrennt voneinander. Personalisierte Werbung bleibt deaktiviert. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ im Footer ändern oder widerrufen."
+                    : "Notwendige Dienste sichern diese Website. Google Analytics 4 zur statistischen Auswertung und Google-Bewertungen mit externen Autorenbildern erlauben Sie freiwillig. Werbung bleibt deaktiviert. Ihre Auswahl können Sie jederzeit über „Cookie-Einstellungen“ im Footer ändern oder widerrufen.",
                 acceptAllBtn: "Alle akzeptieren",
                 acceptNecessaryBtn: "Nur notwendige",
                 showPreferencesBtn: "Einstellungen",
@@ -81,7 +84,9 @@ export function ConsentManager() {
                   {
                     title: "Sie entscheiden",
                     description:
-                      "Alle optionalen Kategorien sind zunächst ausgeschaltet. Zum Widerruf deaktivieren Sie die betreffende Kategorie und speichern Ihre Auswahl oder wählen „Alle ablehnen“. Marketing und personalisierte Werbung bleiben technisch deaktiviert.",
+                      GOOGLE_ADS_ENABLED
+                        ? "Alle optionalen Kategorien sind zunächst ausgeschaltet. Zum Widerruf deaktivieren Sie die betreffende Kategorie und speichern Ihre Auswahl oder wählen „Alle ablehnen“. Nach Widerruf der Conversion-Messung wird eine bereits mit Google Ads verbundene Seite neu geladen. Personalisierte Werbung bleibt technisch deaktiviert."
+                        : "Alle optionalen Kategorien sind zunächst ausgeschaltet. Zum Widerruf deaktivieren Sie die betreffende Kategorie und speichern Ihre Auswahl oder wählen „Alle ablehnen“. Marketing und personalisierte Werbung bleiben technisch deaktiviert.",
                   },
                   {
                     title: "Notwendige Dienste",
@@ -92,19 +97,21 @@ export function ConsentManager() {
                   {
                     title: "Statistik – Google Analytics 4",
                     description:
-                      "Wertet nach Ihrer Zustimmung Seitenaufrufe auf www.energie-kraft.de aus. Google Ireland Limited erhält dabei Cookie-Kennungen sowie Nutzungs-, Browser- und Geräteinformationen; eine Verarbeitung in den USA ist möglich. Analytics-Cookies sind höchstens 180 Tage gültig. Ohne Zustimmung werden keine Analytics-Skripte geladen und keine Tracking-Pings gesendet. Erlaubt keine Werbung oder Werbepersonalisierung.",
+                      "Wertet nach Ihrer Zustimmung Seitenaufrufe auf www.energie-kraft.de aus. Google Ireland Limited erhält dabei Cookie-Kennungen sowie Nutzungs-, Browser- und Geräteinformationen; eine Verarbeitung in den USA ist möglich. Analytics-Cookies sind höchstens 180 Tage gültig. Ohne Ihre Statistik-Einwilligung wird Google Analytics 4 nicht aktiviert und unsere Einbindung sendet keine Analytics-Ereignisse. Eine gesonderte Marketing-Einwilligung kann Google Ads aktivieren. Die Statistik-Einwilligung erlaubt keine Werbung oder Werbepersonalisierung.",
                     linkedCategory: "analytics",
                   },
                   {
                     title: "Marketing / Conversion-Messung – Google Ads",
                     description:
-                      "Vorgesehen zur Messung, ob Anzeigen zu Aktionen auf der Website führen. Erlaubt hierfür Werbespeicherung und die Übermittlung werbebezogener Nutzungsdaten an Google. Personalisierte Werbung benötigt eine zusätzliche Freigabe. Derzeit technisch deaktiviert.",
+                      GOOGLE_ADS_ENABLED
+                        ? "Misst nach Ihrer ausdrücklichen Zustimmung, ob Google-Anzeigen zu erfolgreich übermittelten Kontakt- oder Konfigurator-Anfragen führen. Google Ireland Limited erhält Cookie- und Anzeigenkennungen, eine zufällige Vorgangskennung sowie Nutzungs-, Browser- und Verbindungsdaten; eine Verarbeitung in den USA ist möglich. Formularinhalte werden nicht übergeben. Ohne Zustimmung wird Google Ads nicht aktiviert; eine Statistik-Freigabe allein genügt nicht. Bis zu 200 bereits gemeldete Vorgangskennungen werden zur Vermeidung von Doppelmeldungen für diese Browser-Sitzung gespeichert. Keine erweiterten Conversions oder personalisierte Werbung."
+                        : "Vorgesehen zur Messung, ob Anzeigen zu Aktionen auf der Website führen. Erlaubt hierfür Werbespeicherung und die Übermittlung werbebezogener Nutzungsdaten an Google. Personalisierte Werbung benötigt eine zusätzliche Freigabe. Derzeit technisch deaktiviert.",
                     linkedCategory: "marketing",
                   },
                   {
                     title: "Personalisierte Werbung",
                     description:
-                      "Separate optionale Erlaubnis, Nutzungsdaten für interessenbezogene Google-Werbung einzusetzen. Wird nur gemeinsam mit der Freigabe für Marketing / Conversion-Messung wirksam. Derzeit technisch deaktiviert.",
+                      "Personalisierte Werbung bieten wir derzeit nicht an. Die Auswahl dieser Kategorie aktiviert keine personalisierte Werbung.",
                     linkedCategory: "personalization",
                   },
                   {

@@ -36,7 +36,14 @@ describe("consent boundary", () => {
       "denied",
     );
     expect(googleConsentSignals(["googleReviews"])).toEqual(googleConsentSignals([]));
-    expect(googleConsentSignals(CONSENT_CATEGORIES)).toEqual(googleConsentSignals(["analytics"]));
+    expect(googleConsentSignals(["marketing"])).toEqual({
+      analytics_storage: "denied", ad_storage: "granted", ad_user_data: "granted",
+      ad_personalization: "denied",
+    });
+    expect(googleConsentSignals(CONSENT_CATEGORIES)).toEqual({
+      analytics_storage: "granted", ad_storage: "granted", ad_user_data: "granted",
+      ad_personalization: "denied",
+    });
   });
 
   it("accepts the library record including its timestamps and null custom data", () => {
@@ -51,6 +58,7 @@ describe("consent boundary", () => {
     "[]",
     JSON.stringify({ ...record, revision: 0 }),
     JSON.stringify({ ...record, revision: 1 }),
+    JSON.stringify({ ...record, revision: 2 }),
     JSON.stringify({ ...record, expirationTime: now }),
     JSON.stringify({ ...record, expirationTime: now + CONSENT_LIFETIME_MS * 2 }),
     JSON.stringify({ ...record, lastConsentTimestamp: "invalid" }),

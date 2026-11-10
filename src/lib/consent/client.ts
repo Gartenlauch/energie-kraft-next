@@ -44,7 +44,7 @@ export function getEffectiveGoogleConsent() {
   );
 }
 
-/** The one gtag-compatible queue, shared by the consent manager and the GA4 adapter. */
+/** The one gtag-compatible queue, shared by consent, GA4 and Google Ads. */
 export function enqueueGoogleCommand(...args: unknown[]) {
   const target = window as Window & { dataLayer?: unknown[] };
   target.dataLayer ??= [];
@@ -63,7 +63,9 @@ export function ensureGoogleConsentDefault() {
 
 /** Disable consumers synchronously BEFORE a denied update reaches a loaded tag. */
 export function publishConsent(command: "default" | "update") {
-  window.dispatchEvent(new Event(CONSENT_BEFORE_CHANGE_EVENT));
+  // A configured Ads tag cannot be unloaded reliably. Its consumer can reload
+  // after revocation instead of sending a denied update/cookieless Ads ping.
+  if (!window.dispatchEvent(new Event(CONSENT_BEFORE_CHANGE_EVENT, { cancelable: true }))) return;
   if (command === "default") ensureGoogleConsentDefault();
   else {
     ensureGoogleConsentDefault();

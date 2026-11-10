@@ -1,6 +1,8 @@
+import { GOOGLE_ADS_ENABLED } from "@/config/google-ads";
+
 export const CONSENT_STORAGE_KEY = "ek_consent";
-// GA4 activation requires a new explicit decision; revision 1 never enabled tracking.
-export const CONSENT_REVISION = 2;
+// Ads activation requires a new decision: previous wording explicitly disabled ads.
+export const CONSENT_REVISION = GOOGLE_ADS_ENABLED ? 3 : 2;
 export const CONSENT_LIFETIME_DAYS = 180;
 export const CONSENT_LIFETIME_MS = CONSENT_LIFETIME_DAYS * 86_400_000;
 export const CONSENT_CATEGORIES = [
@@ -37,8 +39,9 @@ export function googleConsentSignals(categories: readonly ConsentCategory[]) {
     categories.includes(category) ? ("granted" as const) : ("denied" as const);
   return {
     analytics_storage: granted("analytics"),
-    ad_storage: "denied" as const,
-    ad_user_data: "denied" as const,
+    ad_storage: GOOGLE_ADS_ENABLED ? granted("marketing") : ("denied" as const),
+    ad_user_data: GOOGLE_ADS_ENABLED ? granted("marketing") : ("denied" as const),
+    // This implementation never enables personalized advertising.
     ad_personalization: "denied" as const,
   };
 }

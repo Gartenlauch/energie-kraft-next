@@ -2,8 +2,9 @@
 
 import { PUBLIC_ROUTE_LIST } from "@/config/routes";
 import { LEGAL_ROUTE_LIST } from "@/config/legal-routes";
-import { canUseTracking, CONSENT_LIFETIME_DAYS, googleConsentSignals } from "./policy";
-import { enqueueGoogleCommand, ensureGoogleConsentDefault, hasConsent } from "./client";
+import { canUseTracking, CONSENT_LIFETIME_DAYS } from "./policy";
+import { enqueueGoogleCommand, hasConsent } from "./client";
+import { ensureGoogleTag } from "./google-tag";
 
 export const GA4_MEASUREMENT_ID = "G-5XEMD60ZRV";
 const disableKey = `ga-disable-${GA4_MEASUREMENT_ID}` as const;
@@ -15,8 +16,6 @@ const publicPaths = new Set<string>([
 type AnalyticsWindow = Window & {
   [disableKey]?: boolean;
   __ekAnalytics?: {
-    script: HTMLScriptElement;
-    loaded: boolean;
     initialized: boolean;
     lastNavigation: string | null;
   };
@@ -58,6 +57,14 @@ export function pauseAnalytics() {
   (window as AnalyticsWindow)[disableKey] = true;
 }
 
+function syncCurrentNavigation() {
+  const search = new URLSearchParams(window.location.search).toString();
+  syncAnalytics(
+    window.location.pathname,
+    window.location.pathname + (search ? `?${search}` : ""),
+  );
+}
+
 export function syncAnalytics(pathname: string, navigation: string) {
   const target = window as AnalyticsWindow;
   const hostAllowed = canUseTracking(window.location.hostname, window.location.protocol);
@@ -76,36 +83,12 @@ export function syncAnalytics(pathname: string, navigation: string) {
   target[disableKey] = false;
 
   if (!target.__ekAnalytics) {
-    const script = document.createElement("script");
-    script.id = "ek-ga4";
-    script.async = true;
-    script.referrerPolicy = "no-referrer";
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
-    target.__ekAnalytics = { script, loaded: false, initialized: false, lastNavigation: null };
-    // Nothing that can measure is queued while the library is still loading.
-    script.onload = () => {
-      target.__ekAnalytics!.loaded = true;
-      const search = new URLSearchParams(window.location.search).toString();
-      syncAnalytics(
-        window.location.pathname,
-        window.location.pathname + (search ? `?${search}` : ""),
-      );
-    };
-    script.onerror = () => {
-      pauseAnalytics();
-      script.remove();
-      delete target.__ekAnalytics;
-    };
-    document.head.appendChild(script);
+    target.__ekAnalytics = { initialized: false, lastNavigation: null };
   }
+  if (!ensureGoogleTag(GA4_MEASUREMENT_ID, syncCurrentNavigation, pauseAnalytics)) return;
   const state = target.__ekAnalytics;
-  if (!state.loaded) return;
   const page = { page_location: pageLocation, page_referrer: "", page_title: "Energie-Kraft Süd" };
   if (!state.initialized) {
-    // Defaults MUST precede config, even when consent was saved before hydration.
-    ensureGoogleConsentDefault();
-    enqueueGoogleCommand("consent", "update", googleConsentSignals(["analytics"]));
-    enqueueGoogleCommand("js", new Date());
     enqueueGoogleCommand("config", GA4_MEASUREMENT_ID, {
       ...page,
       send_page_view: false,

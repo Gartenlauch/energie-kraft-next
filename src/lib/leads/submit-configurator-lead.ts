@@ -3,6 +3,7 @@ import "client-only";
 import { httpsCallable } from "firebase/functions";
 
 import { firebaseFunctions } from "@/lib/firebase/client";
+import { trackGoogleAdsLead } from "@/lib/consent/google-ads";
 import type {
   SubmitConfiguratorLeadInput,
   SubmitConfiguratorLeadResult,
@@ -24,6 +25,11 @@ export async function submitConfiguratorLead(
     await submitConfiguratorLeadCallable(
       input,
     );
+
+  trackGoogleAdsLead(
+    { ok: result.data.ok, leadId: result.data.leadId },
+    input.configurators.some(({ type }) => type === "heat_pump") ? "heatPump" : "contact",
+  );
 
   return result.data;
 }

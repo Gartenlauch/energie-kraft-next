@@ -179,6 +179,7 @@ const inputClassName =
 
 export function ContactLeadForm() {
   const formRef = useRef<HTMLFormElement>(null);
+  const submitInFlight = useRef(false);
   const [formValues, setFormValues] =
     useState<ContactFormValues>(
       createInitialFormValues,
@@ -259,7 +260,7 @@ export function ContactLeadForm() {
   }
 
   async function handleSubmit() {
-    if (isSubmitting) {
+    if (submitInFlight.current || submittedLeadId) {
       return;
     }
 
@@ -303,6 +304,7 @@ export function ContactLeadForm() {
     setFieldErrors({});
     setGeneralError(null);
     setIsSubmitting(true);
+    submitInFlight.current = true;
 
     try {
       const result = await submitContactLead(
@@ -315,6 +317,7 @@ export function ContactLeadForm() {
         "Ihre Anfrage konnte momentan nicht übermittelt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie uns telefonisch.",
       );
     } finally {
+      submitInFlight.current = false;
       setIsSubmitting(false);
     }
   }

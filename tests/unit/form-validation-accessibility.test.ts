@@ -5,6 +5,8 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ContactLeadForm } from "@/components/contact/contact-lead-form";
 import { ConfiguratorContactForm } from "@/components/configurator/configurator-contact-form";
+import { submitContactLead } from "@/lib/leads/submit-contact-lead";
+import type { SubmitContactLeadResult } from "@/types/contact-lead";
 
 vi.mock("@/config/env/public", () => ({ publicEnv: {
   NEXT_PUBLIC_CANONICAL_BASE_URL: "https://www.energie-kraft.de",
@@ -23,6 +25,7 @@ let root: Root;
 let frames: FrameRequestCallback[];
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   frames = [];
   vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
@@ -123,6 +126,37 @@ function renderConfig(overrides = {}, onContinue = vi.fn()) {
 
 describe("contact validation accessibility", () => {
   beforeEach(() => act(() => root.render(createElement(ContactLeadForm))));
+  it("does not submit invalid fields and blocks simultaneous duplicate requests", async () => {
+    const submit = vi.mocked(submitContactLead);
+    submitContact();
+    expect(submit).not.toHaveBeenCalled();
+    fillContact();
+    click('input[type="checkbox"]');
+    click("#contact-privacy");
+    let resolve!: (result: SubmitContactLeadResult) => void;
+    submit.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+    const form = element<HTMLFormElement>("form");
+    act(() => {
+      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+    expect(submit).toHaveBeenCalledOnce();
+    await act(async () => resolve({ ok: true, leadId: "synthetic-lead" }));
+    expect(container.textContent).toContain("Vielen Dank für Ihre Anfrage");
+  });
+  it("allows a new attempt after a failed request", async () => {
+    const submit = vi.mocked(submitContactLead);
+    fillContact();
+    click('input[type="checkbox"]');
+    click("#contact-privacy");
+    submit.mockRejectedValueOnce(new Error("synthetic failure"));
+    await act(async () => submitContact());
+    expect(container.textContent).toContain("momentan nicht übermittelt");
+    submit.mockResolvedValueOnce({ ok: true, leadId: "synthetic-lead" });
+    await act(async () => submitContact());
+    expect(submit).toHaveBeenCalledTimes(2);
+    expect(container.textContent).toContain("Vielen Dank für Ihre Anfrage");
+  });
   it("marks required fields, the radio group and conditional phone without requiring every interest", () => {
     for (const id of ["first-name", "last-name", "email", "street", "postal-code", "city", "message", "privacy"]) {
       expect(element(`#contact-${id}`).getAttribute("aria-required")).toBe("true");

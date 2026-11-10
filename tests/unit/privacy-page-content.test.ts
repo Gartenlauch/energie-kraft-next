@@ -29,17 +29,25 @@ describe("Privacy publication copy", () => {
     const editorialNotes = /Freigabeentwurf|Entwurf\s*[–-]|nicht zur Produktionsveröffentlichung freigegeben|Vor Veröffentlichung bestätigen|Vor der Veröffentlichung|Noch offen|Zur Freigabe|Interne Prüf- und Arbeitshinweise|Verbleibender Freigabepunkt|noch zu bestätigen|hier ergänzt|gesondert zu bewerten|Vorgesehene Rechtsgrundlage/i;
     expect(text).not.toMatch(editorialNotes);
     expect(JSON.stringify(metadata)).not.toMatch(editorialNotes);
-    expect(text).toContain("Stand: 21. Oktober 2026");
-    expect(text).toContain("10. Google Analytics 4 und deaktiviertes Google-Ads-Webtracking");
+    expect(text).toContain("Stand: 10. November 2026");
+    expect(text).toContain("10. Google Analytics 4 und Google Ads");
     expect(text).toContain(
       "nach Ihrer ausdrücklichen Einwilligung in „Statistik – Google Analytics 4“ den Statistikdienst Google Analytics 4",
     );
     expect(text).toContain(
-      "Vor Ihrer Zustimmung werden keine Analytics-Skripte geladen und auch keine cookielosen Analytics-Pings versendet",
+      "Ohne Ihre Statistik-Einwilligung wird Google Analytics 4 nicht aktiviert und unsere Einbindung sendet keine Analytics-Ereignisse. Eine gesonderte Marketing-Einwilligung kann Google Ads aktivieren.",
     );
+    expect(text).toContain("Wir setzen den Basic Consent Mode ein.");
     expect(text).toContain(
-      "Google-Ads-Webtracking, Conversion-Tracking, Remarketing und personalisierte Werbung bleiben technisch deaktiviert, auch bei Auswahl der entsprechenden Kategorien.",
+      "Wegen der ergänzten Google-Ads-Conversion-Messung fragen wir Ihre Auswahl erneut ab. Einwilligungen aus früheren Fassungen werden hierfür nicht übernommen.",
     );
+    expect(text).not.toMatch(/keine Analytics-Skripte|noch deaktivierten Statistik-Kategorie/);
+    expect(text).toContain(
+      "Mit Ihrer gesonderten ausdrücklichen Einwilligung in „Marketing / Conversion-Messung – Google Ads“ messen wir",
+    );
+    expect(text).toContain("Eine Statistik-Einwilligung allein aktiviert Google Ads nicht.");
+    expect(text).toContain("Erweiterte Conversions und personalisierte Werbung bleiben deaktiviert.");
+    expect(text).toContain("ek_ads_conversions");
   });
 
   it("publishes the confirmed privacy contacts and secure authority link", () => {

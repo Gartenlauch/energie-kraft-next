@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/app/(site)/_components/legal/legal-page";
 import { LegalSection } from "@/app/(site)/_components/legal/legal-section";
 import { siteConfig } from "@/config/site";
+import { GOOGLE_ADS_ENABLED } from "@/config/google-ads";
 import { CONSENT_LIFETIME_DAYS } from "@/lib/consent/policy";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { SeoContent } from "@/types/content";
@@ -22,7 +23,7 @@ export default function DatenschutzPage() {
       eyebrow="Rechtliche Informationen"
       title="Datenschutzerklärung"
       documentLayout
-      description="Stand: 21. Oktober 2026. Diese Informationen erläutern, wie wir personenbezogene Daten beim Besuch unserer Website und bei der Nutzung ihrer Funktionen verarbeiten."
+      description={`${GOOGLE_ADS_ENABLED ? "Stand: 10. November 2026." : "Stand: 21. Oktober 2026."} Diese Informationen erläutern, wie wir personenbezogene Daten beim Besuch unserer Website und bei der Nutzung ihrer Funktionen verarbeiten.`}
     >
       <LegalSection title="1. Verantwortlicher und Kontakt" documentLayout>
         <address className="not-italic">
@@ -344,7 +345,7 @@ export default function DatenschutzPage() {
       </LegalSection>
 
       <LegalSection
-        title="10. Google Analytics 4 und deaktiviertes Google-Ads-Webtracking"
+        title={GOOGLE_ADS_ENABLED ? "10. Google Analytics 4 und Google Ads" : "10. Google Analytics 4 und deaktiviertes Google-Ads-Webtracking"}
         documentLayout
       >
         <p>
@@ -357,8 +358,10 @@ export default function DatenschutzPage() {
           TDDDG.
         </p>
         <p>
-          Wir setzen den Basic Consent Mode ein: Vor Ihrer Zustimmung werden keine Analytics-Skripte
-          geladen und auch keine cookielosen Analytics-Pings versendet. Nach Zustimmung werden
+          Wir setzen den Basic Consent Mode ein. Ohne Ihre Statistik-Einwilligung wird Google
+          Analytics 4 nicht aktiviert und unsere Einbindung sendet keine Analytics-Ereignisse.
+          Eine gesonderte Marketing-Einwilligung kann Google Ads aktivieren.
+          Nach Ihrer Statistik-Einwilligung werden
           insbesondere aufgerufene öffentliche Seiten, Zeitpunkte, Cookie-Kennungen sowie Browser-,
           Geräte- und technische Verbindungsdaten verarbeitet. Dabei wird Ihre IP-Adresse technisch
           an Google übermittelt; nach Anbieterangaben wird sie in Google Analytics 4 nicht
@@ -414,13 +417,47 @@ export default function DatenschutzPage() {
           widerrufen. Dann beenden wir die Messung und entfernen die für unsere Website erreichbaren
           Analytics-Cookies. Bereits übermittelte Daten werden dadurch nicht rückwirkend gelöscht.
           Die übrige Website und die gesonderte Freigabe für Google-Bewertungen bleiben unabhängig
-          nutzbar. Frühere Entscheidungen aus der noch deaktivierten Statistik-Kategorie gelten
-          nicht als Einwilligung in diese Messung; wir fragen Ihre Auswahl erneut ab.
+          nutzbar. Wegen der ergänzten Google-Ads-Conversion-Messung fragen wir Ihre Auswahl erneut ab.
+          Einwilligungen aus früheren Fassungen werden hierfür nicht übernommen.
         </p>
-        <p>
-          Google-Ads-Webtracking, Conversion-Tracking, Remarketing und personalisierte Werbung
-          bleiben technisch deaktiviert, auch bei Auswahl der entsprechenden Kategorien.
-        </p>
+        {GOOGLE_ADS_ENABLED ? (
+          <>
+            <p>
+              Mit Ihrer gesonderten ausdrücklichen Einwilligung in „Marketing / Conversion-Messung –
+              Google Ads“ messen wir, ob Anzeigen zu erfolgreich übermittelten Kontakt- oder
+              Konfigurator-Anfragen führen. Anbieter und mögliche Empfänger sind die oben genannten
+              Google-Unternehmen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO sowie für das
+              Speichern und Auslesen von Informationen auf Ihrem Endgerät § 25 Abs. 1 TDDDG.
+              Eine Statistik-Einwilligung allein aktiviert Google Ads nicht.
+            </p>
+            <p>
+              Erst nach dieser Einwilligung aktivieren wir das Google-Ads-Ziel im gemeinsamen
+              Google-Tag. Ohne sie werden keine Ads-Conversions gesendet, auch keine cookielosen
+              Ersatzmeldungen. Erfasst werden Cookie- und Anzeigenkennungen, technische Browser-,
+              Geräte- und Verbindungsdaten einschließlich Ihrer IP-Adresse sowie eine zufällige,
+              vom Backend bestätigte Vorgangskennung. Namen, E-Mail-Adressen, Telefonnummern,
+              Adressen und Nachrichtentexte aus den Formularen übergeben wir nicht. Erweiterte
+              Conversions und personalisierte Werbung bleiben deaktiviert. Eine Verarbeitung in
+              den USA ist möglich; die zuvor erläuterten Hinweise zu Übermittlungen gelten auch hier.
+            </p>
+            <p>
+              Zur Vermeidung doppelter Conversion-Meldungen speichern wir nach Einwilligung bis zu
+              200 bereits gemeldete Vorgangskennungen im Session Storage „ek_ads_conversions“ für
+              die Browser-Sitzung. Dies verändert die Speicherung und Bearbeitung Ihrer eigentlichen
+              Anfrage nicht. Google Ads kann Cookies mit dem Namenspräfix „_gcl_“ zur Zuordnung von
+              Anzeigenkontakten verwenden. Googles dienstseitige Aufbewahrung richtet sich nach
+              den Einstellungen und Bedingungen des Dienstes. Bei Widerruf über die
+              Cookie-Einstellungen löschen wir erreichbare Ads-Cookies und laden eine bereits mit
+              Google Ads verbundene Seite neu, um das geladene Tag zu beenden. Bereits übermittelte
+              Daten werden durch den Widerruf nicht rückwirkend gelöscht.
+            </p>
+          </>
+        ) : (
+          <p>
+            Google-Ads-Webtracking, Conversion-Tracking, Remarketing und personalisierte Werbung
+            bleiben technisch deaktiviert, auch bei Auswahl der entsprechenden Kategorien.
+          </p>
+        )}
       </LegalSection>
 
       <LegalSection title="11. Empfänger und Aufbewahrung" documentLayout>
@@ -492,7 +529,7 @@ export default function DatenschutzPage() {
         <p>
           Eine Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Die
           Rechtmäßigkeit der bis zum Widerruf erfolgten Verarbeitung bleibt unberührt. Für
-          Google Analytics und Google-Bewertungen nutzen Sie dazu „Cookie-Einstellungen“ im Footer. Für Ihre weiteren
+          Google Analytics{GOOGLE_ADS_ENABLED ? ", Google Ads" : ""} und Google-Bewertungen nutzen Sie dazu „Cookie-Einstellungen“ im Footer. Für Ihre weiteren
           Anliegen wenden Sie sich an die Kontaktdaten in Abschnitt 1, insbesondere an unseren
           Datenschutzbeauftragten. Wir beantworten Anträge grundsätzlich innerhalb eines Monats;
           über eine gesetzlich zulässige Verlängerung informieren wir Sie innerhalb dieser Frist.

@@ -101,8 +101,8 @@ describe("GA4 basic consent boundary", () => {
     expect(scripts()).toHaveLength(0);
   });
 
-  it("requires a fresh decision for revision 1", () => {
-    consent(["necessary", "analytics", "googleReviews"], 1);
+  it.each([1, 2])("requires a fresh decision for revision %s", (revision) => {
+    consent(["necessary", "analytics", "googleReviews"], revision);
     sync();
     expect(client.readConsent()).toBeNull();
     expect(scripts()).toHaveLength(0);
